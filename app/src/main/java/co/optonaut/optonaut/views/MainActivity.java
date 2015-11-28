@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //FragmentMainBinding binding = DataBindingUtil.setContentView(this, R.layout.fragment_main);
+
+
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
                     TextView t = (TextView) findViewById(R.id.text);
-                    t.setText(response.body().toString());
+                    //t.setText(response.body().toString());
                 }
 
                 @Override
@@ -59,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
 
 
     }
