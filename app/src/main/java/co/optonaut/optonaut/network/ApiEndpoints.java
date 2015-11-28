@@ -15,5 +15,8 @@ import retrofit.http.Headers;
 public interface ApiEndpoints {
     @Headers({"Accept: application/json"})
     @GET("optographs")
-    Call<List<Optograph>> listOptographs(@Header("Authorization") String authorization);
+    Call<List<Optograph>> listOptographsWithAuthentification(@Header("Authorization") String authorization);
+
+    @GET("optographs/feed")
+    Call<List<Optograph>> listOptographs();
 }

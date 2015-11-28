@@ -67,7 +67,7 @@ public class ApiConsumer {
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {
-        Call<List<Optograph>> call = service.listOptographs(getAuthorizationToken());
+        Call<List<Optograph>> call = service.listOptographs();
 
         Log.d(DEBUG_TAG, "Request fired!");
 
