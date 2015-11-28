@@ -7,21 +7,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.viewmodels.OptographAdapter;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
+/**
+ * @author Nilan Marktanner
+ * @date 2015-11-13
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -36,16 +27,10 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+                FeedFragment fragment = (FeedFragment) getSupportFragmentManager().findFragmentById(R.id.feedFragment);
                 fragment.refreshFeed();
             }
         });
-
-
-
-
-
-
     }
 
     @Override

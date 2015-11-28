@@ -7,6 +7,7 @@ import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
+import retrofit.http.Query;
 
 /**
  * @author Nilan Marktanner
@@ -19,4 +20,7 @@ public interface ApiEndpoints {
 
     @GET("optographs/feed")
     Call<List<Optograph>> listOptographs();
+
+    @GET("optographs/feed")
+    Call<List<Optograph>> listOptographsWithLimit(@Query("limit") int limit);
 }

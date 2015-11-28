@@ -16,7 +16,7 @@
         <ImageView
             android:id="@+id/optograph_preview_asset"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="500dp"
             tools:src="@android:drawable/sym_def_app_icon"
             app:assetId="@{optograph.preview_asset_id}"/>
 

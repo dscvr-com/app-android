@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.views;
 
 import android.databinding.DataBindingUtil;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,10 +22,16 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class MainActivityFragment extends Fragment {
+/**
+ * @author Nilan Marktanner
+ * @date 2015-11-13
+ */
+public class FeedFragment extends Fragment {
     private OptographAdapter adapter;
+    private final int LIMIT = 5;
 
-    public MainActivityFragment() {
+
+    public FeedFragment() {
     }
 
     @Override
@@ -50,7 +57,7 @@ public class MainActivityFragment extends Fragment {
     public void refreshFeed() {
         ApiConsumer apiConsumer = new ApiConsumer();
         try {
-            apiConsumer.getOptographs(new Callback<List<Optograph>>() {
+            apiConsumer.getOptographs(LIMIT, new Callback<List<Optograph>>() {
                 @Override
                 public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
                     List<Optograph> optographs = response.body();
@@ -59,7 +66,7 @@ public class MainActivityFragment extends Fragment {
 
                 @Override
                 public void onFailure(Throwable t) {
-
+                    Snackbar.make(getView(), "A network error occured!", Snackbar.LENGTH_SHORT).show();
                 }
             });
         } catch (IOException e) {

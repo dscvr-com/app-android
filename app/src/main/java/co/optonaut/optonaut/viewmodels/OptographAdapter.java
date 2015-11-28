@@ -16,7 +16,7 @@ import co.optonaut.optonaut.model.Optograph;
 
 /**
  * @author Nilan Marktanner
- * @date 2015-11-28.
+ * @date 2015-11-28
  */
 public class OptographAdapter extends RecyclerView.Adapter<OptographAdapter.OptographViewHolder> {
     List<Optograph> optographs;
@@ -24,10 +24,6 @@ public class OptographAdapter extends RecyclerView.Adapter<OptographAdapter.Opto
 
     public OptographAdapter() {
         this.optographs = new ArrayList<>();
-    }
-
-    public OptographAdapter(List<Optograph> optographs) {
-        this.optographs = optographs;
     }
 
     @Override

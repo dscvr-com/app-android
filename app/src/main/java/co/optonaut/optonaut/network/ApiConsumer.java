@@ -17,7 +17,7 @@ import retrofit.Retrofit;
 
 /**
  * @author Nilan Marktanner
- * @date 2015-11-13.
+ * @date 2015-11-13
  */
 public class ApiConsumer {
 
@@ -71,6 +71,12 @@ public class ApiConsumer {
 
         Log.d(DEBUG_TAG, "Request fired!");
 
+        call.enqueue(callback);
+    }
+
+    public void getOptographs(int limit, Callback<List<Optograph>> callback) throws IOException {
+        Call<List<Optograph>> call = service.listOptographsWithLimit(limit);
+        Log.d(DEBUG_TAG, "Request fired!");
         call.enqueue(callback);
     }
 }
