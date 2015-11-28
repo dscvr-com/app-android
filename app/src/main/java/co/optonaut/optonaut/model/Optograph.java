@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.model;
 
-import java.util.UUID;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 
 /**
  * @author Nilan Marktanner
@@ -8,22 +9,21 @@ import java.util.UUID;
  */
 
 public class Optograph {
-    private UUID id;
-    private UUID left_texture_asset_id;
-    private UUID preview_asset_id;
+    private String uuid;
+    private String left_texture_asset_id;
+    private String preview_asset_id;
     private String text;
-    private UUID right_texture_asset_id;
+    private String right_texture_asset_id;
 
-
-    public UUID getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public UUID getLeft_texture_asset_id() {
+    public String getLeft_texture_asset_id() {
         return left_texture_asset_id;
     }
 
-    public UUID getPreview_asset_id() {
+    public String getPreview_asset_id() {
         return preview_asset_id;
     }
 
@@ -31,7 +31,7 @@ public class Optograph {
         return text;
     }
 
-    public UUID getRight_texture_asset_id() {
+    public String getRight_texture_asset_id() {
         return right_texture_asset_id;
     }
 }

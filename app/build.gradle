@@ -27,6 +27,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
 
     // Manual entries
     // compile 'com.fasterxml.jackson.core:jackson-core:2.6.3'

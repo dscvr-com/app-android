@@ -1,9 +1,7 @@
 package co.optonaut.optonaut.views;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,14 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.viewmodels.OptographAdapter;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -29,10 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //FragmentMainBinding binding = DataBindingUtil.setContentView(this, R.layout.fragment_main);
-
-
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -41,30 +36,11 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+                fragment.refreshFeed();
             }
         });
 
-
-        ApiConsumer apiConsumer = new ApiConsumer();
-
-        try {
-            apiConsumer.getOptographs(new Callback<List<Optograph>>() {
-                @Override
-                public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
-                    TextView t = (TextView) findViewById(R.id.text);
-                    //t.setText(response.body().toString());
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
 
