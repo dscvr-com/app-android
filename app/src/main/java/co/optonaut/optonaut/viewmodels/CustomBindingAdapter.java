@@ -18,7 +18,7 @@ import co.optonaut.optonaut.network.ImageHandler;
 public class CustomBindingAdapter {
     @BindingAdapter("app:assetId")
     public static void loadImage(ImageView imageView, String preview_asset_id) {
-        String url = ImageHandler.buildImageUrl(preview_asset_id);
+        String url = ImageHandler.buildImageUrl(preview_asset_id, 500, 500);
         Picasso.with(imageView.getContext()).load(url).into(imageView);
     }
 }
