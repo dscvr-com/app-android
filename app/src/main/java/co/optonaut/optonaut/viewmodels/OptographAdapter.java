@@ -59,6 +59,10 @@ public class OptographAdapter extends RecyclerView.Adapter<OptographAdapter.Opto
         }
     }
 
+    public void clear() {
+        this.optographs.clear();
+    }
+
     public void addItems(List<Optograph> optographs) {
         this.optographs.addAll(optographs);
         notifyDataSetChanged();

@@ -17,6 +17,7 @@ import java.util.List;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographAdapter;
 import retrofit.Callback;
 import retrofit.Response;
@@ -29,6 +30,7 @@ import retrofit.Retrofit;
 public class FeedFragment extends Fragment {
     private OptographAdapter adapter;
     private final int LIMIT = 5;
+    private int count = 0;
 
 
     public FeedFragment() {
@@ -52,15 +54,26 @@ public class FeedFragment extends Fragment {
         recList.setLayoutManager(llm);
         adapter = new OptographAdapter();
         recList.setAdapter(adapter);
+
+        recList.addOnScrollListener(new InfiniteScrollListener(llm) {
+            @Override
+            public void onLoadMore(int current_page) {
+                refreshFeed();
+            }
+        });
+
     }
 
     public void refreshFeed() {
         ApiConsumer apiConsumer = new ApiConsumer();
         try {
-            apiConsumer.getOptographs(LIMIT, new Callback<List<Optograph>>() {
+            count++;
+            apiConsumer.getOptographs(LIMIT*count, new Callback<List<Optograph>>() {
                 @Override
                 public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
+                    // TODO: Only fetch items newer than newest item in adapter
                     List<Optograph> optographs = response.body();
+                    adapter.clear();
                     adapter.addItems(optographs);
                 }
 
