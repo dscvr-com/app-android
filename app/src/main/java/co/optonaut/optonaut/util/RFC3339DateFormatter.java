@@ -14,12 +14,12 @@ import java.util.Locale;
  */
 public class RFC3339DateFormatter {
     private static final DateTimeFormatter rfc3339Formatter1 = DateTimeFormat
-                                                        .forPattern("yyyy-MM-ddTHH:mm:ss.SSSZ")
+                                                        .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSZ")
                                                         .withZone(DateTimeZone.getDefault())
                                                         .withLocale(Locale.US)
                                                         .withChronology(ISOChronology.getInstance());
     private static final DateTimeFormatter rfc3339Formatter2 = DateTimeFormat
-                                                        .forPattern("yyyy-MM-ddTHH:mm:ssZ")
+                                                        .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ssZ")
                                                         .withZone(DateTimeZone.getDefault())
                                                         .withLocale(Locale.US)
                                                         .withChronology(ISOChronology.getInstance());
@@ -39,5 +39,9 @@ public class RFC3339DateFormatter {
         }
 
         return dateTime;
+    }
+
+    public static String toRFC3339String(DateTime dateTime) {
+        return dateTime.toString(rfc3339Formatter1);
     }
 }
