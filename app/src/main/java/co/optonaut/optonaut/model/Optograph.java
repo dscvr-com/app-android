@@ -15,6 +15,8 @@ public class Optograph {
     private String text;
     private String right_texture_asset_id;
 
+    private String created_at;
+
     public String getUuid() {
         return uuid;
     }
@@ -33,5 +35,9 @@ public class Optograph {
 
     public String getRight_texture_asset_id() {
         return right_texture_asset_id;
+    }
+
+    public String getCreated_at() {
+        return created_at;
     }
 }

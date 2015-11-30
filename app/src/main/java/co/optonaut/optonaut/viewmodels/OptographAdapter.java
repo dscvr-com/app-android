@@ -67,4 +67,16 @@ public class OptographAdapter extends RecyclerView.Adapter<OptographAdapter.Opto
         this.optographs.addAll(optographs);
         notifyDataSetChanged();
     }
+
+    public Optograph get(int position) {
+        return optographs.get(position);
+    }
+
+    public Optograph last() {
+        return get(getItemCount() - 1);
+    }
+
+    public boolean isEmpty() {
+        return getItemCount() == 0;
+    }
 }

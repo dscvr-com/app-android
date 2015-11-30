@@ -46,12 +46,12 @@ public class ApiConsumer {
                 Request newRequest = chain.request().newBuilder().addHeader("User-Agent", "Retrofit-Sample-App").build();
                 Request request = chain.request();
 
-                Log.d(DEBUG_TAG, request.headers().toString());
-                Log.d(DEBUG_TAG, request.toString());
+                Log.v(DEBUG_TAG, request.headers().toString());
+                Log.v(DEBUG_TAG, request.toString());
 
                 com.squareup.okhttp.Response response = chain.proceed(request);
-                Log.d(DEBUG_TAG, response.headers().toString());
-                Log.d(DEBUG_TAG, response.toString());
+                Log.v(DEBUG_TAG, response.headers().toString());
+                Log.v(DEBUG_TAG, response.toString());
 
                 return chain.proceed(newRequest);
             }

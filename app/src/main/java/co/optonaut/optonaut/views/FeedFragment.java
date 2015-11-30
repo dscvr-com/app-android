@@ -33,9 +33,9 @@ import retrofit.Retrofit;
  * @date 2015-11-13
  */
 public class FeedFragment extends Fragment {
+    private static final String DEBUG_TAG = "Optonaut";
     private OptographAdapter adapter;
     private final int LIMIT = 5;
-    private int count = 0;
 
 
     public FeedFragment() {
@@ -63,23 +63,49 @@ public class FeedFragment extends Fragment {
         recList.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
             public void onLoadMore(int current_page) {
-                refreshFeed();
+                loadNextOptographs();
             }
         });
 
-        refreshFeed();
+        reinitializeFeed();
+
     }
 
-    public void refreshFeed() {
+    public void reinitializeFeed() {
+        Log.v(DEBUG_TAG, "Reinitialize feed!");
         ApiConsumer apiConsumer = new ApiConsumer();
         try {
-            count++;
-            apiConsumer.getOptographs(LIMIT*count, new Callback<List<Optograph>>() {
+            apiConsumer.getOptographs(LIMIT, new Callback<List<Optograph>>() {
                 @Override
                 public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
-                    // TODO: Only fetch items newer than newest item in adapter
                     List<Optograph> optographs = response.body();
                     adapter.clear();
+                    adapter.addItems(optographs);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Snackbar.make(getView(), "A network error occured!", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadNextOptographs() {
+        String older_than = RFC3339DateFormatter.toRFC3339String(DateTime.now());
+        if (!adapter.isEmpty()) {
+            older_than = adapter.last().getCreated_at();
+        }
+        Log.v(DEBUG_TAG, "Load next optographs older than " + older_than);
+
+        ApiConsumer apiConsumer = new ApiConsumer();
+        try {
+            apiConsumer.getOptographs(LIMIT, older_than, new Callback<List<Optograph>>() {
+                @Override
+                public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
+                    List<Optograph> optographs = response.body();
                     adapter.addItems(optographs);
                 }
 
