@@ -6,10 +6,13 @@ import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
+import org.joda.time.DateTime;
+
 import java.io.IOException;
 import java.util.List;
 
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -25,6 +28,8 @@ public class ApiConsumer {
 
     private static final String BASE_URL = "https://api-staging.optonaut.co/";
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
+
+    private static final int DEFAULT_LIMIT = 5;
 
     OkHttpClient client;
 
@@ -67,16 +72,21 @@ public class ApiConsumer {
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {
-        Call<List<Optograph>> call = service.listOptographs();
-
-        Log.d(DEBUG_TAG, "Request fired!");
-
-        call.enqueue(callback);
+        getOptographs(DEFAULT_LIMIT, RFC3339DateFormatter.toRFC3339String(DateTime.now()), callback);
     }
 
     public void getOptographs(int limit, Callback<List<Optograph>> callback) throws IOException {
-        Call<List<Optograph>> call = service.listOptographsWithLimit(limit);
-        Log.d(DEBUG_TAG, "Request fired!");
+        getOptographs(limit, RFC3339DateFormatter.toRFC3339String(DateTime.now()), callback);
+    }
+
+    public void getOptographs(String older_than, Callback<List<Optograph>> callback) throws IOException {
+        getOptographs(DEFAULT_LIMIT, older_than, callback);
+    }
+
+    public void getOptographs(int limit, String older_than, Callback<List<Optograph>> callback) throws IOException {
+        Call<List<Optograph>> call = service.listOptographs(limit, older_than);
+        Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
         call.enqueue(callback);
     }
+
 }

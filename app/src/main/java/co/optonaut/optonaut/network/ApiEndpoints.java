@@ -19,8 +19,5 @@ public interface ApiEndpoints {
     Call<List<Optograph>> listOptographsWithAuthentification(@Header("Authorization") String authorization);
 
     @GET("optographs/feed")
-    Call<List<Optograph>> listOptographs();
-
-    @GET("optographs/feed")
-    Call<List<Optograph>> listOptographsWithLimit(@Query("limit") int limit);
+    Call<List<Optograph>> listOptographs(@Query("limit") int limit, @Query("older_than") String older_than);
 }
