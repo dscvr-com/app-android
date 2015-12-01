@@ -19,7 +19,6 @@ public class ImageHandler {
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
     public static String buildImageUrl(String id, int width, int height) {
-
         String urlPartToSign = String.format("%sx%s/%s/original/%s.jpg", width, height, S3_URL, id);
 
         try {

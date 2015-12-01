@@ -79,4 +79,13 @@ public class OptographAdapter extends RecyclerView.Adapter<OptographAdapter.Opto
     public boolean isEmpty() {
         return getItemCount() == 0;
     }
+
+    public List<Optograph> getOptographs() {
+        return this.optographs;
+    }
+
+    public void setOptographs(List<Optograph> optographs) {
+        this.optographs = optographs;
+        notifyDataSetChanged();
+    }
 }
