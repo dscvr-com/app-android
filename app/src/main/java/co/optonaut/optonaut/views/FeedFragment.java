@@ -20,23 +20,30 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.FeedManager;
 import co.optonaut.optonaut.util.FeedMerger;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
-import co.optonaut.optonaut.viewmodels.OptographAdapter;
+import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-11-13
  */
 public class FeedFragment extends Fragment {
-    private OptographAdapter adapter;
+    private OptographFeedAdapter adapter;
     private SwipeRefreshLayout swipeContainer;
 
     public FeedFragment() {
     }
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new OptographFeedAdapter();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        return inflater.inflate(R.layout.feed_fragment, container, false);
     }
 
     @Override
@@ -49,7 +56,6 @@ public class FeedFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(view.getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
-        adapter = new OptographAdapter();
         recList.setAdapter(adapter);
 
         recList.addOnScrollListener(new InfiniteScrollListener(llm) {

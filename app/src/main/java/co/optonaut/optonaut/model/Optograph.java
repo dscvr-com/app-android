@@ -2,6 +2,8 @@ package co.optonaut.optonaut.model;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.joda.time.DateTime;
 
@@ -12,14 +14,23 @@ import co.optonaut.optonaut.util.RFC3339DateFormatter;
  * @date 2015-11-13
  */
 
-public class Optograph {
+public class Optograph implements Parcelable {
     private String uuid;
     private String left_texture_asset_id;
     private String preview_asset_id;
     private String text;
     private String right_texture_asset_id;
-
     private String created_at;
+
+    public Optograph(Parcel source) {
+        // SAME ORDER AS IN writeToParcel!
+        this.uuid = source.readString();
+        this.left_texture_asset_id = source.readString();
+        this.preview_asset_id = source.readString();
+        this.text = source.readString();
+        this.right_texture_asset_id = source.readString();
+        this.created_at = source.readString();
+    }
 
     public String getUuid() {
         return uuid;
@@ -69,4 +80,34 @@ public class Optograph {
         result = 31 * result + (created_at != null ? created_at.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        // SAME ORDER AS IN Optograph(Parcel source)!
+        dest.writeString(this.uuid);
+        dest.writeString(this.left_texture_asset_id);
+        dest.writeString(this.preview_asset_id);
+        dest.writeString(this.text);
+        dest.writeString(this.right_texture_asset_id);
+        dest.writeString(this.created_at);
+    }
+
+    public static final Parcelable.Creator<Optograph> CREATOR =
+            new Parcelable.Creator<Optograph>(){
+
+                @Override
+                public Optograph createFromParcel(Parcel source) {
+                    return new Optograph(source);
+                }
+
+                @Override
+                public Optograph[] newArray(int size) {
+                    return new Optograph[size];
+                }
+            };
 }

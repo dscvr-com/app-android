@@ -24,7 +24,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_feed"/>
+    <FrameLayout
+        android:id="@+id/fragment_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

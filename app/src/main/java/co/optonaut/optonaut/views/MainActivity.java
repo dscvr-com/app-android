@@ -10,12 +10,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.Optograph;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-11-13
  */
 public class MainActivity extends AppCompatActivity {
+    private final String FEED_FRAGMENT_TAG = "FEED_FRAGMENT";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +27,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (findViewById(R.id.fragment_placeholder) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+            FeedFragment feedFragment = new FeedFragment();
+
+            feedFragment.setArguments(getIntent().getExtras());
+
+            getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_placeholder, new FeedFragment(), FEED_FRAGMENT_TAG).commit();
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +69,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openOptograph2DView(Optograph optograph) {
+        Optograph2DFragment optograph2DFragment = new Optograph2DFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("optograph", optograph);
+        optograph2DFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction().
+            replace(R.id.fragment_placeholder, optograph2DFragment).addToBackStack(null).commit();
+
+
     }
 
 
