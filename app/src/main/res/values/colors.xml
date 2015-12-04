@@ -5,6 +5,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- Feed -->
+    <color name="informationBar">#333333</color>
+
     <color name="debugView1">#3F51B5</color>
     <color name="debugView2">#FF0000</color>
     <color name="debugView3">#FFFF00</color>

@@ -53,6 +53,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
         holder.getBinding().setVariable(BR.optograph, optograph);
+        holder.getBinding().setVariable(BR.person, optograph.getPerson());
         holder.getBinding().executePendingBindings();
     }
 

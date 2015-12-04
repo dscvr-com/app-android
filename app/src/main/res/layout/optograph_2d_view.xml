@@ -20,7 +20,6 @@
             android:id="@+id/optograph_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/debugView1"
             android:text="@{optograph.text}"
             android:gravity="center"
             android:padding="4dp"
@@ -30,7 +29,6 @@
         <ImageView
             android:id="@+id/optograph_preview_asset"
             android:layout_width="match_parent"
-            android:background="@color/debugView2"
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:layout_margin="4dp"
@@ -44,7 +42,6 @@
             android:id="@+id/person_avatar_asset"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/debugView1"
             android:padding="4dp"
             android:layout_margin="4dp"
             android:layout_below="@+id/optograph_preview_asset"
