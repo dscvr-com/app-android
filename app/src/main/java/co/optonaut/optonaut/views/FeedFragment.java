@@ -67,7 +67,6 @@ public class FeedFragment extends Fragment {
             }
         });
 
-
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,11 +89,7 @@ public class FeedFragment extends Fragment {
             }
         });
 
-
-
-
         FeedManager.reinitializeFeed();
-
     }
 
     @Override

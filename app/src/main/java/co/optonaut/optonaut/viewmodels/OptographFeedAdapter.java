@@ -45,6 +45,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 ((MainActivity) itemView.getContext()).openOptograph2DView(viewHolder.getBinding().getOptograph());
             }
         });
+
+        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
+        profileView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) itemView.getContext()).openProfileFragment(viewHolder.getBinding().getPerson());
+            }
+        });
         return viewHolder;
     }
 

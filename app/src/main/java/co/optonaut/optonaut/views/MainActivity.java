@@ -11,6 +11,7 @@ import android.view.View;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 
 /**
  * @author Nilan Marktanner
@@ -70,7 +71,17 @@ public class MainActivity extends AppCompatActivity {
         optograph2DFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction().
-            replace(R.id.fragment_placeholder, optograph2DFragment).addToBackStack(null).commit();
+                replace(R.id.fragment_placeholder, optograph2DFragment).addToBackStack(null).commit();
+    }
+
+    public void openProfileFragment(Person person) {
+        ProfileFragment profileFragment= new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("person", person);
+        profileFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction().
+                replace(R.id.fragment_placeholder, profileFragment).addToBackStack(null).commit();
     }
 
 

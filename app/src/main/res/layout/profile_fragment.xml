@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data class=".ProfileBinding">
+        <import type="co.optonaut.optonaut.model.Person" />
+        <variable
+            name="person"
+            type="Person" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/coordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+        <ImageView
+            android:id="@+id/person_avatar_asset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_margin="4dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            tools:src="@android:drawable/sym_def_app_icon"
+            app:assetId="@{person.avatar_asset_id}"
+            android:layout_gravity="start|top"/>
+        <LinearLayout
+            android:id="@+id/feed_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/person_avatar_asset"
+            >
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</layout>
