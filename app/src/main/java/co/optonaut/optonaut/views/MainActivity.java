@@ -39,14 +39,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_placeholder, new FeedFragment(), FEED_FRAGMENT_TAG).commit();
         }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                Snackbar.make(view, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -79,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().
             replace(R.id.fragment_placeholder, optograph2DFragment).addToBackStack(null).commit();
-
-
     }
 
 

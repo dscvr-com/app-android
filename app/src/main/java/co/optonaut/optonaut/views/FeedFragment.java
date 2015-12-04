@@ -1,6 +1,8 @@
 package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -80,6 +82,17 @@ public class FeedFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                Snackbar.make(view, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+
         FeedManager.reinitializeFeed();
 
     }
@@ -87,6 +100,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity) getActivity()).getSupportActionBar().show();
         BusProvider.getInstance().register(this);
     }
 

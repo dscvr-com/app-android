@@ -1,14 +1,22 @@
 package co.optonaut.optonaut.views;
 
+import android.app.ActionBar;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
+import co.optonaut.optonaut.Optograph2DBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 
@@ -18,7 +26,7 @@ import co.optonaut.optonaut.model.Optograph;
  */
 public class Optograph2DFragment extends Fragment {
     private static final String DEBUG_TAG = "Optonaut";
-    private FeedItemBinding binding;
+    private Optograph2DBinding binding;
     private Optograph optograph;
 
 
@@ -32,13 +40,15 @@ public class Optograph2DFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.feed_item, container, false);
-    }
+        // hide Action Bar to simulate "Fullscreen Mode"
+        ((MainActivity) getActivity()).getSupportActionBar().hide();
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        binding = DataBindingUtil.bind(view);
+        binding = DataBindingUtil.inflate(inflater, R.layout.optograph_2d_view, container, false);
         binding.setVariable(BR.optograph, optograph);
+        binding.setVariable(BR.person, optograph.getPerson());
+        Log.d(DEBUG_TAG, "Person asset: " + optograph.getPerson().getAvatar_asset_id());
+
         binding.executePendingBindings();
+        return binding.getRoot();
     }
 }

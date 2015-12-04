@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryText">#000000</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="debugView1">#3F51B5</color>
+    <color name="debugView2">#FF0000</color>
+    <color name="debugView3">#FFFF00</color>
+    <color name="debugView4">#00AA05</color>
 </resources>
