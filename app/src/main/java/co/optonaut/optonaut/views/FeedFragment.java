@@ -62,7 +62,7 @@ public class FeedFragment extends Fragment {
 
         recList.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
-            public void onLoadMore(int current_page) {
+            public void onLoadMore() {
                 FeedManager.loadOlderThan(adapter.last().getCreated_at());
             }
         });
@@ -110,6 +110,5 @@ public class FeedFragment extends Fragment {
         swipeContainer.setRefreshing(false);
         List<Optograph> optographs = optographsReceivedEvent.getOptographs();
         adapter.setOptographs(FeedMerger.mergeOptographsIntoFeed(adapter.getOptographs(), optographs));
-
     }
 }
