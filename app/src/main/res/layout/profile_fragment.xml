@@ -25,15 +25,14 @@
             tools:src="@android:drawable/sym_def_app_icon"
             app:assetId="@{person.avatar_asset_id}"
             android:layout_gravity="start|top"/>
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/feed_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_below="@id/person_avatar_asset"
             >
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
     </RelativeLayout>
