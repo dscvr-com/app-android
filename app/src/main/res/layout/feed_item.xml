@@ -17,7 +17,7 @@
                   android:layout_height="wrap_content"
                   android:background="@color/informationBar">
 
-        <ImageView
+        <com.triposo.barone.ScalingImageView
             android:id="@+id/optograph_preview_asset"
             android:layout_width="match_parent"
             android:background="@color/debugView2"
