@@ -40,9 +40,6 @@ public class Optograph2DFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // hide Action Bar to simulate "Fullscreen Mode"
-        ((MainActivity) getActivity()).getSupportActionBar().hide();
-
         binding = DataBindingUtil.inflate(inflater, R.layout.optograph_2d_view, container, false);
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());

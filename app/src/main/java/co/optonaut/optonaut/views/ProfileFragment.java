@@ -33,9 +33,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // hide Action Bar to simulate "Fullscreen Mode"
-        ((MainActivity) getActivity()).getSupportActionBar().hide();
-
         BusProvider.getInstance().register(this);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);

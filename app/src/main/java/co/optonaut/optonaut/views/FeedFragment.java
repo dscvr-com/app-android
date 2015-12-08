@@ -95,7 +95,6 @@ public class FeedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).getSupportActionBar().show();
         BusProvider.getInstance().register(this);
     }
 
