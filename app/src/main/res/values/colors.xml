@@ -5,6 +5,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="optonautMain">#EF4836</color>
+
+
     <!-- Feed -->
     <color name="informationBar">#333333</color>
 
