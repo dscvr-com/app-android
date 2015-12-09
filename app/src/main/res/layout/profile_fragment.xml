@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
-        <ImageView
+        <com.triposo.barone.ScalingImageView
             android:id="@+id/person_avatar_asset"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

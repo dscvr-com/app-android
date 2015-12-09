@@ -3,10 +3,12 @@ package co.optonaut.optonaut.network;
 import java.util.List;
 
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -20,4 +22,10 @@ public interface ApiEndpoints {
 
     @GET("optographs/feed")
     Call<List<Optograph>> listOptographs(@Query("limit") int limit, @Query("older_than") String older_than);
+
+    @GET("optographs/search")
+    Call<List<Optograph>> searchOptographs(@Query("limit") int limit,  @Query("older_than") String older_than, @Query("keyword") String keyword);
+
+    @GET("persons/{id}")
+    Call<Person> getPerson(@Path("id") String id);
 }

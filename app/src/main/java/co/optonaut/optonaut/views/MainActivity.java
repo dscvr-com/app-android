@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,10 @@ import java.util.Stack;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.network.ApiConsumer;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * @author Nilan Marktanner
@@ -88,8 +93,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void initializeTabs() {
+            Class[] classes = {FeedFragment.class, FeedFragment.class, FeedFragment.class, ProfileFragment.class};
             for (int i = 0; i < 4; i++) {
-                addTab(null, FeedFragment.class, new Bundle(), tabTitles[i]);
+                Bundle bundle = new Bundle();
+                if (i == 3) {
+                    bundle.putString("id", "1064fd0e-833b-4a6b-b4bc-d90a03074eba");
+                }
+                addTab(null, classes[i], bundle, tabTitles[i]);
             }
 
             viewPager.setAdapter(this);

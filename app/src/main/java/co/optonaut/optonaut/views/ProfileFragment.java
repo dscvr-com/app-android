@@ -3,15 +3,26 @@ package co.optonaut.optonaut.views;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import java.util.List;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.ProfileBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.bus.OptographsReceivedEvent;
+import co.optonaut.optonaut.bus.PersonReceivedEvent;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.network.PersonManager;
+import co.optonaut.optonaut.util.FeedMerger;
 
 /**
  * @author Nilan Marktanner
@@ -27,14 +38,18 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        person = args.getParcelable("person");
+        if (args.containsKey("person")) {
+            person = args.getParcelable("person");
+        } else if (args.containsKey("id")) {
+            PersonManager.loadPerson(args.getString("id"));
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        BusProvider.getInstance().register(this);
-
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
         binding.setVariable(BR.person, person);
         binding.executePendingBindings();
@@ -44,6 +59,26 @@ public class ProfileFragment extends Fragment {
                 replace(R.id.feed_placeholder, feedFragment).addToBackStack(null).commit();
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void reveicePerson(PersonReceivedEvent personReceivedEvent) {
+        Log.d("Optonaut", "Registered person");
+        person = personReceivedEvent.getPerson();
+        binding.setVariable(BR.person, person);
+        binding.executePendingBindings();
     }
 
 

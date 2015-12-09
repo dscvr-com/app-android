@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
@@ -86,6 +87,12 @@ public class ApiConsumer {
     public void getOptographs(int limit, String older_than, Callback<List<Optograph>> callback) throws IOException {
         Call<List<Optograph>> call = service.listOptographs(limit, older_than);
         Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
+        call.enqueue(callback);
+    }
+
+    public void getPerson(String id, Callback<Person> callback) throws IOException {
+        Call<Person> call = service.getPerson(id);
+        Log.d(DEBUG_TAG, "Get Person request fired: get person " + id);
         call.enqueue(callback);
     }
 
