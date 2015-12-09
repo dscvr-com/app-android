@@ -1,0 +1,45 @@
+package co.optonaut.optonaut.views;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SearchView;
+
+import co.optonaut.optonaut.R;
+
+/**
+ * @author Nilan Marktanner
+ * @date 2015-12-09
+ */
+public class SearchFragment extends Fragment {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.search_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new CustomQueryTextListener());
+    }
+
+    private static class CustomQueryTextListener implements SearchView.OnQueryTextListener {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            // TODO: submit new query
+            return false;
+        }
+    }
+}

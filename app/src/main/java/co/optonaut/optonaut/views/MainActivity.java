@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void initializeTabs() {
-            Class[] classes = {FeedFragment.class, FeedFragment.class, FeedFragment.class, ProfileFragment.class};
+            Class[] classes = {FeedFragment.class, SearchFragment.class, FeedFragment.class, ProfileFragment.class};
             for (int i = 0; i < 4; i++) {
                 Bundle bundle = new Bundle();
                 if (i == 3) {

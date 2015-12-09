@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Optonaut</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Search -->
+    <string name="search_hint">Sightseeing #London</string>
 </resources>
