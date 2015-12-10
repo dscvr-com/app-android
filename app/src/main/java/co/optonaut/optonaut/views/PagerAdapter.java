@@ -5,10 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -22,7 +19,7 @@ import co.optonaut.optonaut.R;
  * @author Nilan Marktanner
  * @date 2015-12-09
  */
-public class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends SmartFragmentStatePagerAdapter {
     private final List<String> tabTitles = new ArrayList<String>() {{
         add("Feed");
         add("Search");
@@ -46,14 +43,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     private void initializeTabs() {
-        tabs.add(TabFragment.newInstance(new FeedFragment(), tabTitles.get(0)));
-        tabs.add(TabFragment.newInstance(new SearchFragment(), tabTitles.get(1)));
+        tabs.add(HostFragment.newInstance(new FeedFragment(), tabTitles.get(0)));
+        tabs.add(HostFragment.newInstance(new SearchFragment(), tabTitles.get(1)));
 
         ProfileFragment profileFragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putString("id", "1064fd0e-833b-4a6b-b4bc-d90a03074eba");
         profileFragment.setArguments(args);
-        tabs.add(TabFragment.newInstance(profileFragment, tabTitles.get(2)));
+        tabs.add(HostFragment.newInstance(profileFragment, tabTitles.get(2)));
     }
 
     @Override
@@ -74,21 +71,6 @@ public class PagerAdapter extends FragmentPagerAdapter {
         ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
         sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;
-    }
-
-    public int getItemPosition(Object item) {
-        if (false) {
-            TabFragment fragment = (TabFragment) item;
-            String title = fragment.getTitle();
-            int position = tabTitles.indexOf(title);
-
-            if (position >= 0) {
-                return position;
-            } else {
-                return POSITION_NONE;
-            }
-        }
-        return POSITION_UNCHANGED;
     }
 
 }

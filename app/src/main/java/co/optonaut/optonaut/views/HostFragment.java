@@ -2,12 +2,9 @@ package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.lang.reflect.Field;
 
 import co.optonaut.optonaut.R;
 
@@ -15,7 +12,7 @@ import co.optonaut.optonaut.R;
  * @author Nilan Marktanner
  * @date 2015-12-09
  */
-public class TabFragment extends BaseFragment {
+public class HostFragment extends BackStackFragment {
     private String title;
     private Fragment fragment;
 
@@ -38,11 +35,11 @@ public class TabFragment extends BaseFragment {
         }
     }
 
-    public static TabFragment newInstance(Fragment fragment, String title) {
-        TabFragment tabFragment = new TabFragment();
-        tabFragment.fragment = fragment;
-        tabFragment.title = title;
-        return tabFragment;
+    public static HostFragment newInstance(Fragment fragment, String title) {
+        HostFragment hostFragment = new HostFragment();
+        hostFragment.fragment = fragment;
+        hostFragment.title = title;
+        return hostFragment;
     }
 
     public String getTitle() {

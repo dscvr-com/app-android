@@ -7,13 +7,13 @@ import android.support.v4.app.FragmentManager;
  * @author Nilan Marktanner
  * @date 2015-12-09
  */
-public class BaseFragment extends Fragment {
+public class BackStackFragment extends Fragment {
     public static boolean handleBackPressed(FragmentManager fm)
     {
         if(fm.getFragments() != null){
             for(Fragment frag : fm.getFragments()){
-                if(frag != null && frag.isVisible() && frag instanceof BaseFragment){
-                    if(((BaseFragment)frag).onBackPressed()){
+                if(frag != null && frag.isVisible() && frag instanceof BackStackFragment){
+                    if(((BackStackFragment)frag).onBackPressed()){
                         return true;
                     }
                 }
