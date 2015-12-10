@@ -29,9 +29,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
         add("Profile");
     }};
     private final int[] imageResId =  {
-            R.drawable.abc_btn_rating_star_off_mtrl_alpha,
-            R.drawable.abc_ic_search_api_mtrl_alpha,
-            R.drawable.abc_edit_text_material
+            R.mipmap.ic_voicemail_white_24dp,
+            R.mipmap.ic_search_white_24dp,
+            R.mipmap.ic_account_circle_white_24dp
     };;
 
     private final Context context;
@@ -70,7 +70,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         Drawable image = ContextCompat.getDrawable(context, imageResId[position]);
         image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-        SpannableString sb = new SpannableString(tabTitles.get(position));
+        SpannableString sb = new SpannableString(" ");
         ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
         sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;

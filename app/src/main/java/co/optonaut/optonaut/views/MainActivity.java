@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), this);
 
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(pagerAdapter);
@@ -67,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        int i = 0;
     }
 
     public void openOptograph2DView(Optograph optograph) {
