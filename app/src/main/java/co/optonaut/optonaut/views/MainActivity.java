@@ -37,24 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void openOptograph2DView(Optograph optograph) {
         HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-
-        Optograph2DFragment optograph2DFragment = new Optograph2DFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("optograph", optograph);
-        optograph2DFragment.setArguments(args);
-
-        hostFragment.replaceFragment(optograph2DFragment, true);
+        hostFragment.replaceFragment(Optograph2DFragment.newInstance(optograph), true);
     }
 
     public void openProfileFragment(Person person) {
         HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-
-        ProfileFragment profileFragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("person", person);
-        profileFragment.setArguments(args);
-
-        hostFragment.replaceFragment(profileFragment, true);
+        hostFragment.replaceFragment(ProfileFragment.newInstance(person), true);
     }
 
     @Override

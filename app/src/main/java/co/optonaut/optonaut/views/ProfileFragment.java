@@ -81,6 +81,14 @@ public class ProfileFragment extends Fragment {
         binding.executePendingBindings();
     }
 
+    public static ProfileFragment newInstance(Person person) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("person", person);
+        profileFragment.setArguments(args);
+        return profileFragment;
+    }
+
 
 
 }

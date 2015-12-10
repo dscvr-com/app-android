@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -44,6 +45,25 @@ public class Optograph2DFragment extends Fragment {
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.executePendingBindings();
-        return binding.getRoot();
+
+        final View view = binding.getRoot();
+
+        ImageView profileView = (ImageView) view.findViewById(R.id.person_avatar_asset);
+        profileView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) view.getContext()).openProfileFragment(binding.getPerson());
+            }
+        });
+
+        return view;
+    }
+
+    public static Optograph2DFragment newInstance(Optograph optograph) {
+        Optograph2DFragment optograph2DFragment = new Optograph2DFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("optograph", optograph);
+        optograph2DFragment.setArguments(args);
+        return optograph2DFragment;
     }
 }
