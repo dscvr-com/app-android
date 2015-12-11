@@ -14,16 +14,24 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.OptographsReceivedEvent;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.FeedManager;
 import co.optonaut.optonaut.util.FeedMerger;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner
@@ -32,6 +40,7 @@ import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 public class FeedFragment extends Fragment {
     private OptographFeedAdapter optographFeedAdapter;
     private SwipeRefreshLayout swipeContainer;
+    private ApiConsumer apiConsumer;
 
 
     public FeedFragment() {
@@ -41,6 +50,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        apiConsumer = new ApiConsumer();
         optographFeedAdapter = new OptographFeedAdapter();
     }
 
@@ -84,14 +94,30 @@ public class FeedFragment extends Fragment {
                 android.R.color.holo_red_light);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                Snackbar.make(view, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        fab.setOnClickListener(view1 -> {
+            apiConsumer.getOptographsAsObservable(5)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<List<Optograph>>() {
+                        @Override
+                        public final void onCompleted() {
+                            // dp nothing
+                        }
 
-        FeedManager.reinitializeFeed();
+                        @Override
+                        public final void onError(Throwable e) {
+                            Snackbar.make(view1, "There was a network error. Try again!", Snackbar.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNext(List<Optograph> optographs) {
+                            optographFeedAdapter.clear();
+                            optographFeedAdapter.addItems(optographs);
+                        }
+                    });
+
+            Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     @Override

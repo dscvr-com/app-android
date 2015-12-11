@@ -18,6 +18,8 @@ import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
+import rx.Observable;
 
 /**
  * @author Nilan Marktanner
@@ -61,6 +63,7 @@ public class ApiConsumer {
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(client)
                 .build();
 
@@ -94,6 +97,17 @@ public class ApiConsumer {
         Call<Person> call = service.getPerson(id);
         Log.d(DEBUG_TAG, "Get Person request fired: get person " + id);
         call.enqueue(callback);
+    }
+
+    public Observable<List<Optograph>> getOptographsAsObservable(int limit) {
+        return getOptographsAsObservable(limit, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+    }
+
+
+    public Observable<List<Optograph>> getOptographsAsObservable(int limit, String older_than) {
+        Observable<List<Optograph>> observable = service.listOptographsAsObservable(limit, older_than);
+        Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
+        return observable;
     }
 
 }

@@ -70,6 +70,11 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         return optographs.size();
     }
 
+    public void addItem(Optograph optograph) {
+        this.optographs.add(optograph);
+        notifyItemChanged(getItemCount());
+    }
+
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;
 

@@ -10,6 +10,7 @@ import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
 
 /**
  * @author Nilan Marktanner
@@ -28,4 +29,7 @@ public interface ApiEndpoints {
 
     @GET("persons/{id}")
     Call<Person> getPerson(@Path("id") String id);
+
+    @GET("optographs/feed")
+    Observable<List<Optograph>> listOptographsAsObservable(@Query("limit") int limit, @Query("older_than") String older_than);
 }
