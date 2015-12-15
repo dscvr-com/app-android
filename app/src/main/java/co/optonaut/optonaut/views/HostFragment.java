@@ -20,7 +20,7 @@ public class HostFragment extends BackStackFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.tab_fragment, container, false);
+        View view = inflater.inflate(R.layout.host_fragment, container, false);
         if (fragment != null ) {
             replaceFragment(fragment, false);
         }
