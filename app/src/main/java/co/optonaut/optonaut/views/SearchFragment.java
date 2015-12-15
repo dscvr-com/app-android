@@ -31,7 +31,7 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query != null) {
-                    ((MainActivity) getActivity()).openSearchFeed(query);
+                    initializeSearchFeedFragment(query);
                 }
                 return true;
             }
@@ -41,6 +41,12 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
+    }
 
+    private void initializeSearchFeedFragment(String keyword) {
+        SearchFeedFragment searchFeedFragment = SearchFeedFragment.newInstance(keyword);
+
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.feed_placeholder, searchFeedFragment).addToBackStack(null).commit();
     }
 }
