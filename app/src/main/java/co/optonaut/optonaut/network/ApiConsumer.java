@@ -17,7 +17,6 @@ import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
-import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;

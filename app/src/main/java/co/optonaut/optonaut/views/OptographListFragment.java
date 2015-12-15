@@ -13,11 +13,8 @@ import android.view.ViewGroup;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.network.FeedManager;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner

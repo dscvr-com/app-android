@@ -1,9 +1,7 @@
 package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
-import co.optonaut.optonaut.network.PersonManager;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

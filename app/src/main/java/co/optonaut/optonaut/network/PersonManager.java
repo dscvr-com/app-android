@@ -2,17 +2,11 @@ package co.optonaut.optonaut.network;
 
 import android.util.Log;
 
-import org.joda.time.DateTime;
-
 import java.io.IOException;
-import java.util.List;
 
 import co.optonaut.optonaut.bus.BusProvider;
-import co.optonaut.optonaut.bus.OptographsReceivedEvent;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
-import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
-import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;

@@ -1,7 +1,6 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.BindingAdapter;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;

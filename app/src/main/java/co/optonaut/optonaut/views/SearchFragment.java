@@ -7,13 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
-import org.joda.time.DateTime;
-
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner

@@ -17,8 +17,6 @@ import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.PersonManager;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner

@@ -1,22 +1,14 @@
 package co.optonaut.optonaut.views;
 
-import android.app.ActionBar;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import co.optonaut.optonaut.BR;
-import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.Optograph2DBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
