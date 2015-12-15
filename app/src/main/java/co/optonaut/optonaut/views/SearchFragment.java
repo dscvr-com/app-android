@@ -7,14 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import org.joda.time.DateTime;
+
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-09
  */
 public class SearchFragment extends Fragment {
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -27,19 +32,21 @@ public class SearchFragment extends Fragment {
 
         SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(new CustomQueryTextListener());
-    }
 
-    private static class CustomQueryTextListener implements SearchView.OnQueryTextListener {
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            return false;
-        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query != null) {
+                    ((MainActivity) getActivity()).openSearchFeed(query);
+                }
+                return true;
+            }
 
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            // TODO: submit new query
-            return false;
-        }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
     }
 }

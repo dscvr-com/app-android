@@ -25,11 +25,12 @@ public interface ApiEndpoints {
     Call<List<Optograph>> listOptographs(@Query("limit") int limit, @Query("older_than") String older_than);
 
     @GET("optographs/search")
-    Call<List<Optograph>> searchOptographs(@Query("limit") int limit,  @Query("older_than") String older_than, @Query("keyword") String keyword);
+    Observable<List<Optograph>> searchOptographs(@Query("limit") int limit,  @Query("older_than") String older_than, @Query("keyword") String keyword);
 
     @GET("persons/{id}")
     Call<Person> getPerson(@Path("id") String id);
 
     @GET("optographs/feed")
     Observable<List<Optograph>> listOptographsAsObservable(@Query("limit") int limit, @Query("older_than") String older_than);
+
 }

@@ -100,21 +100,26 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public Observable<List<Optograph>> getOptographsAsObservable(int limit, String older_than) {
-        // Observable<Optograph>
-        Observable<List<Optograph>> observable = service.listOptographsAsObservable(limit, older_than);
-        Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
-        return observable;
-    }
-
     public Observable<Optograph> getOptographs(int limit, String older_than) {
         Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than);
         return service.listOptographsAsObservable(limit, older_than).flatMap(Observable::from);
     }
 
     public Observable<Optograph> getOptographs(int limit) {
-        return service.listOptographsAsObservable(limit, getNow()).flatMap(Observable::from);
+        return getOptographs(limit, getNow());
     }
+
+    public Observable<Optograph> searchOptographs(int limit, String older_than, String keyword) {
+        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than + " fitting keyword " + keyword);
+        return service.searchOptographs(limit, older_than, keyword).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> searchOptographs(int limit, String keyword) {
+        return searchOptographs(limit, getNow(), keyword);
+    }
+
+
+
 
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());

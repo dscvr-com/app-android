@@ -45,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
         hostFragment.replaceFragment(ProfileFragment.newInstance(person), true);
     }
 
+    public void openSearchFeed(String keyword) {
+        HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
+        hostFragment.replaceFragment(SearchFeedFragment.newInstance(keyword), true);
+    }
+
     @Override
     public void onBackPressed()
     {
