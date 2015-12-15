@@ -48,6 +48,10 @@ public class ProfileFragment extends Fragment {
         binding.setVariable(BR.person, person);
         binding.executePendingBindings();
 
+        if (person != null) {
+            initializeProfileFeed();
+        }
+
         return binding.getRoot();
     }
 
@@ -70,12 +74,16 @@ public class ProfileFragment extends Fragment {
         binding.setVariable(BR.person, person);
 
 
+        initializeProfileFeed();
+
+        binding.executePendingBindings();
+    }
+
+    private void initializeProfileFeed() {
         ProfileFeedFragment profileFeedFragment = ProfileFeedFragment.newInstance(person);
 
         getChildFragmentManager().beginTransaction().
                 replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
-
-        binding.executePendingBindings();
     }
 
     public static ProfileFragment newInstance(Person person) {
