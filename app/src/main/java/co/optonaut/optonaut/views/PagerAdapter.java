@@ -43,7 +43,7 @@ public class PagerAdapter extends SmartFragmentStatePagerAdapter {
     }
 
     private void initializeTabs() {
-        tabs.add(HostFragment.newInstance(new FeedFragment(), tabTitles.get(0)));
+        tabs.add(HostFragment.newInstance(new MainFeedFragment(), tabTitles.get(0)));
         tabs.add(HostFragment.newInstance(new SearchFragment(), tabTitles.get(1)));
 
         ProfileFragment profileFragment = new ProfileFragment();

@@ -8,21 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
-import java.util.List;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.ProfileBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
-import co.optonaut.optonaut.bus.OptographsReceivedEvent;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
-import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.PersonManager;
-import co.optonaut.optonaut.util.FeedMerger;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Nilan Marktanner
@@ -54,10 +50,6 @@ public class ProfileFragment extends Fragment {
         binding.setVariable(BR.person, person);
         binding.executePendingBindings();
 
-        FeedFragment feedFragment = new FeedFragment();
-        getChildFragmentManager().beginTransaction().
-                replace(R.id.feed_placeholder, feedFragment).addToBackStack(null).commit();
-
         return binding.getRoot();
     }
 
@@ -78,6 +70,13 @@ public class ProfileFragment extends Fragment {
         Log.d("Optonaut", "Registered person");
         person = personReceivedEvent.getPerson();
         binding.setVariable(BR.person, person);
+
+
+        ProfileFeedFragment profileFeedFragment = ProfileFeedFragment.newInstance(person);
+
+        getChildFragmentManager().beginTransaction().
+                replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
+
         binding.executePendingBindings();
     }
 

@@ -13,14 +13,14 @@ import android.support.v7.widget.RecyclerView;
 public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListener {
     public static String TAG = InfiniteScrollListener.class.getSimpleName();
 
-    // The total number of items in the dataset after the last load
+    // The total number of items in the dataset after the getOldest load
     private int previousTotal = 0;
 
-    // True if we are still waiting for the last set of data to load.
+    // True if we are still waiting for the getOldest set of data to load.
     private boolean loading = true;
 
     // The minimum amount of items to have below your current scroll position before loading more.
-    private int visibleThreshold = 5;
+    private int visibleThreshold = 3;
 
     private int firstVisibleItem;
     private int visibleItemCount;
@@ -35,6 +35,11 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+
+        // don't react on layout changes
+        if (dx == 0 && dy == 0) {
+            return;
+        }
 
         visibleItemCount = recyclerView.getChildCount();
         totalItemCount = llm.getItemCount();

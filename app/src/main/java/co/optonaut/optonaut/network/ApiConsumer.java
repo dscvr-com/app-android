@@ -17,6 +17,7 @@ import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -76,11 +77,11 @@ public class ApiConsumer {
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {
-        getOptographs(DEFAULT_LIMIT, RFC3339DateFormatter.toRFC3339String(DateTime.now()), callback);
+        getOptographs(DEFAULT_LIMIT, getNow(), callback);
     }
 
     public void getOptographs(int limit, Callback<List<Optograph>> callback) throws IOException {
-        getOptographs(limit, RFC3339DateFormatter.toRFC3339String(DateTime.now()), callback);
+        getOptographs(limit, getNow(), callback);
     }
 
     public void getOptographs(String older_than, Callback<List<Optograph>> callback) throws IOException {
@@ -99,15 +100,24 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public Observable<List<Optograph>> getOptographsAsObservable(int limit) {
-        return getOptographsAsObservable(limit, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
-    }
-
-
     public Observable<List<Optograph>> getOptographsAsObservable(int limit, String older_than) {
+        // Observable<Optograph>
         Observable<List<Optograph>> observable = service.listOptographsAsObservable(limit, older_than);
         Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
         return observable;
+    }
+
+    public Observable<Optograph> getOptographs(int limit, String older_than) {
+        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than);
+        return service.listOptographsAsObservable(limit, older_than).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> getOptographs(int limit) {
+        return service.listOptographsAsObservable(limit, getNow()).flatMap(Observable::from);
+    }
+
+    private String getNow() {
+        return RFC3339DateFormatter.toRFC3339String(DateTime.now());
     }
 
 }

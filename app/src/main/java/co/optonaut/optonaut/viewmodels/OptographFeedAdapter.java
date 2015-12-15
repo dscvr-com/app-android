@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,8 +73,36 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
     public void addItem(Optograph optograph) {
-        this.optographs.add(optograph);
-        notifyItemChanged(getItemCount());
+        DateTime created_at = optograph.getCreated_atDateTime();
+
+        // skip if optograph is already in list
+        if (optographs.contains(optograph)) {
+            return;
+        }
+
+        // if list is empty, simply add new optograph
+        if (optographs.isEmpty()) {
+            optographs.add(optograph);
+            notifyItemInserted(getItemCount());
+            return;
+        }
+
+        // if optograph is oldest, simply append to list
+        if (created_at.isBefore(getOldest().getCreated_atDateTime())) {
+            optographs.add(optograph);
+            notifyItemInserted(getItemCount());
+            return;
+        }
+
+        // find correct position of optograph
+        for (int i = 0; i < optographs.size(); i++) {
+            Optograph current = optographs.get(i);
+            if (created_at.isAfter(current.getCreated_atDateTime())) {
+                optographs.add(i, optograph);
+                notifyItemInserted(i);
+                return;
+            }
+        }
     }
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
@@ -87,33 +117,19 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
     }
 
-    public void clear() {
-        this.optographs.clear();
-    }
-
-    public void addItems(List<Optograph> optographs) {
-        this.optographs.addAll(optographs);
-        notifyDataSetChanged();
-    }
-
     public Optograph get(int position) {
         return optographs.get(position);
     }
 
-    public Optograph last() {
+    public Optograph getOldest() {
         return get(getItemCount() - 1);
     }
 
     public boolean isEmpty() {
-        return getItemCount() == 0;
+        return optographs.isEmpty();
     }
 
     public List<Optograph> getOptographs() {
         return this.optographs;
-    }
-
-    public void setOptographs(List<Optograph> optographs) {
-        this.optographs = optographs;
-        notifyDataSetChanged();
     }
 }
