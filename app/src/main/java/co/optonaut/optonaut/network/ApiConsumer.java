@@ -88,7 +88,7 @@ public class ApiConsumer {
     }
 
     public void getOptographs(int limit, String older_than, Callback<List<Optograph>> callback) throws IOException {
-        Call<List<Optograph>> call = service.listOptographs(limit, older_than);
+        Call<List<Optograph>> call = service.getOptographs(limit, older_than);
         Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
         call.enqueue(callback);
     }
@@ -101,11 +101,32 @@ public class ApiConsumer {
 
     public Observable<Optograph> getOptographs(int limit, String older_than) {
         Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than);
-        return service.listOptographsAsObservable(limit, older_than).flatMap(Observable::from);
+        return service.getOptographsAsObservable(limit, older_than).flatMap(Observable::from);
     }
 
     public Observable<Optograph> getOptographs(int limit) {
         return getOptographs(limit, getNow());
+    }
+
+    public Observable<Optograph> getOptographs() {
+        return getOptographs(DEFAULT_LIMIT, getNow());
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit, String older_than) {
+        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs from person " + id + " older than " + older_than);
+        return service.getOptographsFromPerson(id, limit, older_than).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, String older_than) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, older_than);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit) {
+        return getOptographsFromPerson(id, limit, getNow());
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, getNow());
     }
 
     public Observable<Optograph> searchOptographs(int limit, String older_than, String keyword) {

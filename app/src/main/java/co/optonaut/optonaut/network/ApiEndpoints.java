@@ -22,7 +22,7 @@ public interface ApiEndpoints {
     Call<List<Optograph>> listOptographsWithAuthentification(@Header("Authorization") String authorization);
 
     @GET("optographs/feed")
-    Call<List<Optograph>> listOptographs(@Query("limit") int limit, @Query("older_than") String older_than);
+    Call<List<Optograph>> getOptographs(@Query("limit") int limit, @Query("older_than") String older_than);
 
     @GET("optographs/search")
     Observable<List<Optograph>> searchOptographs(@Query("limit") int limit,  @Query("older_than") String older_than, @Query("keyword") String keyword);
@@ -30,7 +30,10 @@ public interface ApiEndpoints {
     @GET("persons/{id}")
     Call<Person> getPerson(@Path("id") String id);
 
+    @GET("persons/{id}/optographs")
+    Observable<List<Optograph>> getOptographsFromPerson(@Path("id") String id, @Query("limit") int limit, @Query("older_than") String older_than);
+
     @GET("optographs/feed")
-    Observable<List<Optograph>> listOptographsAsObservable(@Query("limit") int limit, @Query("older_than") String older_than);
+    Observable<List<Optograph>> getOptographsAsObservable(@Query("limit") int limit, @Query("older_than") String older_than);
 
 }

@@ -2,8 +2,10 @@ package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
 
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.PersonManager;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -37,17 +39,16 @@ public class ProfileFeedFragment extends OptographListFragment {
 
     @Override
     protected void initializeFeed() {
-        apiConsumer.getOptographs(5)
-                .filter(optograph -> optograph.getPerson().getId().equals(person.getId()))
+        apiConsumer.getOptographsFromPerson(person.getId())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
+
     }
 
     @Override
     protected void loadMore() {
-        apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
-                .filter(optograph -> optograph.getPerson().getId().equals(person.getId()))
+        apiConsumer.getOptographsFromPerson(person.getId(), optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
