@@ -10,37 +10,26 @@ import android.support.v7.app.AppCompatActivity;
  */
 // source: http://www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
 public class GLActivity extends AppCompatActivity {
-    /** The OpenGL view. */
-    private GLSurfaceView mGlSurfaceView;
+    private GLSurfaceView glView;
 
-    /**
-     * Called when the activity is first created.
-     * @param savedInstanceState The instance state.
-     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.mGlSurfaceView = new GLSurfaceView(this);
-        this.mGlSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        this.mGlSurfaceView.setRenderer(new GLRenderer(this));
-        this.setContentView(this.mGlSurfaceView);
+        this.glView = new GLSurfaceView(this);
+        this.glView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        this.glView.setRenderer(new GLRenderer(this));
+        this.setContentView(this.glView);
     }
 
-    /**
-     * Remember to resume the glSurface.
-     */
     @Override
     protected void onResume() {
         super.onResume();
-        this.mGlSurfaceView.onResume();
+        this.glView.onResume();
     }
 
-    /**
-     * Also pause the glSurface.
-     */
     @Override
     protected void onPause() {
-        this.mGlSurfaceView.onPause();
+        this.glView.onPause();
         super.onPause();
     }
 }

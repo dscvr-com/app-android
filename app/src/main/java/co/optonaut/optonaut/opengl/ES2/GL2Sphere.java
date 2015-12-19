@@ -213,6 +213,7 @@ public class GL2Sphere {
     public void draw(float[] mvpMatrix) {
         // bind the previously generated texture.
         //gl.glBindTexture(GL10.GL_TEXTURE_2D, this.textures[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
         GLES20.glUseProgram(program);
 
