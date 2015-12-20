@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl.ES2;
+package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,16 +12,12 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import co.optonaut.optonaut.opengl.ES1.Maths;
-import co.optonaut.optonaut.opengl.MyGLRenderer;
+import co.optonaut.optonaut.opengl.deprecated.example.MyGLRenderer;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
  */
-
 // source: www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
 public class GL2Sphere {
     /** Maximum allowed depth. */
@@ -87,7 +83,7 @@ public class GL2Sphere {
 
     /**
      * GL2Sphere constructor.
-     * @param depth integer representing the split of the sphere.
+     * @param depth integer representing the split of the sphere. Will be clamped to internal variable {@code MAXIMUM_ALLOWED_DEPTH}
      * @param radius The spheres radius.
      */
     public GL2Sphere(final int depth, final float radius) {
@@ -165,30 +161,9 @@ public class GL2Sphere {
             fb.position(0);
             this.textureBuffer.add(fb);
 
-            initializeProgram();
         }
-    }
 
-    /**
-     * Load the texture for the square.
-     *
-     * @param gl Handle.
-     * @param context Handle.
-     * @param texture Texture map for the sphere.
-     */
-    public void loadGLTexture(final GL10 gl, final Context context, final int texture) {
-        // Generate one texture pointer, and bind it to the texture array.
-        gl.glGenTextures(1, this.textures, 0);
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, this.textures[0]);
-
-        // Create nearest filtered texture.
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-
-        // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), texture);
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        bitmap.recycle();
+        initializeProgram();
     }
 
     public void loadGLTexture(final Context context, final int texture) {
@@ -205,14 +180,11 @@ public class GL2Sphere {
         bitmap.recycle();
     }
 
-    /**
-     * The draw method for the square with the GL context.
-     *
-     * @param gl Graphics handle.
-     */
     public void draw(float[] mvpMatrix) {
+        // TODO: use texture here, or use in shader code!
+
         // bind the previously generated texture.
-        //gl.glBindTexture(GL10.GL_TEXTURE_2D, this.textures[0]);
+        // TODO: read about this method
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
         GLES20.glUseProgram(program);
@@ -225,6 +197,7 @@ public class GL2Sphere {
         // prepare coordinates
         GLES20.glEnableVertexAttribArray(positionHandle);
 
+        // TODO: check if necessary
         GLES20.glFrontFace(GLES20.GL_CW);
 
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
@@ -233,7 +206,7 @@ public class GL2Sphere {
             // get handle to fragment shader's vColor member
             colorHandle = GLES20.glGetUniformLocation(program, "vColor");
 
-            // Set color for drawing the triangle
+            // Set color for drawing the sphere
             GLES20.glUniform4fv(colorHandle, 1, color, 0);
 
             // get handle to shape's transformation matrix
@@ -242,32 +215,9 @@ public class GL2Sphere {
             // Pass the projection and view transformation to the shader
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
-            // Draw the triangle
+            // Draw the sphere
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
-
-
-        /*
-        // Point to our buffers.
-        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-        // Set the face rotation, clockwise in this case.
-        gl.glFrontFace(GL10.GL_CW);
-
-        // Point to our vertex buffer.
-        for (int i = 0; i < this.totalNumOfStrips; i++) {
-            gl.glVertexPointer(COORDS_PER_VERTEX, GL10.GL_FLOAT, 0, this.vertexBuffer.get(i));
-            gl.glTexCoordPointer(COORDS_PER_TEXTURE, GL10.GL_FLOAT, 0, this.textureBuffer.get(i));
-
-            // Draw the vertices as triangle strip.
-            gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, this.vertices.get(i).length / COORDS_PER_VERTEX);
-        }
-
-        // Disable the client state before leaving.
-        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-        */
     }
 
     private void initializeProgram() {

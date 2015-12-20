@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl.ES1;
+package co.optonaut.optonaut.opengl.deprecated.ES1;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

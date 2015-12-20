@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl.ES2;
+package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -9,16 +9,13 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.opengl.Triangle;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
  */
+// source: http://www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
 public class GL2Renderer implements GLSurfaceView.Renderer {
-    /** Tilt the spheres a little. */
-    private static final int AXIAL_TILT_DEGREES = 30;
-
     /** Clear colour, alpha component. */
     private static final float CLEAR_RED = 0.0f;
 
@@ -40,15 +37,10 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
     /** Perspective setup, far component. */
     private static final float Z_FAR = 100.0f;
 
-    /** Object distance on the screen. move it back a bit so we can see it! */
-    private static final float OBJECT_DISTANCE = -10.0f;
 
-
-    // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mvpMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
-    private float[] rotationMatrix = new float[16];
 
     private GL2Sphere sphere;
 
@@ -62,30 +54,19 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
 
 
     public void onDrawFrame(GL10 unused) {
-        float[] scratch = new float[16];
-
         GLES20.glClearColor(CLEAR_RED, CLEAR_GREEN, CLEAR_BLUE, CLEAR_ALPHA);
 
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        // Set the camera position (View matrix)
+        // Set the camera position
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, -30, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        // Create a rotation for the triangle
-        Matrix.setRotateM(rotationMatrix, 0, angle, 0, 0, -1.0f);
-
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the mMVPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        Matrix.multiplyMM(scratch, 0, mvpMatrix, 0, rotationMatrix, 0);
-
         // Draw shape
-        //triangle.draw(scratch);
-        sphere.draw(scratch);
+        sphere.draw(mvpMatrix);
     }
 
     @Override

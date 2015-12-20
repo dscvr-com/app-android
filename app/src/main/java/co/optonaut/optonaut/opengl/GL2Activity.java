@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl.ES2;
+package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

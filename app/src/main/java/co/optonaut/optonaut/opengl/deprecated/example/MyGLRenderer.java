@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl;
+package co.optonaut.optonaut.opengl.deprecated.example;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -6,8 +6,6 @@ import android.opengl.Matrix;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import co.optonaut.optonaut.opengl.ES2.GL2Sphere;
 
 /**
  * @author Nilan Marktanner

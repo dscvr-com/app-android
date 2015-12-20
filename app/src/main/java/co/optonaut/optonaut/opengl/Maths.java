@@ -1,10 +1,9 @@
-package co.optonaut.optonaut.opengl.ES1;
+package co.optonaut.optonaut.opengl;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
  */
-
 // source: http://www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
 public class Maths {
     /**

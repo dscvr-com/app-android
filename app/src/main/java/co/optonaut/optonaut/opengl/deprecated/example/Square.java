@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl;
+package co.optonaut.optonaut.opengl.deprecated.example;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

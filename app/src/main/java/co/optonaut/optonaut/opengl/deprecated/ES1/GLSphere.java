@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl.ES1;
+package co.optonaut.optonaut.opengl.deprecated.ES1;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import co.optonaut.optonaut.opengl.Maths;
 
 /**
  * @author Nilan Marktanner
