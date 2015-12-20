@@ -86,7 +86,6 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
         // Draw shape
         //triangle.draw(scratch);
         sphere.draw(scratch);
-
     }
 
     @Override
@@ -100,7 +99,6 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GLES20.glClearDepthf(1.0f);
-
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {

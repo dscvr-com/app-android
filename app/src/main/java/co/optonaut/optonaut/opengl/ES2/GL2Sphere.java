@@ -225,6 +225,8 @@ public class GL2Sphere {
         // prepare coordinates
         GLES20.glEnableVertexAttribArray(positionHandle);
 
+        GLES20.glFrontFace(GLES20.GL_CW);
+
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
 
@@ -241,8 +243,7 @@ public class GL2Sphere {
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
             // Draw the triangle
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numVerticesPerStrip);
-
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
 
 
