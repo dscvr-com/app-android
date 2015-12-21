@@ -55,18 +55,20 @@ public class GL2Sphere {
             // the coordinates of the objects that use this vertex shader
             "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
+            "attribute vec2 a_texCoord;" +
+            "varying vec2 v_texCoord;" +
             "void main() {" +
-            // the matrix must be included as a modifier of gl_Position
-            // Note that the uMVPMatrix factor *must be first* in order
-            // for the matrix multiplication product to be correct.
             "  gl_Position = uMVPMatrix * vPosition;" +
+            "  v_texCoord = a_texCoord;" +
             "}";
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
+            "varying vec2 v_texCoord;" +
+            "uniform sampler2D s_texture;" +
             "uniform vec4 vColor;" +
             "void main() {" +
-            "  gl_FragColor = vColor;" +
+            "  gl_FragColor = texture2D(s_texture, v_texCoord);" +
             "}";
 
     private final int numVerticesPerStrip;
@@ -77,6 +79,8 @@ public class GL2Sphere {
     private int positionHandle;
     private int colorHandle;
     private int mvpMatrixHandle;
+    private int texCoordHandle;
+    private int textureSamplerHandle;
 
     // Set color with red, green, blue and alpha (opacity) values
     private float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
@@ -168,7 +172,7 @@ public class GL2Sphere {
 
     public void loadGLTexture(final Context context, final int texture) {
         GLES20.glGenTextures(1, this.textures, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
         // Create nearest filtered texture
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
@@ -186,22 +190,27 @@ public class GL2Sphere {
         // bind the previously generated texture.
         // TODO: read about this method
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
-
         GLES20.glUseProgram(program);
 
         // get handles
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
         colorHandle = GLES20.glGetUniformLocation(program, "vColor");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
+        texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
+        textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
 
         // prepare coordinates
         GLES20.glEnableVertexAttribArray(positionHandle);
+        GLES20.glEnableVertexAttribArray(texCoordHandle);
+
+
 
         // TODO: check if necessary
         GLES20.glFrontFace(GLES20.GL_CW);
 
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
+            GLES20.glVertexAttribPointer (texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer.get(i));
 
             // get handle to fragment shader's vColor member
             colorHandle = GLES20.glGetUniformLocation(program, "vColor");
@@ -215,9 +224,14 @@ public class GL2Sphere {
             // Pass the projection and view transformation to the shader
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
+            // Set the sampler texture unit to 0, where we have saved the texture.
+            GLES20.glUniform1i(textureSamplerHandle, 0);
+
             // Draw the sphere
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
+        GLES20.glDisableVertexAttribArray(positionHandle);
+        GLES20.glDisableVertexAttribArray(texCoordHandle);
     }
 
     private void initializeProgram() {

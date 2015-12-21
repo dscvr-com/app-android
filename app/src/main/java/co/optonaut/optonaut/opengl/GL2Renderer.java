@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -47,6 +48,8 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
     private Context context;
     public volatile float angle;
 
+    private volatile float scale;
+
 
     public GL2Renderer(Context context) {
         this.context = context;
@@ -60,10 +63,17 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Set the camera position
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0, -30, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(viewMatrix, 0,
+                0, 0, 0, // eye
+                0f, 0f, -10f, // center
+                0f, 1.0f, 0f); // up
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+        // Scale view
+        // Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
+
 
         // Draw shape
         sphere.draw(mvpMatrix);
@@ -71,8 +81,10 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        this.scale = 1.0f;
+
         // initialize sphere
-        this.sphere = new GL2Sphere(5, 2);
+        this.sphere = new GL2Sphere(5, 20);
 
         // load texture
         this.sphere.loadGLTexture(this.context, R.drawable.abc_ic_voice_search_api_mtrl_alpha);
@@ -107,5 +119,14 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
 
     public void setAngle(float angle) {
         this.angle = angle;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        Log.d("Optonaut", "New scale: " + String.valueOf(scale));
+        this.scale = scale;
     }
 }
