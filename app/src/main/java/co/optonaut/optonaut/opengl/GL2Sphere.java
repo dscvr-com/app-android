@@ -193,10 +193,7 @@ public class GL2Sphere {
     }
 
     public void draw(float[] mvpMatrix) {
-        // TODO: use texture here, or use in shader code!
-
         // bind the previously generated texture.
-        // TODO: read about this method
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
         GLES20.glUseProgram(program);
 
@@ -219,15 +216,6 @@ public class GL2Sphere {
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
             GLES20.glVertexAttribPointer (texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer.get(i));
-
-            // get handle to fragment shader's vColor member
-            colorHandle = GLES20.glGetUniformLocation(program, "vColor");
-
-            // Set color for drawing the sphere
-            GLES20.glUniform4fv(colorHandle, 1, color, 0);
-
-            // get handle to shape's transformation matrix
-            mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
 
             // Pass the projection and view transformation to the shader
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);

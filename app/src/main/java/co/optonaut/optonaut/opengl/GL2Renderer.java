@@ -16,25 +16,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 // source: http://www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
 public class GL2Renderer implements GLSurfaceView.Renderer {
-    /** Clear colour, alpha component. */
-    private static final float CLEAR_RED = 0.0f;
-
-    /** Clear colour, alpha component. */
-    private static final float CLEAR_GREEN = 0.0f;
-
-    /** Clear colour, alpha component. */
-    private static final float CLEAR_BLUE = 0.0f;
-
-    /** Clear colour, alpha component. */
-    private static final float CLEAR_ALPHA = 0.5f;
-
-    /** Perspective setup, field of view component. */
     private static final float FIELD_OF_VIEW_Y = 45.0f;
-
-    /** Perspective setup, near component. */
     private static final float Z_NEAR = 0.1f;
-
-    /** Perspective setup, far component. */
     private static final float Z_FAR = 100.0f;
 
 
@@ -64,8 +47,11 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        Log.d("Optonaut", "onSurfaceCreated");
-        this.scale = 1.0f;
+        // Set the camera position
+        Matrix.setLookAtM(viewMatrix, 0,
+                0, 0, 0, // eye
+                0f, 0f, 1f, // center
+                0f, 1.0f, 0f); // up
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -88,22 +74,8 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
             isTextureChanged = false;
         }
 
-        GLES20.glClearColor(CLEAR_RED, CLEAR_GREEN, CLEAR_BLUE, CLEAR_ALPHA);
-
-        // Redraw background color
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-        // Set the camera position
-        Matrix.setLookAtM(viewMatrix, 0,
-                0, 0, 0, // eye
-                0f, 0f, -10f, // center
-                0f, 1.0f, 0f); // up
-
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
-        // Scale view
-        // Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
 
         // Draw shape
         sphere.draw(mvpMatrix);
