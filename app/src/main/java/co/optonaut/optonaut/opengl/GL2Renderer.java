@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -8,8 +9,6 @@ import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import co.optonaut.optonaut.R;
 
 /**
  * @author Nilan Marktanner
@@ -49,14 +48,46 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
     public volatile float angle;
 
     private volatile float scale;
-
+    private Bitmap texture;
+    private boolean isTextureChanged;
 
     public GL2Renderer(Context context) {
         this.context = context;
+        this.isTextureChanged = false;
     }
 
+    public GL2Renderer(Context context, Bitmap texture) {
+        this.context = context;
+        this.isTextureChanged = false;
+        this.texture = texture;
+    }
 
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Log.d("Optonaut", "onSurfaceCreated");
+        this.scale = 1.0f;
+
+        // Set the background frame color
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearDepthf(1.0f);
+
+        if (isTextureChanged) {
+            Log.d("Optonaut", "Texture changed in Surface Created");
+            reinitialize();
+            isTextureChanged = false;
+        } else {
+            initializeSphere();
+        }
+    }
+
+    @Override
     public void onDrawFrame(GL10 unused) {
+        if (isTextureChanged) {
+            Log.d("Optonaut", "Texture changed in drawFrame");
+            reinitialize();
+            isTextureChanged = false;
+        }
+
         GLES20.glClearColor(CLEAR_RED, CLEAR_GREEN, CLEAR_BLUE, CLEAR_ALPHA);
 
         // Redraw background color
@@ -74,51 +105,31 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
         // Scale view
         // Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
 
-
         // Draw shape
         sphere.draw(mvpMatrix);
     }
 
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        this.scale = 1.0f;
-
-        // initialize sphere
-        this.sphere = new GL2Sphere(5, 20);
-
-        // load texture
-        this.sphere.loadGLTexture(this.context, R.drawable.abc_ic_voice_search_api_mtrl_alpha);
-
-        // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glClearDepthf(1.0f);
-    }
-
     public void onSurfaceChanged(GL10 unused, int width, int height) {
+        Log.d("Optonaut", "onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
 
         Matrix.perspectiveM(projectionMatrix, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
     }
 
-    public static int loadShader(int type, String shaderCode){
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
 
-        // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-
-        return shader;
+    private void reinitialize() {
+        initializeSphere();
+        initializeTexture();
     }
 
-    public float getAngle() {
-        return angle;
+    private void initializeTexture() {
+        this.sphere.loadGLTexture(this.texture, false);
     }
 
-    public void setAngle(float angle) {
-        this.angle = angle;
+    private void initializeSphere() {
+        this.sphere = new GL2Sphere(5, 20);
     }
 
     public float getScale() {
@@ -128,5 +139,10 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
     public void setScale(float scale) {
         Log.d("Optonaut", "New scale: " + String.valueOf(scale));
         this.scale = scale;
+    }
+
+    public void updateTexture(Bitmap bitmap) {
+        this.texture = bitmap;
+        isTextureChanged = true;
     }
 }

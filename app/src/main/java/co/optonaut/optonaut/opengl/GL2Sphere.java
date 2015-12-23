@@ -171,6 +171,13 @@ public class GL2Sphere {
     }
 
     public void loadGLTexture(final Context context, final int texture) {
+        // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
+        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), texture);
+        loadGLTexture(bitmap, false);
+    }
+
+    public void loadGLTexture(final Bitmap bitmap, boolean recycle) {
+
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
@@ -179,9 +186,10 @@ public class GL2Sphere {
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 
         // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), texture);
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-        bitmap.recycle();
+        if (recycle) {
+            bitmap.recycle();
+        }
     }
 
     public void draw(float[] mvpMatrix) {

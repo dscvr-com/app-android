@@ -12,6 +12,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.Optograph2DBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.opengl.MyGLSurfaceView;
 
 /**
  * @author Nilan Marktanner
@@ -21,6 +22,7 @@ public class Optograph2DFragment extends Fragment {
     private static final String DEBUG_TAG = "Optonaut";
     private Optograph2DBinding binding;
     private Optograph optograph;
+    private MyGLSurfaceView glView;
 
 
     @Override
@@ -48,6 +50,8 @@ public class Optograph2DFragment extends Fragment {
             }
         });
 
+        this.glView = (MyGLSurfaceView) view.findViewById(R.id.GLSurface);
+
         return view;
     }
 
@@ -57,5 +61,17 @@ public class Optograph2DFragment extends Fragment {
         args.putParcelable("optograph", optograph);
         optograph2DFragment.setArguments(args);
         return optograph2DFragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.glView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.glView.onPause();
     }
 }

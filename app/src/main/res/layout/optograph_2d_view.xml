@@ -26,17 +26,13 @@
             android:layout_margin="4dp"
             tools:text="Title" />
 
-        <com.triposo.barone.ScalingImageView
-            android:id="@+id/optograph_preview_asset"
+
+        <co.optonaut.optonaut.opengl.MyGLSurfaceView
+            android:id="@+id/GLSurface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:layout_margin="4dp"
-            android:layout_below="@+id/optograph_text"
-            android:adjustViewBounds="true"
-            android:scaleType="fitStart"
-            tools:src="@android:drawable/sym_def_app_icon"
-            app:assetId="@{optograph.preview_asset_id}"/>
+            android:layout_below="@id/optograph_text"
+            app:textureId="@{optograph.left_texture_asset_id}"/>
 
         <ImageView
             android:id="@+id/person_avatar_asset"
@@ -44,7 +40,7 @@
             android:layout_height="match_parent"
             android:padding="4dp"
             android:layout_margin="4dp"
-            android:layout_below="@+id/optograph_preview_asset"
+            android:layout_below="@id/GLSurface"
             tools:src="@android:drawable/sym_def_app_icon"
             app:assetId="@{person.avatar_asset_id}"/>
 
