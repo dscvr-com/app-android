@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.opengl.deprecated.example.MyGLRenderer;
+import co.optonaut.optonaut.util.Maths;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
  */
 // source: www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
-public class GL2Sphere {
+public class Sphere {
     /** Maximum allowed depth. */
     private static final int MAXIMUM_ALLOWED_DEPTH = 7;
 
@@ -86,11 +87,11 @@ public class GL2Sphere {
     private float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     /**
-     * GL2Sphere constructor.
+     * Sphere constructor.
      * @param depth integer representing the split of the sphere. Will be clamped to internal variable {@code MAXIMUM_ALLOWED_DEPTH}
      * @param radius The spheres radius.
      */
-    public GL2Sphere(final int depth, final float radius) {
+    public Sphere(final int depth, final float radius) {
         // Clamp depth to the range 1 to MAXIMUM_ALLOWED_DEPTH;
         final int d = Math.max(1, Math.min(MAXIMUM_ALLOWED_DEPTH, depth));
 

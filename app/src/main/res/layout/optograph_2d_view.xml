@@ -27,7 +27,7 @@
             tools:text="Title" />
 
 
-        <co.optonaut.optonaut.opengl.MyGLSurfaceView
+        <co.optonaut.optonaut.opengl.Optograph2DView
             android:id="@+id/GLSurface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

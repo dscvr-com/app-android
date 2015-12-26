@@ -1,6 +1,9 @@
 package co.optonaut.optonaut.views;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,7 +15,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.Optograph2DBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.opengl.MyGLSurfaceView;
+import co.optonaut.optonaut.opengl.Optograph2DView;
 
 /**
  * @author Nilan Marktanner
@@ -22,7 +25,9 @@ public class Optograph2DFragment extends Fragment {
     private static final String DEBUG_TAG = "Optonaut";
     private Optograph2DBinding binding;
     private Optograph optograph;
-    private MyGLSurfaceView glView;
+
+    private Optograph2DView optograph2DView;
+    private SensorManager sensorManager;
 
 
     @Override
@@ -30,6 +35,7 @@ public class Optograph2DFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         optograph = args.getParcelable("optograph");
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Override
@@ -50,7 +56,8 @@ public class Optograph2DFragment extends Fragment {
             }
         });
 
-        this.glView = (MyGLSurfaceView) view.findViewById(R.id.GLSurface);
+        this.optograph2DView = (Optograph2DView) view.findViewById(R.id.GLSurface);
+        //registerRotationVectorListener();
 
         return view;
     }
@@ -66,12 +73,22 @@ public class Optograph2DFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        this.glView.onResume();
+        this.optograph2DView.onResume();
+        //registerRotationVectorListener();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        this.glView.onPause();
+        this.optograph2DView.onPause();
+        //unregisterRotationVectorListener();
+    }
+
+    private void registerRotationVectorListener() {
+        sensorManager.registerListener(optograph2DView.getOptographRenderer(), sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    private void unregisterRotationVectorListener() {
+        sensorManager.unregisterListener(optograph2DView.getOptographRenderer());
     }
 }

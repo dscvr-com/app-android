@@ -8,7 +8,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.network.ImageHandler;
-import co.optonaut.optonaut.opengl.MyGLSurfaceView;
+import co.optonaut.optonaut.opengl.Optograph2DView;
 
 /**
  * @author Nilan Marktanner
@@ -34,9 +34,9 @@ public class CustomBindingAdapter {
     }
 
     @BindingAdapter("app:textureId")
-    public static void loadTexture(MyGLSurfaceView myGLSurfaceView, String texture_id) {
+    public static void loadTexture(Optograph2DView myGLSurfaceView, String texture_id) {
         Picasso.with(myGLSurfaceView.getContext())
-                .load(ImageHandler.buildImageUrl(texture_id, 7000, 2050))
+                .load(ImageHandler.buildImageUrl(texture_id, 7000, 2500))
                 .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.NO_CACHE) // disable caching
                 .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
                 .into(myGLSurfaceView);

@@ -13,7 +13,7 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import co.optonaut.optonaut.opengl.Maths;
+import co.optonaut.optonaut.util.Maths;
 
 /**
  * @author Nilan Marktanner

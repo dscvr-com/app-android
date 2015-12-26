@@ -4,18 +4,20 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import java.util.Arrays;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.util.Maths;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-11-13
  */
 public class MainActivity extends AppCompatActivity {
-    private final String FEED_FRAGMENT_TAG = "FEED_FRAGMENT";
-
     private PagerAdapter pagerAdapter;
     private ViewPager viewPager;
     private TabLayout tabLayout;

@@ -2,20 +2,27 @@ package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.util.Arrays;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import co.optonaut.optonaut.sensors.RotationVectorListener;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
  */
 // source: http://www.jimscosmos.com/code/android-open-gl-texture-mapped-spheres/
-public class GL2Renderer implements GLSurfaceView.Renderer {
+public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventListener {
     private static final float FIELD_OF_VIEW_Y = 45.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 100.0f;
@@ -25,24 +32,18 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
 
-    private GL2Sphere sphere;
+    private RotationVectorListener rotationVectorListener;
 
-    private Context context;
-    public volatile float angle;
+    private Sphere sphere;
 
-    private volatile float scale;
     private Bitmap texture;
     private boolean isTextureChanged;
+    private boolean isTextureLoaded;
 
-    public GL2Renderer(Context context) {
-        this.context = context;
+    public OptographRenderer(Context context) {
         this.isTextureChanged = false;
-    }
-
-    public GL2Renderer(Context context, Bitmap texture) {
-        this.context = context;
-        this.isTextureChanged = false;
-        this.texture = texture;
+        this.isTextureLoaded = false;
+        rotationVectorListener = new RotationVectorListener();
     }
 
     @Override
@@ -98,23 +99,33 @@ public class GL2Renderer implements GLSurfaceView.Renderer {
 
     private void initializeTexture() {
         this.sphere.loadGLTexture(this.texture, false);
+        isTextureLoaded = true;
     }
 
     private void initializeSphere() {
-        this.sphere = new GL2Sphere(5, 20);
-    }
-
-    public float getScale() {
-        return scale;
-    }
-
-    public void setScale(float scale) {
-        Log.d("Optonaut", "New scale: " + String.valueOf(scale));
-        this.scale = scale;
+        this.sphere = new Sphere(5, 20);
     }
 
     public void updateTexture(Bitmap bitmap) {
         this.texture = bitmap;
         isTextureChanged = true;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) {
+            return;
+        }
+        // only listen for sensors when texture is loaded
+        if (isTextureLoaded) {
+            rotationVectorListener.handleSensorEvent(event);
+            //rotationMatrix = rotationVectorListener.getRotationMatrix();
+            Log.d("Optonaut", Arrays.toString(rotationVectorListener.getRotationMatrix()));
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // do nothing
     }
 }
