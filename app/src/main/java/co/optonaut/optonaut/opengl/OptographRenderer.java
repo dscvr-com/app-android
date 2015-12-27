@@ -31,6 +31,7 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private final float[] mvpMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
+    private float[] rotationMatrix = new float[16];
 
     private RotationVectorListener rotationVectorListener;
 
@@ -44,6 +45,7 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         this.isTextureChanged = false;
         this.isTextureLoaded = false;
         rotationVectorListener = new RotationVectorListener();
+        Matrix.setIdentityM(rotationMatrix, 0);
     }
 
     @Override
@@ -59,7 +61,6 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         GLES20.glClearDepthf(1.0f);
 
         if (isTextureChanged) {
-            Log.d("Optonaut", "Texture changed in Surface Created");
             reinitialize();
             isTextureChanged = false;
         } else {
@@ -70,13 +71,16 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     @Override
     public void onDrawFrame(GL10 unused) {
         if (isTextureChanged) {
-            Log.d("Optonaut", "Texture changed in drawFrame");
             reinitialize();
             isTextureChanged = false;
         }
 
+        // rotate viewMatrix to allow for user-interaction
+        float[] viewMatrixRotated = new float[16];
+        Matrix.multiplyMM(viewMatrixRotated, 0, viewMatrix, 0, rotationMatrix, 0);
+
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrixRotated, 0);
 
         // Draw shape
         sphere.draw(mvpMatrix);
@@ -84,7 +88,6 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        Log.d("Optonaut", "onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
 
@@ -113,15 +116,14 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) {
+        // only listen for Rotationvector Sensor, and if texture is loaded
+        if (event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR || !isTextureLoaded) {
             return;
         }
-        // only listen for sensors when texture is loaded
-        if (isTextureLoaded) {
-            rotationVectorListener.handleSensorEvent(event);
-            //rotationMatrix = rotationVectorListener.getRotationMatrix();
-            Log.d("Optonaut", Arrays.toString(rotationVectorListener.getRotationMatrix()));
-        }
+
+        // pipe sensor event to our rotationVectorListener and obtain inverse rotation
+        rotationVectorListener.handleSensorEvent(event);
+        rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
     }
 
     @Override

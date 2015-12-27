@@ -36,7 +36,7 @@ public class CustomBindingAdapter {
     @BindingAdapter("app:textureId")
     public static void loadTexture(Optograph2DView myGLSurfaceView, String texture_id) {
         Picasso.with(myGLSurfaceView.getContext())
-                .load(ImageHandler.buildImageUrl(texture_id, 7000, 2500))
+                .load(ImageHandler.buildImageUrl(texture_id, 4096, 2500))
                 .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.NO_CACHE) // disable caching
                 .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
                 .into(myGLSurfaceView);

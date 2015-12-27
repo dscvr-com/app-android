@@ -67,7 +67,6 @@ public class Sphere {
             "precision mediump float;" +
             "varying vec2 v_texCoord;" +
             "uniform sampler2D s_texture;" +
-            "uniform vec4 vColor;" +
             "void main() {" +
             "  gl_FragColor = texture2D(s_texture, v_texCoord);" +
             "}";
@@ -78,13 +77,9 @@ public class Sphere {
 
     // Handles
     private int positionHandle;
-    private int colorHandle;
     private int mvpMatrixHandle;
     private int texCoordHandle;
     private int textureSamplerHandle;
-
-    // Set color with red, green, blue and alpha (opacity) values
-    private float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     /**
      * Sphere constructor.
@@ -171,14 +166,7 @@ public class Sphere {
         initializeProgram();
     }
 
-    public void loadGLTexture(final Context context, final int texture) {
-        // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), texture);
-        loadGLTexture(bitmap, false);
-    }
-
     public void loadGLTexture(final Bitmap bitmap, boolean recycle) {
-
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
@@ -200,7 +188,6 @@ public class Sphere {
 
         // get handles
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        colorHandle = GLES20.glGetUniformLocation(program, "vColor");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
         texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
         textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");

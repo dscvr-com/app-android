@@ -42,21 +42,19 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     }
 
     private void queueBitmap() {
-        Log.d("Optonaut", "Queue Event");
         queueEvent(() -> {
-            Log.d("Optonaut", "Execute Event");
             optographRenderer.updateTexture(texture);
         });
     }
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-
+        // do nothing
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
-
+        // do nothing
     }
 
     @Override

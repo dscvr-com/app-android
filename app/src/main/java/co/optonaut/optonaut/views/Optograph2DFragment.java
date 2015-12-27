@@ -57,7 +57,7 @@ public class Optograph2DFragment extends Fragment {
         });
 
         this.optograph2DView = (Optograph2DView) view.findViewById(R.id.GLSurface);
-        //registerRotationVectorListener();
+        registerRotationVectorListener();
 
         return view;
     }
@@ -74,14 +74,14 @@ public class Optograph2DFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.optograph2DView.onResume();
-        //registerRotationVectorListener();
+        registerRotationVectorListener();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         this.optograph2DView.onPause();
-        //unregisterRotationVectorListener();
+        unregisterRotationVectorListener();
     }
 
     private void registerRotationVectorListener() {
