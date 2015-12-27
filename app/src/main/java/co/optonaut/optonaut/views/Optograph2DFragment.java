@@ -85,7 +85,7 @@ public class Optograph2DFragment extends Fragment {
     }
 
     private void registerRotationVectorListener() {
-        sensorManager.registerListener(optograph2DView.getOptographRenderer(), sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(optograph2DView.getOptographRenderer(), sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
     }
 
     private void unregisterRotationVectorListener() {
