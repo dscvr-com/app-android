@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -73,43 +72,4 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     public OptographRenderer getOptographRenderer() {
         return optographRenderer;
     }
-
-    /*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float curX, curY;
-        float mX, mY;
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                // TODO: scroll view
-                mX = event.getX();
-                mY = event.getY();
-
-                unregisterRotationVectorListener();
-
-                return true;
-            case MotionEvent.ACTION_UP:
-                curX = event.getX();
-                curY = event.getY();
-
-                // TODO: scroll
-
-                registerRotationVectorListener();
-
-                return true;
-
-            case MotionEvent.ACTION_MOVE:
-                curX = event.getX();
-                curY = event.getY();
-
-                // TODO: scroll
-                mX = curX;
-                mY = curY;
-
-                return true;
-            default:
-                return false;
-        }
-    }
-    */
 }

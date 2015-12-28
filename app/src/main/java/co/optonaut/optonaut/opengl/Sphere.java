@@ -1,8 +1,6 @@
 package co.optonaut.optonaut.opengl;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
