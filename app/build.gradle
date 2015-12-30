@@ -13,6 +13,13 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+
+        ndk {
+            moduleName "vrcubeworld"
+            ldLibs "log android GLESv3 EGL"
+            stl "gnustl_static"
+            cFlags "-std=c99 -Werror"
+        }
     }
     buildTypes {
         release {
@@ -70,3 +77,4 @@ configurations {
     all*.exclude group: 'commons-logging', module: 'commons-logging'
     all*.exclude group: 'org.apache.httpcomponents', module: 'httpclient'
 }
+
