@@ -3,6 +3,8 @@ package co.optonaut.optonaut.opengl;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
@@ -14,6 +16,7 @@ import com.squareup.picasso.Target;
  * @date 2015-12-23
  */
 public class Optograph2DView extends GLSurfaceView implements Target {
+    private SensorManager sensorManager;
     private OptographRenderer optographRenderer;
     private Bitmap texture;
 
@@ -32,6 +35,9 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         setEGLContextClientVersion(2);
         optographRenderer = new OptographRenderer(context);
         setRenderer(optographRenderer);
+
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        registerRotationVectorListener();
     }
 
     @Override
@@ -62,14 +68,24 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         if (texture != null) {
             queueBitmap();
         }
+        registerRotationVectorListener();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        unregisterRotationVectorListener();
     }
 
     public OptographRenderer getOptographRenderer() {
         return optographRenderer;
+    }
+
+    private void registerRotationVectorListener() {
+        sensorManager.registerListener(optographRenderer, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
+    }
+
+    private void unregisterRotationVectorListener() {
+        sensorManager.unregisterListener(optographRenderer);
     }
 }
