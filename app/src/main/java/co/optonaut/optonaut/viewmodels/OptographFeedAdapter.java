@@ -2,10 +2,13 @@ package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.joda.time.DateTime;
 
@@ -16,6 +19,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.MainActivity;
 
 /**
@@ -24,6 +28,7 @@ import co.optonaut.optonaut.views.MainActivity;
  */
 public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdapter.OptographViewHolder> {
     private static final String DEBUG_TAG = "Optonaut";
+    private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     List<Optograph> optographs;
 
 
@@ -62,6 +67,13 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
+
+        // span complete screen
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
+        holder.itemView.setLayoutParams(params);
+
+        View view = holder.itemView;
+
         holder.getBinding().setVariable(BR.optograph, optograph);
         holder.getBinding().setVariable(BR.person, optograph.getPerson());
         holder.getBinding().executePendingBindings();
