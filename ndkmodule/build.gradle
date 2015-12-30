@@ -1,3 +1,4 @@
+// apply from: '../local.properties'
 apply plugin: 'com.android.library'
 
 android {
@@ -13,18 +14,20 @@ android {
 
         // These directives will be used to tell Android studio how to compile your library
 
-        // NOTE: These are used to generate an Android.mk file.  your current Android.mk file
-        // WILL BE IGNORED.  I’ll talk about how to include a complex Android.mk file later
-        ndk {
-            //This will be the name of your library (so: libNdkModule.so)
-            moduleName "ndkmodule"
-            cFlags "-std=c99"
-            ldLibs 'log'
-        }
-    }
+        // We need to set the libs dir for the output and the srcdirs to null to
+        // prevent the gradle ndk hooks from firing.  We need to depend on Android.mk
+        // NOTE: this appears to break the android studio 'android' project view
+        // (at least, it hides the jni directory…)
+        sourceSets {
+            main {
+                //Tell Gradle where to put the compiled library
+                jniLibs.srcDirs = ['src/main/libs']
 
-    sourceSets.main {
-        jni.srcDirs = ['src/main/jni'];
+                //hide the ‘jni’ folder so that the automatic gradle build doesn’t try to run
+                //it’s own ndk-build process
+                jni.srcDirs = [];
+            }
+        }
     }
 
     buildTypes {
@@ -32,6 +35,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // Tell Gradle the run the ndkBuild task when compiling
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    // This task utilizes the Android.mk file defined in src/main/jni so that you
+    // have more control over the build parameters (like library inclusion)
+    task ndkBuild(type: Exec) {
+        // start in directory file('src/main/jni').absolutePath
+        // have gradle.properties in same directory as this file with following lines
+        // ndk_build_path=/home/transcendent/android-ndk/ndk-build
+        // ndk_module_path=NDK_MODULE_PATH=/home/transcendent/projects/Optonaut/ndkmodule/ndksubmodules
+        commandLine ndk_build_path, ndk_module_path, '-C', file('src/main/jni').absolutePath
     }
 }
 

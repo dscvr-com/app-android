@@ -1,0 +1,5 @@
+configurations.create('default')
+
+dependencies.add('default', project(':VrApi:Projects:AndroidPrebuilt'))
+
+artifacts.add('default', file('../../Libs/Android/SystemUtils.aar'))

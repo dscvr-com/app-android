@@ -1,0 +1,4 @@
+rootProject.projectDir = new File(settingsDir, '../../../../..')
+rootProject.name = "VrCubeWorld_NativeActivity"
+
+include ':', 'VrApi:Projects:AndroidPrebuilt', 'VrSamples:Native:VrCubeworld_NativeActivity:Projects:Android', 'VrAppSupport:SystemUtils:Projects:AndroidPrebuilt'

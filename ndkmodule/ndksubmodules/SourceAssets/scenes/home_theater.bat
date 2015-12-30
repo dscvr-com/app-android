@@ -1,0 +1,2 @@
+set BIN="../../bin/Win64/FbxConvert/"
+%BIN%FbxConvertx64.exe -o home_theater -pack -cinema -noTest -noPush -stripModoNumbers -rotate 180 -scale 0.01 -translate 3 0 0.45 -flipv -attrib position uv0 -sort origin -tag screen -render home_theater\home_theater.fbx -raytrace screen -include home_theater\icon.png %1 %2 %3 %4
