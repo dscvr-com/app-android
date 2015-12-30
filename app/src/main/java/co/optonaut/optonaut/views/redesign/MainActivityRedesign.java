@@ -3,6 +3,7 @@ package co.optonaut.optonaut.views.redesign;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import co.optonaut.ndkmodule.MainNative;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.MainFeedFragment;
@@ -30,6 +31,9 @@ public class MainActivityRedesign extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, mainSnappyFeedFragment).commit();
         }
+
+        MainNative mainNative = new MainNative();
+        mainNative.callNativeMethod("deviceName", 1000, 1000);
 
 
     }
