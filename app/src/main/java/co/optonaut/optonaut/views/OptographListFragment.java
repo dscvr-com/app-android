@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
 /**
  * @author Nilan Marktanner
@@ -74,6 +76,9 @@ public abstract class OptographListFragment extends Fragment {
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
             Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(getActivity(), VRModeActivity.class);
+            startActivity(intent);
         });
     }
 

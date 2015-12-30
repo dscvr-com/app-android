@@ -21,6 +21,16 @@ android {
         }
     }
 
+    productFlavors {
+        vanilla {
+            applicationId "co.optonaut.optonaut"
+        }
+
+        vrmode {
+            applicationId "co.optonaut.optonaut.vrmode"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import co.optonaut.optonaut.views.VRModeActivity;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-12-23
