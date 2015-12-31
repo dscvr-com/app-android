@@ -1,6 +1,8 @@
 package co.optonaut.optonaut.viewmodels;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
@@ -51,6 +54,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 ((MainActivity) itemView.getContext()).openProfileFragment(viewHolder.getBinding().getPerson());
             }
         });
+
+        // TODO: extend TextView that uses enum as property for correct character of icomoon
+        TextView like = (TextView) itemView.findViewById(R.id.like);
+        like.setTypeface(Typeface.createFromAsset(itemView.getContext().getAssets(), "icons.ttf"));
+        like.setText(String.valueOf((char) 0xe87d));
+
         return viewHolder;
     }
 
