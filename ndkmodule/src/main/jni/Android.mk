@@ -3,7 +3,6 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 include $(NDK_MODULE_PATH)/cflags.mk
 
-LOCAL_CPPFLAGS  := -std=c++11
 LOCAL_CFLAGS := \
     -I$(NDK_MODULE_PATH)/1stParty/OpenGL_Loader/Include \
     -I$(NDK_MODULE_PATH)/1stParty/OpenGL_Loader/Src \
@@ -15,7 +14,16 @@ LOCAL_CFLAGS := \
     -I$(NDK_MODULE_PATH)/VrAppSupport/VrGUI/Src \
     -I$(NDK_MODULE_PATH)/VrAppSupport/VrLocale/Src \
     -I$(NDK_MODULE_PATH)/VrAppSupport/VrSound/Include \
-    -D__GXX_EXPERIMENTAL_CXX0X__ \
+    \
+    -L$(NDK_MODULE_PATH)/LibOVRKernel/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrApi/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppFramework/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppSupport/SystemUtils/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppSupport/VrGUI/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppSupport/VrLocale/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppSupport/VrModel/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrAppSupport/VrSound/Libs/Android/armeabi-v7a/ \
+    -L$(NDK_MODULE_PATH)/VrCapture/Libs/Android/armeabi-v7a/ \
 
 LOCAL_MODULE := ndkmodule
 
