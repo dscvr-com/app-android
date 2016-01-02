@@ -9,6 +9,7 @@ Copyright	:	Copyright 2015 Oculus VR, LLC. All Rights reserved.
 
 *************************************************************************************/
 
+//#include "../../../ndksubmodules/VrAppFramework/Include/App.h"
 #include "App.h"
 #include "GuiSys.h"
 #include "OVR_Locale.h"

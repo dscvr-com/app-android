@@ -49,7 +49,7 @@ android {
         // have gradle.properties in same directory as this file with following lines
         // ndk_build_path=/home/transcendent/android-ndk/ndk-build
         // ndk_module_path=NDK_MODULE_PATH=/home/transcendent/projects/Optonaut/ndkmodule/ndksubmodules
-        commandLine ndk_build_path, ndk_module_path, '-C', file('src/main/jni').absolutePath
+        commandLine ndk_build_path, ndk_module_path, ndk_verbosity, '-C', file('src/main/jni').absolutePath
     }
 }
 
