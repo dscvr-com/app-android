@@ -9,9 +9,11 @@ import android.util.DisplayMetrics;
  * @date 2015-12-30
  */
 public class Constants {
+    public static final String DEBUG_TAG = "Optonaut";
     private static Constants constants;
 
     private DisplayMetrics displayMetrics;
+
 
     private Constants(Activity activity) {
         displayMetrics = new DisplayMetrics();

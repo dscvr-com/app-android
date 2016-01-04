@@ -216,6 +216,10 @@ public class Sphere {
         GLES20.glDisableVertexAttribArray(texCoordHandle);
     }
 
+    public boolean hasTexture() {
+        return GLES20.glIsTexture(this.textures[0]);
+    }
+
     private void initializeProgram() {
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
@@ -235,4 +239,9 @@ public class Sphere {
         GLES20.glLinkProgram(program);
     }
 
+    public void clearTexture() {
+        if (hasTexture()) {
+            GLES20.glDeleteTextures(1, textures, 0);
+        }
+    }
 }

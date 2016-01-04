@@ -72,8 +72,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
         holder.itemView.setLayoutParams(params);
 
-        View view = holder.itemView;
-
         holder.getBinding().setVariable(BR.optograph, optograph);
         holder.getBinding().setVariable(BR.person, optograph.getPerson());
         holder.getBinding().executePendingBindings();

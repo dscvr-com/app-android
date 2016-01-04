@@ -26,7 +26,7 @@ public class MainFeedFragment extends OptographListFragment {
 
     @Override
     protected void initializeFeed() {
-        apiConsumer.getOptographs(5)
+        apiConsumer.getOptographs(20)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);

@@ -8,11 +8,13 @@ import android.hardware.SensorEventListener;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import co.optonaut.optonaut.sensors.RotationVectorListener;
+import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -33,16 +35,17 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private RotationVectorListener rotationVectorListener;
 
     private Sphere sphere;
-
+    private int id = 0;
     private Bitmap texture;
     private boolean isTextureChanged;
     private boolean isTextureLoaded;
 
-    public OptographRenderer(Context context) {
+    public OptographRenderer(Context context, int id) {
         this.isTextureChanged = false;
         this.isTextureLoaded = false;
         rotationVectorListener = new RotationVectorListener();
         Matrix.setIdentityM(rotationMatrix, 0);
+        this.id = id;
     }
 
     @Override
@@ -54,22 +57,28 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
                 0f, 1.0f, 0f); // up
 
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         GLES20.glClearDepthf(1.0f);
 
-        if (isTextureChanged) {
-            reinitialize();
-            isTextureChanged = false;
-        } else {
-            initializeSphere();
-        }
+        Log.d(Constants.DEBUG_TAG, "Initialize sphere in renderer " + id);
+        initialize();
+    }
+
+    private void initialize() {
+        initializeSphere();
+        clearTexture();
+    }
+
+    private void clearTexture() {
+        sphere.clearTexture();
     }
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        if (isTextureChanged) {
+        // if texture was loaded but sphere has no texture yet (or it was lost), (re-)load it.
+        if (isTextureLoaded && !sphere.hasTexture()) {
+            Log.d("Optonaut", "Texture was lost. Reloading in renderer " + id);
             reinitialize();
-            isTextureChanged = false;
         }
 
         // rotate viewMatrix to allow for user-interaction
@@ -80,6 +89,7 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrixRotated, 0);
 
         // Draw shape
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         sphere.draw(mvpMatrix);
     }
 
@@ -92,23 +102,28 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     }
 
 
-    private void reinitialize() {
+    protected void reinitialize() {
         initializeSphere();
         initializeTexture();
     }
 
     private void initializeTexture() {
         this.sphere.loadGLTexture(this.texture, false);
+        if (isTextureLoaded) {
+            Log.d(Constants.DEBUG_TAG, "Reloading texture in renderer " + id);
+        } else {
+            Log.d(Constants.DEBUG_TAG, "loaded texture in renderer " + id);
+        }
         isTextureLoaded = true;
     }
 
     private void initializeSphere() {
-        this.sphere = new Sphere(5, 20);
+        this.sphere = new Sphere(5, 1);
     }
 
     public void updateTexture(Bitmap bitmap) {
         this.texture = bitmap;
-        isTextureChanged = true;
+        reinitialize();
     }
 
     @Override

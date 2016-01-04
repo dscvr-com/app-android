@@ -20,7 +20,7 @@ public class ImageHandler {
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
     // use maximal texture size for now
-    private static final int TEXTURE_SIZE = Math.min(512, GLES20.GL_MAX_TEXTURE_SIZE);
+    private static final int TEXTURE_SIZE = Math.min(2048, GLES20.GL_MAX_TEXTURE_SIZE);
 
     public static String buildImageUrl(String id, int width, int height) {
         String urlPartToSign = String.format("%sx%s/%s/original/%s.jpg", width, height, S3_URL, id);

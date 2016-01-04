@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.BindingAdapter;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.MemoryPolicy;
@@ -9,6 +10,7 @@ import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.network.ImageHandler;
 import co.optonaut.optonaut.opengl.Optograph2DView;
+import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -34,11 +36,13 @@ public class CustomBindingAdapter {
     }
 
     @BindingAdapter("app:textureId")
-    public static void loadTexture(Optograph2DView myGLSurfaceView, String texture_id) {
-        Picasso.with(myGLSurfaceView.getContext())
+    public static void loadTexture(Optograph2DView optograph2DView, String texture_id) {
+        Log.d(Constants.DEBUG_TAG, "queing texture: " + texture_id + " into view " + optograph2DView.getId());
+
+        Picasso.with(optograph2DView.getContext())
                 .load(ImageHandler.buildTextureUrl(texture_id))
-                .networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.NO_CACHE) // disable caching
+                //.networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.NO_CACHE) // disable caching
                 .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
-                .into(myGLSurfaceView);
+                .into(optograph2DView);
     }
 }

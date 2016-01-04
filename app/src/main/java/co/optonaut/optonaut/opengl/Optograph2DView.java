@@ -7,10 +7,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.VRModeActivity;
 
 /**
@@ -21,6 +23,8 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     private SensorManager sensorManager;
     private OptographRenderer optographRenderer;
     private Bitmap texture;
+    private static int maxId = 0;
+    private int id = 0;
 
 
     public Optograph2DView(Context context, AttributeSet attrs) {
@@ -35,7 +39,8 @@ public class Optograph2DView extends GLSurfaceView implements Target {
 
     private void initialize(Context context) {
         setEGLContextClientVersion(2);
-        optographRenderer = new OptographRenderer(context);
+        id = maxId++;
+        optographRenderer = new OptographRenderer(context, id);
         setRenderer(optographRenderer);
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -44,19 +49,28 @@ public class Optograph2DView extends GLSurfaceView implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        Log.d(Constants.DEBUG_TAG, "queing bitmap from " + from + " into view " + String.valueOf(id));
         texture = bitmap;
         queueBitmap();
+        //queueReinitalize();
+    }
+
+    private void queueReinitalize() {
+        queueEvent(optographRenderer::reinitialize);
     }
 
     private void queueBitmap() {
+
         queueEvent(() -> {
             optographRenderer.updateTexture(texture);
+            //requestRender();
         });
     }
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-        // do nothing
+        Log.d("Optonaut", "Could not load bitmap");
+        Log.d("Optonaut", errorDrawable.toString());
     }
 
     @Override
@@ -89,5 +103,33 @@ public class Optograph2DView extends GLSurfaceView implements Target {
 
     private void unregisterRotationVectorListener() {
         sensorManager.unregisterListener(optographRenderer);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Optograph2DView that = (Optograph2DView) o;
+
+        if (sensorManager != null ? !sensorManager.equals(that.sensorManager) : that.sensorManager != null)
+            return false;
+        if (optographRenderer != null ? !optographRenderer.equals(that.optographRenderer) : that.optographRenderer != null)
+            return false;
+        return !(texture != null ? !texture.equals(that.texture) : that.texture != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sensorManager != null ? sensorManager.hashCode() : 0;
+        result = 31 * result + (optographRenderer != null ? optographRenderer.hashCode() : 0);
+        result = 31 * result + (texture != null ? texture.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }
