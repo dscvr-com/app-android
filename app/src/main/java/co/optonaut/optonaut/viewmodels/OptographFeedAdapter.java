@@ -1,10 +1,8 @@
 package co.optonaut.optonaut.viewmodels;
 
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +20,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.opengl.Optograph2DView;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.MainActivity;
 
@@ -68,13 +67,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
 
-        // span complete screen
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
-        holder.itemView.setLayoutParams(params);
+        Optograph2DView optograph2DView = holder.getOptograph2DView();
+        if (!optograph.equals(holder.getBinding().getOptograph())) {
+            Log.d(Constants.DEBUG_TAG, "Reset view at position " + position);
+            // span complete screen
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
+            holder.itemView.setLayoutParams(params);
 
-        holder.getBinding().setVariable(BR.optograph, optograph);
-        holder.getBinding().setVariable(BR.person, optograph.getPerson());
-        holder.getBinding().executePendingBindings();
+            optograph2DView.resetContent();
+            holder.getBinding().setVariable(BR.optograph, optograph);
+            holder.getBinding().setVariable(BR.person, optograph.getPerson());
+            holder.getBinding().executePendingBindings();
+        }
     }
 
     @Override
@@ -117,13 +121,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;
+        private Optograph2DView optograph2DView;
 
         public OptographViewHolder(View rowView) {
             super(rowView);
             this.binding = DataBindingUtil.bind(rowView);
+            this.optograph2DView = (Optograph2DView) rowView.findViewById(R.id.optograph2dview);
         }
         public FeedItemBinding getBinding() {
             return binding;
+        }
+        public Optograph2DView getOptograph2DView() {
+            return optograph2DView;
         }
     }
 

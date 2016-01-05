@@ -30,7 +30,11 @@ public class MainActivityRedesign extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, mainSnappyFeedFragment).commit();
         }
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        // do nothing
+        // TODO: retain fragment state
     }
 }

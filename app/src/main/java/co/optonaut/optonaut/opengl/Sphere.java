@@ -48,6 +48,8 @@ public class Sphere {
     /** Total number of strips for the given depth. */
     private final int totalNumOfStrips;
 
+    private boolean shouldRenderTexture;
+
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -85,6 +87,8 @@ public class Sphere {
      * @param radius The spheres radius.
      */
     public Sphere(final int depth, final float radius) {
+        shouldRenderTexture = true;
+
         // Clamp depth to the range 1 to MAXIMUM_ALLOWED_DEPTH;
         final int d = Math.max(1, Math.min(MAXIMUM_ALLOWED_DEPTH, depth));
 
@@ -165,8 +169,10 @@ public class Sphere {
     }
 
     public void loadGLTexture(final Bitmap bitmap, boolean recycle) {
+        clearTexture();
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
+        shouldRenderTexture = true;
 
         // Create nearest filtered texture
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
@@ -180,40 +186,47 @@ public class Sphere {
     }
 
     public void draw(float[] mvpMatrix) {
-        // bind the previously generated texture.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
+        if (shouldRenderTexture) {
+            // bind the previously generated texture.
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
+        }
         GLES20.glUseProgram(program);
 
         // get handles
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
         texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
-        textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
+        if (shouldRenderTexture) {
+            textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
+        }
 
         // prepare coordinates
         GLES20.glEnableVertexAttribArray(positionHandle);
-        GLES20.glEnableVertexAttribArray(texCoordHandle);
-
-
+        if (shouldRenderTexture) {
+            GLES20.glEnableVertexAttribArray(texCoordHandle);
+        }
 
         // TODO: check if necessary
         GLES20.glFrontFace(GLES20.GL_CW);
 
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
-            GLES20.glVertexAttribPointer (texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer.get(i));
-
             // Pass the projection and view transformation to the shader
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
-            // Set the sampler texture unit to 0, where we have saved the texture.
-            GLES20.glUniform1i(textureSamplerHandle, 0);
+            if (shouldRenderTexture) {
+                GLES20.glVertexAttribPointer(texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer.get(i));
+                // Set the sampler texture unit to 0, where we have saved the texture.
+                GLES20.glUniform1i(textureSamplerHandle, 0);
+            }
 
             // Draw the sphere
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
         GLES20.glDisableVertexAttribArray(positionHandle);
-        GLES20.glDisableVertexAttribArray(texCoordHandle);
+        if (shouldRenderTexture) {
+            GLES20.glDisableVertexAttribArray(texCoordHandle);
+        }
     }
 
     public boolean hasTexture() {
@@ -240,8 +253,7 @@ public class Sphere {
     }
 
     public void clearTexture() {
-        if (hasTexture()) {
-            GLES20.glDeleteTextures(1, textures, 0);
-        }
+        GLES20.glDeleteTextures(1, textures, 0);
+        shouldRenderTexture = false;
     }
 }

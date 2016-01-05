@@ -26,7 +26,6 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 100.0f;
 
-
     private final float[] mvpMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
@@ -37,13 +36,13 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private Sphere sphere;
     private int id = 0;
     private Bitmap texture;
-    private boolean isTextureChanged;
-    private boolean isTextureLoaded;
+
+    // did the texture change from an external source?
+    private boolean forceRedrawTexture;
 
     public OptographRenderer(Context context, int id) {
-        this.isTextureChanged = false;
-        this.isTextureLoaded = false;
-        rotationVectorListener = new RotationVectorListener();
+        this.forceRedrawTexture = false;
+        this.rotationVectorListener = new RotationVectorListener();
         Matrix.setIdentityM(rotationMatrix, 0);
         this.id = id;
     }
@@ -60,26 +59,13 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         GLES20.glClearDepthf(1.0f);
 
-        Log.d(Constants.DEBUG_TAG, "Initialize sphere in renderer " + id);
-        initialize();
-    }
-
-    private void initialize() {
+        // Log.d(Constants.DEBUG_TAG, "Reinitialize onSurfaceCreated in renderer " + id);
         initializeSphere();
-        clearTexture();
-    }
-
-    private void clearTexture() {
-        sphere.clearTexture();
     }
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        // if texture was loaded but sphere has no texture yet (or it was lost), (re-)load it.
-        if (isTextureLoaded && !sphere.hasTexture()) {
-            Log.d("Optonaut", "Texture was lost. Reloading in renderer " + id);
-            reinitialize();
-        }
+        redrawTexture();
 
         // rotate viewMatrix to allow for user-interaction
         float[] viewMatrixRotated = new float[16];
@@ -104,17 +90,18 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
 
     protected void reinitialize() {
         initializeSphere();
+        reinitializeTexture();
+    }
+
+    private void reinitializeTexture() {
         initializeTexture();
+        forceRedrawTexture = true;
     }
 
     private void initializeTexture() {
-        this.sphere.loadGLTexture(this.texture, false);
-        if (isTextureLoaded) {
-            Log.d(Constants.DEBUG_TAG, "Reloading texture in renderer " + id);
-        } else {
-            Log.d(Constants.DEBUG_TAG, "loaded texture in renderer " + id);
+        if (this.sphere != null && this.texture != null) {
+            this.sphere.loadGLTexture(this.texture, false);
         }
-        isTextureLoaded = true;
     }
 
     private void initializeSphere() {
@@ -126,20 +113,52 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         reinitialize();
     }
 
+    private boolean isTextureBound() {
+        if(texture != null) {
+            if (sphere != null) {
+                return sphere.hasTexture();
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         // only listen for Rotationvector Sensor, and if texture is loaded
-        if (event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR || !isTextureLoaded) {
-            return;
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            // pipe sensor event to our rotationVectorListener and obtain inverse rotation
+            rotationVectorListener.handleSensorEvent(event);
+            rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
         }
-
-        // pipe sensor event to our rotationVectorListener and obtain inverse rotation
-        rotationVectorListener.handleSensorEvent(event);
-        rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // do nothing
+    }
+
+    private void redrawTexture() {
+        // if texture was loaded but sphere has no texture yet (or it was lost), (re-)load it.
+        if (forceRedrawTexture || !isTextureBound()) {
+            forceRedrawTexture = false;
+            // Log.d(Constants.DEBUG_TAG, "Force redraw in renderer " + id);
+            initializeTexture();
+        }
+    }
+
+    public void clearTexture() {
+        if (sphere != null) {
+            this.sphere.clearTexture();
+        }
+        this.texture = null;
+        forceRedrawTexture = true;
+    }
+
+    public void resetContent() {
+        this.forceRedrawTexture = false;
+        this.rotationVectorListener = new RotationVectorListener();
+        Matrix.setIdentityM(rotationMatrix, 0);
+        initializeSphere();
+        this.texture = null;
     }
 }

@@ -37,12 +37,12 @@ public class CustomBindingAdapter {
 
     @BindingAdapter("app:textureId")
     public static void loadTexture(Optograph2DView optograph2DView, String texture_id) {
-        Log.d(Constants.DEBUG_TAG, "queing texture: " + texture_id + " into view " + optograph2DView.getId());
+        Log.d(Constants.DEBUG_TAG, "queing texture: " + texture_id);
 
         Picasso.with(optograph2DView.getContext())
                 .load(ImageHandler.buildTextureUrl(texture_id))
                 //.networkPolicy(NetworkPolicy.NO_STORE, NetworkPolicy.NO_CACHE) // disable caching
-                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
+                //.memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
                 .into(optograph2DView);
     }
 }

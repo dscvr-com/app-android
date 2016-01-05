@@ -12,8 +12,8 @@ import android.util.Log;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.views.VRModeActivity;
 
 /**
  * @author Nilan Marktanner
@@ -48,37 +48,6 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     }
 
     @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        Log.d(Constants.DEBUG_TAG, "queing bitmap from " + from + " into view " + String.valueOf(id));
-        texture = bitmap;
-        queueBitmap();
-        //queueReinitalize();
-    }
-
-    private void queueReinitalize() {
-        queueEvent(optographRenderer::reinitialize);
-    }
-
-    private void queueBitmap() {
-
-        queueEvent(() -> {
-            optographRenderer.updateTexture(texture);
-            //requestRender();
-        });
-    }
-
-    @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-        Log.d("Optonaut", "Could not load bitmap");
-        Log.d("Optonaut", errorDrawable.toString());
-    }
-
-    @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
-        // do nothing
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (texture != null) {
@@ -92,6 +61,35 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         super.onPause();
         unregisterRotationVectorListener();
     }
+
+    @Override
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        Log.d(Constants.DEBUG_TAG, "from " + from + " into view " + String.valueOf(id));
+        texture = bitmap;
+        queueBitmap();
+    }
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+        Log.d("Optonaut", "Could not load bitmap");
+        Log.d("Optonaut", errorDrawable.toString());
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
+        if (texture != null) {
+            queueClearTexture();
+        }
+    }
+
+    private void queueClearTexture() {
+        queueEvent(optographRenderer::clearTexture);
+    }
+
+    private void queueBitmap() {
+        queueEvent(() -> optographRenderer.updateTexture(texture));
+    }
+
 
     public OptographRenderer getOptographRenderer() {
         return optographRenderer;
@@ -117,7 +115,6 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         if (optographRenderer != null ? !optographRenderer.equals(that.optographRenderer) : that.optographRenderer != null)
             return false;
         return !(texture != null ? !texture.equals(that.texture) : that.texture != null);
-
     }
 
     @Override
@@ -131,5 +128,9 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     @Override
     public int getId() {
         return id;
+    }
+
+    public void resetContent() {
+        optographRenderer.resetContent();
     }
 }
