@@ -19,8 +19,8 @@ public class ImageHandler {
     private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
-    // use maximal texture size for now
     private static final int TEXTURE_SIZE = Math.min(2048, GLES20.GL_MAX_TEXTURE_SIZE);
+    private static final int PREVIEW_TEXTURE_SIZE = Math.min(256, GLES20.GL_MAX_TEXTURE_SIZE);
 
     public static String buildImageUrl(String id, int width, int height) {
         String urlPartToSign = String.format("%sx%s/%s/original/%s.jpg", width, height, S3_URL, id);
@@ -29,8 +29,15 @@ public class ImageHandler {
     }
 
     public static String buildTextureUrl(String id) {
-        String urlPartToSign = String.format("0x0/filters:square(%s)/%s/original/%s.jpg", TEXTURE_SIZE, S3_URL, id);
+        return buildSquareUrl(id, TEXTURE_SIZE);
+    }
 
+    public static String buildPreviewTextureUrl(String id) {
+        return buildSquareUrl(id, PREVIEW_TEXTURE_SIZE);
+    }
+
+    private static String buildSquareUrl(String id, int length) {
+        String urlPartToSign = String.format("0x0/filters:square(%s)/%s/original/%s.jpg", length, S3_URL, id);
         return getSignedUrl(urlPartToSign);
     }
 
@@ -54,5 +61,4 @@ public class ImageHandler {
         byte[] bytes = mac.doFinal(value.getBytes());
         return Base64.encodeToString(bytes, Base64.URL_SAFE);
     }
-
 }

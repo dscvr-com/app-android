@@ -56,13 +56,14 @@ public abstract class OptographListFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         recList.setAdapter(optographFeedAdapter);
+        recList.setItemViewCacheSize(5);
 
-        /*recList.addOnScrollListener(new InfiniteScrollListener(llm) {
+        recList.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
             public void onLoadMore() {
                 loadMore();
             }
-        });*/
+        });
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading

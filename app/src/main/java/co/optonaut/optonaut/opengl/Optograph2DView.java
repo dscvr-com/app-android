@@ -25,6 +25,7 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     private Bitmap texture;
     private static int maxId = 0;
     private int id = 0;
+    private String optographTextureId;
 
 
     public Optograph2DView(Context context, AttributeSet attrs) {
@@ -51,7 +52,7 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     public void onResume() {
         super.onResume();
         if (texture != null) {
-            queueBitmap();
+            setTexture();
         }
         registerRotationVectorListener();
     }
@@ -64,9 +65,9 @@ public class Optograph2DView extends GLSurfaceView implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        Log.d(Constants.DEBUG_TAG, "from " + from + " into view " + String.valueOf(id));
+        // Log.d(Constants.DEBUG_TAG, "from " + from + " into view " + String.valueOf(id));
         texture = bitmap;
-        queueBitmap();
+        setTexture();
     }
 
     @Override
@@ -86,8 +87,8 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         queueEvent(optographRenderer::clearTexture);
     }
 
-    private void queueBitmap() {
-        queueEvent(() -> optographRenderer.updateTexture(texture));
+    private void setTexture() {
+        optographRenderer.setTexture(texture);
     }
 
 
@@ -130,7 +131,20 @@ public class Optograph2DView extends GLSurfaceView implements Target {
         return id;
     }
 
-    public void resetContent() {
+    public void hardResetContent() {
         optographRenderer.resetContent();
+    }
+
+    public void rebindTexture() {
+        // Log.d(Constants.DEBUG_TAG, "Queue rebindTexture in view " + id);
+       setTexture();
+    }
+
+    public void setOptographTextureId(String optographTextureId) {
+        this.optographTextureId = optographTextureId;
+    }
+
+    public String getOptographTextureId() {
+        return optographTextureId;
     }
 }

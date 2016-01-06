@@ -26,7 +26,7 @@ public class MainFeedFragment extends OptographListFragment {
 
     @Override
     protected void initializeFeed() {
-        apiConsumer.getOptographs(20)
+        apiConsumer.getOptographs(2)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
@@ -38,10 +38,13 @@ public class MainFeedFragment extends OptographListFragment {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
+
+        // TODO: prefetch textures
     }
 
     @Override
     protected void refresh() {
-        // TODO!
+        // TODO: actually refresh data
+        swipeContainer.setRefreshing(false);
     }
 }

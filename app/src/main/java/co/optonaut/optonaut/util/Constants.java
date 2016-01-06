@@ -2,7 +2,11 @@ package co.optonaut.optonaut.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+
+import com.squareup.picasso.Cache;
+import com.squareup.picasso.Picasso;
 
 /**
  * @author Nilan Marktanner
@@ -21,12 +25,14 @@ public class Constants {
     }
 
     public static void initializeConstants(Activity activity) {
-        constants = new Constants(activity);
+        if (constants == null) {
+            constants = new Constants(activity);
+        }
     }
 
     public static Constants getInstance() {
         if (constants == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("Constants singleton was not initialized!");
         }
         return constants;
     }

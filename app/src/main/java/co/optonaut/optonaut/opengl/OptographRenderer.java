@@ -37,13 +37,14 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private int id = 0;
     private Bitmap texture;
 
-    // did the texture change from an external source?
+    //
     private boolean forceRedrawTexture;
 
+    // did the texture change from an external source?
+    private boolean textureUpdated;
+
     public OptographRenderer(Context context, int id) {
-        this.forceRedrawTexture = false;
-        this.rotationVectorListener = new RotationVectorListener();
-        Matrix.setIdentityM(rotationMatrix, 0);
+        resetContent();
         this.id = id;
     }
 
@@ -61,6 +62,17 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
 
         // Log.d(Constants.DEBUG_TAG, "Reinitialize onSurfaceCreated in renderer " + id);
         initializeSphere();
+        if (textureUpdated) {
+            reinitializeTexture();
+        }
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 unused, int width, int height) {
+        GLES20.glViewport(0, 0, width, height);
+        float ratio = (float) width / height;
+
+        Matrix.perspectiveM(projectionMatrix, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
     }
 
     @Override
@@ -79,14 +91,6 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         sphere.draw(mvpMatrix);
     }
 
-    @Override
-    public void onSurfaceChanged(GL10 unused, int width, int height) {
-        GLES20.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
-
-        Matrix.perspectiveM(projectionMatrix, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
-    }
-
 
     protected void reinitialize() {
         initializeSphere();
@@ -101,16 +105,14 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
     private void initializeTexture() {
         if (this.sphere != null && this.texture != null) {
             this.sphere.loadGLTexture(this.texture, false);
+            textureUpdated = false;
+        } else {
+            Log.d(Constants.DEBUG_TAG, "Reinitialize texture with no texture");
         }
     }
 
     private void initializeSphere() {
         this.sphere = new Sphere(5, 1);
-    }
-
-    public void updateTexture(Bitmap bitmap) {
-        this.texture = bitmap;
-        reinitialize();
     }
 
     private boolean isTextureBound() {
@@ -139,9 +141,9 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
 
     private void redrawTexture() {
         // if texture was loaded but sphere has no texture yet (or it was lost), (re-)load it.
-        if (forceRedrawTexture || !isTextureBound()) {
+        if (forceRedrawTexture || (!isTextureBound() && texture != null)) {
             forceRedrawTexture = false;
-            // Log.d(Constants.DEBUG_TAG, "Force redraw in renderer " + id);
+            Log.d(Constants.DEBUG_TAG, "Force redraw in renderer " + id);
             initializeTexture();
         }
     }
@@ -160,5 +162,10 @@ public class OptographRenderer implements GLSurfaceView.Renderer, SensorEventLis
         Matrix.setIdentityM(rotationMatrix, 0);
         initializeSphere();
         this.texture = null;
+    }
+
+    public void setTexture(Bitmap texture) {
+        this.texture = texture;
+        this.textureUpdated = true;
     }
 }
