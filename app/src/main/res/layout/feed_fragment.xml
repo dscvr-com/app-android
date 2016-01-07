@@ -9,7 +9,7 @@
             android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <android.support.v7.widget.RecyclerView
+            <co.optonaut.optonaut.views.redesign.SnappyRecyclerView
                 android:id="@+id/optographFeed"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

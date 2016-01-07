@@ -17,6 +17,8 @@ import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
+import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
 
 /**
  * @author Nilan Marktanner
@@ -49,11 +51,11 @@ public abstract class OptographListFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recList = (RecyclerView) view.findViewById(R.id.optographFeed);
+        SnappyRecyclerView recList = (SnappyRecyclerView) view.findViewById(R.id.optographFeed);
         // our children have fixed size
         recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(view.getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        SnappyLinearLayoutManager llm = new SnappyLinearLayoutManager(view.getContext());
+        llm.setOrientation(SnappyLinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         recList.setAdapter(optographFeedAdapter);
         recList.setItemViewCacheSize(5);
