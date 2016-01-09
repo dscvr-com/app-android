@@ -20,62 +20,12 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-08
  */
 public class CardboardRendererTest implements CardboardView.StereoRenderer {
-    private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 100.0f;
-
-    private static final float CAMERA_Z = 0.01f;
-    private static final float TIME_DELTA = 0.3f;
-
-    private static final float YAW_LIMIT = 0.12f;
-    private static final float PITCH_LIMIT = 0.12f;
-
-    private static final int COORDS_PER_VERTEX = 3;
-
-    // We keep the light always position just above the user.
-    private static final float[] LIGHT_POS_IN_WORLD_SPACE = new float[] { 0.0f, 2.0f, 0.0f, 1.0f };
-
-    private final float[] lightPosInEyeSpace = new float[4];
-
-    private int cubeProgram;
-    private int floorProgram;
-
-    private int cubePositionParam;
-    private int cubeNormalParam;
-    private int cubeColorParam;
-    private int cubeModelParam;
-    private int cubeModelViewParam;
-    private int cubeModelViewProjectionParam;
-    private int cubeLightPosParam;
-
-    private int floorPositionParam;
-    private int floorNormalParam;
-    private int floorColorParam;
-    private int floorModelParam;
-    private int floorModelViewParam;
-    private int floorModelViewProjectionParam;
-    private int floorLightPosParam;
-
-    private float[] modelCube;
-    private float[] camera;
-    private float[] view;
-    private float[] headView;
-    private float[] modelViewProjection;
-    private float[] modelView;
-    private float[] modelFloor;
-
-    private int score = 0;
-    private float objectDistance = 12f;
-    private float floorDepth = 20f;
 
     public CardboardRendererTest() {
     }
 
     @Override
     public void onNewFrame(HeadTransform headTransform) {
-        // Build the camera matrix and apply it to the ModelView.
-        Matrix.setLookAtM(camera, 0, 0.0f, 0.0f, CAMERA_Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-
-        headTransform.getHeadView(headView, 0);
         checkGLError("onNewFrame");
     }
 
