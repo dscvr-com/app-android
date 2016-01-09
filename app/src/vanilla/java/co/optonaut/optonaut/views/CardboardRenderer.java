@@ -1,10 +1,6 @@
 package co.optonaut.optonaut.views;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -13,13 +9,10 @@ import com.google.vrtoolkit.cardboard.CardboardView;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
 import co.optonaut.optonaut.opengl.Sphere;
-import co.optonaut.optonaut.sensors.RotationVectorListener;
 import co.optonaut.optonaut.util.Constants;
 
 /**
@@ -77,19 +70,23 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     @Override
     public void onDrawEye(Eye eye) {
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        /*// Apply the eye transformation to the camera.
+        // Apply the eye transformation to the camera.
         Matrix.multiplyMM(view, 0, eye.getEyeView(), 0, camera, 0);
 
         float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, view, 0);
 
         if (eye.getType() == Eye.Type.LEFT || eye.getType() == Eye.Type.MONOCULAR) {
-            //this.sphereLeft.draw(modelViewProjection);
+            redrawTexture();
+
+            // Set the background frame color
+            GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+            this.sphereLeft.draw(modelViewProjection);
         } else {
             //this.sphereRight.draw(modelViewProjection);
-        }*/
+        }
     }
 
     @Override
@@ -104,10 +101,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
-        // Set the background frame color
-        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 0.5f);
-
-        //initializeSpheres();
+        initializeSpheres();
         /*if (textureLeftUpdated) {
             reinitializeTexture(Eye.Type.LEFT);
         }
@@ -128,15 +122,8 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     }
 
     public void setTexture(int type, Bitmap texture) {
-        if (type == Eye.Type.LEFT) {
-            this.textureLeft = texture;
-            this.textureLeftUpdated = true;
-        } else if(type == Eye.Type.RIGHT) {
-            this.textureRight = texture;
-            this.textureRightUpdated = true;
-        } else {
-            throw new RuntimeException("setTexture called with monocular eye type!");
-        }
+        this.textureLeft = texture;
+        this.textureLeftUpdated = true;
     }
 
     private void reinitializeTexture(int type) {
@@ -188,21 +175,10 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     private void redrawTexture() {
         // if texture was loaded but sphere has no texture yet (or it was lost), (re-)load it.
-        if (forceRedrawTexture) {
+        if (forceRedrawTexture || (!isTextureBound(Eye.Type.LEFT) && getTexture(Eye.Type.LEFT) != null)) {
             forceRedrawTexture = false;
             initializeTexture(Eye.Type.LEFT);
-            initializeTexture(Eye.Type.RIGHT);
             Log.d(Constants.DEBUG_TAG, "Force redraw in cardboard renderer");
-        }
-        if ((!isTextureBound(Eye.Type.LEFT) && getTexture(Eye.Type.LEFT) != null)) {
-            forceRedrawTexture = false;
-            Log.d(Constants.DEBUG_TAG, "Force initialize left texture");
-            initializeTexture(Eye.Type.LEFT);
-        }
-        if ((!isTextureBound(Eye.Type.RIGHT) && getTexture(Eye.Type.RIGHT) != null)) {
-            forceRedrawTexture = false;
-            Log.d(Constants.DEBUG_TAG, "Force initialize right texture");
-            initializeTexture(Eye.Type.RIGHT);
         }
     }
 

@@ -26,7 +26,11 @@ import co.optonaut.optonaut.util.Constants;
  * @author Nilan Marktanner
  * @date 2015-12-30
  */
-public class VRModeActivity extends CardboardActivity {
+public class VRModeActivity extends CardboardActivity implements Target {
+
+    private Bitmap texture;
+    private CardboardRenderer cardboardRenderer;
+    private Optograph optograph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +39,51 @@ public class VRModeActivity extends CardboardActivity {
 
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
 
-        /*
-        leftTarget = new SphereTarget(Eye.Type.LEFT);
-        rightTarget = new SphereTarget(Eye.Type.RIGHT);
-        loadTextures();
-        */
-        CardboardRendererTest cardboardRenderer = new CardboardRendererTest();
+        cardboardRenderer = new CardboardRenderer();
 
         cardboardView.setRenderer(cardboardRenderer);
         // might use this for performance boost...
-        cardboardView.setRestoreGLStateEnabled(false);
+        // cardboardView.setRestoreGLStateEnabled(false);
         setCardboardView(cardboardView);
+
+        initalizeOptograph();
+        loadTextures();
+    }
+
+    private void initalizeOptograph() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            this.optograph = intent.getExtras().getParcelable("optograph");
+            if (this.optograph == null) {
+                throw new RuntimeException("Failed to initialize optograph!");
+            }
+        }
+    }
+
+    private void loadTextures() {
+        Picasso.with(this)
+                .load(ImageHandler.buildTextureUrl(this.optograph.getLeft_texture_asset_id()))
+                .into(this);
+    }
+
+    private void setTexture() {
+        cardboardRenderer.setTexture(Eye.Type.LEFT, texture);
+    }
+
+    @Override
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        Log.d(Constants.DEBUG_TAG, "Received texture in VRMode");
+        texture = bitmap;
+        setTexture();
+    }
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
 
     }
 }

@@ -34,6 +34,7 @@ public class CardboardRendererTest implements CardboardView.StereoRenderer {
         //GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glColorMask(true, true, true, true);
         GLES20.glDepthMask(true);
+        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         checkGLError("onDrawEye");
     }
@@ -52,7 +53,7 @@ public class CardboardRendererTest implements CardboardView.StereoRenderer {
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
+
         checkGLError("clearColor");
 
         checkGLError("onSurfaceCreated");
