@@ -3,6 +3,7 @@ package co.optonaut.optonaut.opengl;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.opengl.deprecated.example.MyGLRenderer;
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
 
 /**

@@ -1,13 +1,9 @@
 package co.optonaut.optonaut.views;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -56,6 +52,8 @@ public class VRModeActivity extends CardboardActivity implements Target {
             this.optograph = intent.getExtras().getParcelable("optograph");
             if (this.optograph == null) {
                 throw new RuntimeException("Failed to initialize optograph!");
+            } else {
+                Log.d(Constants.DEBUG_TAG, "Loaded optograph " + optograph.getId() + " in VRMode!");
             }
         }
     }
@@ -69,6 +67,14 @@ public class VRModeActivity extends CardboardActivity implements Target {
     private void setTexture() {
         cardboardRenderer.setTexture(Eye.Type.LEFT, texture);
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (texture != null) {
+            setTexture();
+        }
+    }
+
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -84,6 +90,5 @@ public class VRModeActivity extends CardboardActivity implements Target {
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
-
     }
 }

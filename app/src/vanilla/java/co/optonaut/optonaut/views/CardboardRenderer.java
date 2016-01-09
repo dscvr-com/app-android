@@ -20,17 +20,13 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-08
  */
 public class CardboardRenderer implements CardboardView.StereoRenderer {
-    private static final float FIELD_OF_VIEW_Y = 45.0f;
     private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 100.0f;
+    private static final float Z_FAR = 120.0f;
 
     private final float[] modelViewProjection = new float[16];
     private final float[] view = new float[16];
-    //private float[] rotation = new float[16];
     private float[] camera = new float[16];
     private float[] headView = new float[16];
-
-    //private RotationVectorListener rotationVectorListener;
 
     private Sphere sphereLeft;
     private Bitmap textureLeft;
@@ -45,25 +41,16 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private boolean textureRightUpdated;
 
     public CardboardRenderer() {
-        //this.rotationVectorListener = new RotationVectorListener();
-        //Matrix.setIdentityM(rotation, 0);
-        this.textureLeftUpdated = false;
-        this.textureRightUpdated = false;
+        resetContent();
     }
 
     @Override
     public void onNewFrame(HeadTransform headTransform) {
-        //redrawTexture();
-
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
                 0, 0, 0, // eye
                 0f, 0f, 1f, // center
                 0f, 1.0f, 0f); // up
-
-        // rotate camera to allow for user-interaction
-        //Matrix.multiplyMM(camera, 0, cameraRaw, 0, rotation, 0);
-
 
         headTransform.getHeadView(headView, 0);
     }
@@ -102,18 +89,19 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         initializeSpheres();
-        /*if (textureLeftUpdated) {
+        if (textureLeftUpdated) {
             reinitializeTexture(Eye.Type.LEFT);
         }
         if (textureRightUpdated) {
             reinitializeTexture(Eye.Type.RIGHT);
-        }*/
+        }
     }
 
     private void initializeSpheres() {
-        this.sphereLeft = new Sphere(5, 1);
+        // TODO: set eye translate to 0 instead of big sphere
+        this.sphereLeft = new Sphere(2, 100);
 
-        this.sphereRight = new Sphere(5, 1);
+        this.sphereRight = new Sphere(2, 100);
     }
 
     @Override
