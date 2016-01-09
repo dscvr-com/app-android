@@ -19,6 +19,7 @@ import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
+import co.optonaut.optonaut.views.test.*;
 
 /**
  * @author Nilan Marktanner
@@ -81,6 +82,7 @@ public abstract class OptographListFragment extends Fragment {
             Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
 
             Intent intent = new Intent(getActivity(), VRModeActivity.class);
+            intent.putExtra("optograph", optographFeedAdapter.getOldest());
             startActivity(intent);
         });
     }
