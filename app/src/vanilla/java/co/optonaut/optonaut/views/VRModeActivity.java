@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views;
 
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,8 @@ import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import java.io.IOException;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
@@ -30,13 +33,21 @@ public class VRModeActivity extends CardboardActivity /*implements Target*/ {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vrmode);
 
+
+        AssetManager am = this.getAssets();
+        Bitmap bmp = null;
+        try {
+            bmp = BitmapFactory.decodeStream(am.open("lava.bmp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
 
 
         //initalizeOptograph();
 
         //texture = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_voicemail_white_24dp);
-        cardboardRenderer = new CardboardRenderer(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_voicemail_white_24dp));
+        cardboardRenderer = new CardboardRenderer(bmp);
 
         cardboardView.setRenderer(cardboardRenderer);
         // might use this for performance boost...
