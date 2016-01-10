@@ -73,7 +73,7 @@ public class Optograph2DView extends GLSurfaceView implements Target {
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
         Log.d("Optonaut", "Could not load bitmap");
-        Log.d("Optonaut", errorDrawable.toString());
+        //Log.d("Optonaut", errorDrawable.toString());
     }
 
     @Override

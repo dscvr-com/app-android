@@ -185,6 +185,7 @@ public class Sphere {
         if (recycle) {
             bitmap.recycle();
         }
+        Log.d(Constants.DEBUG_TAG, "Loaded texture on sphere");
     }
 
     public void draw(float[] mvpMatrix) {
@@ -255,7 +256,9 @@ public class Sphere {
     }
 
     public void clearTexture() {
-        GLES20.glDeleteTextures(1, textures, 0);
-        shouldRenderTexture = false;
+        if (hasTexture()) {
+            GLES20.glDeleteTextures(1, textures, 0);
+            shouldRenderTexture = false;
+        }
     }
 }
