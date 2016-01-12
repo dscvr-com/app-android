@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import co.optonaut.optonaut.util.ShaderLoader;
+import co.optonaut.optonaut.util.MyGLUtils;
 
 /**
  * @author Nilan Marktanner
@@ -20,13 +20,13 @@ public class Plane {
     private static final int VERTICES_PER_PLANE = 4;
 
     private static final float[] VERTICES = {
-            0, 0, 1, // left front
-            0, 0, 0, // left back
-            1, 0, 1, // right front
-            1, 0, 0  // right back
+            -0.5f, 0.0f, 0.5f, // left front
+            -0.5f, 0.0f, -0.5f, // left back
+            0.5f, 0.0f, 0.5f, // right front
+            0.5f, 0.0f, -0.5f  // right back
     };
 
-    private static final float[] TEXTURE_VERTICES = {
+    private static final float[] TEXTURE_COORDS = {
             0, 0,  // bottom left
             0, 1, // top left
             1, 1, // top right
@@ -103,15 +103,15 @@ public class Plane {
         byteBuffer.order(ByteOrder.nativeOrder());
 
         textureBuffer = byteBuffer.asFloatBuffer();
-        textureBuffer.put(TEXTURE_VERTICES);
+        textureBuffer.put(TEXTURE_COORDS);
         textureBuffer.position(0);
     }
 
 
     private void initializeProgram() {
-        int vertexShader = ShaderLoader.loadShader(GLES20.GL_VERTEX_SHADER,
+        int vertexShader = MyGLUtils.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
-        int fragmentShader = ShaderLoader.loadShader(GLES20.GL_FRAGMENT_SHADER,
+        int fragmentShader = MyGLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER,
                 fragmentShaderCode);
 
         // create empty OpenGL ES Program
@@ -141,6 +141,7 @@ public class Plane {
 
     public void draw(float[] mvpMatrix) {
         // bind the previously generated texture.
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
         GLES20.glUseProgram(program);
 
@@ -154,13 +155,12 @@ public class Plane {
         GLES20.glEnableVertexAttribArray(positionHandle);
         GLES20.glEnableVertexAttribArray(texCoordHandle);
 
-        GLES20.glFrontFace(GLES20.GL_CW);
-
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, vertexBuffer);
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
         GLES20.glVertexAttribPointer(texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer);
+
         // Set the sampler texture unit to 0, where we have saved the texture.
         GLES20.glUniform1i(textureSamplerHandle, 0);
 
