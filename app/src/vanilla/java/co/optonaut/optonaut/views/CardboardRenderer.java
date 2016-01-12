@@ -12,7 +12,7 @@ import com.google.vrtoolkit.cardboard.Viewport;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
-import co.optonaut.optonaut.opengl.Sphere;
+import co.optonaut.optonaut.opengl.Plane;
 import co.optonaut.optonaut.util.Constants;
 
 /**
@@ -27,8 +27,8 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private final float[] view = new float[16];
     private float[] camera = new float[16];
 
-    private Sphere sphereLeft;
-    private Bitmap textureLeft;
+    private Plane plane;
+    private Bitmap texture;
 
     public CardboardRenderer() {
 
@@ -36,7 +36,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     public CardboardRenderer(Bitmap texture) {
         Log.d(Constants.DEBUG_TAG, "Renderer Constructor");
-        this.textureLeft = texture;
+        this.texture = texture;
 
     }
 
@@ -62,7 +62,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-            this.sphereLeft.draw(modelViewProjection);
+            this.plane.draw(modelViewProjection);
         } else {
             // Set the background frame color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -82,58 +82,15 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
-        initializeSpheres();
-        initializeTexture(Eye.Type.LEFT);
+        initializePlanes();
     }
 
-    private void initializeSpheres() {
-        // TODO: set eye translate to 0 instead of big sphere
-        this.sphereLeft = new Sphere(3, 100);
+    private void initializePlanes() {
+        this.plane = new Plane(texture);
     }
 
     @Override
     public void onRendererShutdown() {
         // do nothing
     }
-
-    private void initializeTexture(int type) {
-        // Sphere sphere = getSphere(type);
-        //Bitmap texture = getTexture(type);
-
-        if (sphereLeft != null && textureLeft != null) {
-            Log.d(Constants.DEBUG_TAG, "Reinitialize texture " + String.valueOf(type));
-            sphereLeft.loadGLTexture(textureLeft, false);
-        } else {
-            Log.d(Constants.DEBUG_TAG, "Reinitialize texture with no texture");
-        }
-    }
-
-    /*
-    public void setTexture(Bitmap texture) {
-        Log.d(Constants.DEBUG_TAG, "Texture updated!");
-        initializeSpheres();
-        textureLeft = texture;
-        initializeTexture(Eye.Type.LEFT);
-    }
-
-    private Bitmap getTexture(int type) {
-        if (type == Eye.Type.LEFT) {
-            return this.textureLeft;
-        } else if (type == Eye.Type.RIGHT) {
-            return null;
-        } else {
-            throw new RuntimeException("There is no monocular texture!");
-        }
-    }
-
-    private Sphere getSphere(int type) {
-        if (type == Eye.Type.LEFT) {
-            return this.sphereLeft;
-        } else if (type == Eye.Type.RIGHT) {
-            return null;
-        } else {
-            throw new RuntimeException("There is no monocular sphere!");
-        }
-    }
-    */
 }
