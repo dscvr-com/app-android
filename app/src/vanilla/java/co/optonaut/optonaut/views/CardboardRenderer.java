@@ -12,6 +12,7 @@ import com.google.vrtoolkit.cardboard.Viewport;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
+import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.opengl.Plane;
 import co.optonaut.optonaut.util.Constants;
 
@@ -27,7 +28,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private final float[] view = new float[16];
     private float[] camera = new float[16];
 
-    private Plane plane;
+    private Cube cube;
     private Bitmap texture;
 
     public CardboardRenderer() {
@@ -44,9 +45,9 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     public void onNewFrame(HeadTransform headTransform) {
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
-                0, 0, 0, // eye
-                0f, 0f, 1f, // center
-                0f, 1.0f, 0f); // up
+                0.0f, 0.0f, 0.01f, // eye
+                0.0f, 0.0f, 0.0f, // center
+                0.0f, 1.0f, 0.0f); // up
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-            this.plane.draw(modelViewProjection);
+            this.cube.draw(modelViewProjection);
         } else {
             // Set the background frame color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -86,7 +87,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     }
 
     private void initializePlanes() {
-        this.plane = new Plane(texture);
+        this.cube = new Cube(texture);
     }
 
     @Override
