@@ -64,7 +64,7 @@ public abstract class OptographListFragment extends Fragment {
         recList.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
             public void onLoadMore() {
-                //loadMore();
+                loadMore();
             }
         });
 
@@ -82,7 +82,7 @@ public abstract class OptographListFragment extends Fragment {
             Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
 
             Intent intent = new Intent(getActivity(), VRModeActivity.class);
-            //intent.putExtra("optograph", optographFeedAdapter.getOldest());
+            intent.putExtra("optograph", optographFeedAdapter.getOldest());
             startActivity(intent);
         });
     }
@@ -91,7 +91,7 @@ public abstract class OptographListFragment extends Fragment {
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // load first few optographs
-        //initializeFeed();
+        initializeFeed();
     }
 
     protected abstract void initializeFeed();

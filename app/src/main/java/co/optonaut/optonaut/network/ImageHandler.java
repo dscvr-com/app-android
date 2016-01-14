@@ -22,6 +22,13 @@ public class ImageHandler {
     private static final int TEXTURE_SIZE = Math.min(2048, GLES20.GL_MAX_TEXTURE_SIZE);
     private static final int PREVIEW_TEXTURE_SIZE = Math.min(256, GLES20.GL_MAX_TEXTURE_SIZE);
 
+    private static final int CUBE_TEXTURE_SIZE = 1024;
+
+    private static final int SUB_X = 0;
+    private static final int SUB_Y = 0;
+    private static final int SUB_D = 1;
+    private static final int PX_D = CUBE_TEXTURE_SIZE;
+
     public static String buildImageUrl(String id, int width, int height) {
         String urlPartToSign = String.format("%sx%s/%s/original/%s.jpg", width, height, S3_URL, id);
 
@@ -38,6 +45,11 @@ public class ImageHandler {
 
     private static String buildSquareUrl(String id, int length) {
         String urlPartToSign = String.format("0x0/filters:square(%s)/%s/original/%s.jpg", length, S3_URL, id);
+        return getSignedUrl(urlPartToSign);
+    }
+
+    public static String buildCubeUrl(String id, int face) {
+        String urlPartToSign = String.format("0x0/filters:cube(%s,%s,%s,%s,%s)/%s/original/%s.jpg", face, SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id);
         return getSignedUrl(urlPartToSign);
     }
 

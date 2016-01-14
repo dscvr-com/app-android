@@ -13,7 +13,6 @@ import com.google.vrtoolkit.cardboard.Viewport;
 import javax.microedition.khronos.egl.EGLConfig;
 
 import co.optonaut.optonaut.opengl.Cube;
-import co.optonaut.optonaut.opengl.Plane;
 import co.optonaut.optonaut.util.Constants;
 
 /**
@@ -28,25 +27,20 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private final float[] view = new float[16];
     private float[] camera = new float[16];
 
-    private Cube cube;
-    private Bitmap texture;
+    private Cube leftCube;
+    private Cube rightCube;
 
     public CardboardRenderer() {
-
-    }
-
-    public CardboardRenderer(Bitmap texture) {
         Log.d(Constants.DEBUG_TAG, "Renderer Constructor");
-        this.texture = texture;
-
+        initializeCubes();
     }
 
     @Override
     public void onNewFrame(HeadTransform headTransform) {
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
-                0.0f, 0.0f, 0.01f, // eye
-                0.0f, 0.0f, 0.0f, // center
+                0.0f, 0.0f, 0.0f, // eye
+                0.0f, 0.0f, 0.01f, // center
                 0.0f, 1.0f, 0.0f); // up
     }
 
@@ -62,11 +56,11 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            this.cube.draw(modelViewProjection);
+            this.leftCube.draw(modelViewProjection);
         } else if (eye.getType() == Eye.Type.RIGHT) {
             // Set the background frame color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            this.cube.draw(modelViewProjection);
+            this.rightCube.draw(modelViewProjection);
         }
     }
 
@@ -83,15 +77,23 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
-        initializePlanes();
     }
 
-    private void initializePlanes() {
-        this.cube = new Cube(texture);
+    private void initializeCubes() {
+        this.leftCube = new Cube();
+        this.rightCube = new Cube();
     }
 
     @Override
     public void onRendererShutdown() {
         // do nothing
+    }
+
+    public Cube getRightCube() {
+        return rightCube;
+    }
+
+    public Cube getLeftCube() {
+        return leftCube;
     }
 }

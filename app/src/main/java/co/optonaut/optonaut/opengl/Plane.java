@@ -27,10 +27,10 @@ public class Plane {
     };
 
     private static final float[] TEXTURE_COORDS = {
-            0, 0,  // bottom left
             0, 1, // top left
             1, 1, // top right
-            1, 0 // bottom right
+            1, 0, // bottom right
+            0, 0  // bottom left
     };
 
 
@@ -56,8 +56,6 @@ public class Plane {
             "varying vec2 v_texCoord;" +
             "uniform sampler2D s_texture;" +
             "void main() {" +
-            //"  gl_FragColor = vec4(abs(v_texCoord.x), 0.0, 0.0, 0.0);" +
-            //"  gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);" +
             "  gl_FragColor = texture2D(s_texture, v_texCoord);" +
             "}";
 
