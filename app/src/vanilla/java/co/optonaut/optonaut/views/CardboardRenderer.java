@@ -62,11 +62,11 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
             this.cube.draw(modelViewProjection);
-        } else {
+        } else if (eye.getType() == Eye.Type.RIGHT) {
             // Set the background frame color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            this.cube.draw(modelViewProjection);
         }
     }
 
