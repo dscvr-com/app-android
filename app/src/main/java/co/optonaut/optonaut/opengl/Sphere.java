@@ -11,9 +11,9 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.optonaut.optonaut.opengl.deprecated.example.MyGLRenderer;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import co.optonaut.optonaut.util.MyGLUtils;
 
 /**
  * @author Nilan Marktanner
@@ -237,9 +237,9 @@ public class Sphere {
     }
 
     private void initializeProgram() {
-        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+        int vertexShader = MyGLUtils.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
-        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+        int fragmentShader = MyGLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER,
                 fragmentShaderCode);
 
         // create empty OpenGL ES Program

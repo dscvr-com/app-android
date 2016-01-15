@@ -41,7 +41,6 @@ public abstract class TextureSet {
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            Log.d(Constants.DEBUG_TAG, "Loading texture into texture target " + index);
             setTexture(bitmap);
             updateTexture(index);
         }

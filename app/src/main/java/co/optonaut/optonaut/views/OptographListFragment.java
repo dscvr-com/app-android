@@ -6,8 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +14,8 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
-import co.optonaut.optonaut.views.test.*;
 
 /**
  * @author Nilan Marktanner

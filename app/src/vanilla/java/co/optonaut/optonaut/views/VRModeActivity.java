@@ -2,20 +2,12 @@ package co.optonaut.optonaut.views;
 
 
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
-import java.io.IOException;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
@@ -36,16 +28,16 @@ public class VRModeActivity extends CardboardActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vrmode);
-
         initializeOptograph();
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
         cardboardRenderer = new CardboardRenderer();
         cardboardView.setRenderer(cardboardRenderer);
-        initializeTextures();
+
         // might use this for performance boost...
         // cardboardView.setRestoreGLStateEnabled(false);
-
         setCardboardView(cardboardView);
+
+        initializeTextures();
     }
 
     private void initializeTextures() {
@@ -62,11 +54,6 @@ public class VRModeActivity extends CardboardActivity {
                     .load(ImageHandler.buildCubeUrl(rightId, Cube.FACES[i]))
                     .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
-
-        Log.d(Constants.DEBUG_TAG, ImageHandler.buildCubeUrl(leftId, 0));
-        Log.d(Constants.DEBUG_TAG, ImageHandler.buildCubeUrl(leftId, 1));
-        Log.d(Constants.DEBUG_TAG, ImageHandler.buildTextureUrl(leftId));
-
     }
 
     private void initializeOptograph() {
@@ -75,6 +62,8 @@ public class VRModeActivity extends CardboardActivity {
             this.optograph = intent.getExtras().getParcelable("optograph");
             if (optograph == null) {
                 throw new RuntimeException("No optograph reveiced in VRActivity!");
+            } else {
+                Log.d(Constants.DEBUG_TAG, "Creating VRActivity for Optograph " + optograph.getId());
             }
         }
     }

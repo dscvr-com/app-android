@@ -2,7 +2,6 @@ package co.optonaut.optonaut.views;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.google.vrtoolkit.cardboard.CardboardView;
 import com.google.vrtoolkit.cardboard.Eye;
@@ -12,7 +11,6 @@ import com.google.vrtoolkit.cardboard.Viewport;
 import javax.microedition.khronos.egl.EGLConfig;
 
 import co.optonaut.optonaut.opengl.Cube;
-import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -30,7 +28,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private Cube rightCube;
 
     public CardboardRenderer() {
-        Log.d(Constants.DEBUG_TAG, "Renderer Constructor");
         initializeCubes();
     }
 
@@ -52,7 +49,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, view, 0);
 
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             this.leftCube.draw(modelViewProjection);
@@ -75,7 +72,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
-        Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
         this.leftCube.initialize();
         this.rightCube.initialize();
     }

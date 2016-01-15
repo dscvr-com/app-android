@@ -70,11 +70,6 @@ public class Plane {
     private int texCoordHandle;
     private int textureSamplerHandle;
 
-    public Plane(Bitmap texture) {
-        initialize();
-        loadGLTexture(texture);
-    }
-
     public Plane() {
         initialize();
     }
@@ -137,13 +132,9 @@ public class Plane {
     };
 
     private void loadGLTexture(final Bitmap bitmap) {
-        Log.d(Constants.DEBUG_TAG, "Load texture in plane");
+        // TODO: check if filtering needs to be applied
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
-
-        // Create nearest filtered texture
-        //GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        //GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 
         // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
