@@ -24,7 +24,7 @@ public abstract class TextureSet {
     }
 
     public abstract Bitmap getTexture(int index);
-    protected abstract void updateTexture(Bitmap texture, int index);
+    protected abstract void updateTexture(int index);
     public abstract int getTextureSetSize();
 
     public TextureTarget getTextureTarget(int index) {
@@ -42,7 +42,8 @@ public abstract class TextureSet {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             Log.d(Constants.DEBUG_TAG, "Loading texture into texture target " + index);
-            updateTexture(bitmap, index);
+            setTexture(bitmap);
+            updateTexture(index);
         }
 
         @Override

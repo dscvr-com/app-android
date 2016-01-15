@@ -3,11 +3,13 @@ package co.optonaut.optonaut.opengl;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MyGLUtils;
 
 /**
@@ -39,6 +41,8 @@ public class Plane {
     private FloatBuffer textureBuffer;
 
     private final int[] textures = new int[1];
+
+    private boolean hasTexture;
 
 
     private final String vertexShaderCode =
@@ -79,6 +83,7 @@ public class Plane {
     private void initialize() {
         buildBuffers();
         initializeProgram();
+        this.hasTexture = false;
     }
 
     private void buildBuffers() {
@@ -126,6 +131,7 @@ public class Plane {
     }
 
     public void loadGLTexture(final Bitmap bitmap) {
+        Log.d(Constants.DEBUG_TAG, "Load texture in plane");
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
@@ -135,38 +141,54 @@ public class Plane {
 
         // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        this.hasTexture = true;
     }
 
     public void draw(float[] mvpMatrix) {
-        // bind the previously generated texture.
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
+        if (hasTexture) {
+            // bind the previously generated texture.
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
+        }
         GLES20.glUseProgram(program);
 
         // get handles
+        Log.d(Constants.DEBUG_TAG, "0");
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
+        Log.d(Constants.DEBUG_TAG, "1");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
-        textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
+        Log.d(Constants.DEBUG_TAG, "2");
+
+        if (hasTexture) {
+            texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
+            Log.d(Constants.DEBUG_TAG, "3");
+            textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
+            Log.d(Constants.DEBUG_TAG, "4");
+            GLES20.glEnableVertexAttribArray(texCoordHandle);
+        }
 
         // prepare coordinates
         GLES20.glEnableVertexAttribArray(positionHandle);
-        GLES20.glEnableVertexAttribArray(texCoordHandle);
 
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, vertexBuffer);
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
-        GLES20.glVertexAttribPointer(texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer);
+        if (hasTexture) {
+            GLES20.glVertexAttribPointer(texCoordHandle, COORDS_PER_TEXTURE, GLES20.GL_FLOAT, false, 0, textureBuffer);
 
-        // Set the sampler texture unit to 0, where we have saved the texture.
-        GLES20.glUniform1i(textureSamplerHandle, 0);
+            // Set the sampler texture unit to 0, where we have saved the texture.
+            GLES20.glUniform1i(textureSamplerHandle, 0);
+        }
 
         // Draw the plane
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, VERTICES_PER_PLANE);
 
         GLES20.glDisableVertexAttribArray(positionHandle);
-        GLES20.glDisableVertexAttribArray(texCoordHandle);
+
+        if (hasTexture) {
+            GLES20.glDisableVertexAttribArray(texCoordHandle);
+        }
     }
 
 }

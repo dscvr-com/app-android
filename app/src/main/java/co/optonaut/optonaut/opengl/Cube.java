@@ -131,10 +131,9 @@ public class Cube {
         }
 
         @Override
-        public void updateTexture(Bitmap texture, int index) {
+        public void updateTexture(int index) {
             checkIndex(index);
 
-            this.textureTargets[index].setTexture(texture);
             planes[index].loadGLTexture(getTexture(index));
         }
 

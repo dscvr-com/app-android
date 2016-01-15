@@ -50,7 +50,9 @@ public class ImageHandler {
 
     public static String buildCubeUrl(String id, int face) {
         String urlPartToSign = String.format("0x0/filters:cube(%s,%s,%s,%s,%s)/%s/original/%s.jpg", face, SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id);
-        return getSignedUrl(urlPartToSign);
+        String result = getSignedUrl(urlPartToSign);
+
+        return result;
     }
 
     private static String getSignedUrl(String urlPartToSign) {

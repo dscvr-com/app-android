@@ -49,7 +49,6 @@ public class VRModeActivity extends CardboardActivity {
 
     private void initializeTextures() {
         String leftId = this.optograph.getLeft_texture_asset_id();
-
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
                     .load(ImageHandler.buildCubeUrl(leftId, Cube.FACES[i]))
@@ -57,7 +56,6 @@ public class VRModeActivity extends CardboardActivity {
         }
 
         String rightId = this.optograph.getRight_texture_asset_id();
-
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
                     .load(ImageHandler.buildCubeUrl(rightId, Cube.FACES[i]))
