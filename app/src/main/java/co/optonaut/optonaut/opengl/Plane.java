@@ -82,7 +82,6 @@ public class Plane {
 
     private void initialize() {
         buildBuffers();
-        initializeProgram();
         this.hasTexture = false;
     }
 
@@ -111,7 +110,7 @@ public class Plane {
     }
 
 
-    private void initializeProgram() {
+    public void initializeProgram() {
         int vertexShader = MyGLUtils.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
         int fragmentShader = MyGLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER,
@@ -153,17 +152,12 @@ public class Plane {
         GLES20.glUseProgram(program);
 
         // get handles
-        Log.d(Constants.DEBUG_TAG, "0");
         positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        Log.d(Constants.DEBUG_TAG, "1");
         mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix");
-        Log.d(Constants.DEBUG_TAG, "2");
 
         if (hasTexture) {
             texCoordHandle = GLES20.glGetAttribLocation(program, "a_texCoord");
-            Log.d(Constants.DEBUG_TAG, "3");
             textureSamplerHandle = GLES20.glGetUniformLocation(program, "s_texture");
-            Log.d(Constants.DEBUG_TAG, "4");
             GLES20.glEnableVertexAttribArray(texCoordHandle);
         }
 

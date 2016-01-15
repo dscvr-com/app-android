@@ -13,6 +13,7 @@ import java.util.List;
 public class Cube {
     private CubeTextureSet cubeTextureSet;
 
+    private boolean isInitialized;
 
     // PLANES
     public static final int FACES_PER_CUBE = 6;
@@ -62,6 +63,7 @@ public class Cube {
         this.cubeTextureSet = new CubeTextureSet();
         initializeTransforms();
         initializePlanes();
+        isInitialized = false;
     }
 
     private void initializeTransforms() {
@@ -79,7 +81,16 @@ public class Cube {
         }
     }
 
+    public void initialize() {
+        for (Plane plane : planes) {
+            plane.initializeProgram();
+        }
+        isInitialized = true;
+    };
+
     public void draw(float[] mvpMatrix) {
+        if (!isInitialized)
+            throw new RuntimeException("Cube not initialized!");
         for (int i = 0; i < FACES_PER_CUBE; ++i) {
             // transform mvpMatrix with the transform specific to this plane
             float[] modelView = new float[16];

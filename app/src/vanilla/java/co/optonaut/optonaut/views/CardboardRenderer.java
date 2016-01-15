@@ -1,6 +1,5 @@
 package co.optonaut.optonaut.views;
 
-import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -77,6 +76,8 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
+        this.leftCube.initialize();
+        this.rightCube.initialize();
     }
 
     private void initializeCubes() {
