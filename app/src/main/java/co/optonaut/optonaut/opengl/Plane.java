@@ -21,6 +21,9 @@ public class Plane {
     private static final int COORDS_PER_TEXTURE = 2;
     private static final int VERTICES_PER_PLANE = 4;
 
+    private Bitmap texture;
+
+
     private static final float[] VERTICES = {
             -0.5f, 0.0f, 0.5f, // left front
             -0.5f, 0.0f, -0.5f, // left back
@@ -30,20 +33,17 @@ public class Plane {
 
     private static final float[] TEXTURE_COORDS = {
             0, 1, // top left
+            0, 0,  // bottom left
             1, 1, // top right
-            1, 0, // bottom right
-            0, 0  // bottom left
+            1, 0 // bottom right
     };
 
-
     private FloatBuffer vertexBuffer;
-
     private FloatBuffer textureBuffer;
-
     private final int[] textures = new int[1];
 
     private boolean hasTexture;
-
+    private boolean textureUpdated;
 
     private final String vertexShaderCode =
             "uniform mat4 uMVPMatrix;" +
@@ -64,7 +64,6 @@ public class Plane {
             "}";
 
     private int program;
-
     // Handles
     private int positionHandle;
     private int mvpMatrixHandle;
@@ -83,6 +82,7 @@ public class Plane {
     private void initialize() {
         buildBuffers();
         this.hasTexture = false;
+        this.textureUpdated = false;
     }
 
     private void buildBuffers() {
@@ -129,7 +129,14 @@ public class Plane {
         GLES20.glLinkProgram(program);
     }
 
-    public void loadGLTexture(final Bitmap bitmap) {
+    public void updateTexture(final Bitmap texture) {
+        synchronized (this) {
+            this.texture = texture;
+        }
+        this.textureUpdated = true;
+    };
+
+    private void loadGLTexture(final Bitmap bitmap) {
         Log.d(Constants.DEBUG_TAG, "Load texture in plane");
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
@@ -141,9 +148,16 @@ public class Plane {
         // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
         this.hasTexture = true;
+        this.textureUpdated = false;
     }
 
     public void draw(float[] mvpMatrix) {
+        if (textureUpdated) {
+            synchronized (this) {
+                loadGLTexture(texture);
+            }
+        }
+
         if (hasTexture) {
             // bind the previously generated texture.
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);

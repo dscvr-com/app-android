@@ -26,35 +26,52 @@ public class Cube {
     private static final int SIDE_LENGTH = 10;
     private static final float HALF_SIDE_LENGTH = SIDE_LENGTH / 2.0f;
 
-    // POSITIONS
+    List<float[]> scales = new ArrayList<>();
+
+    // TRANSLATIONS
     private static final float[] POSITION_AHEAD = {0, 0, HALF_SIDE_LENGTH};
-    private static final float[] POSITION_LEFT = {-HALF_SIDE_LENGTH, 0, 0};
+    private static final float[] POSITION_RIGHT = {-HALF_SIDE_LENGTH, 0, 0};
     private static final float[] POSITION_BEHIND = {0, 0, -HALF_SIDE_LENGTH};
-    private static final float[] POSITION_RIGHT = {HALF_SIDE_LENGTH, 0, 0};
+    private static final float[] POSITION_LEFT = {HALF_SIDE_LENGTH, 0, 0};
     private static final float[] POSITION_TOP = {0, HALF_SIDE_LENGTH, 0};
     private static final float[] POSITION_BOTTOM = {0, -HALF_SIDE_LENGTH, 0};
 
+    List<float[]> translations = new ArrayList<>();
+
     // ROTATIONS
-    private static final float[] ROTATION_AHEAD = {90, 1, 0, 0};
-    private static final float[] ROTATION_LEFT = {90, 0, 0, 1};
-    private static final float[] ROTATION_BEHIND = {-90, 1, 0, 0};
-    private static final float[] ROTATION_RIGHT = {-90, 0, 0, 1};
-    private static final float[] ROTATION_TOP = {90, 0, 1, 0};
-    private static final float[] ROTATION_BOTTOM = {-90, 0, 1, 0};
+    private static final float[] ROTATION_AHEAD_FIRST = {90, 1, 0, 0};
+    private static final float[] ROTATION_AHEAD_SECOND = {180, 0, 1, 0};
+
+    private static final float[] ROTATION_RIGHT_FIRST = {-90, 0, 0, 1};
+    private static final float[] ROTATION_RIGHT_SECOND = {90, 1, 0, 0};
+
+    private static final float[] ROTATION_BEHIND_FIRST = {90, 1, 0, 0};
+    private static final float[] ROTATION_BEHIND_SECOND = {0, 1, 0, 0};
+
+    private static final float[] ROTATION_LEFT_FIRST = {90, 0, 0, 1};
+    private static final float[] ROTATION_LEFT_SECOND = {90, 1, 0, 0};
+
+    private static final float[] ROTATION_TOP_FIRST = {-90, 0, 1, 0};
+    private static final float[] ROTATION_TOP_SECOND = {180, 0, 0, 1};
+
+    private static final float[] ROTATION_BOTTOM_FIRST = {-90, 0, 1, 0};
+    private static final float[] ROTATION_BOTTOM_SECOND = {0, 0, 0, 1};
+
+    List<float[]> rotations = new ArrayList<>();
 
     // FACE CONSTANTS
     public static final int FACE_AHEAD  = 0;
-    public static final int FACE_LEFT   = 1;
+    public static final int FACE_RIGHT  = 1;
     public static final int FACE_BEHIND = 2;
-    public static final int FACE_RIGHT  = 3;
+    public static final int FACE_LEFT   = 3;
     public static final int FACE_TOP    = 4;
     public static final int FACE_BOTTOM = 5;
 
     public static final int[] FACES = {
             FACE_AHEAD,
-            FACE_LEFT,
-            FACE_BEHIND,
             FACE_RIGHT,
+            FACE_BEHIND,
+            FACE_LEFT,
             FACE_TOP,
             FACE_BOTTOM
     };
@@ -66,13 +83,41 @@ public class Cube {
         isInitialized = false;
     }
 
+    private void initializeTranslations() {
+        translations.add(buildTranslationMatrix(POSITION_AHEAD));
+        translations.add(buildTranslationMatrix(POSITION_RIGHT));
+        translations.add(buildTranslationMatrix(POSITION_BEHIND));
+        translations.add(buildTranslationMatrix(POSITION_LEFT));
+        translations.add(buildTranslationMatrix(POSITION_TOP));
+        translations.add(buildTranslationMatrix(POSITION_BOTTOM));
+    }
+
+    private void initializeRotations() {
+        rotations.add(buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_RIGHT_SECOND, ROTATION_RIGHT_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_BEHIND_SECOND, ROTATION_BEHIND_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_LEFT_SECOND, ROTATION_LEFT_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_TOP_SECOND, ROTATION_TOP_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_BOTTOM_SECOND,ROTATION_BOTTOM_FIRST));
+    }
+
+    private void initializeScales() {
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(buildScaleMatrix(SIDE_LENGTH));
+    }
+
     private void initializeTransforms() {
-        transforms.add(computeTransform(POSITION_AHEAD, ROTATION_AHEAD, SIDE_LENGTH));
-        transforms.add(computeTransform(POSITION_LEFT, ROTATION_LEFT, SIDE_LENGTH));
-        transforms.add(computeTransform(POSITION_BEHIND, ROTATION_BEHIND, SIDE_LENGTH));
-        transforms.add(computeTransform(POSITION_RIGHT, ROTATION_RIGHT, SIDE_LENGTH));
-        transforms.add(computeTransform(POSITION_TOP, ROTATION_TOP, SIDE_LENGTH));
-        transforms.add(computeTransform(POSITION_BOTTOM, ROTATION_BOTTOM, SIDE_LENGTH));
+        initializeTranslations();
+        initializeRotations();
+        initializeScales();
+
+        for (int i = 0; i < FACES_PER_CUBE; ++i) {
+            transforms.add(computeTransform(translations.get(i), rotations.get(i), scales.get(i)));
+        }
     }
 
     private void initializePlanes() {
@@ -91,38 +136,52 @@ public class Cube {
     public void draw(float[] mvpMatrix) {
         if (!isInitialized)
             throw new RuntimeException("Cube not initialized!");
+        float[] modelView = new float[16];
         for (int i = 0; i < FACES_PER_CUBE; ++i) {
             // transform mvpMatrix with the transform specific to this plane
-            float[] modelView = new float[16];
             Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, transforms.get(i), 0);
             planes[i].draw(modelView);
         }
     }
 
-    private float[] computeTransform(float[] translation, float[] rotation, float scale) {
-        // build scale matrix S
-        float[] scaleMatrix = new float[16];
-        Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
-
-        // build rotation matrix
-        float[] rotationMatrix = new float[16];
-        Matrix.setRotateM(rotationMatrix, 0, rotation[0], rotation[1], rotation[2], rotation[3]);
-
+    private float[] computeTransform(float[] translationMatrix, float[] rotationMatrix, float[] scaleMatrix) {
         // R*S
         float[] rsMatrix = new float[16];
         Matrix.multiplyMM(rsMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
-
-        // build translation matrix
-        float[] translationMatrix = new float[16];
-        Matrix.setIdentityM(translationMatrix, 0);
-        Matrix.translateM(translationMatrix, 0, translation[0], translation[1], translation[2]);
 
         // T*R*S
         float[] trsMatrix = new float[16];
         Matrix.multiplyMM(trsMatrix, 0, translationMatrix, 0, rsMatrix, 0);
 
         return trsMatrix;
+    }
+
+    private float[] buildTranslationMatrix(float[] translation) {
+        float[] translationMatrix = new float[16];
+        Matrix.setIdentityM(translationMatrix, 0);
+        Matrix.translateM(translationMatrix, 0, translation[0], translation[1], translation[2]);
+        return translationMatrix;
+    }
+
+    private float[] buildRotationMatrix(float[] rotation) {
+        float[] rotationMatrix = new float[16];
+        Matrix.setRotateM(rotationMatrix, 0, rotation[0], rotation[1], rotation[2], rotation[3]);
+        return rotationMatrix;
+    }
+
+    private float[] buildRotationMatrix(float[] rotation_l, float[] rotation_r) {
+        float[] L = buildRotationMatrix(rotation_l);
+        float[] R = buildRotationMatrix(rotation_r);
+        float[] rotationMatrix = new float[16];
+        Matrix.multiplyMM(rotationMatrix, 0, L, 0, R, 0);
+        return rotationMatrix;
+    }
+
+    private float[] buildScaleMatrix(float scale) {
+        float[] scaleMatrix = new float[16];
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
+        return scaleMatrix;
     }
 
     public TextureSet getCubeTextureSet() {
@@ -145,7 +204,7 @@ public class Cube {
         public void updateTexture(int index) {
             checkIndex(index);
 
-            planes[index].loadGLTexture(getTexture(index));
+            planes[index].updateTexture(getTexture(index));
         }
 
         @Override

@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -61,6 +62,10 @@ public class VRModeActivity extends CardboardActivity {
                     .load(ImageHandler.buildCubeUrl(rightId, Cube.FACES[i]))
                     .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
+
+        Log.d(Constants.DEBUG_TAG, ImageHandler.buildCubeUrl(leftId, 0));
+        Log.d(Constants.DEBUG_TAG, ImageHandler.buildCubeUrl(leftId, 1));
+        Log.d(Constants.DEBUG_TAG, ImageHandler.buildTextureUrl(leftId));
 
     }
 
