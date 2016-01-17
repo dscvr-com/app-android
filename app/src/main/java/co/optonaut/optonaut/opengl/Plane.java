@@ -132,7 +132,13 @@ public class Plane {
     };
 
     private void loadGLTexture(final Bitmap bitmap) {
+        if (texture == null) {
+            Log.d(Constants.DEBUG_TAG, "No texture");
+            return;
+        }
         // TODO: check if filtering needs to be applied
+        Log.d(Constants.DEBUG_TAG, "Binding texture");
+
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
@@ -143,6 +149,13 @@ public class Plane {
     }
 
     public void draw(float[] mvpMatrix) {
+        if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
+            Log.d(Constants.DEBUG_TAG, "Got texture but is no texture!");
+        } else if (GLES20.glIsTexture(this.textures[0]) && !hasTexture) {
+            Log.d(Constants.DEBUG_TAG, "Got no texture but is texture!");
+        }
+
+
         if (textureUpdated) {
             synchronized (this) {
                 loadGLTexture(texture);

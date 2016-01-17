@@ -2,9 +2,12 @@ package co.optonaut.optonaut.opengl;
 
 import android.graphics.Bitmap;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -94,11 +97,12 @@ public class Cube {
 
     private void initializeRotations() {
         rotations.add(buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
+        //rotations.add(buildRotationMatrix(new float[]{90, 0, 1, 0}));
         rotations.add(buildRotationMatrix(ROTATION_RIGHT_SECOND, ROTATION_RIGHT_FIRST));
         rotations.add(buildRotationMatrix(ROTATION_BEHIND_SECOND, ROTATION_BEHIND_FIRST));
         rotations.add(buildRotationMatrix(ROTATION_LEFT_SECOND, ROTATION_LEFT_FIRST));
         rotations.add(buildRotationMatrix(ROTATION_TOP_SECOND, ROTATION_TOP_FIRST));
-        rotations.add(buildRotationMatrix(ROTATION_BOTTOM_SECOND,ROTATION_BOTTOM_FIRST));
+        rotations.add(buildRotationMatrix(ROTATION_BOTTOM_SECOND, ROTATION_BOTTOM_FIRST));
     }
 
     private void initializeScales() {
@@ -137,7 +141,7 @@ public class Cube {
         if (!isInitialized)
             throw new RuntimeException("Cube not initialized!");
         float[] modelView = new float[16];
-        for (int i = 0; i < FACES_PER_CUBE; ++i) {
+        for (int i = 0; i < 3; ++i) {
             // transform mvpMatrix with the transform specific to this plane
             Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, transforms.get(i), 0);
             planes[i].draw(modelView);
@@ -188,6 +192,9 @@ public class Cube {
         return cubeTextureSet;
     }
 
+    public void pingTextures() {
+    }
+
     private class CubeTextureSet extends TextureSet {
         public CubeTextureSet() {
             super();
@@ -202,6 +209,7 @@ public class Cube {
 
         @Override
         public void updateTexture(int index) {
+            Log.d(Constants.DEBUG_TAG, "Updated texture " + index);
             checkIndex(index);
 
             planes[index].updateTexture(getTexture(index));

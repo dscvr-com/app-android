@@ -17,12 +17,12 @@
         android:layout_height="wrap_content"
         android:background="@color/informationBar">
 
-        <co.optonaut.optonaut.opengl.Optograph2DView
+        <co.optonaut.optonaut.opengl.Optograph2DCubeView
             android:id="@+id/optograph2dview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            app:textureId="@{optograph.left_texture_asset_id}"/>
+            app:optograph="@{optograph}"/>
 
         <ImageView
             android:id="@+id/person_avatar_asset"

@@ -10,7 +10,9 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ImageHandler;
+import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.opengl.Optograph2DView;
 import co.optonaut.optonaut.util.Constants;
 
@@ -53,5 +55,10 @@ public class CustomBindingAdapter {
                             //.memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // disable caching
                     .into(optograph2DView);
         }
+    }
+
+    @BindingAdapter("app:optograph")
+    public static void loadOptograph(Optograph2DCubeView optograph2DCubeView, Optograph optograph) {
+        optograph2DCubeView.setOptograph(optograph);
     }
 }

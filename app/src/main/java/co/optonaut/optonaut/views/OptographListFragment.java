@@ -1,17 +1,21 @@
 package co.optonaut.optonaut.views;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.network.ImageHandler;
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
@@ -76,6 +80,8 @@ public abstract class OptographListFragment extends Fragment {
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(view1 -> {
             Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
+
+            Log.d(Constants.DEBUG_TAG, ImageHandler.buildTextureUrl(optographFeedAdapter.getOldest().getLeft_texture_asset_id()));
 
             Intent intent = new Intent(getActivity(), VRModeActivity.class);
             intent.putExtra("optograph", optographFeedAdapter.getOldest());

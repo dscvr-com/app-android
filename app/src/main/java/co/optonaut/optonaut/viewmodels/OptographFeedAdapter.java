@@ -3,14 +3,13 @@ package co.optonaut.optonaut.viewmodels;
 import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 
@@ -21,7 +20,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.opengl.Optograph2DView;
+import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.MainActivity;
 
@@ -73,9 +72,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             // cancel the request for the old texture
             if (holder.getBinding().getOptograph() != null) {
                 // Log.d(Constants.DEBUG_TAG, "Cancelling old request");
-                Picasso.with(holder.itemView.getContext())
-                        .cancelRequest(holder.getOptograph2DView());
-                holder.resetOptograph2DView();
+                // TODO: cancel request
             }
             // span complete screen
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
@@ -86,8 +83,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.getBinding().setVariable(BR.person, optograph.getPerson());
             holder.getBinding().executePendingBindings();
         } else {
-            // Log.d(Constants.DEBUG_TAG, "Rebind texture at position " + position);
-            holder.getOptograph2DView().rebindTexture();
+            Log.d(Constants.DEBUG_TAG, "Rebind texture at position " + position);
+            // holder.getOptograph2DView().rebindTexture();
         }
     }
 
@@ -131,22 +128,22 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;
-        private Optograph2DView optograph2DView;
+        private Optograph2DCubeView optograph2DView;
 
         public OptographViewHolder(View rowView) {
             super(rowView);
             this.binding = DataBindingUtil.bind(rowView);
-            this.optograph2DView = (Optograph2DView) rowView.findViewById(R.id.optograph2dview);
+            this.optograph2DView = (Optograph2DCubeView) rowView.findViewById(R.id.optograph2dview);
         }
         public FeedItemBinding getBinding() {
             return binding;
         }
-        public Optograph2DView getOptograph2DView() {
+        public Optograph2DCubeView getOptograph2DView() {
             return optograph2DView;
         }
 
         public void resetOptograph2DView() {
-            this.optograph2DView.hardResetContent();
+            this.optograph2DView.hardResetTexture();
         }
     }
 
