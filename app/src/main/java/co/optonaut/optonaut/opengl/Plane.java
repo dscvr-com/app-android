@@ -131,34 +131,37 @@ public class Plane {
         this.textureUpdated = true;
     };
 
-    private void loadGLTexture(final Bitmap bitmap) {
+    private void loadGLTexture() {
         if (texture == null) {
-            Log.d(Constants.DEBUG_TAG, "No texture");
+            Log.d(Constants.DEBUG_TAG, "Loading texture but got no texture in Plane!");
             return;
         }
-        // TODO: check if filtering needs to be applied
-        Log.d(Constants.DEBUG_TAG, "Binding texture");
-
         GLES20.glGenTextures(1, this.textures, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.textures[0]);
 
+        // Filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
         // Use Android GLUtils to specify a two-dimensional texture image from our bitmap.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texture, 0);
         this.hasTexture = true;
         this.textureUpdated = false;
     }
 
     public void draw(float[] mvpMatrix) {
         if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
-            Log.d(Constants.DEBUG_TAG, "Got texture but is no texture!");
+            Log.v(Constants.DEBUG_TAG, "Rebinding texture, context was probably lost.");
+            synchronized (this) {
+                loadGLTexture();
+            }
         } else if (GLES20.glIsTexture(this.textures[0]) && !hasTexture) {
             Log.d(Constants.DEBUG_TAG, "Got no texture but is texture!");
         }
 
-
         if (textureUpdated) {
             synchronized (this) {
-                loadGLTexture(texture);
+                loadGLTexture();
             }
         }
 
@@ -203,4 +206,10 @@ public class Plane {
         }
     }
 
+    public void resetTexture() {
+        this.texture = null;
+        this.hasTexture = false;
+
+        // TODO: delete formerly bound texture?
+    }
 }

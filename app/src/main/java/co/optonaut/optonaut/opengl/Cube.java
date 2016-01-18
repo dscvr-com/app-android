@@ -141,7 +141,7 @@ public class Cube {
         if (!isInitialized)
             throw new RuntimeException("Cube not initialized!");
         float[] modelView = new float[16];
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < FACES_PER_CUBE; ++i) {
             // transform mvpMatrix with the transform specific to this plane
             Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, transforms.get(i), 0);
             planes[i].draw(modelView);
@@ -192,7 +192,8 @@ public class Cube {
         return cubeTextureSet;
     }
 
-    public void pingTextures() {
+    public void resetTextures() {
+        this.cubeTextureSet.reset();
     }
 
     private class CubeTextureSet extends TextureSet {
@@ -209,7 +210,6 @@ public class Cube {
 
         @Override
         public void updateTexture(int index) {
-            Log.d(Constants.DEBUG_TAG, "Updated texture " + index);
             checkIndex(index);
 
             planes[index].updateTexture(getTexture(index));
@@ -218,6 +218,14 @@ public class Cube {
         @Override
         public int getTextureSetSize() {
             return FACES_PER_CUBE;
+        }
+
+        @Override
+        public void reset() {
+            Log.d(Constants.DEBUG_TAG, "Resetting planes");
+            for (int i = 0; i < getTextureSetSize(); ++i) {
+                planes[i].resetTexture();
+            }
         }
 
         private void checkIndex(int face) {

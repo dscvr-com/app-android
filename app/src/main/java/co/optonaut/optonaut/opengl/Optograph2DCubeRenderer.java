@@ -33,12 +33,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     private RotationVectorListener rotationVectorListener;
 
     private Cube cube;
-    private int id = 0;
 
-    public Optograph2DCubeRenderer(Context context, int id) {
+    public Optograph2DCubeRenderer() {
         Log.d(Constants.DEBUG_TAG, "renderer constructor");
         this.cube = new Cube();
-        this.id = id;
         this.rotationVectorListener = new RotationVectorListener();
         Matrix.setIdentityM(rotationMatrix, 0);
     }
@@ -64,7 +62,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
         this.cube.initialize();
-        this.cube.pingTextures();
 
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
@@ -102,5 +99,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
         return this.cube.getCubeTextureSet().getTextureTarget(face);
+    }
+
+    public void reset() {
+        this.cube.resetTextures();
     }
 }

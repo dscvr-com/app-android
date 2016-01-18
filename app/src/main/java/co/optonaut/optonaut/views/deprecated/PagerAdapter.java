@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.deprecated;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.views.HostFragment;
+import co.optonaut.optonaut.views.MainFeedFragment;
+import co.optonaut.optonaut.views.ProfileFragment;
+import co.optonaut.optonaut.views.SearchFragment;
 
 /**
  * @author Nilan Marktanner

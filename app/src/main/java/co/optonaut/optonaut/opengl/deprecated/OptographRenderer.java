@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.opengl;
+package co.optonaut.optonaut.opengl.deprecated;
 
 import android.content.Context;
 import android.graphics.Bitmap;

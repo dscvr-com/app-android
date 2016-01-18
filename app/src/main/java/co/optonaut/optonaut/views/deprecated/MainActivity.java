@@ -1,17 +1,17 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.deprecated;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-
-import java.util.Arrays;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
-import co.optonaut.optonaut.util.Maths;
+import co.optonaut.optonaut.views.BackStackFragment;
+import co.optonaut.optonaut.views.HostFragment;
+import co.optonaut.optonaut.views.ProfileFragment;
+import co.optonaut.optonaut.views.SearchFeedFragment;
 
 /**
  * @author Nilan Marktanner

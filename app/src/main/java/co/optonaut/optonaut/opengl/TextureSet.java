@@ -31,6 +31,8 @@ public abstract class TextureSet {
         return textureTargets[index];
     }
 
+    public abstract void reset();
+
     protected class TextureTarget implements Target {
         private int index;
         private Bitmap texture;

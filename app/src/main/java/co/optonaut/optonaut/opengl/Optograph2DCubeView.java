@@ -1,8 +1,6 @@
 package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
@@ -10,7 +8,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ImageHandler;
@@ -23,9 +20,6 @@ import co.optonaut.optonaut.util.Constants;
 public class Optograph2DCubeView extends GLSurfaceView{
     private SensorManager sensorManager;
     private Optograph2DCubeRenderer optograph2DCubeRenderer;
-    private static int maxId = 0;
-    private int id = 0;
-
     private Optograph optograph;
 
 
@@ -41,8 +35,7 @@ public class Optograph2DCubeView extends GLSurfaceView{
 
     private void initialize(Context context) {
         setEGLContextClientVersion(2);
-        id = maxId++;
-        optograph2DCubeRenderer = new Optograph2DCubeRenderer(context, id);
+        optograph2DCubeRenderer = new Optograph2DCubeRenderer();
         setRenderer(optograph2DCubeRenderer);
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -74,16 +67,8 @@ public class Optograph2DCubeView extends GLSurfaceView{
         sensorManager.unregisterListener(optograph2DCubeRenderer);
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    public void hardResetTexture() {
-        // TODO: clear texture set
-    }
-
     public void initializeTextures() {
+        Log.v(Constants.DEBUG_TAG, "Loading textures for Cube");
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(getContext())
                     .load(ImageHandler.buildCubeUrl(this.optograph.getLeft_texture_asset_id(), Cube.FACES[i]))
@@ -92,6 +77,18 @@ public class Optograph2DCubeView extends GLSurfaceView{
     }
 
     public void setOptograph(Optograph optograph) {
+        // this view is set with the same optograph - abort
+        if (optograph.equals(this.optograph)) {
+            Log.d(Constants.DEBUG_TAG, "Setting same optograph in 2DCubeView");
+            return;
+        }
+
+        // this view is being reused with another optograh - reset renderer
+        if (this.optograph != null) {
+            optograph2DCubeRenderer.reset();
+        }
+
+        // actually set optograph
         this.optograph = optograph;
         initializeTextures();
     }
@@ -103,7 +100,6 @@ public class Optograph2DCubeView extends GLSurfaceView{
 
         Optograph2DCubeView that = (Optograph2DCubeView) o;
 
-        if (id != that.id) return false;
         if (sensorManager != null ? !sensorManager.equals(that.sensorManager) : that.sensorManager != null)
             return false;
         if (optograph2DCubeRenderer != null ? !optograph2DCubeRenderer.equals(that.optograph2DCubeRenderer) : that.optograph2DCubeRenderer != null)
@@ -116,7 +112,6 @@ public class Optograph2DCubeView extends GLSurfaceView{
     public int hashCode() {
         int result = sensorManager != null ? sensorManager.hashCode() : 0;
         result = 31 * result + (optograph2DCubeRenderer != null ? optograph2DCubeRenderer.hashCode() : 0);
-        result = 31 * result + id;
         result = 31 * result + (optograph != null ? optograph.hashCode() : 0);
         return result;
     }

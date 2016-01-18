@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.deprecated;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -15,7 +15,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.Optograph2DBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.opengl.Optograph2DView;
+import co.optonaut.optonaut.opengl.deprecated.Optograph2DView;
 
 /**
  * @author Nilan Marktanner
