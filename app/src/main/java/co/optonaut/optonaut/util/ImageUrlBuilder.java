@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.network;
+package co.optonaut.optonaut.util;
 
 import android.opengl.GLES20;
 import android.util.Base64;
@@ -14,13 +14,10 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Nilan Marktanner
  * @date 2015-11-28
  */
-public class ImageHandler {
+public class ImageUrlBuilder {
     private static final String THUMBOR_URL = "http://images.optonaut.co";
     private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
-
-    private static final int TEXTURE_SIZE = Math.min(2048, GLES20.GL_MAX_TEXTURE_SIZE);
-    private static final int PREVIEW_TEXTURE_SIZE = Math.min(256, GLES20.GL_MAX_TEXTURE_SIZE);
 
     private static final int CUBE_TEXTURE_SIZE = Math.min(1024, GLES20.GL_MAX_TEXTURE_SIZE);
 
@@ -32,19 +29,6 @@ public class ImageHandler {
     public static String buildImageUrl(String id, int width, int height) {
         String urlPartToSign = String.format("%sx%s/%s/original/%s.jpg", width, height, S3_URL, id);
 
-        return getSignedUrl(urlPartToSign);
-    }
-
-    public static String buildTextureUrl(String id) {
-        return buildSquareUrl(id, TEXTURE_SIZE);
-    }
-
-    public static String buildPreviewTextureUrl(String id) {
-        return buildSquareUrl(id, PREVIEW_TEXTURE_SIZE);
-    }
-
-    private static String buildSquareUrl(String id, int length) {
-        String urlPartToSign = String.format("0x0/filters:square(%s)/%s/original/%s.jpg", length, S3_URL, id);
         return getSignedUrl(urlPartToSign);
     }
 

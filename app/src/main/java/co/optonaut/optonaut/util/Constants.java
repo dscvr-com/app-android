@@ -1,12 +1,7 @@
 package co.optonaut.optonaut.util;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-
-import com.squareup.picasso.Cache;
-import com.squareup.picasso.Picasso;
 
 /**
  * @author Nilan Marktanner

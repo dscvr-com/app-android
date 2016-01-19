@@ -10,7 +10,7 @@ import android.util.Log;
 import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.network.ImageHandler;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
 
 /**
@@ -71,7 +71,7 @@ public class Optograph2DCubeView extends GLSurfaceView{
         Log.v(Constants.DEBUG_TAG, "Loading textures for Cube");
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(getContext())
-                    .load(ImageHandler.buildCubeUrl(this.optograph.getLeft_texture_asset_id(), Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getLeft_texture_asset_id(), Cube.FACES[i]))
                     .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
         }
     }

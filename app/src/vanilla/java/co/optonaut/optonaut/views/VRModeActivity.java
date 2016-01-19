@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.network.ImageHandler;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Constants;
 
@@ -44,14 +44,14 @@ public class VRModeActivity extends CardboardActivity {
         String leftId = this.optograph.getLeft_texture_asset_id();
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageHandler.buildCubeUrl(leftId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(leftId, Cube.FACES[i]))
                     .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
 
         String rightId = this.optograph.getRight_texture_asset_id();
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageHandler.buildCubeUrl(rightId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(rightId, Cube.FACES[i]))
                     .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
     }
