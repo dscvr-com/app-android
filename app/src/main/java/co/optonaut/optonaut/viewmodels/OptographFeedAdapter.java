@@ -21,7 +21,6 @@ import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.views.deprecated.MainActivity;
 
 /**
  * @author Nilan Marktanner

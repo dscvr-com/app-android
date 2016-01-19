@@ -45,7 +45,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // only listen for Rotationvector Sensor, and if texture is loaded
+        // only listen for Rotationvector Sensor
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // pipe sensor event to our rotationVectorListener and obtain inverse rotation
             rotationVectorListener.handleSensorEvent(event);

@@ -17,6 +17,7 @@ import java.io.InputStream;
  */
 public class Constants {
     public static final String DEBUG_TAG = "Optonaut";
+    public static final float ACCELERATION_EPSILON = 1.0f;
     private static Constants constants;
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";
 

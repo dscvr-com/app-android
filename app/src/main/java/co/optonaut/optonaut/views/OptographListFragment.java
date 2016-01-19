@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
@@ -28,6 +29,7 @@ public abstract class OptographListFragment extends Fragment {
     protected OptographFeedAdapter optographFeedAdapter;
     protected SwipeRefreshLayout swipeContainer;
     protected ApiConsumer apiConsumer;
+    protected SnappyRecyclerView recList;
 
 
     public OptographListFragment() {
@@ -51,7 +53,7 @@ public abstract class OptographListFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SnappyRecyclerView recList = (SnappyRecyclerView) view.findViewById(R.id.optographFeed);
+        recList = (SnappyRecyclerView) view.findViewById(R.id.optographFeed);
         // our children have fixed size
         recList.setHasFixedSize(true);
         SnappyLinearLayoutManager llm = new SnappyLinearLayoutManager(view.getContext());
@@ -91,6 +93,17 @@ public abstract class OptographListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // load first few optographs
         initializeFeed();
+    }
+
+    public Optograph getCurrentOptograph() {
+        Optograph optograph = null;
+
+        if (!optographFeedAdapter.isEmpty()) {
+            SnappyLinearLayoutManager lm = ((SnappyLinearLayoutManager) recList.getLayoutManager());
+            optograph = optographFeedAdapter.get(lm.findFirstVisibleItemPosition());
+        }
+
+        return optograph;
     }
 
     protected abstract void initializeFeed();
