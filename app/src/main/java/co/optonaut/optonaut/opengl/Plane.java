@@ -76,8 +76,7 @@ public class Plane {
 
     private void initialize() {
         buildBuffers();
-        this.hasTexture = false;
-        this.textureUpdated = false;
+        resetTexture();
     }
 
     private void buildBuffers() {
@@ -124,11 +123,9 @@ public class Plane {
         GLES20.glLinkProgram(program);
     }
 
-    public void updateTexture(final Bitmap texture) {
-        synchronized (this) {
+    public synchronized void updateTexture(final Bitmap texture) {
             this.texture = texture;
-        }
-        this.textureUpdated = true;
+            this.textureUpdated = true;
     };
 
     private void loadGLTexture() {
@@ -207,8 +204,9 @@ public class Plane {
     }
 
     public void resetTexture() {
-        this.texture = null;
         this.hasTexture = false;
+        this.textureUpdated = false;
+        updateTexture(Constants.getInstance().getDefaultTexture());
 
         // TODO: delete formerly bound texture?
     }
