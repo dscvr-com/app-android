@@ -100,7 +100,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         Intent intent = new Intent(activity, VRModeActivity.class);
         intent.putExtra("optograph", getCurrentOptograph());
 
-        activity.finish();
+        //activity.finish();
 
         activity.startActivity(intent);
     }
