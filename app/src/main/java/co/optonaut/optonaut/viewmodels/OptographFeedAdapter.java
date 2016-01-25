@@ -51,11 +51,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             }
         });
 
-        // TODO: extend TextView that uses enum as property for correct character of icomoon
-        TextView like = (TextView) itemView.findViewById(R.id.like);
-        like.setTypeface(Typeface.createFromAsset(itemView.getContext().getAssets(), "icons.ttf"));
-        like.setText(String.valueOf((char) 0xe87d));
-
         return viewHolder;
     }
 

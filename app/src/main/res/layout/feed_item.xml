@@ -30,15 +30,8 @@
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:padding="0dp"
-            android:layout_marginBottom="20dp"
-            android:layout_gravity="bottom"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="top|left"
             app:avatarId="@{person.avatar_asset_id}"/>
-
-        <TextView
-            android:id="@+id/like"
-            android:background="@color/primary_text_default_material_dark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"/>
     </FrameLayout>
 </layout> 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -30,15 +31,19 @@ public class OverlayNavigationFragment extends Fragment {
         TextView homeLabel = (TextView) view.findViewById(R.id.home_label);
         homeLabel.setText("HOME");
         Button homeButton = (Button) view.findViewById(R.id.home_button);
+        homeButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        homeButton.setText(String.valueOf((char) 0xe90e));
 
         Button recordButton = (Button) view.findViewById(R.id.record_button);
+        recordButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        recordButton.setText(String.valueOf((char) 0xe902));
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
         profileLabel.setText("PROFILE");
         Button profileButton = (Button) view.findViewById(R.id.profile_button);
 
-        profileButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "icons.ttf"));
-        profileButton.setText(String.valueOf((char) 0xe87d));
+        profileButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        profileButton.setText(String.valueOf((char) 0xe910));
 
         return view;
     }

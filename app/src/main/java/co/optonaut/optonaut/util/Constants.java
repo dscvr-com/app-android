@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ public class Constants {
 
     private DisplayMetrics displayMetrics;
     private Bitmap defaultTexture;
+    private Typeface typeface;
 
 
     private Constants(Activity activity) {
@@ -31,6 +33,12 @@ public class Constants {
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         initializeDefaultTexture(activity);
+
+        initializeTypeface(activity);
+    }
+
+    private void initializeTypeface(Activity activity) {
+        typeface = Typeface.createFromAsset(activity.getAssets(), "icons.ttf");
     }
 
     private void initializeDefaultTexture(Context context) {
@@ -72,5 +80,9 @@ public class Constants {
 
     public Bitmap getDefaultTexture() {
         return defaultTexture;
+    }
+
+    public Typeface getDefaultTypeface() {
+        return typeface;
     }
 }

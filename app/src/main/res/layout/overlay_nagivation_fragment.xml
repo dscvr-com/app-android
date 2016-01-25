@@ -10,6 +10,8 @@
 
         <Button
             android:id="@+id/home_button"
+            android:textColor="@color/mainFontColor"
+            android:background="@color/transparentOverlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
@@ -31,6 +33,7 @@
 
         <Button
             android:id="@+id/record_button"
+            android:textColor="@color/mainFontColor"
             android:background="@drawable/rounded_corners_colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -52,9 +55,10 @@
 
         <Button
             android:id="@+id/profile_button"
+            android:textColor="@color/mainFontColor"
+            android:background="@color/transparentOverlay"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"/>
+            android:layout_height="wrap_content"/>
         <TextView
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/profile_button"
