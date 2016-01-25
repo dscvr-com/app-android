@@ -8,6 +8,8 @@
     <color name="optonautMain">#EF4836</color>
     <color name="transparentOverlay">#00777777</color>
 
+    <color name="mainFontColor">#FFFFFF</color>
+
 
     <!-- Feed -->
     <color name="informationBar">#333333</color>

@@ -4,4 +4,8 @@
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
+
+    <!-- Main Overlay Layout -->
+    <string name="home_label">Home</string>
+    <string name="profile_label">Profile</string>
 </resources>

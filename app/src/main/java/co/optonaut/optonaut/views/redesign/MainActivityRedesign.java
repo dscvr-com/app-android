@@ -1,11 +1,13 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
 
 /**
@@ -13,6 +15,7 @@ import co.optonaut.optonaut.views.MainFeedFragment;
  * @date 2015-12-29
  */
 public class MainActivityRedesign extends AppCompatActivity {
+    HostFragment hostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +31,13 @@ public class MainActivityRedesign extends AppCompatActivity {
             }
 
             MainFeedFragment mainSnappyFeedFragment = new MainFeedFragment();
+            hostFragment = HostFragment.newInstance(mainSnappyFeedFragment, "Main Snappy Feed Fragment");
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.feed_placeholder, mainSnappyFeedFragment).commit();
+                    .add(R.id.feed_placeholder, hostFragment).commit();
+
+            // TODO: add overlay layout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.feed_placeholder, new OverlayNavigationFragment()).commit();
         }
 
         goFullscreen();
