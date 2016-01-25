@@ -77,15 +77,6 @@ public abstract class OptographListFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(view1 -> {
-            Snackbar.make(view1, "Create new optograph: not implemented yet.", Snackbar.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(getActivity(), VRModeActivity.class);
-            intent.putExtra("optograph", optographFeedAdapter.getOldest());
-            startActivity(intent);
-        });
     }
 
     @Override
