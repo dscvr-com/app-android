@@ -16,7 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class ImageUrlBuilder {
     private static final String THUMBOR_URL = "http://images.optonaut.co";
-    private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
+    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
     private static final int CUBE_TEXTURE_SIZE = Math.min(1024, GLES20.GL_MAX_TEXTURE_SIZE);
@@ -32,8 +32,10 @@ public class ImageUrlBuilder {
         return getSignedUrl(urlPartToSign);
     }
 
-    public static String buildCubeUrl(String id, int face) {
-        String urlPartToSign = String.format("0x0/filters:cube(%s,%s,%s,%s,%s)/%s/original/%s.jpg", face, SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id);
+    public static String buildCubeUrl(String optographId, String rl, int face) {
+
+        String urlPartToSign = String.format("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%d.jpg",
+                SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, optographId, rl, face);
 
         return getSignedUrl(urlPartToSign);
     }

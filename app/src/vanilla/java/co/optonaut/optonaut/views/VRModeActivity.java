@@ -77,17 +77,16 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         if (optograph == null) {
             return;
         }
-        String leftId = this.optograph.getLeft_texture_asset_id();
+        String optographId = this.optograph.getId();
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(leftId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(optographId, "l", Cube.FACES[i]))
                     .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
 
-        String rightId = this.optograph.getRight_texture_asset_id();
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(rightId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(optographId, "r", Cube.FACES[i]))
                     .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
     }
