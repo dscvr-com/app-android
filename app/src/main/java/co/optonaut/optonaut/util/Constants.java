@@ -3,9 +3,11 @@ package co.optonaut.optonaut.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -19,12 +21,17 @@ import java.io.InputStream;
 public class Constants {
     public static final String DEBUG_TAG = "Optonaut";
     public static final float ACCELERATION_EPSILON = 1.0f;
+
+    private static final String MAIN_ICON_PATH = "logo-text-white-temporary.png";
     private static Constants constants;
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";
 
     private DisplayMetrics displayMetrics;
     private Bitmap defaultTexture;
+    private BitmapDrawable mainIcon;
     private Typeface typeface;
+    private int expectedStatusBarHeight;
+    private int toolbarHeight;
 
 
     private Constants(Activity activity) {
@@ -35,10 +42,58 @@ public class Constants {
         initializeDefaultTexture(activity);
 
         initializeTypeface(activity);
+
+        initializeMainIcon(activity);
+
+        initializeExpectedStatusBarPixelHeight(activity);
+
+        initializeToolbarHeight(activity);
     }
 
-    private void initializeTypeface(Activity activity) {
-        typeface = Typeface.createFromAsset(activity.getAssets(), "icons.ttf");
+    private void initializeToolbarHeight(Context context) {
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                new int[] { android.R.attr.actionBarSize });
+        toolbarHeight = (int) styledAttributes.getDimension(0, 0);
+        Log.d(DEBUG_TAG, "height: " + toolbarHeight);
+        styledAttributes.recycle();
+    }
+
+    private void initializeExpectedStatusBarPixelHeight(Context context) {
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            expectedStatusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+            Log.d(DEBUG_TAG, "height2: " + expectedStatusBarHeight);
+        } else {
+            Log.d(DEBUG_TAG, "Could not load expected StatusBar height!");
+            expectedStatusBarHeight = 0;
+        }
+    }
+
+    private void initializeMainIcon(Context context) {
+        AssetManager am = context.getAssets();
+
+        InputStream is = null;
+        try {
+            is = am.open(MAIN_ICON_PATH);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            mainIcon = new BitmapDrawable(context.getResources(), bitmap);
+        } catch (final IOException e) {
+            Log.d(DEBUG_TAG, "Could not load main icon!");
+            e.printStackTrace();
+            mainIcon = null;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void initializeTypeface(Context context) {
+        typeface = Typeface.createFromAsset(context.getAssets(), "icons.ttf");
     }
 
     private void initializeDefaultTexture(Context context) {
@@ -50,12 +105,14 @@ public class Constants {
             defaultTexture = BitmapFactory.decodeStream(is);
         } catch (final IOException e) {
             Log.d(DEBUG_TAG, "Could not load default texture!");
+            e.printStackTrace();
             defaultTexture = null;
         } finally {
             if (is != null) {
                 try {
                     is.close();
-                } catch (IOException ignored) {
+                } catch (IOException exception) {
+                    exception.printStackTrace();
                 }
             }
         }
@@ -82,7 +139,19 @@ public class Constants {
         return defaultTexture;
     }
 
+    public BitmapDrawable getMainIcon() {
+        return mainIcon;
+    }
+
     public Typeface getDefaultTypeface() {
         return typeface;
+    }
+
+    public int getExpectedStatusBarHeight() {
+        return expectedStatusBarHeight;
+    }
+
+    public int getToolbarHeight() {
+        return toolbarHeight;
     }
 }

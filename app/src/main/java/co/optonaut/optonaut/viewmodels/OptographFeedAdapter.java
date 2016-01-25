@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +45,15 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
         ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
+        // set padding depending on toolbar + statusbar height
+        final float scale = Constants.getInstance().getDisplayMetrics().density;
+        int marginTop = Constants.getInstance().getExpectedStatusBarHeight() + Constants.getInstance().getToolbarHeight() + (int) (scale * 5.0f + 0.5f);
+        int marginLeft = (int) (20 * scale + 0.5f);
+
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) profileView.getLayoutParams();
+        lp.setMargins(marginLeft, marginTop, 0, 0);
+        profileView.setLayoutParams(lp);
+
         profileView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,6 +115,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
 
         // find correct position of optograph
+        // TODO: allow for "breaks" between new optograph and others...
         for (int i = 0; i < optographs.size(); i++) {
             Optograph current = optographs.get(i);
             if (created_at.isAfter(current.getCreated_atDateTime())) {

@@ -3,6 +3,7 @@ package co.optonaut.optonaut.views.redesign;
 import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,13 +38,19 @@ public class OverlayNavigationFragment extends Fragment {
         Button recordButton = (Button) view.findViewById(R.id.record_button);
         recordButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
+        recordButton.setOnClickListener(v -> {
+            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
+        });
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
         profileLabel.setText("PROFILE");
-        Button profileButton = (Button) view.findViewById(R.id.profile_button);
 
+        Button profileButton = (Button) view.findViewById(R.id.profile_button);
         profileButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
+        profileButton.setOnClickListener(v -> {
+            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
+        });
 
         return view;
     }

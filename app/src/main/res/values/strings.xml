@@ -2,6 +2,9 @@
     <string name="app_name">Optonaut</string>
     <string name="action_settings">Settings</string>
 
+    <!-- General -->
+    <string name="feature_next_version">This feature will be added in the next version!</string>
+
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
 

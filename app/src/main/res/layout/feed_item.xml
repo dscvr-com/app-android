@@ -15,10 +15,11 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/informationBar">
+        android:background="@color/transparentOverlay">
 
         <co.optonaut.optonaut.opengl.Optograph2DCubeView
             android:id="@+id/optograph2dview"
+            android:background="@color/transparentOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -30,7 +31,7 @@
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:padding="0dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="60dp"
             android:layout_gravity="top|left"
             app:avatarId="@{person.avatar_asset_id}"/>
     </FrameLayout>

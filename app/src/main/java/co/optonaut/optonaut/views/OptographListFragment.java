@@ -77,6 +77,10 @@ public abstract class OptographListFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        // TODO: fiddling...
+        int topOffset = Constants.getInstance().getToolbarHeight() + 5;
+        swipeContainer.setProgressViewOffset(true, topOffset, topOffset + 2 * Constants.getInstance().getExpectedStatusBarHeight());
     }
 
     @Override
