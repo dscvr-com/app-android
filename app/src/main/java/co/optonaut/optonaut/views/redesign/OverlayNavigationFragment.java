@@ -134,15 +134,17 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
     private void initializeSharedPreferences(View view) {
-        int lowerBoundary = getLowerBoundary(view);
-        int upperBoundary = getUpperBoundary(view);
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         if (!sharedPref.contains(getActivity().getResources().getString(R.string.preference_lowerboundary))) {
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putInt(getString(R.string.preference_upperboundary), upperBoundary);
+            int lowerBoundary = getLowerBoundary(view);
             editor.putInt(getString(R.string.preference_lowerboundary), lowerBoundary);
-            editor.commit();
         }
+        if (!sharedPref.contains(getActivity().getResources().getString(R.string.preference_upperboundary))) {
+            int upperBoundary = getUpperBoundary(view);
+            editor.putInt(getString(R.string.preference_upperboundary), upperBoundary);
+        }
+        editor.commit();
     }
 
     public void toggleTotalVisibility(int visibility) {
