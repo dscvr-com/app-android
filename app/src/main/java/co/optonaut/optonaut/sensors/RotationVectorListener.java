@@ -4,11 +4,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.opengl.Matrix;
-import android.util.Log;
-
-import java.util.Arrays;
-
-import co.optonaut.optonaut.util.Maths;
 
 /**
  * @author Nilan Marktanner

@@ -1,18 +1,11 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
 
@@ -41,7 +34,6 @@ public class MainActivityRedesign extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, hostFragment).commit();
 
-            // TODO: add overlay layout
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, new OverlayNavigationFragment()).commit();
         }

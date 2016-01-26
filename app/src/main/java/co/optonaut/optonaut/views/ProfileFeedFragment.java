@@ -2,10 +2,8 @@ package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
 
-import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.PersonManager;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

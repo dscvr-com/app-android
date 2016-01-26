@@ -1,17 +1,14 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.BindingAdapter;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
-import co.optonaut.optonaut.opengl.deprecated.Optograph2DView;
-import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
 
 /**
  * @author Nilan Marktanner

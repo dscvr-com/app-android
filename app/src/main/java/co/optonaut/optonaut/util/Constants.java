@@ -54,7 +54,6 @@ public class Constants {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
                 new int[] { android.R.attr.actionBarSize });
         toolbarHeight = (int) styledAttributes.getDimension(0, 0);
-        Log.d(DEBUG_TAG, "height: " + toolbarHeight);
         styledAttributes.recycle();
     }
 
@@ -62,7 +61,6 @@ public class Constants {
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             expectedStatusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
-            Log.d(DEBUG_TAG, "height2: " + expectedStatusBarHeight);
         } else {
             Log.d(DEBUG_TAG, "Could not load expected StatusBar height!");
             expectedStatusBarHeight = 0;
