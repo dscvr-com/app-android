@@ -1,18 +1,17 @@
 package co.optonaut.optonaut.views.redesign;
 
-import android.graphics.Typeface;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
@@ -29,8 +28,24 @@ public class OverlayNavigationFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.overlay_nagivation_fragment, container, false);
 
+        initializeToolbar(view);
+
+        initializeNavigationButtons(view);
+
+        return view;
+    }
+
+    private void initializeNavigationButtons(View view) {
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
+
+        float scale = Constants.getInstance().getDisplayMetrics().density;
+        int marginTop = (int) (25 * scale + 0.5f);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
+        lp.setMargins(0, marginTop, 0, 0);
+
+
         TextView homeLabel = (TextView) view.findViewById(R.id.home_label);
-        homeLabel.setText("HOME");
+        homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
         homeButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         homeButton.setText(String.valueOf((char) 0xe90e));
@@ -43,7 +58,7 @@ public class OverlayNavigationFragment extends Fragment {
         });
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
-        profileLabel.setText("PROFILE");
+        profileLabel.setText(getResources().getString(R.string.profile_label));
 
         Button profileButton = (Button) view.findViewById(R.id.profile_button);
         profileButton.setTypeface(Constants.getInstance().getDefaultTypeface());
@@ -51,7 +66,36 @@ public class OverlayNavigationFragment extends Fragment {
         profileButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
         });
+    }
 
-        return view;
+    private void initializeToolbar(View view) {
+        Button searchButton = (Button) view.findViewById(R.id.search_button);
+        searchButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        searchButton.setText(String.valueOf((char) 0xe91f));
+        searchButton.setOnClickListener(v -> {
+            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
+        });
+
+        ImageView header = (ImageView) view.findViewById(R.id.header);
+        header.setImageDrawable(Constants.getInstance().getMainIcon());
+
+        Button notificationButton = (Button) view.findViewById(R.id.notification_button);
+        notificationButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        notificationButton.setText(String.valueOf((char) 0xe90f));
+        notificationButton.setOnClickListener(v -> {
+            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
+        });
+    }
+
+    public void toggleTotalVisibility(int visibility) {
+        if (visibility != View.INVISIBLE && visibility != View.VISIBLE) {
+            throw new RuntimeException("Can only toggle between visible and invisible!");
+        }
+
+        if (getView() != null) {
+            getView().setVisibility(visibility);
+        } else {
+            Log.w(Constants.DEBUG_TAG, "Setting visibility of null-View!");
+        }
     }
 }

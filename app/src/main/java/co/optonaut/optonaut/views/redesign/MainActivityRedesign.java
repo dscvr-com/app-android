@@ -31,27 +31,6 @@ public class MainActivityRedesign extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_redesign);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        toolbar.setTitle("");
-
-        Button searchButton = (Button) findViewById(R.id.search_button);
-        searchButton.setTypeface(Constants.getInstance().getDefaultTypeface());
-        searchButton.setText(String.valueOf((char) 0xe91f));
-        searchButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
-        });
-
-        ImageView header = (ImageView) findViewById(R.id.header);
-        header.setImageDrawable(Constants.getInstance().getMainIcon());
-
-        Button notificationButton = (Button) findViewById(R.id.notification_button);
-        notificationButton.setTypeface(Constants.getInstance().getDefaultTypeface());
-        notificationButton.setText(String.valueOf((char) 0xe90f));
-        notificationButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
-        });
-        setSupportActionBar(toolbar);
-
         if (findViewById(R.id.feed_placeholder) != null) {
             if (savedInstanceState != null) {
                 return;
