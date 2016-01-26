@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views.redesign;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,7 +15,8 @@ import co.optonaut.optonaut.views.MainFeedFragment;
  * @date 2015-12-29
  */
 public class MainActivityRedesign extends AppCompatActivity {
-    HostFragment hostFragment;
+    private HostFragment hostFragment;
+    private OverlayNavigationFragment overlayFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +36,9 @@ public class MainActivityRedesign extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, hostFragment).commit();
 
+            overlayFragment = new OverlayNavigationFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.feed_placeholder, new OverlayNavigationFragment()).commit();
+                    .add(R.id.feed_placeholder, overlayFragment).commit();
         }
 
         goFullscreen();
@@ -69,5 +72,27 @@ public class MainActivityRedesign extends AppCompatActivity {
     public void onBackPressed() {
         // do nothing
         // TODO: retain fragment state
+    }
+
+    public int getUpperBoundary() {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+
+        // don't set preference to 0 if it is not set yet
+        if (sharedPref.contains(getResources().getString(R.string.preference_upperboundary))) {
+            return sharedPref.getInt(getResources().getString(R.string.preference_upperboundary), 0);
+        }
+
+        return 0;
+    }
+
+    public int getLowerBoundary() {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+
+        // don't set preference to 0 if it is not set yet
+        if (sharedPref.contains(getResources().getString(R.string.preference_lowerboundary))) {
+            return sharedPref.getInt(getResources().getString(R.string.preference_lowerboundary), 0);
+        }
+
+        return 0;
     }
 }

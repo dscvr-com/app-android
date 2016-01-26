@@ -1,5 +1,9 @@
 package co.optonaut.optonaut.views.redesign;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -9,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
@@ -22,6 +27,7 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-25
  */
 public class OverlayNavigationFragment extends Fragment {
+    Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,14 +43,6 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
     private void initializeNavigationButtons(View view) {
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.my_toolbar);
-
-        float scale = Constants.getInstance().getDisplayMetrics().density;
-        int marginTop = (int) (25 * scale + 0.5f);
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
-        lp.setMargins(0, marginTop, 0, 0);
-
-
         TextView homeLabel = (TextView) view.findViewById(R.id.home_label);
         homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
@@ -112,6 +110,39 @@ public class OverlayNavigationFragment extends Fragment {
                 popupMenu.show();
             }
         });
+
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+
+        float scale = Constants.getInstance().getDisplayMetrics().density;
+        int marginTop = (int) (25 * scale + 0.5f);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
+        lp.setMargins(0, marginTop, 0, 0);
+        toolbar.setLayoutParams(lp);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final ViewTreeObserver observer = view.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                //observer.removeOnGlobalLayoutListener(this);
+                // get width and height of the view
+                initializeSharedPreferences(view);
+            }
+        });
+    }
+
+    private void initializeSharedPreferences(View view) {
+        int lowerBoundary = getLowerBoundary(view);
+        int upperBoundary = getUpperBoundary(view);
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        if (!sharedPref.contains(getActivity().getResources().getString(R.string.preference_lowerboundary))) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt(getString(R.string.preference_upperboundary), upperBoundary);
+            editor.putInt(getString(R.string.preference_lowerboundary), lowerBoundary);
+            editor.commit();
+        }
     }
 
     public void toggleTotalVisibility(int visibility) {
@@ -124,5 +155,31 @@ public class OverlayNavigationFragment extends Fragment {
         } else {
             Log.w(Constants.DEBUG_TAG, "Setting visibility of null-View!");
         }
+    }
+
+    private int getLowerBoundary(View view) {
+        int lowerBoundary = 0;
+        if (view != null && view.findViewById(R.id.navigation_buttons) != null) {
+            int[] location = new int[2];
+            view.findViewById(R.id.navigation_buttons).getLocationOnScreen(location);
+            lowerBoundary = location[1];
+            Log.d(Constants.DEBUG_TAG, "lower: " + lowerBoundary);
+        } else {
+            Log.w(Constants.DEBUG_TAG, "lower boundary not set yet");
+        }
+        return lowerBoundary;
+    }
+
+    private int getUpperBoundary(View view) {
+        int upperBoundary = 0;
+        if (view != null && toolbar != null) {
+            int[] location = new int[2];
+            toolbar.getLocationOnScreen(location);
+            upperBoundary = location[1] + toolbar.getHeight();
+            Log.d(Constants.DEBUG_TAG, "upper: " + upperBoundary);
+        } else {
+            Log.w(Constants.DEBUG_TAG, "upper boundary not set yet");
+        }
+        return upperBoundary;
     }
 }

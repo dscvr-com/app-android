@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
@@ -25,6 +26,7 @@ import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
 /**
  * @author Nilan Marktanner
@@ -47,14 +49,29 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
-        // set padding depending on toolbar + statusbar height
-        final float scale = Constants.getInstance().getDisplayMetrics().density;
-        int topOffset = Constants.getInstance().getExpectedStatusBarHeight() + Constants.getInstance().getToolbarHeight();
+        initializeProfileBar(itemView);
+        initializeDescriptionBar(itemView);
 
+        return viewHolder;
+    }
+
+    private void initializeDescriptionBar(View itemView) {
+        RelativeLayout rl = (RelativeLayout) itemView.findViewById(R.id.description_bar);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
+
+        int newMarginBottom = ITEM_HEIGHT - ((MainActivityRedesign) itemView.getContext()).getLowerBoundary() + lp.bottomMargin;
+        lp.setMargins(0, 0, 0, newMarginBottom);
+        rl.setLayoutParams(lp);
+    }
+
+    private void initializeProfileBar(final View itemView) {
         RelativeLayout rl = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
+
+        // set margin and height
+        int newMarginTop = ((MainActivityRedesign) itemView.getContext()).getUpperBoundary();
         lp.height = Constants.getInstance().getToolbarHeight();
-        lp.setMargins(0, topOffset, 0, 0);
+        lp.setMargins(0, newMarginTop, 0, 0);
         rl.setLayoutParams(lp);
 
         ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
@@ -89,9 +106,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 popupMenu.show();
             }
         });
-
-
-        return viewHolder;
     }
 
 
@@ -108,6 +122,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             // span complete screen
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
             holder.itemView.setLayoutParams(params);
+
+            TextView heart_label = (TextView) holder.itemView.findViewById(R.id.heart_label);
+            heart_label.setTypeface(Constants.getInstance().getDefaultTypeface());
+
+            // TODO: check if user has starred optograph
+            boolean userLikesOptograph = false;
+            if (userLikesOptograph) {
+                heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+            } else {
+                // TODO: use empty heart
+                heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+            }
 
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().setVariable(BR.person, optograph.getPerson());

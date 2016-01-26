@@ -7,8 +7,11 @@
     <string name="licenses">Licenses</string>
 
     <!-- Feed -->
+        <!-- Feed Element -->
+        <string name="heart_count">%1$d %2$s</string>
         <!-- Feed Menu -->
         <string name="report">Report</string>
+
 
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
@@ -19,4 +22,9 @@
     <!-- Main Overlay Layout -->
     <string name="home_label">Home</string>
     <string name="profile_label">Profile</string>
+
+    <!-- Preferences -->
+    <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
+    <string name="preference_lowerboundary">co.optonaut.optonaut.feed.lowerboundary</string>
+    <string name="preference_file">co.optonaut.optonaut.PREFERENCE_FILE</string>
 </resources>

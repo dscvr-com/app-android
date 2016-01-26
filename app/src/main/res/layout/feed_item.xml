@@ -70,5 +70,40 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/description_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="25dp"
+            android:background="@color/transparentOverlay">
+
+            <TextView
+                android:id="@+id/private_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:layout_marginLeft="5dp"
+                android:layout_toLeftOf="@+id/description_label"/>
+
+            <co.optonaut.optonaut.views.redesign.ExpandableTextView
+                android:id="@+id/description_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:layout_marginLeft="5dp"
+                app:trimLength="25"
+                android:text="@{optograph.text}"/>
+
+            <TextView
+                android:id="@+id/heart_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"/>
+        </RelativeLayout>
+
     </FrameLayout>
 </layout> 

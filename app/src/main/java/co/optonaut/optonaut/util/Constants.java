@@ -6,10 +6,12 @@ import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +29,9 @@ public class Constants {
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";
 
     private DisplayMetrics displayMetrics;
+    private Display display;
+    private int maxX;
+    private int maxY;
     private Bitmap defaultTexture;
     private BitmapDrawable mainIcon;
     private Typeface typeface;
@@ -35,9 +40,7 @@ public class Constants {
 
 
     private Constants(Activity activity) {
-        displayMetrics = new DisplayMetrics();
-
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        initializeDisplay(activity);
 
         initializeDefaultTexture(activity);
 
@@ -48,6 +51,12 @@ public class Constants {
         initializeExpectedStatusBarPixelHeight(activity);
 
         initializeToolbarHeight(activity);
+    }
+
+    private void initializeDisplay(Activity activity) {
+        display = activity.getWindowManager().getDefaultDisplay();
+        displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
     }
 
     private void initializeToolbarHeight(Context context) {
