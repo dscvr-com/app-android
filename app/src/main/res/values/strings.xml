@@ -1,8 +1,16 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Optonaut</string>
     <string name="action_settings">Settings</string>
 
-    <!-- General -->
+    <!-- Menu -->
+    <string name="licenses">Licenses</string>
+
+    <!-- Feed -->
+        <!-- Feed Menu -->
+        <string name="report">Report</string>
+
+    <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
 
     <!-- Search -->

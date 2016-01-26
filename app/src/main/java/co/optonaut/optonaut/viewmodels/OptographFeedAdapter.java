@@ -6,12 +6,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -68,6 +71,28 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         Button settingsButton = (Button) itemView.findViewById(R.id.settings_button);
         settingsButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         settingsButton.setText(String.valueOf((char) 0xe904));
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), v);
+                popupMenu.inflate(R.menu.feed_item_menu);
+
+                //registering popup with OnMenuItemClickListener
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Snackbar.make(
+                                itemView,
+                                itemView.getResources().getString(R.string.feature_next_version),
+                                Snackbar.LENGTH_SHORT
+                        ).show();
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+            }
+        });
+
 
         return viewHolder;
     }

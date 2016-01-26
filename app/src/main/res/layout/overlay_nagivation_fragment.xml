@@ -22,21 +22,31 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
                 android:background="@color/transparentOverlay"
-                android:textColor="@color/brightFont"/>
+                android:textColor="@color/bright"/>
 
-            <ImageView
+            <TextView
                 android:id="@+id/header"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:layout_gravity="center"/>
 
             <Button
                 android:id="@+id/notification_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
+                android:layout_marginRight="25dp"
                 android:background="@color/transparentOverlay"
-                android:textColor="@color/brightFont"/>
+                android:textColor="@color/bright"/>
+
+            <Button
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:background="@color/transparentOverlay"
+                android:textColor="@color/bright"/>
 
         </FrameLayout>
     </android.support.v7.widget.Toolbar>
@@ -48,7 +58,7 @@
 
         <Button
             android:id="@+id/home_button"
-            android:textColor="@color/brightFont"
+            android:textColor="@color/bright"
             android:background="@color/transparentOverlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -60,7 +70,7 @@
             android:layout_height="wrap_content"
             android:text="@string/home_label"
             android:textAllCaps="true"
-            android:textColor="@color/brightFont"/>
+            android:textColor="@color/bright"/>
     </RelativeLayout>
 
 
@@ -71,7 +81,7 @@
 
         <Button
             android:id="@+id/record_button"
-            android:textColor="@color/brightFont"
+            android:textColor="@color/bright"
             android:background="@drawable/rounded_corners_colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -80,7 +90,7 @@
             android:layout_below="@id/record_button"
             android:layout_centerHorizontal="true"
             android:text=" "
-            android:textColor="@color/brightFont"
+            android:textColor="@color/bright"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -93,7 +103,7 @@
 
         <Button
             android:id="@+id/profile_button"
-            android:textColor="@color/brightFont"
+            android:textColor="@color/bright"
             android:background="@color/transparentOverlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -105,7 +115,7 @@
             android:layout_height="wrap_content"
             android:text="@string/profile_label"
             android:textAllCaps="true"
-            android:textColor="@color/brightFont"/>
+            android:textColor="@color/bright"/>
     </RelativeLayout>
 
 

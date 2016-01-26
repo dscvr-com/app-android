@@ -9,7 +9,8 @@
     <color name="transparentOverlay">#00777777</color>
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
 
-    <color name="brightFont">#FFFFFF</color>
+    <color name="bright">#FFFFFF</color>
+    <color name="semiBright">#AAAAAA</color>
 
 
     <!-- Feed -->

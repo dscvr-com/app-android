@@ -6,11 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
@@ -76,14 +79,40 @@ public class OverlayNavigationFragment extends Fragment {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
         });
 
-        ImageView header = (ImageView) view.findViewById(R.id.header);
-        header.setImageDrawable(Constants.getInstance().getMainIcon());
+        TextView header = (TextView) view.findViewById(R.id.header);
+        header.setTypeface(Constants.getInstance().getDefaultTypeface());
+        header.setText(String.valueOf((char) 0xe91c));
 
         Button notificationButton = (Button) view.findViewById(R.id.notification_button);
         notificationButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         notificationButton.setText(String.valueOf((char) 0xe90f));
         notificationButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
+        });
+
+        Button settingsButton = (Button) view.findViewById(R.id.settings_button);
+        settingsButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        settingsButton.setText(String.valueOf((char) 0xe904));
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                popupMenu.inflate(R.menu.profile_menu);
+
+                //registering popup with OnMenuItemClickListener
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Snackbar.make(
+                                view,
+                                "You Clicked: " + item.getTitle(),
+                                Snackbar.LENGTH_SHORT
+                        ).show();
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+            }
         });
     }
 
