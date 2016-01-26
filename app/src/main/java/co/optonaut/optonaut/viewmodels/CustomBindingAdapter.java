@@ -2,6 +2,7 @@ package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.BindingAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -9,6 +10,8 @@ import com.squareup.picasso.Picasso;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
+import co.optonaut.optonaut.util.RFC3339DateFormatter;
+import co.optonaut.optonaut.util.TimeUtils;
 
 /**
  * @author Nilan Marktanner
@@ -38,5 +41,10 @@ public class CustomBindingAdapter {
     @BindingAdapter("app:optograph")
     public static void loadOptograph(Optograph2DCubeView optograph2DCubeView, Optograph optograph) {
         optograph2DCubeView.setOptograph(optograph);
+    }
+
+    @BindingAdapter("app:createdAt")
+    public static void setTimeAgo(TextView textViev, String created_at) {
+        textViev.setText(TimeUtils.getTimeAgo(RFC3339DateFormatter.fromRFC3339String(created_at)));
     }
 }
