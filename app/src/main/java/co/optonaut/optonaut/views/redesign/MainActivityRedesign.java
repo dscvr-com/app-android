@@ -18,9 +18,9 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         // initialize constants
         Constants.initializeConstants(this);
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_redesign);
 

@@ -33,9 +33,9 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Constants.initializeConstants(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vrmode);
-        Constants.initializeConstants(this);
         initializeOptograph();
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
         cardboardRenderer = new CardboardRenderer();
