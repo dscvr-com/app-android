@@ -5,6 +5,7 @@ import android.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.joda.time.format.PeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -15,12 +16,11 @@ import org.joda.time.format.PeriodFormatterBuilder;
  */
 public class TimeUtils {
     public static String getTimeAgo(DateTime createdAt) {
-        Period period = new Period(createdAt, DateTime.now());
+        Period period = new Period(createdAt, DateTime.now(), PeriodType.yearMonthDayTime());
 
         if (period.getMinutes() == 0
                 && period.getHours() == 0
                 && period.getDays() == 0
-                && period.getWeeks() == 0
                 && period.getMonths() == 0
                 && period.getYears() == 0) {
             return "just now";
@@ -35,10 +35,6 @@ public class TimeUtils {
             periodFormatterBuilder
                     .appendMonths()
                     .appendSuffix(" month", " months");
-        } else if (period.getWeeks() >= 1) {
-            periodFormatterBuilder
-                    .appendWeeks()
-                    .appendSuffix(" week", " weeks");
         } else if (period.getDays() >= 1) {
             periodFormatterBuilder
                     .appendDays()
@@ -57,9 +53,6 @@ public class TimeUtils {
 
         periodFormatterBuilder.appendLiteral(" ago");
         PeriodFormatter formatter = periodFormatterBuilder.toFormatter();
-
-        Log.d(Constants.DEBUG_TAG, period.toString() + " --- " + formatter.print(period));
-
 
         return formatter.print(period);
     }
