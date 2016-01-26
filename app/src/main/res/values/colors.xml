@@ -7,8 +7,9 @@
 
     <color name="optonautMain">#EF4836</color>
     <color name="transparentOverlay">#00777777</color>
+    <color name="semiTransparentOverlay">#DDFFFFFF</color>
 
-    <color name="mainFontColor">#FFFFFF</color>
+    <color name="brightFont">#FFFFFF</color>
 
 
     <!-- Feed -->

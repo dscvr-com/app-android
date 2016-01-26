@@ -2,14 +2,17 @@ package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -44,22 +47,27 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
-        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
         // set padding depending on toolbar + statusbar height
         final float scale = Constants.getInstance().getDisplayMetrics().density;
-        int marginTop = Constants.getInstance().getExpectedStatusBarHeight() + Constants.getInstance().getToolbarHeight() + (int) (scale * 5.0f + 0.5f);
-        int marginLeft = (int) (20 * scale + 0.5f);
+        int topOffset = Constants.getInstance().getExpectedStatusBarHeight() + Constants.getInstance().getToolbarHeight();
 
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) profileView.getLayoutParams();
-        lp.setMargins(marginLeft, marginTop, 0, 0);
-        profileView.setLayoutParams(lp);
+        RelativeLayout rl = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
+        lp.height = Constants.getInstance().getToolbarHeight();
+        lp.setMargins(0, topOffset, 0, 0);
+        rl.setLayoutParams(lp);
 
+        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
         profileView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // ((MainActivity) itemView.getContext()).openProfileFragment(viewHolder.getBinding().getPerson());
+                Snackbar.make(v, v.getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
             }
         });
+
+        Button settingsButton = (Button) itemView.findViewById(R.id.settings_button);
+        settingsButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        settingsButton.setText(String.valueOf((char) 0xe904));
 
         return viewHolder;
     }

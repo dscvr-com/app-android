@@ -25,14 +25,39 @@
             android:layout_gravity="center"
             app:optograph="@{optograph}"/>
 
-        <ImageView
-            android:id="@+id/person_avatar_asset"
-            android:background="@color/transparentOverlay"
-            android:layout_height="40dp"
-            android:layout_width="40dp"
-            android:padding="0dp"
-            android:layout_marginTop="60dp"
-            android:layout_gravity="top|left"
-            app:avatarId="@{person.avatar_asset_id}"/>
+        <RelativeLayout
+            android:id="@+id/profile_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/semiTransparentOverlay">
+            <ImageView
+                android:id="@+id/person_avatar_asset"
+                android:background="@color/transparentOverlay"
+                android:layout_height="40dp"
+                android:layout_width="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                app:avatarId="@{person.avatar_asset_id}"/>
+
+            <TextView
+                android:layout_toRightOf="@id/person_avatar_asset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:textColor="@color/optonautMain"
+                android:layout_marginLeft="5dp"
+                android:text="@{person.display_name}"/>
+
+            <Button
+                android:id="@+id/settings_button"
+                android:background="@color/transparentOverlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
     </FrameLayout>
 </layout> 
