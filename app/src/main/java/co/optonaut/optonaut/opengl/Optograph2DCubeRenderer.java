@@ -19,7 +19,7 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-17
  */
 public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEventListener {
-    private static final float FIELD_OF_VIEW_Y = 45.0f;
+    private static final float FIELD_OF_VIEW_Y = 95.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 
@@ -34,7 +34,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     private Cube cube;
 
     public Optograph2DCubeRenderer() {
-        Log.d(Constants.DEBUG_TAG, "renderer constructor");
+        Log.v(Constants.DEBUG_TAG, "renderer constructor");
         this.cube = new Cube();
         this.rotationVectorListener = new RotationVectorListener();
         Matrix.setIdentityM(rotationMatrix, 0);
@@ -59,7 +59,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        Log.d(Constants.DEBUG_TAG, "onSurfaceCreated");
+        Log.v(Constants.DEBUG_TAG, "onSurfaceCreated");
         this.cube.initialize();
 
         // Set the camera position
@@ -75,7 +75,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        Log.d(Constants.DEBUG_TAG, "onSurfaceChanged");
+        Log.v(Constants.DEBUG_TAG, "onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
 

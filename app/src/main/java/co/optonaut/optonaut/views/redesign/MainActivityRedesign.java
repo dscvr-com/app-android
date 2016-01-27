@@ -3,6 +3,7 @@ package co.optonaut.optonaut.views.redesign;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import co.optonaut.optonaut.R;
@@ -94,5 +95,17 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
 
         return 0;
+    }
+
+    public void setOverlayVisibility(int visibility) {
+        if (overlayFragment != null) {
+            overlayFragment.setTotalVisibility(visibility);
+        } else {
+            Log.w(Constants.DEBUG_TAG, "Setting overlay visibility on null object");
+        }
+    }
+
+    public boolean toggleOverlayVisibility() {
+        return overlayFragment.toggleTotalVisibility();
     }
 }

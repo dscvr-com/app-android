@@ -4,14 +4,17 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
+import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 
 import com.squareup.picasso.Picasso;
 
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
 /**
  * @author Nilan Marktanner
@@ -21,6 +24,7 @@ public class Optograph2DCubeView extends GLSurfaceView{
     private SensorManager sensorManager;
     private Optograph2DCubeRenderer optograph2DCubeRenderer;
     private Optograph optograph;
+    private boolean rotationListenerIsRegistered;
 
 
     public Optograph2DCubeView(Context context, AttributeSet attrs) {
@@ -42,6 +46,14 @@ public class Optograph2DCubeView extends GLSurfaceView{
         registerRotationVectorListener();
     }
 
+    public void toggleRotationListener() {
+        if (rotationListenerIsRegistered) {
+            unregisterRotationVectorListener();
+        } else {
+            registerRotationVectorListener();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -59,12 +71,14 @@ public class Optograph2DCubeView extends GLSurfaceView{
     }
 
 
-    private void registerRotationVectorListener() {
+    public void registerRotationVectorListener() {
         sensorManager.registerListener(optograph2DCubeRenderer, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
+        rotationListenerIsRegistered = true;
     }
 
-    private void unregisterRotationVectorListener() {
+    public void unregisterRotationVectorListener() {
         sensorManager.unregisterListener(optograph2DCubeRenderer);
+        rotationListenerIsRegistered = false;
     }
 
     public void initializeTextures() {

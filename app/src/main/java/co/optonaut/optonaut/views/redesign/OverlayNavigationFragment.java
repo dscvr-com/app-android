@@ -147,7 +147,7 @@ public class OverlayNavigationFragment extends Fragment {
         editor.commit();
     }
 
-    public void toggleTotalVisibility(int visibility) {
+    public void setTotalVisibility(int visibility) {
         if (visibility != View.INVISIBLE && visibility != View.VISIBLE) {
             throw new RuntimeException("Can only toggle between visible and invisible!");
         }
@@ -157,6 +157,23 @@ public class OverlayNavigationFragment extends Fragment {
         } else {
             Log.w(Constants.DEBUG_TAG, "Setting visibility of null-View!");
         }
+    }
+
+    public boolean toggleTotalVisibility() {
+        View view = getView();
+        boolean toggled = false;
+        if (view != null) {
+            if (view.getVisibility() == View.INVISIBLE) {
+                setTotalVisibility(View.VISIBLE);
+                toggled = true;
+            } else if (view.getVisibility() == View.VISIBLE) {
+                setTotalVisibility(View.INVISIBLE);
+                toggled = true;
+            } else {
+                Log.w(Constants.DEBUG_TAG, "Visibility of Overlay was neither invisible nor visible");
+            }
+        }
+        return toggled;
     }
 
     private int getLowerBoundary(View view) {

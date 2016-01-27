@@ -25,6 +25,7 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
@@ -47,7 +48,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 from(parent.getContext()).
                 inflate(R.layout.feed_item, parent, false);
 
+        Optograph2DCubeView optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
+
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: add touch navigation and don't allow scrolling
+                viewHolder.toggleVisibility();
+                Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         initializeProfileBar(itemView);
         initializeDescriptionBar(itemView);
@@ -184,14 +196,49 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;
+        RelativeLayout profileBar;
+        RelativeLayout descriptionBar;
+        private boolean informationBarsAreVisible;
+        private Optograph2DCubeView optograph2DCubeView;
 
         public OptographViewHolder(View rowView) {
             super(rowView);
             this.binding = DataBindingUtil.bind(rowView);
+            profileBar = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
+            descriptionBar = (RelativeLayout) itemView.findViewById(R.id.description_bar);
+            optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
+            setInformationBarsVisible();
         }
+
+        private void setInformationBarsVisible() {
+            profileBar.setVisibility(View.VISIBLE);
+            descriptionBar.setVisibility(View.VISIBLE);
+            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
+            // todo: unregister touch listener
+            optograph2DCubeView.registerRotationVectorListener();
+            informationBarsAreVisible = true;
+        }
+
+        private void setInformationBarsInvisible() {
+            profileBar.setVisibility(View.INVISIBLE);
+            descriptionBar.setVisibility(View.INVISIBLE);
+            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
+            // todo: register touch listener
+            optograph2DCubeView.unregisterRotationVectorListener();
+            informationBarsAreVisible = false;
+        }
+
 
         public FeedItemBinding getBinding() {
             return binding;
+        }
+
+        public void toggleVisibility() {
+            if (informationBarsAreVisible) {
+                setInformationBarsInvisible();
+            } else {
+                setInformationBarsVisible();
+            }
         }
     }
 
