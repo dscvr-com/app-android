@@ -19,7 +19,7 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-17
  */
 public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEventListener {
-    private static final float FIELD_OF_VIEW_Y = 45.0f;
+    private static final float FIELD_OF_VIEW_Y = 95.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 
