@@ -1,5 +1,7 @@
 package co.optonaut.optonaut.util;
 
+import android.opengl.Matrix;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
@@ -62,5 +64,45 @@ public class Maths {
         }
 
         return p;
+    }
+
+    public static float[] computeTransform(float[] translationMatrix, float[] rotationMatrix, float[] scaleMatrix) {
+        // R*S
+        float[] rsMatrix = new float[16];
+        Matrix.multiplyMM(rsMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
+
+        // T*R*S
+        float[] trsMatrix = new float[16];
+        Matrix.multiplyMM(trsMatrix, 0, translationMatrix, 0, rsMatrix, 0);
+
+        return trsMatrix;
+    }
+
+    public static float[] buildTranslationMatrix(float[] translation) {
+        float[] translationMatrix = new float[16];
+        Matrix.setIdentityM(translationMatrix, 0);
+        Matrix.translateM(translationMatrix, 0, translation[0], translation[1], translation[2]);
+        return translationMatrix;
+    }
+
+    public static float[] buildRotationMatrix(float[] rotation) {
+        float[] rotationMatrix = new float[16];
+        Matrix.setRotateM(rotationMatrix, 0, rotation[0], rotation[1], rotation[2], rotation[3]);
+        return rotationMatrix;
+    }
+
+    public static float[] buildRotationMatrix(float[] rotation_l, float[] rotation_r) {
+        float[] L = buildRotationMatrix(rotation_l);
+        float[] R = buildRotationMatrix(rotation_r);
+        float[] rotationMatrix = new float[16];
+        Matrix.multiplyMM(rotationMatrix, 0, L, 0, R, 0);
+        return rotationMatrix;
+    }
+
+    public static float[] buildScaleMatrix(float scale) {
+        float[] scaleMatrix = new float[16];
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
+        return scaleMatrix;
     }
 }

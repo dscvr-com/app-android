@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.Maths;
 
 /**
  * @author Nilan Marktanner
@@ -87,31 +88,31 @@ public class Cube {
     }
 
     private void initializeTranslations() {
-        translations.add(buildTranslationMatrix(POSITION_AHEAD));
-        translations.add(buildTranslationMatrix(POSITION_RIGHT));
-        translations.add(buildTranslationMatrix(POSITION_BEHIND));
-        translations.add(buildTranslationMatrix(POSITION_LEFT));
-        translations.add(buildTranslationMatrix(POSITION_TOP));
-        translations.add(buildTranslationMatrix(POSITION_BOTTOM));
+        translations.add(Maths.buildTranslationMatrix(POSITION_AHEAD));
+        translations.add(Maths.buildTranslationMatrix(POSITION_RIGHT));
+        translations.add(Maths.buildTranslationMatrix(POSITION_BEHIND));
+        translations.add(Maths.buildTranslationMatrix(POSITION_LEFT));
+        translations.add(Maths.buildTranslationMatrix(POSITION_TOP));
+        translations.add(Maths.buildTranslationMatrix(POSITION_BOTTOM));
     }
 
     private void initializeRotations() {
-        rotations.add(buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
         //rotations.add(buildRotationMatrix(new float[]{90, 0, 1, 0}));
-        rotations.add(buildRotationMatrix(ROTATION_RIGHT_SECOND, ROTATION_RIGHT_FIRST));
-        rotations.add(buildRotationMatrix(ROTATION_BEHIND_SECOND, ROTATION_BEHIND_FIRST));
-        rotations.add(buildRotationMatrix(ROTATION_LEFT_SECOND, ROTATION_LEFT_FIRST));
-        rotations.add(buildRotationMatrix(ROTATION_TOP_SECOND, ROTATION_TOP_FIRST));
-        rotations.add(buildRotationMatrix(ROTATION_BOTTOM_SECOND, ROTATION_BOTTOM_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_RIGHT_SECOND, ROTATION_RIGHT_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_BEHIND_SECOND, ROTATION_BEHIND_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_LEFT_SECOND, ROTATION_LEFT_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_TOP_SECOND, ROTATION_TOP_FIRST));
+        rotations.add(Maths.buildRotationMatrix(ROTATION_BOTTOM_SECOND, ROTATION_BOTTOM_FIRST));
     }
 
     private void initializeScales() {
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
-        scales.add(buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
+        scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
     }
 
     private void initializeTransforms() {
@@ -120,7 +121,7 @@ public class Cube {
         initializeScales();
 
         for (int i = 0; i < FACES_PER_CUBE; ++i) {
-            transforms.add(computeTransform(translations.get(i), rotations.get(i), scales.get(i)));
+            transforms.add(Maths.computeTransform(translations.get(i), rotations.get(i), scales.get(i)));
         }
     }
 
@@ -146,46 +147,6 @@ public class Cube {
             Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, transforms.get(i), 0);
             planes[i].draw(modelView);
         }
-    }
-
-    private float[] computeTransform(float[] translationMatrix, float[] rotationMatrix, float[] scaleMatrix) {
-        // R*S
-        float[] rsMatrix = new float[16];
-        Matrix.multiplyMM(rsMatrix, 0, rotationMatrix, 0, scaleMatrix, 0);
-
-        // T*R*S
-        float[] trsMatrix = new float[16];
-        Matrix.multiplyMM(trsMatrix, 0, translationMatrix, 0, rsMatrix, 0);
-
-        return trsMatrix;
-    }
-
-    private float[] buildTranslationMatrix(float[] translation) {
-        float[] translationMatrix = new float[16];
-        Matrix.setIdentityM(translationMatrix, 0);
-        Matrix.translateM(translationMatrix, 0, translation[0], translation[1], translation[2]);
-        return translationMatrix;
-    }
-
-    private float[] buildRotationMatrix(float[] rotation) {
-        float[] rotationMatrix = new float[16];
-        Matrix.setRotateM(rotationMatrix, 0, rotation[0], rotation[1], rotation[2], rotation[3]);
-        return rotationMatrix;
-    }
-
-    private float[] buildRotationMatrix(float[] rotation_l, float[] rotation_r) {
-        float[] L = buildRotationMatrix(rotation_l);
-        float[] R = buildRotationMatrix(rotation_r);
-        float[] rotationMatrix = new float[16];
-        Matrix.multiplyMM(rotationMatrix, 0, L, 0, R, 0);
-        return rotationMatrix;
-    }
-
-    private float[] buildScaleMatrix(float scale) {
-        float[] scaleMatrix = new float[16];
-        Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
-        return scaleMatrix;
     }
 
     public TextureSet getCubeTextureSet() {
