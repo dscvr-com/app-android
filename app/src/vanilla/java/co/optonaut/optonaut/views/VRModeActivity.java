@@ -128,11 +128,11 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private void switchToNormalMode() {
         Log.d(Constants.DEBUG_TAG, "Switched to Normal Mode");
         inVRMode = false;
-        Intent intent = new Intent(this, MainActivityRedesign.class);
+        //Intent intent = new Intent(this, MainActivityRedesign.class);
 
         this.finish();
 
-        startActivity(intent);
+        //startActivity(intent);
     }
 
     @Override

@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,19 @@ public class MainActivityRedesign extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        findFragments();
+    }
+
+    private void findFragments() {
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (hostFragment == null && fragment instanceof HostFragment) {
+                hostFragment = (HostFragment) fragment;
+            } else if (overlayFragment == null && fragment instanceof OverlayNavigationFragment) {
+                overlayFragment = (OverlayNavigationFragment) fragment;
+            } else {
+                Log.w(Constants.DEBUG_TAG, "Unknown Fragment in SupportFragmentManager");
+            }
+        }
     }
 
     @Override
