@@ -56,6 +56,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             @Override
             public void onClick(View v) {
                 // TODO: add touch navigation and don't allow scrolling
+                // TODO: hide notification bar
                 viewHolder.toggleVisibility();
                 Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
             }

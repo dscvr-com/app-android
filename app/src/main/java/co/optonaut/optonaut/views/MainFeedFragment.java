@@ -56,7 +56,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
     @Override
     protected void initializeFeed() {
-        apiConsumer.getOptographs(2)
+        apiConsumer.getOptographs(50)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
@@ -64,7 +64,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
     @Override
     protected void loadMore() {
-        apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
+        apiConsumer.getOptographs(50, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
