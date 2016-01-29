@@ -33,6 +33,8 @@ public class Maths {
      */
     private static final long POWER_CLAMP = 0x00000000ffffffffL;
 
+    public static final double PI_2 = Math.PI / 2.0;
+
     /**
      * Constructor, although not used at the moment.
      */

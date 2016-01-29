@@ -2,7 +2,9 @@ package co.optonaut.optonaut.sensors;
 
 import android.graphics.Point;
 import android.opengl.Matrix;
+import android.util.Log;
 
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
 
 /**
@@ -54,7 +56,7 @@ public class TouchEventListener extends RotationMatrixProvider {
         this.hfov = vfov * sceneWidth / (float) sceneHeight;
 
         // constraint symmetrical around initial theta
-        maxTheta = (float) -Math.PI/4.0f - BORDER - (vfov * (float) Math.PI / 180.0f) / 2.0f;
+        maxTheta = (float) Maths.PI_2 - BORDER - (vfov * (float) Math.PI / 180.0f) / 2.0f;
         minTheta = -maxTheta;
     }
 
@@ -115,7 +117,7 @@ public class TouchEventListener extends RotationMatrixProvider {
         }
 
         // clamp theta for border effect
-        //theta = Math.max(minTheta, Math.min(theta, maxTheta));
+        theta = Math.max(minTheta, Math.min(theta, maxTheta));
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
