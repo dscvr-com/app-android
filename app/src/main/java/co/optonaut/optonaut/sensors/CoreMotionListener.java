@@ -24,11 +24,11 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     private static final float[] CORRECTION = Maths.buildRotationMatrix(new float[]{90, 1, 0, 0});
     private static int observers = 0;
 
-    private float[] rotationMatrix = new float[16];
+    private float[] rotationMatrix;
 
 
     private CoreMotionListener(Context context) {
-        Matrix.setIdentityM(rotationMatrix, 0);
+        rotationMatrix = null;
         sensorManager = (SensorManager) context.getSystemService(Service.SENSOR_SERVICE);
     }
 
@@ -46,8 +46,11 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     }
 
     public static void register() {
-        if (observers == 0) {
-            sensorManager.registerListener(coreMotionListener, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
+        if (true) {
+            Log.v(Constants.DEBUG_TAG, "Registering CoreMotionListener");
+            sensorManager.registerListener(coreMotionListener, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            Log.v(Constants.DEBUG_TAG, "Skip Registering CoreMotionListener");
         }
 
         observers++;
@@ -56,6 +59,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     public static void unregister() {
         observers--;
         if (observers == 0) {
+            Log.v(Constants.DEBUG_TAG, "Unregistering CoreMotionListener");
             sensorManager.unregisterListener(coreMotionListener);
         } else if (observers < 0) {
             Log.w(Constants.DEBUG_TAG, "Unregister call but no observer!");
@@ -87,6 +91,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
 
             // apply correction so we refer to the coordinate system of the phone when holding it "upright",
             // screen to the user and perpendicular to the ground plane
+            rotationMatrix = new float[16];
             Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, temp, 0);
         }
     }

@@ -10,8 +10,6 @@ import co.optonaut.optonaut.util.Maths;
  * @date 2015-12-26
  */
 public class TouchEventListener extends RotationMatrixProvider {
-    private static final float[] CORRECTION = Maths.buildRotationMatrix(new float[]{90, 1, 0, 0});
-
     private boolean isTouching;
 
     private float theta;
@@ -42,7 +40,7 @@ public class TouchEventListener extends RotationMatrixProvider {
     public TouchEventListener(float dampFactor, int sceneWidth, int sceneHeight, float vfov) {
         isTouching = false;
         phi = 0.0f;
-        theta = (float) -Math.PI / 2.0f;
+        theta = 0.0f;
         phiDiff = 0.0f;
         thetaDiff = 0.0f;
         phiDamp = 0.0f;
@@ -55,8 +53,9 @@ public class TouchEventListener extends RotationMatrixProvider {
         this.vfov = vfov;
         this.hfov = vfov * sceneWidth / (float) sceneHeight;
 
-        maxTheta = -BORDER - (vfov * (float) Math.PI / 180.0f) / 2.0f;
-        minTheta = (float) -Math.PI - maxTheta;
+        // constraint symmetrical around initial theta
+        maxTheta = (float) -Math.PI/4.0f - BORDER - (vfov * (float) Math.PI / 180.0f) / 2.0f;
+        minTheta = -maxTheta;
     }
 
     public void touchStart(Point point) {
@@ -108,7 +107,7 @@ public class TouchEventListener extends RotationMatrixProvider {
             phiDamp = phiDiff;
             thetaDamp = thetaDiff;
 
-            phi -= phiDiff;
+            phi += phiDiff;
             theta += thetaDiff;
 
             phiDiff = 0;
@@ -116,14 +115,12 @@ public class TouchEventListener extends RotationMatrixProvider {
         }
 
         // clamp theta for border effect
-        theta = Math.max(minTheta, Math.min(theta, maxTheta));
+        //theta = Math.max(minTheta, Math.min(theta, maxTheta));
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
-        float[] rotationY = {(float) Math.toDegrees(phi), 0, 1, 0};
+        float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
 
-        float[] rotationMatrix = new float[16];
-        Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, Maths.buildRotationMatrix(rotationX, rotationY), 0);
-        return rotationMatrix;
+        return Maths.buildRotationMatrix(rotationY, rotationX);
     }
 
     public boolean isTouching() {

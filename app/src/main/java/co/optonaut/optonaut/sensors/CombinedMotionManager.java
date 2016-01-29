@@ -3,6 +3,8 @@ package co.optonaut.optonaut.sensors;
 import android.graphics.Point;
 import android.opengl.Matrix;
 
+import java.util.Arrays;
+
 import co.optonaut.optonaut.util.Maths;
 
 /**
@@ -50,18 +52,20 @@ public class CombinedMotionManager extends RotationMatrixProvider {
                 float[] diffRotationMatrix = new float[16];
                 Matrix.multiplyMM(diffRotationMatrix, 0, inverse, 0, coreMotionMatrix, 0);
 
-                // diffRotationMatrix.m21 == [9] and diffRotationMatrix.m22 [10] for zero-based matrix indices
+                // m21 equals [9] and m22 equals [10] for zero-based matrix indices
                 float diffRotationTheta = (float) Math.atan2(diffRotationMatrix[9], diffRotationMatrix[10]);
                 float diffRotationPhi = (float) Math.atan2(-diffRotationMatrix[8],
                         Math.sqrt(diffRotationMatrix[9] * diffRotationMatrix[9] +
                                 diffRotationMatrix[10] * diffRotationMatrix[10]));
 
                 touchEventListener.setPhi(touchEventListener.getPhi() + diffRotationPhi);
-                touchEventListener.setTheta(touchEventListener.getTheta() + diffRotationTheta);
+                touchEventListener.setTheta(touchEventListener.getTheta() - diffRotationTheta);
             }
         }
 
-        lastCoreMotionMatrix = coreMotionMatrix;
+        if (coreMotionMatrix != null) {
+            lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
+        }
 
         return touchEventListener.getRotationMatrix();
     }
@@ -78,5 +82,9 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     public boolean isRegisteredOnCoreMotionListener() {
         return registeredOnCoreMotionListener;
+    }
+
+    public boolean isTouching() {
+        return touchEventListener.isTouching();
     }
 }

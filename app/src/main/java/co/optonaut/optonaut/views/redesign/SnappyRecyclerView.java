@@ -54,7 +54,7 @@ public final class SnappyRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Log.v(Constants.DEBUG_TAG, "Received touch event");
+        Log.v(Constants.DEBUG_TAG, "Received touch event in SnappyRecyclerView");
         if (isScrollingEnabled) {
             // We want the parent to handle all touch events--there's a lot going on there,
             // and there is no reason to overwrite that functionality--bad things will happen.
@@ -80,6 +80,7 @@ public final class SnappyRecyclerView extends RecyclerView {
             return ret;
         } else {
             // disable scrolling but still pipe touch events
+            Log.v(Constants.DEBUG_TAG, "Scrolling disabled");
             return false;
         }
     }

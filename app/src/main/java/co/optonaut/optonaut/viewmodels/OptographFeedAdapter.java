@@ -60,14 +60,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.v(Constants.DEBUG_TAG, "ACTION: " + event.getAction());
+                // Log.v(Constants.DEBUG_TAG, "ACTION: " + event.getAction());
                 if (viewHolder.isNavigationModeCombined) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
                         Log.v(Constants.DEBUG_TAG, "Single Click in combined Navigation");
                         viewHolder.toggleNavigationMode();
                         snappyRecyclerView.enableScrolling();
-                        Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
-                        return true;
+                        // still return optograph2DCubeView for registering end of touching
+                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
                     } else {
                         Log.v(Constants.DEBUG_TAG, "Pipe touch in combined Navigation");
                         return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
@@ -77,10 +77,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                         Log.v(Constants.DEBUG_TAG, "Single Click in simple Navigation");
                         viewHolder.toggleNavigationMode();
                         snappyRecyclerView.disableScrolling();
-                        Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
                         return true;
                     } else {
-                        Log.v(Constants.DEBUG_TAG, "Pipe touch in simple Navigation");
+                        // need to return true here to prevent touch-stealing of parent!
                         return true;
                     }
                 }

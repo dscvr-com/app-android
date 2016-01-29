@@ -120,4 +120,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     public boolean isRegisteredOnSensors() {
         return combinedMotionManager.isRegisteredOnCoreMotionListener();
     }
+
+    public CombinedMotionManager getCombinedMotionManager() {
+        return combinedMotionManager;
+    }
 }

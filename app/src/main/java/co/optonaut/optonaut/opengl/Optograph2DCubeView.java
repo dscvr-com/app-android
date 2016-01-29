@@ -126,22 +126,25 @@ public class Optograph2DCubeView extends GLSurfaceView {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    Log.v(Constants.DEBUG_TAG, "DOWN: " + point.toString());
                     optograph2DCubeRenderer.touchStart(point);
-                    return true;
+                    break;
                 case MotionEvent.ACTION_MOVE:
-                    Log.v(Constants.DEBUG_TAG, "MOVE: " + point.toString());
                     optograph2DCubeRenderer.touchMove(point);
-                    return true;
+                    break;
                 case MotionEvent.ACTION_UP:
-                    Log.v(Constants.DEBUG_TAG, "UP: " + point.toString());
                     optograph2DCubeRenderer.touchEnd(point);
-                    return true;
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    // release touching state also for cancel action
+                    optograph2DCubeRenderer.touchEnd(point);
+                    break;
                 default:
-                    // ignore
-                    Log.v(Constants.DEBUG_TAG, "NONE: " + event.getAction());
-                    return true;
+                    // ignore eventt
+                    return false;
             }
+
+            // we dealt with the event
+            return true;
         };
     }
 
