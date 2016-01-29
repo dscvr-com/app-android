@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.sensors;
 
 import android.graphics.Point;
+import android.opengl.Matrix;
 
 import co.optonaut.optonaut.util.Maths;
 
@@ -9,6 +10,8 @@ import co.optonaut.optonaut.util.Maths;
  * @date 2015-12-26
  */
 public class TouchEventListener extends RotationMatrixProvider {
+    private static final float[] CORRECTION = Maths.buildRotationMatrix(new float[]{90, 1, 0, 0});
+
     private boolean isTouching;
 
     private float theta;
@@ -105,7 +108,7 @@ public class TouchEventListener extends RotationMatrixProvider {
             phiDamp = phiDiff;
             thetaDamp = thetaDiff;
 
-            phi += phiDiff;
+            phi -= phiDiff;
             theta += thetaDiff;
 
             phiDiff = 0;
@@ -117,7 +120,10 @@ public class TouchEventListener extends RotationMatrixProvider {
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) Math.toDegrees(phi), 0, 1, 0};
-        return Maths.buildRotationMatrix(rotationX, rotationY);
+
+        float[] rotationMatrix = new float[16];
+        Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, Maths.buildRotationMatrix(rotationX, rotationY), 0);
+        return rotationMatrix;
     }
 
     public boolean isTouching() {

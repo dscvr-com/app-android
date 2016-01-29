@@ -10,16 +10,13 @@ import co.optonaut.optonaut.util.Maths;
  * @date 2016-01-28
  */
 public class CombinedMotionManager extends RotationMatrixProvider {
-    private RotationVectorListener rotationVectorListener;
     private TouchEventListener touchEventListener;
 
-    private float[] lastRotationVectorMatrix = new float[16];
+    private float[] lastCoreMotionMatrix = null;
+    private boolean registeredOnCoreMotionListener;
 
     public CombinedMotionManager(float dampFactor, int sceneWidth, int sceneHeight, float vfov) {
-        rotationVectorListener = new RotationVectorListener();
         touchEventListener = new TouchEventListener(dampFactor, sceneWidth, sceneHeight, vfov);
-
-        Matrix.setIdentityM(lastRotationVectorMatrix, 0);
     }
 
     public void touchStart(Point point) {
@@ -44,26 +41,42 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     @Override
     public float[] getRotationMatrix() {
-        float[] rotationVectorMatrix = rotationVectorListener.getRotationMatrix();
+        float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
 
         if (!touchEventListener.isTouching()) {
             // Update from motion and damping
-            float[] inverse = Maths.buildInverse(lastRotationVectorMatrix);
-            float[] diffRotationMatrix = new float[16];
-            Matrix.multiplyMM(diffRotationMatrix, 0, inverse, 0, rotationVectorMatrix, 0);
+            if (lastCoreMotionMatrix != null) {
+                float[] inverse = Maths.buildInverse(lastCoreMotionMatrix);
+                float[] diffRotationMatrix = new float[16];
+                Matrix.multiplyMM(diffRotationMatrix, 0, inverse, 0, coreMotionMatrix, 0);
 
-            // diffRotationMatrix.m21 == [10] and diffRotationMatrix.m22 [11] for zero-based matrix indices
-            float diffRotationTheta = (float) Math.atan2(diffRotationMatrix[10], diffRotationMatrix[11]);
-            float diffRotationPhi = (float) Math.atan2(-diffRotationMatrix[9],
-                                                       Math.sqrt(diffRotationMatrix[10] * diffRotationMatrix[10] +
-                                                               diffRotationMatrix[11] * diffRotationMatrix[11]));
+                // diffRotationMatrix.m21 == [9] and diffRotationMatrix.m22 [10] for zero-based matrix indices
+                float diffRotationTheta = (float) Math.atan2(diffRotationMatrix[9], diffRotationMatrix[10]);
+                float diffRotationPhi = (float) Math.atan2(-diffRotationMatrix[8],
+                        Math.sqrt(diffRotationMatrix[9] * diffRotationMatrix[9] +
+                                diffRotationMatrix[10] * diffRotationMatrix[10]));
 
-            touchEventListener.setPhi(touchEventListener.getPhi() + diffRotationPhi);
-            touchEventListener.setTheta(touchEventListener.getTheta() + diffRotationTheta);
+                touchEventListener.setPhi(touchEventListener.getPhi() + diffRotationPhi);
+                touchEventListener.setTheta(touchEventListener.getTheta() + diffRotationTheta);
+            }
         }
 
-        lastRotationVectorMatrix = rotationVectorMatrix;
+        lastCoreMotionMatrix = coreMotionMatrix;
 
         return touchEventListener.getRotationMatrix();
+    }
+
+    public void registerOnCoreMotionListener() {
+        CoreMotionListener.register();
+        registeredOnCoreMotionListener = true;
+    }
+
+    public void unregisterOnCoreMotionListener() {
+        CoreMotionListener.unregister();
+        registeredOnCoreMotionListener = false;
+    }
+
+    public boolean isRegisteredOnCoreMotionListener() {
+        return registeredOnCoreMotionListener;
     }
 }

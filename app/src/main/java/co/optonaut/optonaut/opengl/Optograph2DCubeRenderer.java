@@ -25,7 +25,7 @@ import co.optonaut.optonaut.util.Constants;
  * @author Nilan Marktanner
  * @date 2016-01-17
  */
-public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEventListener {
+public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float FIELD_OF_VIEW_Y = 95.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
@@ -37,8 +37,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     private final float[] camera = new float[16];
     private float[] rotationMatrix = new float[16];
 
-
-    private RotationVectorListener rotationVectorListener;
     private CombinedMotionManager combinedMotionManager;
 
     private Cube cube;
@@ -46,26 +44,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     public Optograph2DCubeRenderer() {
         Log.v(Constants.DEBUG_TAG, "renderer constructor");
         this.cube = new Cube();
-        this.rotationVectorListener = new RotationVectorListener();
         this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
         Matrix.setIdentityM(rotationMatrix, 0);
-    }
-
-
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // only listen for Rotationvector Sensor
-        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            // pipe sensor event to our rotationVectorListener and obtain inverse rotation
-            rotationVectorListener.handleSensorEvent(event);
-            // rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Override
@@ -97,7 +77,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     public void onDrawFrame(GL10 gl) {
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
-        rotationMatrix = combinedMotionManager.getRotationMatrix();
+        rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         //Log.v(Constants.DEBUG_TAG, Arrays.toString(rotationMatrix));
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
@@ -127,5 +107,17 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     public void touchEnd(Point point) {
         combinedMotionManager.touchEnd(point);
+    }
+
+    public void registerOnSensors() {
+        combinedMotionManager.registerOnCoreMotionListener();
+    }
+
+    public void unregisterOnSensors() {
+        combinedMotionManager.unregisterOnCoreMotionListener();
+    }
+
+    public boolean isRegisteredOnSensors() {
+        return combinedMotionManager.isRegisteredOnCoreMotionListener();
     }
 }

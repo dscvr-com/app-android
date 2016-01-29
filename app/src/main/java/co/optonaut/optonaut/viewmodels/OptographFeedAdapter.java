@@ -281,7 +281,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             descriptionBar.setVisibility(View.VISIBLE);
             ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
             // todo: unregister touch listener
-            optograph2DCubeView.registerRotationVectorListener();
+            optograph2DCubeView.registerRendererOnSensors();
             isNavigationModeCombined = false;
         }
 
@@ -290,7 +290,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             descriptionBar.setVisibility(View.INVISIBLE);
             ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
             // todo: register touch listener
-            optograph2DCubeView.unregisterRotationVectorListener();
+            optograph2DCubeView.unregisterRendererOnSensors();
             isNavigationModeCombined = true;
         }
 

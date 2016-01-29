@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
@@ -23,9 +24,12 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO: initialize in Application
         // initialize constants
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
+        CoreMotionListener.initialize(this);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_redesign);
