@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import co.optonaut.optonaut.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,9 +28,15 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         inVRMode = false;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -75,7 +82,6 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     @Override
     protected void refresh() {
         // TODO: actually refresh data
-        swipeContainer.setRefreshing(false);
     }
 
     @Override

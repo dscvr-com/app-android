@@ -105,4 +105,10 @@ public class Maths {
         Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
         return scaleMatrix;
     }
+
+    public static float[] buildInverse(float[] matrix) {
+        float[] inverse = new float[16];
+        Matrix.invertM(inverse, 0, matrix, 0);
+        return inverse;
+    }
 }

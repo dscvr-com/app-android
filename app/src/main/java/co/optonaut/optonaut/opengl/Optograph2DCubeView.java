@@ -1,12 +1,14 @@
 package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.squareup.picasso.Picasso;
@@ -70,11 +72,11 @@ public class Optograph2DCubeView extends GLSurfaceView{
         unregisterRotationVectorListener();
     }
 
-
     public void registerRotationVectorListener() {
         sensorManager.registerListener(optograph2DCubeRenderer, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_UI);
         rotationListenerIsRegistered = true;
     }
+
 
     public void unregisterRotationVectorListener() {
         sensorManager.unregisterListener(optograph2DCubeRenderer);
@@ -129,4 +131,30 @@ public class Optograph2DCubeView extends GLSurfaceView{
         result = 31 * result + (optograph != null ? optograph.hashCode() : 0);
         return result;
     }
+
+    public OnTouchListener getOnTouchListener() {
+        return (v, event) -> {
+            Point point = new Point((int) event.getX(), (int) event.getY());
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.v(Constants.DEBUG_TAG, "DOWN: " + point.toString());
+                    optograph2DCubeRenderer.touchStart(point);
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    Log.v(Constants.DEBUG_TAG, "MOVE: " + point.toString());
+                    optograph2DCubeRenderer.touchMove(point);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    Log.v(Constants.DEBUG_TAG, "UP: " + point.toString());
+                    optograph2DCubeRenderer.touchEnd(point);
+                    return true;
+                default:
+                    // ignore
+                    Log.v(Constants.DEBUG_TAG, "NONE: " + event.getAction());
+                    return true;
+            }
+        };
+    }
+
 }

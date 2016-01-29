@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,7 +28,9 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
 
 /**
  * @author Nilan Marktanner
@@ -36,6 +39,7 @@ import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdapter.OptographViewHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     List<Optograph> optographs;
+    private SnappyRecyclerView snappyRecyclerView;
 
 
     public OptographFeedAdapter() {
@@ -52,13 +56,34 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        // TODO: add touch navigation and don't allow scrolling
+        optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                // TODO: add touch navigation and don't allow scrolling
-                // TODO: hide notification bar
-                viewHolder.toggleVisibility();
-                Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.v(Constants.DEBUG_TAG, "ACTION: " + event.getAction());
+                if (viewHolder.isNavigationModeCombined) {
+                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+                        Log.v(Constants.DEBUG_TAG, "Single Click in combined Navigation");
+                        viewHolder.toggleNavigationMode();
+                        snappyRecyclerView.enableScrolling();
+                        Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
+                        return true;
+                    } else {
+                        Log.v(Constants.DEBUG_TAG, "Pipe touch in combined Navigation");
+                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
+                    }
+                } else {
+                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+                        Log.v(Constants.DEBUG_TAG, "Single Click in simple Navigation");
+                        viewHolder.toggleNavigationMode();
+                        snappyRecyclerView.disableScrolling();
+                        Snackbar.make(itemView, "Navigation mode toggled", Snackbar.LENGTH_SHORT).show();
+                        return true;
+                    } else {
+                        Log.v(Constants.DEBUG_TAG, "Pipe touch in simple Navigation");
+                        return true;
+                    }
+                }
             }
         });
 
@@ -75,6 +100,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         int newMarginBottom = ITEM_HEIGHT - ((MainActivityRedesign) itemView.getContext()).getLowerBoundary() + lp.bottomMargin;
         lp.setMargins(0, 0, 0, newMarginBottom);
         rl.setLayoutParams(lp);
+
+        rl.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // don't pipe click events to views below description bar
+                return true;
+            }
+        });
     }
 
     private void initializeProfileBar(final View itemView) {
@@ -86,6 +119,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         lp.height = Constants.getInstance().getToolbarHeight();
         lp.setMargins(0, newMarginTop, 0, 0);
         rl.setLayoutParams(lp);
+
+        rl.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // don't pipe click events to views below profile bar
+                return true;
+            }
+        });
 
         ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
         profileView.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +162,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         });
     }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        snappyRecyclerView = (SnappyRecyclerView) recyclerView;
+    }
 
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
@@ -195,12 +242,30 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
     }
 
+    public Optograph get(int position) {
+        return optographs.get(position);
+    }
+
+    public Optograph getOldest() {
+        return get(getItemCount() - 1);
+    }
+
+    public boolean isEmpty() {
+        return optographs.isEmpty();
+    }
+
+    public List<Optograph> getOptographs() {
+        return this.optographs;
+    }
+
+
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;
         RelativeLayout profileBar;
         RelativeLayout descriptionBar;
-        private boolean informationBarsAreVisible;
         private Optograph2DCubeView optograph2DCubeView;
+        private boolean isNavigationModeCombined;
+
 
         public OptographViewHolder(View rowView) {
             super(rowView);
@@ -217,7 +282,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
             // todo: unregister touch listener
             optograph2DCubeView.registerRotationVectorListener();
-            informationBarsAreVisible = true;
+            isNavigationModeCombined = false;
         }
 
         private void setInformationBarsInvisible() {
@@ -226,36 +291,24 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
             // todo: register touch listener
             optograph2DCubeView.unregisterRotationVectorListener();
-            informationBarsAreVisible = false;
+            isNavigationModeCombined = true;
         }
-
 
         public FeedItemBinding getBinding() {
             return binding;
         }
 
-        public void toggleVisibility() {
-            if (informationBarsAreVisible) {
-                setInformationBarsInvisible();
-            } else {
+
+        public void toggleNavigationMode() {
+            if (isNavigationModeCombined) {
                 setInformationBarsVisible();
+            } else {
+                setInformationBarsInvisible();
             }
         }
-    }
 
-    public Optograph get(int position) {
-        return optographs.get(position);
-    }
-
-    public Optograph getOldest() {
-        return get(getItemCount() - 1);
-    }
-
-    public boolean isEmpty() {
-        return optographs.isEmpty();
-    }
-
-    public List<Optograph> getOptographs() {
-        return this.optographs;
+        public boolean isNavigationModeCombined() {
+            return isNavigationModeCombined;
+        }
     }
 }

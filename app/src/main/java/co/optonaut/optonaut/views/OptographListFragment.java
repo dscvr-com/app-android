@@ -2,7 +2,6 @@ package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
@@ -22,7 +20,6 @@ import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
  */
 public abstract class OptographListFragment extends Fragment {
     protected OptographFeedAdapter optographFeedAdapter;
-    protected SwipeRefreshLayout swipeContainer;
     protected ApiConsumer apiConsumer;
     protected SnappyRecyclerView recList;
 
@@ -63,19 +60,6 @@ public abstract class OptographListFragment extends Fragment {
                 loadMore();
             }
         });
-
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(this::refresh);
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        // TODO: fiddling...
-        int topOffset = Constants.getInstance().getToolbarHeight() + 5;
-        swipeContainer.setProgressViewOffset(true, topOffset, topOffset + 2 * Constants.getInstance().getExpectedStatusBarHeight());
     }
 
     @Override

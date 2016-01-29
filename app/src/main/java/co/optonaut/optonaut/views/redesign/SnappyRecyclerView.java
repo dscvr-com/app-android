@@ -1,9 +1,13 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+
+import co.optonaut.optonaut.util.Constants;
 
 /**
  * @author Nilan Marktanner
@@ -12,6 +16,7 @@ import android.view.MotionEvent;
 
 // source: http://stackoverflow.com/a/26445064/1176596
 public final class SnappyRecyclerView extends RecyclerView {
+    private boolean isScrollingEnabled = true;
 
     public SnappyRecyclerView(Context context) {
         super(context);
@@ -38,28 +43,60 @@ public final class SnappyRecyclerView extends RecyclerView {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        // We want the parent to handle all touch events--there's a lot going on there,
-        // and there is no reason to overwrite that functionality--bad things will happen.
-        final boolean ret = super.onTouchEvent(e);
-        final LayoutManager lm = getLayoutManager();
-
-        if (lm instanceof ISnappyLayoutManager
-                && (e.getAction() == MotionEvent.ACTION_UP ||
-                e.getAction() == MotionEvent.ACTION_CANCEL)
-                && getScrollState() == SCROLL_STATE_IDLE) {
-            // The layout manager is a SnappyLayoutManager, which means that the
-            // children should be snapped to a grid at the end of a drag or
-            // fling. The motion event is either a user lifting their finger or
-            // the cancellation of a motion events, so this is the time to take
-            // over the scrolling to perform our own functionality.
-            // Finally, the scroll state is idle--meaning that the resultant
-            // velocity after the user's gesture was below the threshold, and
-            // no fling was performed, so the view may be in an unaligned state
-            // and will not be flung to a proper state.
-            smoothScrollToPosition(((ISnappyLayoutManager) lm).getFixScrollPos());
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        // intercept only if scrolling is enabled
+        if (isScrollingEnabled) {
+            return super.onInterceptTouchEvent(event);
+        } else {
+            return false;
         }
+    }
 
-        return ret;
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        Log.v(Constants.DEBUG_TAG, "Received touch event");
+        if (isScrollingEnabled) {
+            // We want the parent to handle all touch events--there's a lot going on there,
+            // and there is no reason to overwrite that functionality--bad things will happen.
+            final boolean ret = super.onTouchEvent(e);
+            final LayoutManager lm = getLayoutManager();
+
+            if (lm instanceof ISnappyLayoutManager
+                    && (e.getAction() == MotionEvent.ACTION_UP ||
+                    e.getAction() == MotionEvent.ACTION_CANCEL)
+                    && getScrollState() == SCROLL_STATE_IDLE) {
+                // The layout manager is a SnappyLayoutManager, which means that the
+                // children should be snapped to a grid at the end of a drag or
+                // fling. The motion event is either a user lifting their finger or
+                // the cancellation of a motion events, so this is the time to take
+                // over the scrolling to perform our own functionality.
+                // Finally, the scroll state is idle--meaning that the resultant
+                // velocity after the user's gesture was below the threshold, and
+                // no fling was performed, so the view may be in an unaligned state
+                // and will not be flung to a proper state.
+                smoothScrollToPosition(((ISnappyLayoutManager) lm).getFixScrollPos());
+            }
+
+            return ret;
+        } else {
+            // disable scrolling but still pipe touch events
+            return false;
+        }
+    }
+
+    public boolean isScrollingEnabled() {
+        return isScrollingEnabled;
+    }
+
+    public void toggleScrolling() {
+        isScrollingEnabled = !isScrollingEnabled;
+    }
+
+    public void enableScrolling() {
+        isScrollingEnabled = true;
+    }
+
+    public void disableScrolling() {
+        isScrollingEnabled = false;
     }
 }

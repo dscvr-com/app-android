@@ -9,6 +9,7 @@ import android.view.View;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
 
@@ -24,6 +25,7 @@ public class MainActivityRedesign extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // initialize constants
         Constants.initializeConstants(this);
+        GestureDetectors.initialize(this);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_redesign);

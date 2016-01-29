@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.opengl;
 
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -7,11 +8,17 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+
+import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.sensors.RotationVectorListener;
+import co.optonaut.optonaut.sensors.TouchEventListener;
 import co.optonaut.optonaut.util.Constants;
 
 /**
@@ -23,6 +30,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 
+    private static final float DAMPING_FACTOR = 0.9f;
+
     private final float[] mvpMatrix = new float[16];
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
@@ -30,6 +39,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
 
     private RotationVectorListener rotationVectorListener;
+    private CombinedMotionManager combinedMotionManager;
 
     private Cube cube;
 
@@ -37,6 +47,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
         Log.v(Constants.DEBUG_TAG, "renderer constructor");
         this.cube = new Cube();
         this.rotationVectorListener = new RotationVectorListener();
+        this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
         Matrix.setIdentityM(rotationMatrix, 0);
     }
 
@@ -48,7 +59,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // pipe sensor event to our rotationVectorListener and obtain inverse rotation
             rotationVectorListener.handleSensorEvent(event);
-            rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
+            // rotationMatrix = rotationVectorListener.getRotationMatrixInverse();
         }
     }
 
@@ -86,6 +97,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
     public void onDrawFrame(GL10 gl) {
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
+        rotationMatrix = combinedMotionManager.getRotationMatrix();
+        //Log.v(Constants.DEBUG_TAG, Arrays.toString(rotationMatrix));
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
         // Calculate the projection and view transformation
@@ -102,5 +115,17 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer, SensorEv
 
     public void reset() {
         this.cube.resetTextures();
+    }
+
+    public void touchStart(Point point) {
+        combinedMotionManager.touchStart(point);
+    }
+
+    public void touchMove(Point point) {
+        combinedMotionManager.touchMove(point);
+    }
+
+    public void touchEnd(Point point) {
+        combinedMotionManager.touchEnd(point);
     }
 }

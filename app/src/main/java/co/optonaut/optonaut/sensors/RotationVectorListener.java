@@ -14,6 +14,7 @@ public class RotationVectorListener extends RotationMatrixProvider {
     private float[] rotationMatrix = new float[16];
 
 
+    // TODO: use singleton pattern (when 0 consumers, stop listening)
     public RotationVectorListener() {
         Matrix.setIdentityM(rotationMatrix, 0);
         Matrix.setRotateM(correctionMatrix, 0, 90, 1, 0, 0);
@@ -50,12 +51,5 @@ public class RotationVectorListener extends RotationMatrixProvider {
     @Override
     public float[] getRotationMatrix() {
         return rotationMatrix;
-    }
-
-    public float[] getRotationMatrixInverse() {
-        float[] rotationMatrixInverse = new float[16];
-        Matrix.invertM(rotationMatrixInverse, 0, rotationMatrix, 0);
-
-        return rotationMatrixInverse;
     }
 }

@@ -55,6 +55,6 @@ public class ProfileFeedFragment extends OptographListFragment {
     @Override
     protected void refresh() {
         // TODO!
-        swipeContainer.setRefreshing(false);
+        // swipeContainer.setRefreshing(false);
     }
 }
