@@ -31,7 +31,7 @@
         <RelativeLayout
             android:id="@+id/profile_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_gravity="top"
             android:background="@color/semiTransparentOverlay">
             <de.hdodenhof.circleimageview.CircleImageView

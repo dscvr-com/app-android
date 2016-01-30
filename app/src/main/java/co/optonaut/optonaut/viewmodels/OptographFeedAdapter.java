@@ -114,7 +114,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
         // set margin and height
         int newMarginTop = ((MainActivityRedesign) itemView.getContext()).getUpperBoundary();
-        lp.height = Constants.getInstance().getToolbarHeight();
         lp.setMargins(0, newMarginTop, 0, 0);
         rl.setLayoutParams(lp);
 
