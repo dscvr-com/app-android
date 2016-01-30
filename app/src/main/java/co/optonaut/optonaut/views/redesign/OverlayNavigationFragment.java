@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,10 +45,20 @@ public class OverlayNavigationFragment extends Fragment {
         homeLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
         homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
+        View home_indicator = (View) view.findViewById(R.id.home_button_indicator);
+        home_indicator.setVisibility(View.VISIBLE);
         homeButton.setTypeface(Constants.getInstance().getIconTypeface());
         homeButton.setText(String.valueOf((char) 0xe90e));
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: switch to home screen
+                home_indicator.setVisibility(View.VISIBLE);
+            }
+        });
 
         Button recordButton = (Button) view.findViewById(R.id.record_button);
+        View profile_button_indicator = (View) view.findViewById(R.id.profile_button_indicator);
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {

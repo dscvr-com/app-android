@@ -76,8 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/record_group"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            >
+            android:layout_centerVertical="true">
             <Button
                 android:id="@+id/home_button"
                 android:textColor="@color/bright"
@@ -88,16 +87,26 @@
                 android:layout_height="28dp"
                 android:textSize="28dp"/>
             <TextView
-                android:layout_below="@+id/home_button"
-                android:layout_marginTop="10dp"
-                android:layout_centerHorizontal="true"
                 android:id="@+id/home_label"
+                android:paddingBottom="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/home_label"
                 android:textAllCaps="true"
                 android:textSize="9dp"
                 android:textColor="@color/bright"/>
+            <View
+                android:id="@+id/home_button_indicator"
+                android:layout_width="62dp"
+                android:layout_height="5dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/rounded_indicator_shape"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible">
+
+            </View>
         </RelativeLayout>
 
 
@@ -112,7 +121,7 @@
             <Button
                 android:id="@+id/record_button"
                 android:textColor="@color/bright"
-                android:background="@drawable/rounded_corners_colored"
+                android:background="@drawable/record_button_shape"
                 android:layout_centerVertical="true"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -127,7 +136,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9dp"/>
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -149,8 +157,8 @@
                 android:textSize="28dp"/>
             <TextView
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/profile_button"
-                android:layout_marginTop="10dp"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="30dp"
                 android:id="@+id/profile_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -158,6 +166,17 @@
                 android:textAllCaps="true"
                 android:textSize="9dp"
                 android:textColor="@color/bright"/>
+
+            <View
+                android:id="@+id/profile_button_indicator"
+                android:layout_width="62dp"
+                android:layout_height="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/rounded_indicator_shape"
+                android:visibility="invisible">
+
+            </View>
         </RelativeLayout>
     </RelativeLayout>
 
