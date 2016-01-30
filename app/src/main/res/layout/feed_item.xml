@@ -92,6 +92,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
                 android:layout_marginLeft="5dp"
+                android:maxWidth="300dp"
                 app:trimLength="25"
                 android:text="@{optograph.text}"/>
 
