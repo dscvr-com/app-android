@@ -16,11 +16,12 @@ import org.joda.time.format.PeriodFormatterBuilder;
  */
 public class TimeUtils {
     public static String getTimeAgo(DateTime createdAt) {
-        Period period = new Period(createdAt, DateTime.now(), PeriodType.yearMonthDayTime());
+        Period period = new Period(createdAt, DateTime.now());
 
         if (period.getMinutes() == 0
                 && period.getHours() == 0
                 && period.getDays() == 0
+                && period.getWeeks() == 0
                 && period.getMonths() == 0
                 && period.getYears() == 0) {
             return "just now";
@@ -35,6 +36,10 @@ public class TimeUtils {
             periodFormatterBuilder
                     .appendMonths()
                     .appendSuffix(" month", " months");
+        } else if (period.getWeeks() >= 1) {
+            periodFormatterBuilder
+                    .appendWeeks()
+                    .appendSuffix(" week", " weeks");
         } else if (period.getDays() >= 1) {
             periodFormatterBuilder
                     .appendDays()
