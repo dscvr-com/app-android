@@ -18,6 +18,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -96,9 +97,9 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
             this.optograph = intent.getExtras().getParcelable("optograph");
             if (optograph == null) {
                 //throw new RuntimeException("No optograph reveiced in VRActivity!");
-                Log.d(Constants.DEBUG_TAG, "No optograph reveiced in VRActivity!");
+                Timber.e("No optograph reveiced in VRActivity!");
             } else {
-                Log.d(Constants.DEBUG_TAG, "Creating VRActivity for Optograph " + optograph.getId());
+                Timber.v("creating VRActivity for Optograph %s", optograph.getId());
             }
         }
     }
@@ -124,18 +125,14 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     }
 
     private void switchToNormalMode() {
-        Log.d(Constants.DEBUG_TAG, "Switched to Normal Mode");
+        Timber.v("switching to feed mode");
         inVRMode = false;
-        //Intent intent = new Intent(this, MainActivityRedesign.class);
-
         this.finish();
-
-        //startActivity(intent);
     }
 
     @Override
     public void onBackPressed() {
-        // TODO: retain optograph feed adapter in MainFeedFragment! then activate this hack...
+        // TODO: stop endless switching loop with timer?
         // switchToNormalMode();
     }
 }

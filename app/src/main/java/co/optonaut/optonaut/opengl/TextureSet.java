@@ -8,6 +8,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import co.optonaut.optonaut.util.Constants;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -49,7 +50,7 @@ public abstract class TextureSet {
 
         @Override
         public void onBitmapFailed(Drawable errorDrawable) {
-            Log.d(Constants.DEBUG_TAG, "Failed to load texture into texture target " + index);
+            Timber.d("Failed to load texture into texture target %s", index);
         }
 
         @Override

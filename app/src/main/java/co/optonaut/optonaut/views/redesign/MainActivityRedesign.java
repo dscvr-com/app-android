@@ -13,6 +13,7 @@ import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -85,7 +86,7 @@ public class MainActivityRedesign extends AppCompatActivity {
             } else if (overlayFragment == null && fragment instanceof OverlayNavigationFragment) {
                 overlayFragment = (OverlayNavigationFragment) fragment;
             } else {
-                Log.w(Constants.DEBUG_TAG, "Unknown Fragment in SupportFragmentManager");
+                Timber.w("unknown fragment in SupportFragmentManager");
             }
         }
     }
@@ -134,7 +135,7 @@ public class MainActivityRedesign extends AppCompatActivity {
                 hideStatusBar();
             }
         } else {
-            Log.w(Constants.DEBUG_TAG, "Setting overlay visibility on null object");
+            Timber.w("setting overlay visibility on null object");
         }
     }
 

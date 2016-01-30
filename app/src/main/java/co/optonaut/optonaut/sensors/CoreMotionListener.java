@@ -11,6 +11,7 @@ import android.util.Log;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -47,10 +48,10 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
 
     public static void register() {
         if (true) {
-            Log.v(Constants.DEBUG_TAG, "Registering CoreMotionListener");
+            Timber.v("Registering CoreMotionListener");
             sensorManager.registerListener(coreMotionListener, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_FASTEST);
         } else {
-            Log.v(Constants.DEBUG_TAG, "Skip Registering CoreMotionListener");
+            Timber.v("Skip Registering CoreMotionListener");
         }
 
         observers++;
@@ -59,10 +60,10 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     public static void unregister() {
         observers--;
         if (observers == 0) {
-            Log.v(Constants.DEBUG_TAG, "Unregistering CoreMotionListener");
+            Timber.v("Unregistering CoreMotionListener");
             sensorManager.unregisterListener(coreMotionListener);
         } else if (observers < 0) {
-            Log.w(Constants.DEBUG_TAG, "Unregister call but no observer!");
+            Timber.w("Unregister call but no observer!");
         }
     }
 

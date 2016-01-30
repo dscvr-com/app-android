@@ -20,6 +20,7 @@ import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.sensors.RotationVectorListener;
 import co.optonaut.optonaut.sensors.TouchEventListener;
 import co.optonaut.optonaut.util.Constants;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -42,7 +43,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private Cube cube;
 
     public Optograph2DCubeRenderer() {
-        Log.v(Constants.DEBUG_TAG, "renderer constructor");
+        Timber.v("cube renderer constructor");
         this.cube = new Cube();
         this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
         Matrix.setIdentityM(rotationMatrix, 0);
@@ -50,7 +51,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        Log.v(Constants.DEBUG_TAG, "onSurfaceCreated");
+        Timber.v("onSurfaceCreated");
         this.cube.initialize();
 
         // Set the camera position
@@ -66,7 +67,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        Log.v(Constants.DEBUG_TAG, "onSurfaceChanged");
+        Timber.v("onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         float ratio = (float) width / height;
 

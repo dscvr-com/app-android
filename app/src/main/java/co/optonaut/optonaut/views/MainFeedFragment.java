@@ -14,6 +14,7 @@ import android.view.View;
 import co.optonaut.optonaut.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -100,13 +101,12 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     }
 
     private void switchToVRMode() {
-        Log.d(Constants.DEBUG_TAG, "Switched to VRMode");
+        Timber.v("switching to VR mode");
         inVRMode = true;
         Activity activity = getActivity();
         Intent intent = new Intent(activity, VRModeActivity.class);
         intent.putExtra("optograph", getCurrentOptograph());
 
-        //activity.finish();
 
         activity.startActivity(intent);
     }

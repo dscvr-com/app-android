@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -157,7 +158,7 @@ public class OverlayNavigationFragment extends Fragment {
         if (getView() != null) {
             getView().setVisibility(visibility);
         } else {
-            Log.w(Constants.DEBUG_TAG, "Setting visibility of null-View!");
+            Timber.w("setting visibility of null-View!");
         }
     }
 
@@ -172,7 +173,7 @@ public class OverlayNavigationFragment extends Fragment {
                 setTotalVisibility(View.INVISIBLE);
                 toggled = true;
             } else {
-                Log.w(Constants.DEBUG_TAG, "Visibility of Overlay was neither invisible nor visible");
+                Timber.w("visibility of overlay was neither invisible nor visible");
             }
         }
         return toggled;
@@ -184,9 +185,9 @@ public class OverlayNavigationFragment extends Fragment {
             int[] location = new int[2];
             view.findViewById(R.id.navigation_buttons).getLocationOnScreen(location);
             lowerBoundary = location[1];
-            Log.d(Constants.DEBUG_TAG, "lower: " + lowerBoundary);
+            Timber.d("lower boundary: %s", lowerBoundary);
         } else {
-            Log.w(Constants.DEBUG_TAG, "lower boundary not set yet");
+            Timber.w("lower boundary not set yet");
         }
         return lowerBoundary;
     }
@@ -197,9 +198,9 @@ public class OverlayNavigationFragment extends Fragment {
             int[] location = new int[2];
             toolbar.getLocationOnScreen(location);
             upperBoundary = location[1] + toolbar.getHeight();
-            Log.d(Constants.DEBUG_TAG, "upper: " + upperBoundary);
+            Timber.d("upper boundary: %s", upperBoundary);
         } else {
-            Log.w(Constants.DEBUG_TAG, "upper boundary not set yet");
+            Timber.w("upper boundary not set yet");
         }
         return upperBoundary;
     }

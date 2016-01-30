@@ -30,6 +30,7 @@ import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -59,21 +60,20 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // Log.v(Constants.DEBUG_TAG, "ACTION: " + event.getAction());
                 if (viewHolder.isNavigationModeCombined) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        Log.v(Constants.DEBUG_TAG, "Single Click in combined Navigation");
+                        Timber.v("detected single click in combined navigation");
                         viewHolder.toggleNavigationMode();
                         snappyRecyclerView.enableScrolling();
                         // still return optograph2DCubeView for registering end of touching
                         return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
                     } else {
-                        Log.v(Constants.DEBUG_TAG, "Pipe touch in combined Navigation");
+                        Timber.v("pipe touch in combined navigation to optograph view");
                         return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
                     }
                 } else {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        Log.v(Constants.DEBUG_TAG, "Single Click in simple Navigation");
+                        Timber.v("detected single click in simple navigation");
                         viewHolder.toggleNavigationMode();
                         snappyRecyclerView.disableScrolling();
                         return true;
@@ -156,10 +156,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.share_item) {
-                            Log.v(Constants.DEBUG_TAG, "Clicked share");
+                            Timber.v("clicked share");
                             return true;
                         } else if (item.getItemId() == R.id.report_item) {
-                            Log.v(Constants.DEBUG_TAG, "Clicked report");
+                            Timber.v("clicked report");
                             return true;
                         }
                         return false;
@@ -210,7 +210,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
             holder.getBinding().executePendingBindings();
         } else {
-            Log.d(Constants.DEBUG_TAG, "Re-Binding of OptographViewHolder at position " + position);
+            Timber.d("rebinding of OptographViewHolder at position " + position);
         }
     }
 

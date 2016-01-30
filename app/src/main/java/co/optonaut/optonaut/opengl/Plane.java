@@ -11,6 +11,7 @@ import java.nio.FloatBuffer;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MyGLUtils;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -130,7 +131,7 @@ public class Plane {
 
     private void loadGLTexture() {
         if (texture == null) {
-            Log.d(Constants.DEBUG_TAG, "Loading texture but got no texture in Plane!");
+            Timber.w("Loading texture but got no texture in Plane!");
             return;
         }
         GLES20.glGenTextures(1, this.textures, 0);
@@ -148,12 +149,12 @@ public class Plane {
 
     public void draw(float[] mvpMatrix) {
         if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
-            Log.v(Constants.DEBUG_TAG, "Rebinding texture, context was probably lost.");
+            Timber.v("Rebinding texture, context was probably lost.");
             synchronized (this) {
                 loadGLTexture();
             }
         } else if (GLES20.glIsTexture(this.textures[0]) && !hasTexture) {
-            Log.d(Constants.DEBUG_TAG, "Got no texture but is texture!");
+            Timber.w("Got no texture but is texture!");
         }
 
         if (textureUpdated) {

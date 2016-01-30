@@ -15,6 +15,8 @@ import android.view.Display;
 import java.io.IOException;
 import java.io.InputStream;
 
+import timber.log.Timber;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-12-30
@@ -62,7 +64,7 @@ public class Constants {
 
     private void initializeToolbarHeight(Context context) {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
-                new int[] { android.R.attr.actionBarSize });
+                new int[]{android.R.attr.actionBarSize});
         toolbarHeight = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
     }
@@ -72,7 +74,7 @@ public class Constants {
         if (resourceId > 0) {
             expectedStatusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         } else {
-            Log.d(DEBUG_TAG, "Could not load expected StatusBar height!");
+            Timber.e("Could not load expected StatusBar height!");
             expectedStatusBarHeight = 0;
         }
     }
@@ -86,7 +88,7 @@ public class Constants {
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             mainIcon = new BitmapDrawable(context.getResources(), bitmap);
         } catch (final IOException e) {
-            Log.d(DEBUG_TAG, "Could not load main icon!");
+            Timber.e("Could not load main icon!");
             e.printStackTrace();
             mainIcon = null;
         } finally {
@@ -115,7 +117,7 @@ public class Constants {
             is = am.open(BLACK_DEFAULT_TEXTURE_PATH);
             defaultTexture = BitmapFactory.decodeStream(is);
         } catch (final IOException e) {
-            Log.d(DEBUG_TAG, "Could not load default texture!");
+            Timber.e("Could not load default texture!");
             e.printStackTrace();
             defaultTexture = null;
         } finally {

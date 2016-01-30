@@ -20,15 +20,13 @@ import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
  * @date 2015-11-13
  */
 public class ApiConsumer {
-
-    private static final String DEBUG_TAG = "Optonaut";
-
     // private static final String BASE_URL = "https://api-staging.optonaut.co/";
     private static final String BASE_URL = "http://optonaut.ngrok.io";
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
@@ -50,12 +48,12 @@ public class ApiConsumer {
                 Request newRequest = chain.request().newBuilder().addHeader("User-Agent", "Retrofit-Sample-App").build();
                 Request request = chain.request();
 
-                Log.v(DEBUG_TAG, request.headers().toString());
-                Log.v(DEBUG_TAG, request.toString());
+                Timber.v(request.headers().toString());
+                Timber.v(request.toString());
 
                 com.squareup.okhttp.Response response = chain.proceed(request);
-                Log.v(DEBUG_TAG, response.headers().toString());
-                Log.v(DEBUG_TAG, response.toString());
+                Timber.v(response.headers().toString());
+                Timber.v(response.toString());
 
                 return chain.proceed(newRequest);
             }
@@ -90,18 +88,18 @@ public class ApiConsumer {
 
     public void getOptographs(int limit, String older_than, Callback<List<Optograph>> callback) throws IOException {
         Call<List<Optograph>> call = service.getOptographs(limit, older_than);
-        Log.d(DEBUG_TAG, "Get Optograph request fired: get " + limit + " optographs older than " + older_than);
+        Timber.i("get optographs request: %s older than %s", limit, older_than);
         call.enqueue(callback);
     }
 
     public void getPerson(String id, Callback<Person> callback) throws IOException {
         Call<Person> call = service.getPerson(id);
-        Log.d(DEBUG_TAG, "Get Person request fired: get person " + id);
+        Timber.d("get person request: %s", id);
         call.enqueue(callback);
     }
 
     public Observable<Optograph> getOptographs(int limit, String older_than) {
-        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than);
+        Timber.i("get optographs request: %s older than %s", limit, older_than);
         return service.getOptographsAsObservable(limit, older_than).flatMap(Observable::from);
     }
 
@@ -114,7 +112,7 @@ public class ApiConsumer {
     }
 
     public Observable<Optograph> getOptographsFromPerson(String id, int limit, String older_than) {
-        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs from person " + id + " older than " + older_than);
+        Timber.i("get optographs request: %i older than %s from person %s", limit, older_than, id);
         return service.getOptographsFromPerson(id, limit, older_than).flatMap(Observable::from);
     }
 
@@ -131,16 +129,13 @@ public class ApiConsumer {
     }
 
     public Observable<Optograph> searchOptographs(int limit, String older_than, String keyword) {
-        Log.d(DEBUG_TAG, "Get Observable of Optograph request fired: get " + limit + " optographs older than " + older_than + " fitting keyword " + keyword);
+        Timber.i("get optographs request: %s older than %s fitting keyword %s", limit, older_than, keyword);
         return service.searchOptographs(limit, older_than, keyword).flatMap(Observable::from);
     }
 
     public Observable<Optograph> searchOptographs(int limit, String keyword) {
         return searchOptographs(limit, getNow(), keyword);
     }
-
-
-
 
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());

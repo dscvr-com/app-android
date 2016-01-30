@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -51,15 +52,13 @@ public class Optograph2DCubeView extends GLSurfaceView {
     public void onResume() {
         super.onResume();
 
-        Log.d(Constants.DEBUG_TAG, "onResume");
-        // TODO: update texture set
         registerRendererOnSensors();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(Constants.DEBUG_TAG, "onPause");
+
         unregisterRendererOnSensors();
     }
 
@@ -73,7 +72,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
     }
 
     public void initializeTextures() {
-        Log.v(Constants.DEBUG_TAG, "Loading textures for Cube");
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(getContext())
                     .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i]))
@@ -84,7 +82,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
     public void setOptograph(Optograph optograph) {
         // this view is set with the same optograph - abort
         if (optograph.equals(this.optograph)) {
-            Log.d(Constants.DEBUG_TAG, "Setting same optograph in 2DCubeView");
+            Timber.v("setting same optograph in 2DCubeView");
             return;
         }
 

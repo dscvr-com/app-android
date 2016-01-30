@@ -9,6 +9,7 @@ import java.util.List;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -183,7 +184,7 @@ public class Cube {
 
         @Override
         public void reset() {
-            Log.d(Constants.DEBUG_TAG, "Resetting planes");
+            Timber.i("Resetting planes");
             for (int i = 0; i < getTextureSetSize(); ++i) {
                 planes[i].resetTexture();
             }

@@ -1,13 +1,11 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import co.optonaut.optonaut.util.Constants;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -54,7 +52,7 @@ public final class SnappyRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Log.v(Constants.DEBUG_TAG, "Received touch event in SnappyRecyclerView");
+        Timber.v("received touch event in SnappyRecyclerView");
         if (isScrollingEnabled) {
             // We want the parent to handle all touch events--there's a lot going on there,
             // and there is no reason to overwrite that functionality--bad things will happen.
@@ -80,7 +78,7 @@ public final class SnappyRecyclerView extends RecyclerView {
             return ret;
         } else {
             // disable scrolling but still pipe touch events
-            Log.v(Constants.DEBUG_TAG, "Scrolling disabled");
+            Timber.v("scrolling disabled but got touch event");
             return false;
         }
     }
