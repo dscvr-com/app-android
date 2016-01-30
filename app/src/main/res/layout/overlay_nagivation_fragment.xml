@@ -67,6 +67,7 @@
         android:id="@+id/navigation_buttons"
         android:layout_width="match_parent"
         android:layout_height="126dp"
+        android:background="@drawable/black_gradient"
         android:layout_gravity="bottom">
 
         <RelativeLayout
