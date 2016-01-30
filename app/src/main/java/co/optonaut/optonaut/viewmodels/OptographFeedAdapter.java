@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,6 +28,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
+import co.optonaut.optonaut.views.redesign.ExpandableTextView;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
 
@@ -97,7 +97,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
 
         int newMarginBottom = ITEM_HEIGHT - ((MainActivityRedesign) itemView.getContext()).getLowerBoundary() + lp.bottomMargin;
-        lp.setMargins(0, 0, 0, newMarginBottom);
+        lp.setMargins(lp.leftMargin, lp.topMargin, lp.rightMargin, newMarginBottom);
         rl.setLayoutParams(lp);
 
         rl.setOnTouchListener(new View.OnTouchListener() {
@@ -135,10 +135,20 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             }
         });
 
-        Button settingsButton = (Button) itemView.findViewById(R.id.settings_button);
-        settingsButton.setTypeface(Constants.getInstance().getDefaultTypeface());
-        settingsButton.setText(String.valueOf((char) 0xe904));
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+        TextView profileLabel = (TextView) itemView.findViewById(R.id.person_name_label);
+        profileLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
+
+        TextView locationLabel = (TextView) itemView.findViewById(R.id.location_label);
+        profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
+
+        TextView timeAgoLabel = (TextView) itemView.findViewById(R.id.time_ago);
+        timeAgoLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
+
+
+        TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_label);
+        settingsLabel.setTypeface(Constants.getInstance().getIconTypeface());
+        settingsLabel.setText(String.valueOf((char) 0xe904));
+        settingsLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(itemView.getContext(), v);
@@ -183,7 +193,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.itemView.setLayoutParams(params);
 
             TextView heart_label = (TextView) holder.itemView.findViewById(R.id.heart_label);
-            heart_label.setTypeface(Constants.getInstance().getDefaultTypeface());
+            heart_label.setTypeface(Constants.getInstance().getIconTypeface());
 
             // TODO: check if user has starred optograph
             boolean userLikesOptograph = false;

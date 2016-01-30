@@ -6,7 +6,6 @@ import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
@@ -34,7 +33,9 @@ public class Constants {
     private int maxY;
     private Bitmap defaultTexture;
     private BitmapDrawable mainIcon;
-    private Typeface typeface;
+    private Typeface icomoon_typeface;
+    private Typeface SF_UI_Light;
+    private Typeface SF_UI_Regular;
     private int expectedStatusBarHeight;
     private int toolbarHeight;
 
@@ -44,7 +45,7 @@ public class Constants {
 
         initializeDefaultTexture(activity);
 
-        initializeTypeface(activity);
+        initializeTypefaces(activity);
 
         initializeMainIcon(activity);
 
@@ -99,8 +100,11 @@ public class Constants {
         }
     }
 
-    private void initializeTypeface(Context context) {
-        typeface = Typeface.createFromAsset(context.getAssets(), "icons.ttf");
+    private void initializeTypefaces(Context context) {
+        AssetManager am = context.getAssets();
+        icomoon_typeface = Typeface.createFromAsset(am, "icons.ttf");
+        SF_UI_Light = Typeface.createFromAsset(am, "SF-UI-Text-Light.otf");
+        SF_UI_Regular = Typeface.createFromAsset(am, "SF-UI-Text-Regular.otf");
     }
 
     private void initializeDefaultTexture(Context context) {
@@ -150,8 +154,16 @@ public class Constants {
         return mainIcon;
     }
 
-    public Typeface getDefaultTypeface() {
-        return typeface;
+    public Typeface getIconTypeface() {
+        return icomoon_typeface;
+    }
+
+    public Typeface getDefaultLightTypeFace() {
+        return SF_UI_Light;
+    }
+
+    public Typeface getDefaultRegularTypeFace() {
+        return SF_UI_Regular;
     }
 
     public int getExpectedStatusBarHeight() {

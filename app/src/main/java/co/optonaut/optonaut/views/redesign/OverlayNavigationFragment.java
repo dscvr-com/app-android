@@ -2,14 +2,11 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +25,7 @@ import co.optonaut.optonaut.util.Constants;
  * @date 2016-01-25
  */
 public class OverlayNavigationFragment extends Fragment {
-    Toolbar toolbar;
+    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,23 +42,25 @@ public class OverlayNavigationFragment extends Fragment {
 
     private void initializeNavigationButtons(View view) {
         TextView homeLabel = (TextView) view.findViewById(R.id.home_label);
+        homeLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
         homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
-        homeButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        homeButton.setTypeface(Constants.getInstance().getIconTypeface());
         homeButton.setText(String.valueOf((char) 0xe90e));
 
         Button recordButton = (Button) view.findViewById(R.id.record_button);
-        recordButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
         });
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
+        profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
         profileLabel.setText(getResources().getString(R.string.profile_label));
 
         Button profileButton = (Button) view.findViewById(R.id.profile_button);
-        profileButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        profileButton.setTypeface(Constants.getInstance().getIconTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
         profileButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
@@ -70,26 +69,26 @@ public class OverlayNavigationFragment extends Fragment {
 
     private void initializeToolbar(View view) {
         Button searchButton = (Button) view.findViewById(R.id.search_button);
-        searchButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        searchButton.setTypeface(Constants.getInstance().getIconTypeface());
         searchButton.setText(String.valueOf((char) 0xe91f));
         searchButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
         });
 
         TextView header = (TextView) view.findViewById(R.id.header);
-        header.setTypeface(Constants.getInstance().getDefaultTypeface());
-        header.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+        header.setTypeface(Constants.getInstance().getIconTypeface());
         header.setText(String.valueOf((char) 0xe91c));
 
         Button notificationButton = (Button) view.findViewById(R.id.notification_button);
-        notificationButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+        notificationButton.setTypeface(Constants.getInstance().getIconTypeface());
         notificationButton.setText(String.valueOf((char) 0xe90f));
         notificationButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
         });
 
-        Button settingsButton = (Button) view.findViewById(R.id.settings_button);
-        settingsButton.setTypeface(Constants.getInstance().getDefaultTypeface());
+
+        Button settingsButton = (Button) view.findViewById(R.id.settings_label);
+        settingsButton.setTypeface(Constants.getInstance().getIconTypeface());
         settingsButton.setText(String.valueOf((char) 0xe904));
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +111,7 @@ public class OverlayNavigationFragment extends Fragment {
                 popupMenu.show();
             }
         });
+
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 

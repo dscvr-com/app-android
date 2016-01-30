@@ -43,6 +43,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
+
     // Manual entries
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -55,8 +56,13 @@ dependencies {
     // Reactive
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
-    // Apache 2.0 license! see https://github.com/triposo/barone
-    compile 'com.triposo:barone:1.0@aar'
+
+    // Apache 2.0 licensed libraries!
+        // see https://github.com/triposo/barone
+        compile 'com.triposo:barone:1.0@aar'
+
+        // see https://github.com/hdodenhof/CircleImageView
+        compile 'de.hdodenhof:circleimageview:2.0.0'
 
 
     compile fileTree(dir: 'libs', include: ['*.jar'])

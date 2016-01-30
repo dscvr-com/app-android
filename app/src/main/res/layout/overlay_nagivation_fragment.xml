@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:background="@color/transparentOverlay"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:layout_height="39dp"
+        android:background="@color/colorPrimary"
         android:elevation="0dp"
-        android:theme="@style/AppTheme.ActionBar">
+        android:theme="@style/AppTheme.ActionBar"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        android:contentInsetRight="0dp"
+        android:contentInsetEnd="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetEnd="0dp">
 
-        <FrameLayout
-            android:background="@color/colorPrimary"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -20,39 +28,39 @@
                 android:id="@+id/search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="left"
                 android:background="@color/transparentOverlay"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:textColor="@color/bright"/>
 
             <TextView
                 android:id="@+id/header"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_margin="0dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
+                android:textSize="24dp"
                 android:gravity="center"
-                android:layout_gravity="center"/>
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"/>
 
             <Button
                 android:id="@+id/notification_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:layout_marginRight="25dp"
                 android:background="@color/transparentOverlay"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:textColor="@color/bright"/>
 
             <Button
-                android:id="@+id/settings_button"
+                android:id="@+id/settings_label"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:background="@color/transparentOverlay"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:textColor="@color/bright"/>
-
-        </FrameLayout>
+        </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
     <RelativeLayout

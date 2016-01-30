@@ -31,42 +31,77 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:background="@color/semiTransparentOverlay">
-            <ImageView
-                android:id="@+id/person_avatar_asset"
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:background="@color/transparentOverlay"
-                android:layout_height="40dp"
+                android:id="@+id/person_avatar_asset"
                 android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                app:avatarId="@{person.avatar_asset_id}"/>
+                android:layout_marginLeft="16dp"
+                android:layout_alignParentLeft="true"
+                app:avatarId="@{person.avatar_asset_id}"
+                app:civ_border_width="0dp"/>
 
-            <TextView
-                android:layout_toRightOf="@id/person_avatar_asset"
+            <RelativeLayout
+                android:id="@+id/person_location_information"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:textColor="@color/optonautMain"
-                android:layout_marginLeft="5dp"
-                android:text="@{person.display_name}"/>
+                android:layout_marginLeft="12dp"
+                android:layout_toRightOf="@id/person_avatar_asset">
+
+                <TextView
+                    android:id="@+id/person_name_label"
+                    android:layout_above="@+id/dummy"
+                    android:layout_gravity="top"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/optonautMain"
+                    android:textSize="15dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@{person.display_name}"/>
+                <View
+                    android:id="@+id/dummy"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"
+                    />
+                <TextView
+                    android:id="@+id/location_label"
+                    android:layout_below="@+id/dummy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/locationFontColor"
+                    android:layout_marginTop="2dp"
+                    android:textSize="11dp"
+                    android:layout_alignParentBottom="true"
+                    android:text="@{person.display_name}"/>
+            </RelativeLayout>
+
 
             <TextView
                 android:id="@+id/time_ago"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/semiBright"
+                android:textColor="@color/timeAgoFontColor"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/settings_button"
+                android:layout_toLeftOf="@+id/settings_label"
                 android:layout_marginRight="5dp"
+                android:textSize="11dp"
                 app:createdAt="@{optograph.created_at}"/>
 
-            <Button
-                android:id="@+id/settings_button"
-                android:background="@color/transparentOverlay"
+            <TextView
+                android:id="@+id/settings_label"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/semiBright"
+                android:layout_height="21dp"
+                android:textSize="21dp"
+                android:textColor="@color/settingsFontColor"
                 android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"/>
 
         </RelativeLayout>
 
@@ -75,15 +110,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="25dp"
-            android:background="@color/transparentOverlay">
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="16dp">
 
             <TextView
                 android:id="@+id/private_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="0dp"
+                android:visibility="gone"
                 android:layout_toLeftOf="@+id/description_label"/>
 
             <co.optonaut.optonaut.views.redesign.ExpandableTextView
@@ -91,8 +127,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
-                android:layout_marginLeft="5dp"
-                android:maxWidth="300dp"
+                android:layout_marginLeft="16dp"
+                android:maxWidth="280dp"
                 app:trimLength="25"
                 android:text="@{optograph.text}"/>
 
@@ -101,9 +137,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"/>
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@+id/description_label"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"/>
         </RelativeLayout>
 
     </FrameLayout>

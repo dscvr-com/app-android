@@ -10,7 +10,9 @@
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
 
     <color name="bright">#FFFFFF</color>
-    <color name="semiBright">#AAAAAA</color>
+    <color name="settingsFontColor">#C6C6C6</color>
+    <color name="timeAgoFontColor">#BBBBBB</color>
+    <color name="locationFontColor">#3C3C3C</color>
 
 
     <!-- Feed -->
