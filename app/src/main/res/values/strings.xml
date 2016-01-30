@@ -7,10 +7,11 @@
     <string name="licenses">Licenses</string>
 
     <!-- Feed -->
-        <!-- Feed Element -->
-        <string name="heart_count">%1$d %2$s</string>
-        <!-- Feed Menu -->
-        <string name="report">Report</string>
+    <!-- Feed Element -->
+    <string name="heart_count">%1$d %2$s</string>
+    <!-- Feed Menu -->
+    <string name="report">Report</string>
+    <string name="share">Share</string>
 
 
     <!-- Dialog -->

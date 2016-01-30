@@ -18,8 +18,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/transparentOverlay">
+        android:layout_height="wrap_content">
 
         <co.optonaut.optonaut.opengl.Optograph2DCubeView
             android:id="@+id/optograph2dview"
@@ -114,8 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="16dp">
+            android:layout_marginBottom="0dp">
 
             <TextView
                 android:id="@+id/private_icon"
@@ -132,8 +130,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
                 android:layout_marginLeft="16dp"
-                android:maxWidth="280dp"
-                app:trimLength="25"
+                android:maxWidth="288dp"
+                app:trimLength="32"
                 android:text="@{optograph.text}"/>
 
             <TextView

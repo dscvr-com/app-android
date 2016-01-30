@@ -156,12 +156,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 //registering popup with OnMenuItemClickListener
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        Snackbar.make(
-                                itemView,
-                                itemView.getResources().getString(R.string.feature_next_version),
-                                Snackbar.LENGTH_SHORT
-                        ).show();
-                        return true;
+                        if (item.getItemId() == R.id.share_item) {
+                            Log.v(Constants.DEBUG_TAG, "Clicked share");
+                            return true;
+                        } else if (item.getItemId() == R.id.report_item) {
+                            Log.v(Constants.DEBUG_TAG, "Clicked report");
+                            return true;
+                        }
+                        return false;
                     }
                 });
 
