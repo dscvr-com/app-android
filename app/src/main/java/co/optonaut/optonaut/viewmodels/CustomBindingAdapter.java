@@ -38,7 +38,7 @@ public class CustomBindingAdapter {
         String personId = person.getId();
         String assetId = person.getAvatar_asset_id();
         Picasso.with(imageView.getContext())
-                .load(ImageUrlBuilder.buildImageUrl(personId, assetId, 50, 50))
+                .load(ImageUrlBuilder.buildImageUrl(personId, assetId, 150, 150))
                 .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
                 .into(imageView);
     }
