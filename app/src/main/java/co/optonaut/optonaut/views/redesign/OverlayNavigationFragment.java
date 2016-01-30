@@ -2,8 +2,6 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -21,6 +19,7 @@ import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.views.dialogs.CardboardImportDialogFragment;
 
 /**
  * @author Nilan Marktanner
@@ -28,6 +27,7 @@ import co.optonaut.optonaut.util.Constants;
  */
 public class OverlayNavigationFragment extends Fragment {
     Toolbar toolbar;
+    CardboardImportDialogFragment cardboardImportDialogFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,6 +38,8 @@ public class OverlayNavigationFragment extends Fragment {
         initializeToolbar(view);
 
         initializeNavigationButtons(view);
+
+        cardboardImportDialogFragment = new CardboardImportDialogFragment();
 
         return view;
     }
@@ -53,7 +55,7 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setTypeface(Constants.getInstance().getDefaultTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
+            cardboardImportDialogFragment.show(getChildFragmentManager(), null);
         });
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);

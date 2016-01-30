@@ -1,15 +1,20 @@
 package co.optonaut.optonaut.views.redesign;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import javax.xml.transform.Result;
+
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.ResultCodes;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
@@ -127,5 +132,23 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     public boolean toggleOverlayVisibility() {
         return overlayFragment.toggleTotalVisibility();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Uri imageUri;
+        switch (requestCode) {
+            case ResultCodes.RESULT_GALLERY :
+                if (null != data) {
+                    imageUri = data.getData();
+                    Log.v(Constants.DEBUG_TAG, "uri: " + imageUri.toString());
+                    // TODO: hit API endpoint with this Uri, then start Share-Intent
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
