@@ -59,7 +59,7 @@
                     android:layout_gravity="top"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentLeft="true"
                     android:textColor="@color/optonautMain"
                     android:textSize="15dp"
                     android:layout_marginBottom="2dp"
@@ -76,11 +76,10 @@
                     android:layout_below="@+id/dummy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentLeft="true"
                     android:textColor="@color/locationFontColor"
                     android:layout_marginTop="2dp"
                     android:textSize="11dp"
-                    android:layout_alignParentBottom="true"
                     android:text="@{location.text}"/>
             </RelativeLayout>
 
