@@ -4,12 +4,16 @@
     <data class=".FeedItemBinding">
         <import type="co.optonaut.optonaut.model.Optograph" />
         <import type="co.optonaut.optonaut.model.Person" />
+        <import type="co.optonaut.optonaut.model.Location" />
         <variable
             name="optograph"
             type="Optograph" />
         <variable
             name="person"
             type="Person" />
+        <variable
+            name="location"
+            type="Location" />
     </data>
 
     <FrameLayout
@@ -78,7 +82,7 @@
                     android:layout_marginTop="2dp"
                     android:textSize="11dp"
                     android:layout_alignParentBottom="true"
-                    android:text="@{person.display_name}"/>
+                    android:text="@{location.text}"/>
             </RelativeLayout>
 
 

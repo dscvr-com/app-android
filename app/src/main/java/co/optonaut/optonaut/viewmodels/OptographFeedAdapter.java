@@ -28,7 +28,6 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
-import co.optonaut.optonaut.views.redesign.ExpandableTextView;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
 
@@ -206,6 +205,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().setVariable(BR.person, optograph.getPerson());
+            holder.getBinding().setVariable(BR.location, optograph.getLocation());
+
             holder.getBinding().executePendingBindings();
         } else {
             Log.d(Constants.DEBUG_TAG, "Re-Binding of OptographViewHolder at position " + position);

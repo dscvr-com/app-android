@@ -65,7 +65,7 @@ public class Optograph implements Parcelable {
     private String preview_asset_id;
     private String left_texture_asset_id;
     private String right_texture_asset_id;
-    // TODO: Location
+    private Location location;
     private Person person;
     private int stars_count;
     private int comments_count;
@@ -86,6 +86,7 @@ public class Optograph implements Parcelable {
         this.preview_asset_id = source.readString();
         this.left_texture_asset_id = source.readString();
         this.right_texture_asset_id = source.readString();
+        this.location = source.readParcelable(Location.class.getClassLoader());
         this.person = source.readParcelable(Person.class.getClassLoader());
         this.stars_count = source.readInt();
         this.comments_count = source.readInt();
@@ -143,6 +144,10 @@ public class Optograph implements Parcelable {
 
     public String getRight_texture_asset_id() {
         return right_texture_asset_id;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public Person getPerson() {
@@ -206,6 +211,7 @@ public class Optograph implements Parcelable {
         dest.writeString(this.preview_asset_id);
         dest.writeString(this.left_texture_asset_id);
         dest.writeString(this.right_texture_asset_id);
+        dest.writeParcelable(this.location, flags);
         dest.writeParcelable(this.person, flags);
         dest.writeInt(this.stars_count);
         dest.writeInt(this.comments_count);
