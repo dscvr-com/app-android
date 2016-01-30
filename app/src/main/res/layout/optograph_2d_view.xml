@@ -42,7 +42,7 @@
             android:layout_margin="4dp"
             android:layout_below="@id/GLSurface"
             tools:src="@android:drawable/sym_def_app_icon"
-            app:assetId="@{person.avatar_asset_id}"/>
+            app:person="@{person}"/>
 
     </RelativeLayout>
 </layout> 

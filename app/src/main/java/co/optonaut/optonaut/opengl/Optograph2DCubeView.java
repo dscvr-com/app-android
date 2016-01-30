@@ -2,8 +2,6 @@ package co.optonaut.optonaut.opengl;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -78,7 +76,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
         Log.v(Constants.DEBUG_TAG, "Loading textures for Cube");
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(getContext())
-                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getLeft_texture_asset_id(), Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i]))
                     .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
         }
     }

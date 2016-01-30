@@ -23,7 +23,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitStart"
             tools:src="@android:drawable/sym_def_app_icon"
-            app:assetId="@{person.avatar_asset_id}"
+            app:person="@{person}"
             android:layout_gravity="start|top"/>
         <FrameLayout
             android:id="@+id/feed_placeholder"

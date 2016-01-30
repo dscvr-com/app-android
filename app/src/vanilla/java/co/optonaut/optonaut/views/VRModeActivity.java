@@ -18,7 +18,6 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
 /**
  * @author Nilan Marktanner
@@ -77,17 +76,16 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         if (optograph == null) {
             return;
         }
-        String leftId = this.optograph.getLeft_texture_asset_id();
+
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(leftId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), true, Cube.FACES[i]))
                     .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
 
-        String rightId = this.optograph.getRight_texture_asset_id();
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(rightId, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), false, Cube.FACES[i]))
                     .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
         }
     }
