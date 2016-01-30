@@ -22,6 +22,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
                 android:background="@color/transparentOverlay"
+                android:visibility="invisible"
                 android:textColor="@color/bright"/>
 
             <TextView
@@ -29,6 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
+                android:gravity="center"
                 android:layout_gravity="center"/>
 
             <Button
@@ -38,6 +40,7 @@
                 android:layout_gravity="right"
                 android:layout_marginRight="25dp"
                 android:background="@color/transparentOverlay"
+                android:visibility="invisible"
                 android:textColor="@color/bright"/>
 
             <Button
@@ -46,6 +49,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:background="@color/transparentOverlay"
+                android:visibility="invisible"
                 android:textColor="@color/bright"/>
 
         </FrameLayout>
@@ -53,70 +57,99 @@
 
     <RelativeLayout
         android:id="@+id/navigation_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left|bottom">
+        android:layout_width="match_parent"
+        android:layout_height="126dp"
+        android:layout_gravity="bottom">
 
-        <Button
-            android:id="@+id/home_button"
-            android:textColor="@color/bright"
-            android:background="@color/transparentOverlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_below="@+id/home_button"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/home_label"
+        <RelativeLayout
+            android:id="@+id/home_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home_label"
-            android:textAllCaps="true"
-            android:textColor="@color/bright"/>
-    </RelativeLayout>
+            android:layout_toLeftOf="@+id/record_group"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            >
+            <Button
+                android:id="@+id/home_button"
+                android:textColor="@color/bright"
+                android:background="@color/transparentOverlay"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textSize="28dp"/>
+            <TextView
+                android:layout_below="@+id/home_button"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/home_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/home_label"
+                android:textAllCaps="true"
+                android:textSize="9dp"
+                android:textColor="@color/bright"/>
+        </RelativeLayout>
 
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom">
-
-        <Button
-            android:id="@+id/record_button"
-            android:textColor="@color/bright"
-            android:background="@drawable/rounded_corners_colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:layout_below="@id/record_button"
-            android:layout_centerHorizontal="true"
-            android:text=" "
-            android:textColor="@color/bright"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom">
-
-        <Button
-            android:id="@+id/profile_button"
-            android:textColor="@color/bright"
-            android:background="@color/transparentOverlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/profile_button"
-            android:id="@+id/profile_label"
+        <RelativeLayout
+            android:id="@+id/record_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/profile_label"
-            android:textAllCaps="true"
-            android:textColor="@color/bright"/>
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true">
+
+            <Button
+                android:id="@+id/record_button"
+                android:textColor="@color/bright"
+                android:background="@drawable/rounded_corners_colored"
+                android:layout_centerVertical="true"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:textSize="33dp"/>
+
+            <TextView
+                android:layout_below="@id/record_button"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text=" "
+                android:textColor="@color/bright"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/profile_group"
+            android:layout_toRightOf="@+id/record_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <Button
+                android:id="@+id/profile_button"
+                android:textColor="@color/bright"
+                android:background="@color/transparentOverlay"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:textSize="28dp"/>
+            <TextView
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/profile_button"
+                android:layout_marginTop="10dp"
+                android:id="@+id/profile_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_label"
+                android:textAllCaps="true"
+                android:textSize="9dp"
+                android:textColor="@color/bright"/>
+        </RelativeLayout>
     </RelativeLayout>
 
 

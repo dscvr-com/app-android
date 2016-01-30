@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,6 +78,7 @@ public class OverlayNavigationFragment extends Fragment {
 
         TextView header = (TextView) view.findViewById(R.id.header);
         header.setTypeface(Constants.getInstance().getDefaultTypeface());
+        header.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
         header.setText(String.valueOf((char) 0xe91c));
 
         Button notificationButton = (Button) view.findViewById(R.id.notification_button);
