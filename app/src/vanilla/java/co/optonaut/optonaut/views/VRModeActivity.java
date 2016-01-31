@@ -7,11 +7,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
 import com.squareup.picasso.Picasso;
+
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
@@ -25,8 +29,13 @@ import timber.log.Timber;
  * @date 2015-12-30
  */
 public class VRModeActivity extends CardboardActivity implements SensorEventListener {
+    private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 500;
+
     private CardboardRenderer cardboardRenderer;
     private Optograph optograph;
+
+    private DateTime creationTime;
+    private boolean thresholdForSwitchReached;
 
     private boolean inVRMode;
     private SensorManager sensorManager;
@@ -47,6 +56,8 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
         initializeTextures();
 
+        creationTime = DateTime.now();
+        thresholdForSwitchReached = false;
         inVRMode = true;
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         registerAccelerationListener();
@@ -62,6 +73,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     public void onResume() {
         super.onResume();
         registerAccelerationListener();
+        creationTime = DateTime.now();
         inVRMode = true;
     }
 
@@ -108,6 +120,18 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     public void onSensorChanged(SensorEvent event) {
         // only listen for Accelerometer if we did not switch to normal mode yet
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && inVRMode) {
+            if (!thresholdForSwitchReached) {
+                Interval timePassed = new Interval(creationTime, DateTime.now());
+                Duration  duration = timePassed.toDuration();
+                long millisecondsPassed = duration.getMillis();
+                if (millisecondsPassed > MILLISECONDS_THRESHOLD_FOR_SWITCH) {
+                    thresholdForSwitchReached = true;
+                } else {
+                    // don't switch
+                    return;
+                }
+            }
+
             // switch to normal mode if phone was turned
             float x = event.values[0];
             float y = event.values[1];

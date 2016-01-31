@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+
 import co.optonaut.optonaut.util.Constants;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -21,8 +25,12 @@ import timber.log.Timber;
  * @date 2015-12-15
  */
 public class MainFeedFragment extends OptographListFragment implements SensorEventListener {
+    private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
+
     private SensorManager sensorManager;
     private boolean inVRMode;
+
+    private DateTime inVRPositionSince;
 
 
     @Override
@@ -31,6 +39,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
 
         inVRMode = false;
+        inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
     }
@@ -96,10 +105,20 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
             float length = (float) Math.sqrt(x*x + y*y);
             if (length < Constants.MINIMUM_AXIS_LENGTH) {
+                inVRPositionSince = null;
+
                 return;
             }
             if (x > y + Constants.ACCELERATION_EPSILON) {
-               switchToVRMode();
+                if (inVRPositionSince == null) {
+                    inVRPositionSince = DateTime.now();
+                }
+                Interval timePassed = new Interval(inVRPositionSince, DateTime.now());
+                Duration duration = timePassed.toDuration();
+                long milliseconds = duration.getMillis();
+                if (milliseconds > MILLISECONDS_THRESHOLD_FOR_SWITCH) {
+                    switchToVRMode();
+                }
             }
         }
     }
