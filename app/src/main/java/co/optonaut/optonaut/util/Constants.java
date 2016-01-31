@@ -25,6 +25,7 @@ public class Constants {
     public static final String DEBUG_TAG = "Optonaut";
     public static final float ACCELERATION_EPSILON = 1.0f;
     public static final float MINIMUM_AXIS_LENGTH = 4.0f;
+	public static final float VFOV = 95.0f;
 
     private static final String MAIN_ICON_PATH = "logo-text-white-temporary.png";
     private static Constants constants;
@@ -32,6 +33,8 @@ public class Constants {
 
     private DisplayMetrics displayMetrics;
     private Display display;
+    private float HFOV;
+
     private int maxX;
     private int maxY;
     private Bitmap defaultTexture;
@@ -45,6 +48,7 @@ public class Constants {
 
     private Constants(Activity activity) {
         initializeDisplay(activity);
+        initializeFieldOfView();
 
         initializeDefaultTexture(activity);
 
@@ -57,6 +61,10 @@ public class Constants {
         initializeToolbarHeight(activity);
     }
 
+    private void initializeFieldOfView() {
+        HFOV = VFOV * displayMetrics.widthPixels / (float) displayMetrics.heightPixels;
+    }
+
     private void initializeDisplay(Activity activity) {
         display = activity.getWindowManager().getDefaultDisplay();
         displayMetrics = new DisplayMetrics();
@@ -65,7 +73,7 @@ public class Constants {
 
     private void initializeToolbarHeight(Context context) {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
-                new int[]{android.R.attr.actionBarSize});
+                new int[] { android.R.attr.actionBarSize });
         toolbarHeight = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
     }
@@ -175,5 +183,9 @@ public class Constants {
 
     public int getToolbarHeight() {
         return toolbarHeight;
+    }
+
+    public float getHFOV() {
+        return HFOV;
     }
 }
