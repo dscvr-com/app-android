@@ -100,7 +100,7 @@
             <View
                 android:id="@+id/home_button_indicator"
                 android:layout_width="62dp"
-                android:layout_height="5dp"
+                android:layout_height="10dp"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/rounded_indicator_shape"
                 android:layout_centerHorizontal="true"

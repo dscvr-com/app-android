@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +47,10 @@ public class OverlayNavigationFragment extends Fragment {
         homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
         View home_indicator = (View) view.findViewById(R.id.home_button_indicator);
+        Timber.d("height: %s", home_indicator.getHeight());
+
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, Constants.getInstance().getDisplayMetrics());
+        home_indicator.setTranslationY(px);
         home_indicator.setVisibility(View.VISIBLE);
         homeButton.setTypeface(Constants.getInstance().getIconTypeface());
         homeButton.setText(String.valueOf((char) 0xe90e));
