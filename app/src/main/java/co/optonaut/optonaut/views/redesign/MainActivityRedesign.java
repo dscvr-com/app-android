@@ -23,7 +23,7 @@ public class MainActivityRedesign extends AppCompatActivity {
     private HostFragment hostFragment;
     private OverlayNavigationFragment overlayFragment;
 
-    boolean isStatusBarVisible;
+    private boolean isStatusBarVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,10 @@ public class MainActivityRedesign extends AppCompatActivity {
         // go full fullscreen mode
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         );
+        isStatusBarVisible = true;
     }
 
     private void hideStatusBar() {
@@ -71,12 +74,23 @@ public class MainActivityRedesign extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
+        isStatusBarVisible = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         findFragments();
+        restoreUIState();
+
+    }
+
+    private void restoreUIState() {
+        if (isStatusBarVisible) {
+            goFullscreen();
+        } else {
+            hideStatusBar();
+        }
     }
 
     private void findFragments() {
@@ -94,7 +108,9 @@ public class MainActivityRedesign extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        goFullscreen();
+        if (hasFocus) {
+            restoreUIState();
+        }
     }
 
 
