@@ -12,6 +12,10 @@
     <!-- Feed Menu -->
     <string name="report">Report</string>
     <string name="share">Share</string>
+    <!-- Share Intent -->
+    <string name="share_subject_web_viewer">Check out this awesome Optonaut moment!</string>
+    <string name="share_body_web_viewer">Check out this awesome Optonaut moment: %1$s</string>
+    <string name="share_via">Share via</string>
 
 
     <!-- Dialog -->

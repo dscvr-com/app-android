@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.viewmodels;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
@@ -137,7 +139,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         profileLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
 
         TextView locationLabel = (TextView) itemView.findViewById(R.id.location_label);
-        profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
+        locationLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
 
         TextView timeAgoLabel = (TextView) itemView.findViewById(R.id.time_ago);
         timeAgoLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
@@ -146,29 +148,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_label);
         settingsLabel.setTypeface(Constants.getInstance().getIconTypeface());
         settingsLabel.setText(String.valueOf((char) 0xe904));
-        settingsLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), v);
-                popupMenu.inflate(R.menu.feed_item_menu);
-
-                //registering popup with OnMenuItemClickListener
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.share_item) {
-                            Timber.v("clicked share");
-                            return true;
-                        } else if (item.getItemId() == R.id.report_item) {
-                            Timber.v("clicked report");
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-
-                popupMenu.show();
-            }
-        });
     }
 
     @Override
@@ -203,6 +182,36 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 // TODO: use empty heart
                 heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
             }
+
+            // setup sharing
+            TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_label);
+            settingsLabel.setOnClickListener(new View.OnClickListener() {
+            String shareUrl = ImageUrlBuilder.buildWebViewerUrl(optograph.getShare_alias());
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
+                    popupMenu.inflate(R.menu.feed_item_menu);
+
+                    //registering popup with OnMenuItemClickListener
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.share_item) {
+                                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, holder.itemView.getResources().getString(R.string.share_subject_web_viewer));
+                                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, holder.itemView.getResources().getString(R.string.share_body_web_viewer, shareUrl));
+                                sharingIntent.setType("text/plain");
+                                holder.itemView.getContext().startActivity(Intent.createChooser(sharingIntent, holder.itemView.getResources().getString(R.string.share_via)));
+                            } else if (item.getItemId() == R.id.report_item) {
+                                Timber.v("clicked report");
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+
+                    popupMenu.show();
+                }
+            });
 
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().setVariable(BR.person, optograph.getPerson());

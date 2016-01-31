@@ -15,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @date 2015-11-28
  */
 public class ImageUrlBuilder {
+    private static final String OPTO_SPACE = "http://opto.space/";
     private static final String THUMBOR_URL = "http://images.optonaut.co";
     //private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
     private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
@@ -38,6 +39,10 @@ public class ImageUrlBuilder {
         String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
         String signedUrl = getSignedUrl(urlPartToSign);
         return signedUrl;
+    }
+
+    public static String buildWebViewerUrl(String share_alias) {
+        return OPTO_SPACE + share_alias;
     }
 
     private static String getSignedUrl(String urlPartToSign) {
