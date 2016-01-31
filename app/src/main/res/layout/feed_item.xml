@@ -62,7 +62,7 @@
                     android:layout_alignParentLeft="true"
                     android:textColor="@color/optonautMain"
                     android:textSize="15dp"
-                    android:layout_marginBottom="2dp"
+                    android:layout_marginBottom="0dp"
                     android:text="@{person.display_name}"/>
                 <View
                     android:id="@+id/dummy"
@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:textColor="@color/locationFontColor"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="0dp"
                     android:textSize="11dp"
                     android:text="@{location.text}"/>
             </RelativeLayout>
