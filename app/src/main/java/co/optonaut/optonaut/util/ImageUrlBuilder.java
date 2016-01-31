@@ -2,7 +2,6 @@ package co.optonaut.optonaut.util;
 
 import android.opengl.GLES20;
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
