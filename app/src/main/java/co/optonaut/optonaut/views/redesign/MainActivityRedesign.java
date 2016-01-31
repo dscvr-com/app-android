@@ -145,6 +145,12 @@ public class MainActivityRedesign extends AppCompatActivity {
                     imageUri = data.getData();
                     Log.v(Constants.DEBUG_TAG, "uri: " + imageUri.toString());
                     // TODO: hit API endpoint with this Uri, then start Share-Intent
+                    String result_url = "random_url";
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getString(R.string.share_body_web_viewer, result_url));
+                    sharingIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_via)));
                 }
                 break;
             default:

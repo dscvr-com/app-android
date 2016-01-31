@@ -7,10 +7,15 @@
     <string name="licenses">Licenses</string>
 
     <!-- Feed -->
-        <!-- Feed Element -->
-        <string name="heart_count">%1$d %2$s</string>
-        <!-- Feed Menu -->
-        <string name="report">Report</string>
+    <!-- Feed Element -->
+    <string name="heart_count">%1$d %2$s</string>
+    <!-- Feed Menu -->
+    <string name="report">Report</string>
+
+    <!-- Share -->
+    <string name="share_subject_web_viewer">Check out this awesome moment in the Optonaut Web Viewer!</string>
+    <string name="share_body_web_viewer">Check this awesome moment in the Optonaut Web Viewer: %1$s!</string>
+    <string name="share_via">Share via</string>
 
 
     <!-- Talking to Users -->
@@ -27,6 +32,7 @@
     <!-- Main Overlay Layout -->
     <string name="home_label">Home</string>
     <string name="profile_label">Profile</string>
+
 
     <!-- Preferences -->
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
