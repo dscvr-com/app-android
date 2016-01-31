@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
-    <RelativeLayout
-                    android:background="@color/transparentOverlay"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-        <co.optonaut.optonaut.views.redesign.SnappyRecyclerView
+<co.optonaut.optonaut.views.redesign.SnappyRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/optographFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"/>
-    </RelativeLayout>
-</layout>
