@@ -2,19 +2,24 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
@@ -26,6 +31,7 @@ import timber.log.Timber;
  * @date 2016-01-25
  */
 public class OverlayNavigationFragment extends Fragment {
+    private RelativeLayout statusbar;
     private Toolbar toolbar;
 
     @Override
@@ -37,6 +43,14 @@ public class OverlayNavigationFragment extends Fragment {
         initializeToolbar(view);
 
         initializeNavigationButtons(view);
+
+        statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            Timber.v("kitkat");
+            statusbar.setVisibility(View.VISIBLE);
+        } else {
+            statusbar.setVisibility(View.GONE);
+        }
 
         return view;
     }

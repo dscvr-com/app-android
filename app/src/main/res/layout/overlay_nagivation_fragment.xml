@@ -4,6 +4,13 @@
              android:background="@color/transparentOverlay"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/statusbar"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:background="@color/colorPrimaryDark" >
+    </RelativeLayout>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

@@ -3,7 +3,7 @@
     <color name="colorPrimary">#EF4836</color>
     <color name="colorPrimaryText">#000000</color>
     <color name="colorPrimaryDark">#EF4836</color>
-    <color name="colorAccent">#FF0000</color>
+    <color name="colorAccent">#EF4836</color>
 
     <color name="optonautMain">#EF4836</color>
     <color name="transparentOverlay">#00777777</color>
