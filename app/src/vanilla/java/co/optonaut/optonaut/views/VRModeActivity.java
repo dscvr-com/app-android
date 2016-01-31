@@ -113,6 +113,11 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
             float y = event.values[1];
             float z = event.values[2];
 
+            float length = (float) Math.sqrt(x*x + y*y);
+            if (length < Constants.MINIMUM_AXIS_LENGTH) {
+                return;
+            }
+
             if (x + Constants.ACCELERATION_EPSILON < y) {
                 switchToNormalMode();
             }
