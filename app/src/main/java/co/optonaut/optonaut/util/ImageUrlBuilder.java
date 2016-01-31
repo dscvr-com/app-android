@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import timber.log.Timber;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-11-28
@@ -21,7 +23,9 @@ public class ImageUrlBuilder {
     private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
+    // TODO: use special formula, use different HFOV for VRmode and normal feed
     private static final int CUBE_TEXTURE_SIZE = Math.min(1024, GLES20.GL_MAX_TEXTURE_SIZE);
+    // private static final int CUBE_TEXTURE_SIZE = Math.min((int) (Constants.getInstance().getDisplayMetrics().widthPixels * 360 / (Constants.getInstance().getHFOV() * Math.PI)), GLES20.GL_MAX_TEXTURE_SIZE);
 
     private static final int SUB_X = 0;
     private static final int SUB_Y = 0;
