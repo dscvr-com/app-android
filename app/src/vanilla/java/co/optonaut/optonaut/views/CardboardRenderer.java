@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
@@ -7,10 +8,14 @@ import com.google.vrtoolkit.cardboard.CardboardView;
 import com.google.vrtoolkit.cardboard.Eye;
 import com.google.vrtoolkit.cardboard.HeadTransform;
 import com.google.vrtoolkit.cardboard.Viewport;
+import com.squareup.picasso.Picasso;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -20,13 +25,15 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 
+    private Float hfov;
+
     private final float[] modelViewProjection = new float[16];
+
     private final float[] view = new float[16];
     private float[] camera = new float[16];
-
     private Cube leftCube;
-    private Cube rightCube;
 
+    private Cube rightCube;
     public CardboardRenderer() {
         initializeCubes();
     }
@@ -42,6 +49,12 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     @Override
     public void onDrawEye(Eye eye) {
+        if (hfov == null) {
+            // need only half hfov as each view has half size
+            hfov = (eye.getFov().getLeft() + eye.getFov().getRight());
+            Timber.v("hfov: %s", hfov);
+        }
+
         // Apply the eye transformation to the camera.
         Matrix.multiplyMM(view, 0, eye.getEyeView(), 0, camera, 0);
 
@@ -92,5 +105,9 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     public Cube getLeftCube() {
         return leftCube;
+    }
+
+    public Float getHfov() {
+        return hfov;
     }
 }

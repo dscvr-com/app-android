@@ -27,7 +27,8 @@ import timber.log.Timber;
  * @date 2016-01-17
  */
 public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
-    private static final float FIELD_OF_VIEW_Y = 95.0f;
+    public static final float FIELD_OF_VIEW_Y = 95.0f;
+    public static final float FIELD_OF_VIEW_X = FIELD_OF_VIEW_Y * Constants.getInstance().getDisplayMetrics().widthPixels / (float) Constants.getInstance().getDisplayMetrics().heightPixels;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 

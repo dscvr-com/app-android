@@ -74,7 +74,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
     public void initializeTextures() {
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(getContext())
-                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i]))
+                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i], Optograph2DCubeRenderer.FIELD_OF_VIEW_X))
                     .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
         }
     }

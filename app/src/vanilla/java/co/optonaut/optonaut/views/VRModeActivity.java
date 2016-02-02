@@ -33,6 +33,8 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
     private CardboardRenderer cardboardRenderer;
     private Optograph optograph;
+    private boolean texturesLoaded;
+
 
     private DateTime creationTime;
     private boolean thresholdForSwitchReached;
@@ -47,14 +49,13 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         setContentView(R.layout.activity_vrmode);
         initializeOptograph();
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
+        texturesLoaded = false;
         cardboardRenderer = new CardboardRenderer();
         cardboardView.setRenderer(cardboardRenderer);
 
         // might use this for performance boost...
         // cardboardView.setRestoreGLStateEnabled(false);
         setCardboardView(cardboardView);
-
-        initializeTextures();
 
         creationTime = DateTime.now();
         thresholdForSwitchReached = false;
@@ -85,24 +86,6 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         sensorManager.unregisterListener(this);
     }
 
-    private void initializeTextures() {
-        if (optograph == null) {
-            return;
-        }
-
-        for (int i = 0; i < Cube.FACES.length; ++i) {
-            Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), true, Cube.FACES[i]))
-                    .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
-        }
-
-        for (int i = 0; i < Cube.FACES.length; ++i) {
-            Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), false, Cube.FACES[i]))
-                    .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
-        }
-    }
-
     private void initializeOptograph() {
         Intent intent = getIntent();
         if (intent != null) {
@@ -110,14 +93,42 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
             if (optograph == null) {
                 //throw new RuntimeException("No optograph reveiced in VRActivity!");
                 Timber.e("No optograph reveiced in VRActivity!");
+                switchToNormalMode();
             } else {
                 Timber.v("creating VRActivity for Optograph %s", optograph.getId());
             }
         }
     }
 
+    private void initializeTextures(float hfov) {
+        for (int i = 0; i < Cube.FACES.length; ++i) {
+            Picasso.with(this)
+                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i], hfov))
+                    .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+
+            Timber.v("Initialize left plane %s", i);
+        }
+
+        for (int i = 0; i < Cube.FACES.length; ++i) {
+            Picasso.with(this)
+                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), false, Cube.FACES[i], hfov))
+                    .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+
+            Timber.v("Initialize right plane %s", i);
+        }
+
+        texturesLoaded = true;
+    }
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // TODO: fix this hack
+        if (!texturesLoaded && cardboardRenderer.getHfov() != null) {
+            Timber.v("Loading textures");
+            initializeTextures(cardboardRenderer.getHfov());
+        }
+
         // only listen for Accelerometer if we did not switch to normal mode yet
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && inVRMode) {
             if (!thresholdForSwitchReached) {
