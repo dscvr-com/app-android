@@ -35,6 +35,10 @@ public final class SnappyRecyclerView extends RecyclerView {
         if (lm instanceof ISnappyLayoutManager) {
             super.smoothScrollToPosition(((ISnappyLayoutManager) getLayoutManager())
                     .getPositionForVelocity(velocityX, velocityY));
+
+            Timber.v("Now watching position %s", ((ISnappyLayoutManager) getLayoutManager())
+                    .getPositionForVelocity(velocityX, velocityY));
+
             return true;
         }
         return super.fling(velocityX, velocityY);
