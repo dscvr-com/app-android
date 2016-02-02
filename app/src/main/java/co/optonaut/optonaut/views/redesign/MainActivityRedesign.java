@@ -191,4 +191,10 @@ public class MainActivityRedesign extends AppCompatActivity {
         Timber.v("Initiated Sharing");
         MixpanelHelper.trackActionViewer2DShare(this);
     }
+
+    public void prepareVRMode() {
+        if (overlayFragment != null) {
+            overlayFragment.hideDialog();
+        }
+    }
 }

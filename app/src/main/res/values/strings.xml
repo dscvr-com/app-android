@@ -20,6 +20,8 @@
 
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
+    <string name="dialog_vrmode_explanation">Tilt your phone by 90° to the left to enter VR mode!</string>
+    <string name="fire">OK</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
