@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
 
 /**
@@ -34,6 +36,8 @@ public class OverlayNavigationFragment extends Fragment {
     private RelativeLayout statusbar;
     private Toolbar toolbar;
 
+    VRModeExplanationDialog vrModeExplanationDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,7 +45,6 @@ public class OverlayNavigationFragment extends Fragment {
         View view = inflater.inflate(R.layout.overlay_nagivation_fragment, container, false);
 
         initializeToolbar(view);
-
         initializeNavigationButtons(view);
 
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
@@ -142,6 +145,17 @@ public class OverlayNavigationFragment extends Fragment {
         });
 
 
+
+        vrModeExplanationDialog = new VRModeExplanationDialog();
+        TextView vrmode_button = (TextView) view.findViewById(R.id.vrmode_button);
+        vrmode_button.setTypeface(Constants.getInstance().getIconTypeface());
+        vrmode_button.setText(String.valueOf((char) 0xe920));
+        vrmode_button.setOnClickListener(v -> {
+            MixpanelHelper.trackActionViewer2DVRButton(getActivity());
+            vrModeExplanationDialog.show(getChildFragmentManager(), null);
+        });
+
+
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         float scale = Constants.getInstance().getDisplayMetrics().density;
@@ -163,6 +177,7 @@ public class OverlayNavigationFragment extends Fragment {
             }
         });
     }
+
 
     private void initializeSharedPreferences(View view) {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -187,6 +202,12 @@ public class OverlayNavigationFragment extends Fragment {
             getView().setVisibility(visibility);
         } else {
             Timber.w("setting visibility of null-View!");
+        }
+    }
+
+    public void hideDialog() {
+        if (vrModeExplanationDialog != null && (vrModeExplanationDialog.isVisible() || vrModeExplanationDialog.isMenuVisible())) {
+            vrModeExplanationDialog.dismiss();
         }
     }
 

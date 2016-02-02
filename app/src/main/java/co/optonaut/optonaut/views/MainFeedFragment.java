@@ -17,6 +17,7 @@ import org.joda.time.Interval;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -128,11 +129,11 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     private void switchToVRMode() {
         Timber.v("switching to VR mode");
         inVRMode = true;
-        Activity activity = getActivity();
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.prepareVRMode();
+
         Intent intent = new Intent(activity, VRModeActivity.class);
         intent.putExtra("optograph", getCurrentOptograph());
-
-
         activity.startActivity(intent);
     }
 

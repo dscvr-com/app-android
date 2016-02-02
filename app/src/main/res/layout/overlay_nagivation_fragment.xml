@@ -29,24 +29,24 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
 
             <Button
                 android:id="@+id/search_button"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@color/transparentOverlay"
                 android:visibility="gone"
                 android:textColor="@color/bright"/>
 
             <TextView
                 android:id="@+id/header"
-                android:layout_width="match_parent"
-                android:layout_margin="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
                 android:textSize="24dp"
-                android:gravity="center"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:layout_centerInParent="true"/>
@@ -54,7 +54,7 @@
             <Button
                 android:id="@+id/notification_button"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@color/transparentOverlay"
                 android:visibility="gone"
                 android:textColor="@color/bright"/>
@@ -62,11 +62,21 @@
             <Button
                 android:id="@+id/settings_label"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:background="@color/transparentOverlay"
                 android:visibility="gone"
                 android:textColor="@color/bright"/>
+
+            <TextView
+                android:id="@+id/vrmode_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:textSize="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"/>
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
