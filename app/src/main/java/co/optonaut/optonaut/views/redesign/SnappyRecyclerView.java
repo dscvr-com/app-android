@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import co.optonaut.optonaut.util.MixpanelHelper;
 import timber.log.Timber;
 
 /**
@@ -36,8 +37,7 @@ public final class SnappyRecyclerView extends RecyclerView {
             super.smoothScrollToPosition(((ISnappyLayoutManager) getLayoutManager())
                     .getPositionForVelocity(velocityX, velocityY));
 
-            Timber.v("Now watching position %s", ((ISnappyLayoutManager) getLayoutManager())
-                    .getPositionForVelocity(velocityX, velocityY));
+            MixpanelHelper.trackViewViewer2D(getContext());
 
             return true;
         }

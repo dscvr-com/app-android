@@ -57,6 +57,11 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
 
+    // mixpanel
+    compile 'com.mixpanel.android:mixpanel-android:4.6.4'
+    compile 'com.google.android.gms:play-services-base:7.0.0'
+    compile 'com.google.android.gms:play-services-gcm:7.0.0'
+
     // Apache 2.0 licensed libraries!
     // see https://github.com/triposo/barone
     compile 'com.triposo:barone:1.0@aar'

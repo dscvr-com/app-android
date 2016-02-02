@@ -10,18 +10,19 @@ import android.os.Bundle;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
-import org.joda.time.Period;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
+import co.optonaut.optonaut.util.MixpanelHelper;
 import timber.log.Timber;
 
 /**
@@ -55,6 +56,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         setCardboardView(cardboardView);
 
         initializeTextures();
+        MixpanelHelper.trackViewViewerVR(this);
 
         creationTime = DateTime.now();
         thresholdForSwitchReached = false;
@@ -75,6 +77,12 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         registerAccelerationListener();
         creationTime = DateTime.now();
         inVRMode = true;
+    }
+
+    @Override
+    public void onDestroy() {
+        MixpanelHelper.flush(this);
+        super.onDestroy();
     }
 
     private void registerAccelerationListener() {

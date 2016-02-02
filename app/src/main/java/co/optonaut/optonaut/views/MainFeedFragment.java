@@ -16,6 +16,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.MixpanelHelper;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -76,6 +77,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .subscribe(optographFeedAdapter::addItem);
     }
 
