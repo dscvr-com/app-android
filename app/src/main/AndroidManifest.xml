@@ -44,6 +44,9 @@
         <meta-data
             android:name="com.mixpanel.android.MPConfig.EnableDebugLogging"
             android:value="false" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="53fc9712e5de047419972713413240dd2b622b06" />
     </application>
 
 
