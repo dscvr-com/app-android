@@ -1,15 +1,20 @@
 package co.optonaut.optonaut.views.redesign;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.ImageUrlBuilder;
+import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
@@ -20,6 +25,10 @@ import timber.log.Timber;
  * @date 2015-12-29
  */
 public class MainActivityRedesign extends AppCompatActivity {
+    private static final int REQUEST_SHARE = 1;
+    ;
+    private MixpanelAPI mixpanelAPI;
+
     private HostFragment hostFragment;
     private OverlayNavigationFragment overlayFragment;
 
@@ -52,7 +61,12 @@ public class MainActivityRedesign extends AppCompatActivity {
                     .add(R.id.feed_placeholder, overlayFragment).commit();
         }
 
+        initializeMixpanel();
         goFullscreen();
+    }
+
+    private void initializeMixpanel() {
+        this.mixpanelAPI = MixpanelAPI.getInstance(this, MixpanelHelper.MIXPANEL_TOKEN);
     }
 
     private void goFullscreen() {
@@ -82,7 +96,13 @@ public class MainActivityRedesign extends AppCompatActivity {
         super.onResume();
         findFragments();
         restoreUIState();
+    }
 
+    @Override
+    public void onDestroy() {
+        // flush mixpanel events before destroying
+        mixpanelAPI.flush();
+        super.onDestroy();
     }
 
     private void restoreUIState() {
@@ -157,5 +177,18 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     public boolean toggleOverlayVisibility() {
         return overlayFragment.toggleTotalVisibility();
+    }
+
+    public void shareOptograph(Optograph optograph) {
+        String shareUrl = ImageUrlBuilder.buildWebViewerUrl(optograph.getShare_alias());
+
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getString(R.string.share_body_web_viewer, shareUrl));
+        sharingIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_via)));
+
+        Timber.v("Initiated Sharing");
+        MixpanelHelper.trackActionViewer2DShare(this);
     }
 }

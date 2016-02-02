@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -22,6 +23,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
+import co.optonaut.optonaut.util.MixpanelHelper;
 import timber.log.Timber;
 
 /**
@@ -57,6 +59,8 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         // cardboardView.setRestoreGLStateEnabled(false);
         setCardboardView(cardboardView);
 
+        MixpanelHelper.trackViewViewerVR(this);
+
         creationTime = DateTime.now();
         thresholdForSwitchReached = false;
         inVRMode = true;
@@ -76,6 +80,12 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         registerAccelerationListener();
         creationTime = DateTime.now();
         inVRMode = true;
+    }
+
+    @Override
+    public void onDestroy() {
+        MixpanelHelper.flush(this);
+        super.onDestroy();
     }
 
     private void registerAccelerationListener() {
@@ -100,7 +110,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         }
     }
 
-    private void initializeTextures(float hfov) {
+	    private void initializeTextures(float hfov) {
         for (int i = 0; i < Cube.FACES.length; ++i) {
             Picasso.with(this)
                     .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i], hfov))

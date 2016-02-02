@@ -186,7 +186,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             // setup sharing
             TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_label);
             settingsLabel.setOnClickListener(new View.OnClickListener() {
-            String shareUrl = ImageUrlBuilder.buildWebViewerUrl(optograph.getShare_alias());
                 @Override
                 public void onClick(View v) {
                     PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
@@ -196,11 +195,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.share_item) {
-                                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, holder.itemView.getResources().getString(R.string.share_subject_web_viewer));
-                                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, holder.itemView.getResources().getString(R.string.share_body_web_viewer, shareUrl));
-                                sharingIntent.setType("text/plain");
-                                holder.itemView.getContext().startActivity(Intent.createChooser(sharingIntent, holder.itemView.getResources().getString(R.string.share_via)));
+                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
+                                return true;
                             } else if (item.getItemId() == R.id.report_item) {
                                 Timber.v("clicked report");
                                 return true;
