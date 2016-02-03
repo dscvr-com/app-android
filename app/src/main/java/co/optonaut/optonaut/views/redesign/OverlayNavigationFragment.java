@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -207,8 +208,12 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
     public void hideDialog() {
-        if (vrModeExplanationDialog != null && (vrModeExplanationDialog.isVisible() || vrModeExplanationDialog.isMenuVisible())) {
-            vrModeExplanationDialog.dismiss();
+        if (vrModeExplanationDialog != null) {
+            if (vrModeExplanationDialog.getDialog() != null) {
+                if (vrModeExplanationDialog.getDialog().isShowing()) {
+                    vrModeExplanationDialog.dismiss();
+                }
+            }
         }
     }
 
