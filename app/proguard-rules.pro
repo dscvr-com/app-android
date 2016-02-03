@@ -104,3 +104,6 @@
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 ##---------------End: proguard configuration for RxJava ----------
+
+# Cardboard Sdk
+-keep class com.google.vrtoolkit.cardboard.** { *; }
