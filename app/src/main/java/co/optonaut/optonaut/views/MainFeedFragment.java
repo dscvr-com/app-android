@@ -1,6 +1,5 @@
 package co.optonaut.optonaut.views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -8,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import org.joda.time.DateTime;
@@ -17,10 +15,12 @@ import org.joda.time.Interval;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
 
 /**
  * @author Nilan Marktanner
@@ -28,6 +28,9 @@ import timber.log.Timber;
  */
 public class MainFeedFragment extends OptographListFragment implements SensorEventListener {
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
+
+    NetworkProblemDialog networkProblemDialog;
+
 
     private SensorManager sensorManager;
     private boolean inVRMode;
@@ -40,6 +43,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         super.onCreate(savedInstanceState);
 
 
+        networkProblemDialog = new NetworkProblemDialog();
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -79,6 +83,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
     }
 
@@ -87,6 +95,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         apiConsumer.getOptographs(50, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
 
         // TODO: prefetch textures

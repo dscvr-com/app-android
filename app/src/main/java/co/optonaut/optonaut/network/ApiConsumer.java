@@ -20,6 +20,7 @@ import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
+import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -99,7 +100,7 @@ public class ApiConsumer {
 
     public Observable<Optograph> getOptographs(int limit, String older_than) {
         Timber.i("get optographs request: %s older than %s", limit, older_than);
-        return service.getOptographsAsObservable(limit, older_than).flatMap(Observable::from);
+        return service.getOptographsAsObservable(limit, older_than).flatMap(Observable::from).onErrorResumeNext(Observable.error(new Throwable()));
     }
 
     public Observable<Optograph> getOptographs(int limit) {

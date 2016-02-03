@@ -1,10 +1,8 @@
 package co.optonaut.optonaut.viewmodels;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,7 +26,6 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
@@ -105,6 +102,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // don't pipe click events to views below description bar
+                Timber.v("touch description bar");
                 return true;
             }
         });
@@ -123,6 +121,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // don't pipe click events to views below profile bar
+                Timber.v("profilebar touched");
                 return true;
             }
         });
@@ -131,7 +130,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         profileView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, v.getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(v, v.getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -173,6 +172,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
             TextView heart_label = (TextView) holder.itemView.findViewById(R.id.heart_label);
             heart_label.setTypeface(Constants.getInstance().getIconTypeface());
+            heart_label.setOnClickListener(v -> {
+                Snackbar.make(holder.itemView, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
+            });
 
             // TODO: check if user has starred optograph
             boolean userLikesOptograph = false;
@@ -198,7 +200,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                                 ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
                                 return true;
                             } else if (item.getItemId() == R.id.report_item) {
-                                Timber.v("clicked report");
+                                Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
                                 return true;
                             }
                             return false;
@@ -215,7 +217,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
             holder.getBinding().executePendingBindings();
         } else {
-            Timber.d("rebinding of OptographViewHolder at position " + position);
+            Timber.d("rebinding of OptographViewHolder at position %s", position);
         }
     }
 
@@ -225,6 +227,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
     public void addItem(Optograph optograph) {
+        if (optograph == null) {
+            return;
+        }
+
         DateTime created_at = optograph.getCreated_atDateTime();
 
         // skip if optograph is already in list

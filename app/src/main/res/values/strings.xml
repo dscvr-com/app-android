@@ -20,8 +20,13 @@
 
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
+    <string name="feature_record_soon">Recording is available soon!</string>
+    <string name="feature_profiles_soon">Profiles are available soon!</string>
+    <string name="feature_favorites_soon">Favorites are available soon!</string>
+    <string name="feature_soon">This feature is available soon!</string>
     <string name="dialog_vrmode_explanation">Tilt your phone by 90° to the left to enter VR mode!</string>
-    <string name="fire">OK</string>
+    <string name="dialog_fire">OK</string>
+    <string name="dialog_network_retry">There was a network problem. Please try again later!</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

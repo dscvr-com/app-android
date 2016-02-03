@@ -63,8 +63,9 @@ public class OverlayNavigationFragment extends Fragment {
         homeLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
         homeLabel.setText(getResources().getString(R.string.home_label));
         Button homeButton = (Button) view.findViewById(R.id.home_button);
-        View home_indicator = (View) view.findViewById(R.id.home_button_indicator);
+        View home_indicator = view.findViewById(R.id.home_button_indicator);
         Timber.d("height: %s", home_indicator.getHeight());
+        Timber.d("measured height: %s", home_indicator.getMeasuredHeight());
 
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, Constants.getInstance().getDisplayMetrics());
         home_indicator.setTranslationY(px);
@@ -84,7 +85,7 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(v, getResources().getString(R.string.feature_record_soon), Snackbar.LENGTH_LONG).show();
         });
 
         TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
@@ -95,7 +96,7 @@ public class OverlayNavigationFragment extends Fragment {
         profileButton.setTypeface(Constants.getInstance().getIconTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
         profileButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
         });
     }
 
