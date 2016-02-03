@@ -19,12 +19,19 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda' // add this line last, after android-apt anyway!
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'OptonautKey'
+            keyPassword 'YzliNGE0MDcxNTEw'
+            storeFile file('/home/transcendent/keystores/optonaut.jks')
+            storePassword 'ZGM0MWY2OTJmMmY1'
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion "19.1.0"
-
     defaultConfig {
         applicationId "co.optonaut.optonaut"
-            minSdkVersion 19
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
         versionName "0.1"
@@ -33,9 +40,9 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     productFlavors {
         vanilla {
             applicationId "co.optonaut.optonaut"
@@ -45,7 +52,6 @@ android {
             applicationId "co.optonaut.optonaut.vrmode"
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -58,7 +64,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
-
     // Manual entries
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -71,27 +76,21 @@ dependencies {
     // Reactive
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:1.1.0'
-
     // mixpanel
     compile 'com.mixpanel.android:mixpanel-android:4.6.4'
     compile 'com.google.android.gms:play-services-base:7.0.0'
     compile 'com.google.android.gms:play-services-gcm:7.0.0'
-
     // Apache 2.0 licensed libraries!
     // see https://github.com/triposo/barone
     compile 'com.triposo:barone:1.0@aar'
-
     // see https://github.com/hdodenhof/CircleImageView
     compile 'de.hdodenhof:circleimageview:2.0.0'
-
     // see https://github.com/JakeWharton/timber
     compile 'com.jakewharton.timber:timber:4.1.0'
-
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 configurations {
