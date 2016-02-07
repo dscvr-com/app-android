@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        // applicationId "co.optonaut.ndkmodule"
+        minSdkVersion 19
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+
+        // These directives will be used to tell Android studio how to compile your library
+
+        sourceSets.main {
+            jniLibs.srcDirs = ['src/main/libs']
+            jni.srcDirs = [] //disable automatic ndk-build call
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    // call regular ndk-build(.cmd) script from app directory
+    task ndkBuild(type: Exec) {
+        // start in directory file('src/main/jni').absolutePath
+        // have gradle.properties in same directory as this file with following lines
+        // ndk_build_path=/home/transcendent/android-ndk/ndk-build
+        // ndk_module_path=NDK_MODULE_PATH=/home/transcendent/projects/Optonaut/ndkmodule
+        commandLine ndk_build_path, '-C', file('src/main/jni').absolutePath
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+}

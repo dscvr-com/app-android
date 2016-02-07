@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.nativecode.TestUtil;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
@@ -86,6 +87,8 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
+            TestUtil t = new TestUtil();
+            t.logNative();
             Snackbar.make(v, getResources().getString(R.string.feature_record_soon), Snackbar.LENGTH_LONG).show();
         });
 

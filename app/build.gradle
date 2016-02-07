@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -90,7 +92,9 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':ndkmodule')
 }
 
 configurations {
