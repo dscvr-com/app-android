@@ -16,8 +16,6 @@ import java.util.List;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
-import co.optonaut.optonaut.views.ProfileFragment;
-import co.optonaut.optonaut.views.SearchFragment;
 
 /**
  * @author Nilan Marktanner

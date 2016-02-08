@@ -10,8 +10,6 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.HostFragment;
-import co.optonaut.optonaut.views.ProfileFragment;
-import co.optonaut.optonaut.views.SearchFeedFragment;
 
 /**
  * @author Nilan Marktanner
