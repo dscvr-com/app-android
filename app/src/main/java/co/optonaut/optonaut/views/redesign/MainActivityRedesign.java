@@ -140,6 +140,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         if(!BackStackFragment.handleBackPressed(getSupportFragmentManager())){
             super.onBackPressed();
         } else {
+            // TODO: find better solution
             goFullscreen();
         }
     }
@@ -205,5 +206,13 @@ public class MainActivityRedesign extends AppCompatActivity {
     public void prepareRecording() {
         hideStatusBar();
         hostFragment.replaceFragment(new RecordFragment(), true);
+    }
+
+    public void takePicture() {
+        if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
+            ((RecordFragment) hostFragment.getCurrentFragment()).takePicture();
+        } else {
+            Timber.d("Tried to take picture but no record fragment available");
+        }
     }
 }

@@ -187,6 +187,7 @@ public class OverlayNavigationFragment extends Fragment {
                 changeMode(RECORD);
             } else if (currentMode == RECORD) {
                 // TODO: start recording
+                ((MainActivityRedesign) getActivity()).takePicture();
             }
 
         });

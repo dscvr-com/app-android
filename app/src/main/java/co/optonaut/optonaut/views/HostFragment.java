@@ -35,6 +35,14 @@ public class HostFragment extends BackStackFragment {
         }
     }
 
+    public Fragment getCurrentFragment() {
+        if (!getChildFragmentManager().getFragments().isEmpty()) {
+            return getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1);
+        }
+
+        return null;
+    }
+
     public static HostFragment newInstance(Fragment fragment, String title) {
         HostFragment hostFragment = new HostFragment();
         hostFragment.fragment = fragment;
