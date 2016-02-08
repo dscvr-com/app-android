@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/navigation_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="126dp"
+        android:background="@drawable/black_gradient"
+        android:layout_gravity="center|bottom">
+
+        <RelativeLayout
+            android:id="@+id/cancel_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/record_button"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true">
+            <Button
+                android:id="@+id/cancel_button"
+                android:textColor="@color/bright"
+                android:background="@color/transparentOverlay"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textSize="28dp"/>
+            <TextView
+                android:id="@+id/cancel_label"
+                android:paddingBottom="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel_label"
+                android:textAllCaps="true"
+                android:textSize="9dp"
+                android:textColor="@color/bright"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/record_button"
+            android:textColor="@color/bright"
+            android:background="@drawable/record_button_shape"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:textSize="33dp"/>
+    </RelativeLayout>
+
+</FrameLayout>

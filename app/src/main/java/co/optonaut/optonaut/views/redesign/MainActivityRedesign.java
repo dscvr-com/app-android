@@ -11,10 +11,12 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.record.RecordFragment;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
@@ -133,11 +135,13 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onBackPressed() {
-        // do nothing
-        // TODO: retain fragment state
+        if(!BackStackFragment.handleBackPressed(getSupportFragmentManager())){
+            super.onBackPressed();
+        } else {
+            goFullscreen();
+        }
     }
 
     public int getUpperBoundary() {
@@ -196,5 +200,10 @@ public class MainActivityRedesign extends AppCompatActivity {
         if (overlayFragment != null) {
             overlayFragment.hideDialog();
         }
+    }
+
+    public void prepareRecording() {
+        hideStatusBar();
+        hostFragment.replaceFragment(new RecordFragment(), true);
     }
 }

@@ -58,6 +58,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    // for butterknife
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 
@@ -82,6 +86,7 @@ dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.6.4'
     compile 'com.google.android.gms:play-services-base:7.0.0'
     compile 'com.google.android.gms:play-services-gcm:7.0.0'
+
     // Apache 2.0 licensed libraries!
     // see https://github.com/triposo/barone
     compile 'com.triposo:barone:1.0@aar'
@@ -89,9 +94,14 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     // see https://github.com/JakeWharton/timber
     compile 'com.jakewharton.timber:timber:4.1.0'
+    // see http://jakewharton.github.io/butterknife/
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':ndkmodule')

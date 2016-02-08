@@ -126,6 +126,36 @@
             </View>
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/cancel_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/record_group"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible">
+            <Button
+                android:id="@+id/cancel_button"
+                android:textColor="@color/bright"
+                android:background="@color/transparentOverlay"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textSize="28dp"/>
+            <TextView
+                android:id="@+id/cancel_label"
+                android:paddingBottom="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/home_label"
+                android:textAllCaps="true"
+                android:textSize="9dp"
+                android:textColor="@color/bright"/>
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/record_group"

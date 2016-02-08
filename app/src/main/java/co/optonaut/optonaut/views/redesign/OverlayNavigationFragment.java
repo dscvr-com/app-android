@@ -2,27 +2,26 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
-import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.nativecode.TestUtil;
 import co.optonaut.optonaut.util.Constants;
@@ -35,19 +34,51 @@ import timber.log.Timber;
  * @date 2016-01-25
  */
 public class OverlayNavigationFragment extends Fragment {
-    private RelativeLayout statusbar;
-    private Toolbar toolbar;
+    public static final int GONE = -1;
+    public static final int FEED = 0;
+    public static final int RECORD = 1;
 
-    VRModeExplanationDialog vrModeExplanationDialog;
+    private int currentMode;
+    @Bind(R.id.statusbar) RelativeLayout statusbar;
+
+    // Toolbar
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.search_button) Button searchButton;
+    @Bind(R.id.header) TextView header;
+    @Bind(R.id.notification_button) Button notificationButton;
+    @Bind(R.id.settings_label) Button settingsButton;
+    @Bind(R.id.vrmode_button) TextView vrmodeButton;
+
+    // Navigation bar
+    @Bind(R.id.home_group) RelativeLayout homeGroup;
+    @Bind(R.id.home_label) TextView homeLabel;
+    @Bind(R.id.home_button) Button homeButton;
+    @Bind(R.id.home_button_indicator) View homeIndicator;
+
+    @Bind(R.id.cancel_group) RelativeLayout cancelGroup;
+    @Bind(R.id.cancel_label) TextView cancelLabel;
+    @Bind(R.id.cancel_button) Button cancelButton;
+
+    @Bind(R.id.record_button) Button recordButton;
+
+    @Bind(R.id.profile_group) RelativeLayout profileGroup;
+    @Bind(R.id.profile_label) TextView profileLabel;
+    @Bind(R.id.profile_button) Button profileButton;
+
+
+    private VRModeExplanationDialog vrModeExplanationDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.overlay_nagivation_fragment, container, false);
+        ButterKnife.bind(this, view);
 
         initializeToolbar(view);
         initializeNavigationButtons(view);
+
+        currentMode = FEED;
 
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
@@ -60,63 +91,16 @@ public class OverlayNavigationFragment extends Fragment {
         return view;
     }
 
-    private void initializeNavigationButtons(View view) {
-        TextView homeLabel = (TextView) view.findViewById(R.id.home_label);
-        homeLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
-        homeLabel.setText(getResources().getString(R.string.home_label));
-        Button homeButton = (Button) view.findViewById(R.id.home_button);
-        View home_indicator = view.findViewById(R.id.home_button_indicator);
-        Timber.d("height: %s", home_indicator.getHeight());
-        Timber.d("measured height: %s", home_indicator.getMeasuredHeight());
-
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, Constants.getInstance().getDisplayMetrics());
-        home_indicator.setTranslationY(px);
-        home_indicator.setVisibility(View.VISIBLE);
-        homeButton.setTypeface(Constants.getInstance().getIconTypeface());
-        homeButton.setText(String.valueOf((char) 0xe90e));
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: switch to home screen
-                home_indicator.setVisibility(View.VISIBLE);
-            }
-        });
-
-        Button recordButton = (Button) view.findViewById(R.id.record_button);
-        View profile_button_indicator = (View) view.findViewById(R.id.profile_button_indicator);
-        recordButton.setTypeface(Constants.getInstance().getIconTypeface());
-        recordButton.setText(String.valueOf((char) 0xe902));
-        recordButton.setOnClickListener(v -> {
-            TestUtil t = new TestUtil();
-            t.logNative();
-            Snackbar.make(v, getResources().getString(R.string.feature_record_soon), Snackbar.LENGTH_LONG).show();
-        });
-
-        TextView profileLabel = (TextView) view.findViewById(R.id.profile_label);
-        profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
-        profileLabel.setText(getResources().getString(R.string.profile_label));
-
-        Button profileButton = (Button) view.findViewById(R.id.profile_button);
-        profileButton.setTypeface(Constants.getInstance().getIconTypeface());
-        profileButton.setText(String.valueOf((char) 0xe910));
-        profileButton.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
-        });
-    }
-
     private void initializeToolbar(View view) {
-        Button searchButton = (Button) view.findViewById(R.id.search_button);
         searchButton.setTypeface(Constants.getInstance().getIconTypeface());
         searchButton.setText(String.valueOf((char) 0xe91f));
         searchButton.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
         });
 
-        TextView header = (TextView) view.findViewById(R.id.header);
         header.setTypeface(Constants.getInstance().getIconTypeface());
         header.setText(String.valueOf((char) 0xe91c));
 
-        Button notificationButton = (Button) view.findViewById(R.id.notification_button);
         notificationButton.setTypeface(Constants.getInstance().getIconTypeface());
         notificationButton.setText(String.valueOf((char) 0xe90f));
         notificationButton.setOnClickListener(v -> {
@@ -124,7 +108,6 @@ public class OverlayNavigationFragment extends Fragment {
         });
 
 
-        Button settingsButton = (Button) view.findViewById(R.id.settings_label);
         settingsButton.setTypeface(Constants.getInstance().getIconTypeface());
         settingsButton.setText(String.valueOf((char) 0xe904));
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -152,22 +135,70 @@ public class OverlayNavigationFragment extends Fragment {
 
 
         vrModeExplanationDialog = new VRModeExplanationDialog();
-        TextView vrmode_button = (TextView) view.findViewById(R.id.vrmode_button);
-        vrmode_button.setTypeface(Constants.getInstance().getIconTypeface());
-        vrmode_button.setText(String.valueOf((char) 0xe920));
-        vrmode_button.setOnClickListener(v -> {
+        vrmodeButton.setTypeface(Constants.getInstance().getIconTypeface());
+        vrmodeButton.setText(String.valueOf((char) 0xe920));
+        vrmodeButton.setOnClickListener(v -> {
             MixpanelHelper.trackActionViewer2DVRButton(getActivity());
             vrModeExplanationDialog.show(getChildFragmentManager(), null);
         });
-
-
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
         float scale = Constants.getInstance().getDisplayMetrics().density;
         int marginTop = (int) (25 * scale + 0.5f);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
         lp.setMargins(0, marginTop, 0, 0);
         toolbar.setLayoutParams(lp);
+    }
+
+    private void initializeNavigationButtons(View view) {
+        homeLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
+        homeLabel.setText(getResources().getString(R.string.home_label));
+
+        cancelLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
+        cancelLabel.setText(getResources().getString(R.string.cancel_label));
+
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, Constants.getInstance().getDisplayMetrics());
+        homeIndicator.setTranslationY(px);
+        homeIndicator.setVisibility(View.VISIBLE);
+        homeButton.setTypeface(Constants.getInstance().getIconTypeface());
+        homeButton.setText(String.valueOf((char) 0xe90e));
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: switch to home screen
+                homeIndicator.setVisibility(View.VISIBLE);
+            }
+        });
+        cancelButton.setTypeface(Constants.getInstance().getIconTypeface());
+        cancelButton.setText(String.valueOf((char) 0xe909));
+        cancelButton.setOnClickListener(v -> {
+            if (currentMode == RECORD) {
+                changeMode(FEED);
+            }
+            getActivity().onBackPressed();
+        });
+
+        recordButton.setTypeface(Constants.getInstance().getIconTypeface());
+        recordButton.setText(String.valueOf((char) 0xe902));
+        recordButton.setOnClickListener(v -> {
+            TestUtil t = new TestUtil();
+            t.logNative();
+
+            if (currentMode == FEED) {
+                changeMode(RECORD);
+            } else if (currentMode == RECORD) {
+                // TODO: start recording
+            }
+
+        });
+
+        profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
+        profileLabel.setText(getResources().getString(R.string.profile_label));
+
+        profileButton.setTypeface(Constants.getInstance().getIconTypeface());
+        profileButton.setText(String.valueOf((char) 0xe910));
+        profileButton.setOnClickListener(v -> {
+            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     @Override
@@ -183,6 +214,31 @@ public class OverlayNavigationFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+
+        getView().setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (currentMode == RECORD) {
+                        changeMode(FEED);
+                    }
+                    getActivity().onBackPressed();
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
 
     private void initializeSharedPreferences(View view) {
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -196,6 +252,50 @@ public class OverlayNavigationFragment extends Fragment {
             editor.putInt(getString(R.string.preference_upperboundary), upperBoundary);
         }
         editor.commit();
+    }
+
+
+    public void changeMode(final int mode) {
+        switch (mode) {
+            case GONE:
+                // TODO: set invisible
+                break;
+            case FEED:
+                // TODO: set feed overlay
+                switchToFeedMode();
+                break;
+            case RECORD:
+                // TODO: set record
+                switchToRecordMode();
+                break;
+            default:
+                Timber.e("Unknown mode in OverlayNavigationFragment");
+
+        }
+    }
+
+    private void switchToRecordMode() {
+        Timber.v("switching to record mode");
+        currentMode = RECORD;
+
+        toolbar.setVisibility(View.INVISIBLE);
+        homeGroup.setVisibility(View.INVISIBLE);
+        cancelGroup.setVisibility(View.VISIBLE);
+        profileGroup.setVisibility(View.INVISIBLE);
+
+
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.prepareRecording();
+    }
+
+    private void switchToFeedMode() {
+        Timber.v("switching to feed mode");
+        currentMode = FEED;
+
+        toolbar.setVisibility(View.VISIBLE);
+        homeGroup.setVisibility(View.VISIBLE);
+        cancelGroup.setVisibility(View.INVISIBLE);
+        profileGroup.setVisibility(View.VISIBLE);
     }
 
     public void setTotalVisibility(int visibility) {

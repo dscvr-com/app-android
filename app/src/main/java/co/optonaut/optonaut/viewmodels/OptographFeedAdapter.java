@@ -144,7 +144,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         timeAgoLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
 
 
-        TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_label);
+        TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_button);
         settingsLabel.setTypeface(Constants.getInstance().getIconTypeface());
         settingsLabel.setText(String.valueOf((char) 0xe904));
     }
@@ -186,7 +186,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             }
 
             // setup sharing
-            TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_label);
+            TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_button);
             settingsLabel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
