@@ -34,6 +34,7 @@ public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback
         surfaceHolder.addCallback(this);
 
         if (camera != null) {
+            // use in portrait mode
             camera.setDisplayOrientation(90);
         }
     }
