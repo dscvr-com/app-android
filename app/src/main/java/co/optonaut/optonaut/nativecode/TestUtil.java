@@ -1,5 +1,7 @@
 package co.optonaut.optonaut.nativecode;
 
+import android.graphics.Bitmap;
+
 /**
  * @author Nilan Marktanner
  * @date 2016-02-07
@@ -9,10 +11,11 @@ public class TestUtil {
         System.loadLibrary("ndkmodule");
     }
 
-    private native void test(String logThis);
+    private native void initRecorder();
+    private native void push(Bitmap bitmap, double[] extrinsicsData);
 
 
-    public void logNative() {
-        test("This will log to LogCat via native Call");
+    public void initialize() {
+        initRecorder();
     }
 }
