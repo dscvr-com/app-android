@@ -10,6 +10,7 @@ import com.crashlytics.android.Crashlytics;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -24,7 +25,7 @@ public class CameraUtils {
     public static Camera getCameraInstance(){
         Camera camera = null;
         try {
-            camera = Camera.open();
+            //camera = open();
         } catch (Exception e){
             // Camera is not available (in use or does not exist)
             Timber.e(e, "Camera not available at the moment.");
@@ -85,5 +86,25 @@ public class CameraUtils {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
+    public static Camera.Size getBiggestSupportedPictureSize(Camera camera) {
+        List<Camera.Size> sizes = camera.getParameters().getSupportedPictureSizes();
+
+        int max = 0;
+        int index = 0;
+
+        for (int i = 0; i < sizes.size(); i++){
+            Camera.Size s = sizes.get(i);
+            int size = s.height * s.width;
+            if (size > max) {
+                index = i;
+                max = size;
+            }
+        }
+
+        // TODO: return correct size
+        //return camera.Size(sizes.get(index).width, sizes.get(index).height);
+        return null;
     }
 }

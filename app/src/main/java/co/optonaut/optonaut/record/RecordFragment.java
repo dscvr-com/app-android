@@ -31,7 +31,28 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            File pictureFile = CameraUtils.getOutputMediaFile(CameraUtils.MEDIA_TYPE_IMAGE);
+            if (pictureFile == null){
+                Timber.d("Error creating media file, check storage permissions");
+                return;
+            }
 
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Timber.d(e, "File not found!");
+            } catch (IOException e) {
+                Timber.d(e, "Error accessing file!");
+            }
+        }
+    };
+
+    private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
             File pictureFile = CameraUtils.getOutputMediaFile(CameraUtils.MEDIA_TYPE_IMAGE);
             if (pictureFile == null){
                 Timber.d("Error creating media file, check storage permissions");
@@ -84,11 +105,11 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    public void takePicture() {
+    public void startRecord() {
         // TODO: rotate camera coordinates like this http://stackoverflow.com/a/18874394/1176596
         // TODO: set size like this http://stackoverflow.com/a/11009422/1176596
         if (camera != null) {
-            camera.takePicture(null, null, pictureCallback);
+            camera.setPreviewCallback(previewCallback);
         }
     }
 

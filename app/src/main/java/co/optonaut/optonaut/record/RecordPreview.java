@@ -2,12 +2,15 @@ package co.optonaut.optonaut.record;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.media.MediaActionSound;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
+import co.optonaut.optonaut.util.CameraUtils;
 import timber.log.Timber;
 
 /**
@@ -17,6 +20,8 @@ import timber.log.Timber;
 public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder surfaceHolder;
     private Camera camera;
+
+    private MediaActionSound mediaActionSound;
 
     public RecordPreview(Context context) {
         super(context);
@@ -37,6 +42,10 @@ public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback
             // use in portrait mode
             camera.setDisplayOrientation(90);
         }
+
+        mediaActionSound = new MediaActionSound();
+        mediaActionSound.load(MediaActionSound.START_VIDEO_RECORDING);
+        mediaActionSound.load(MediaActionSound.STOP_VIDEO_RECORDING);
     }
 
     public RecordPreview(Context context, AttributeSet attrs) {
@@ -65,6 +74,9 @@ public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // set preview size and make any resize, rotate or
         // reformatting changes here
+        Camera.Parameters parameters = camera.getParameters();
+        parameters.setRotation(90);
+        //parameters.setPictureSize(CameraUtils.getBiggestSupportedPictureSize(camera));
 
         // start preview with new settings
         startPreview(surfaceHolder);

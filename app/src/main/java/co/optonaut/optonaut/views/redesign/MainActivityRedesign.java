@@ -210,7 +210,7 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     public void takePicture() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
-            ((RecordFragment) hostFragment.getCurrentFragment()).takePicture();
+            ((RecordFragment) hostFragment.getCurrentFragment()).startRecord();
         } else {
             Timber.d("Tried to take picture but no record fragment available");
         }
