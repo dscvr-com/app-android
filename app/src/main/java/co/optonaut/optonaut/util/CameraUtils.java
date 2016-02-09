@@ -22,6 +22,9 @@ public class CameraUtils {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
+    public static final String STORAGE_PATH = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES).getPath().concat("/").concat("Optonaut").concat("/");
+
     public static Camera getCameraInstance(){
         Camera camera = null;
         try {

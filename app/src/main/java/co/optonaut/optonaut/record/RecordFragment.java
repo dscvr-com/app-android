@@ -5,19 +5,12 @@ import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.nativecode.TestUtil;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import timber.log.Timber;
@@ -51,8 +44,7 @@ public class RecordFragment extends Fragment {
                     0, 0, 0, 1
                 };
 
-                TestUtil t = new TestUtil();
-                t.pushImage(bitmap, extrinsicsData);
+                Recorder.pushImage(bitmap, extrinsicsData);
             } else {
                 throw new UnsupportedOperationException("Wrong preview format.");
             }

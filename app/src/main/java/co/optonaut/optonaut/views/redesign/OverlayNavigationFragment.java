@@ -23,7 +23,6 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.nativecode.TestUtil;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;

@@ -11,9 +11,10 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
-import co.optonaut.optonaut.nativecode.TestUtil;
+import co.optonaut.optonaut.record.Recorder;
 import co.optonaut.optonaut.record.RecordFragment;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
+import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.MixpanelHelper;
@@ -39,14 +40,12 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO: initialize in Application
         // initialize constants
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
         CoreMotionListener.initialize(this);
 
-        TestUtil t = new TestUtil();
-        t.initialize();
+        Recorder.initialize(CameraUtils.STORAGE_PATH);
 
         super.onCreate(savedInstanceState);
 
