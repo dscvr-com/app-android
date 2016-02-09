@@ -18,4 +18,8 @@ public class TestUtil {
     public void initialize() {
         initRecorder();
     }
+
+    public void pushImage(Bitmap bitmap, double[] extrinsicsData) {
+        push(bitmap, extrinsicsData);
+    }
 }

@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.record;
 
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -16,7 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.nativecode.TestUtil;
 import co.optonaut.optonaut.util.CameraUtils;
+import co.optonaut.optonaut.util.Constants;
 import timber.log.Timber;
 
 /**
@@ -31,6 +34,7 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+            Timber.v("new preview image");
             Camera.Parameters parameters = camera.getParameters();
             int imageFormat = parameters.getPreviewFormat();
             if (imageFormat == ImageFormat.NV21) {
@@ -39,6 +43,16 @@ public class RecordFragment extends Fragment {
                         parameters.getPreviewSize().width,
                         parameters.getPreviewSize().height);
 
+                Bitmap bitmap = Bitmap.createBitmap(Constants.getInstance().getDisplayMetrics(), imageAsARGB8888, parameters.getPreviewSize().width, parameters.getPreviewSize().height, Bitmap.Config.ARGB_8888);
+                double[] extrinsicsData = {
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                };
+
+                TestUtil t = new TestUtil();
+                t.pushImage(bitmap, extrinsicsData);
             } else {
                 throw new UnsupportedOperationException("Wrong preview format.");
             }

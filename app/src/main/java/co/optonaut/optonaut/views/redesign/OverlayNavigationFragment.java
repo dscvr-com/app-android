@@ -180,13 +180,9 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
-            TestUtil t = new TestUtil();
-            t.initialize();
-
             if (currentMode == FEED) {
                 changeMode(RECORD);
             } else if (currentMode == RECORD) {
-                // TODO: start recording
                 ((MainActivityRedesign) getActivity()).takePicture();
             }
 

@@ -10,8 +10,9 @@ using namespace optonaut;
 
 
 
-#define DEBUG_TAG "NDK_AndroidNDK1SampleActivity"
+#define DEBUG_TAG "Optonaut"
 
+// TODO: give as parameter in init method
 const string path = "/storage/emulated/0/Pictures/Optonaut/";
 
 int counter = 0;
@@ -32,7 +33,7 @@ extern "C" {
 }
 void Java_co_optonaut_optonaut_nativecode_TestUtil_initRecorder(JNIEnv *env, jobject thiz)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, "NDK:LC: [%s]", "Initializing Recorder");
+    __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "NDK:LC: [%s]", "Initializing Recorder");
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -52,7 +53,8 @@ void Java_co_optonaut_optonaut_nativecode_TestUtil_initRecorder(JNIEnv *env, job
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics.clone(), sink, "", 1, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics.clone(), sink, path + "debug", 1, true);
+    recorder->SetIdle(false);
 }
 
 void Java_co_optonaut_optonaut_nativecode_TestUtil_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
@@ -63,7 +65,8 @@ void Java_co_optonaut_optonaut_nativecode_TestUtil_push(JNIEnv *env, jobject thi
     AndroidBitmap_getInfo(env, bitmap, &info);
 
     if(info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        __android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, "NDK:LC: [%s]", "Bitmap format is not RGBA_8888!");
+        __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "NDK:LC: [%s]", "Bitmap format is not RGBA_8888!");
+        __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "NDK:LC: [%d]", info.format);
     }
 
     AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
@@ -85,6 +88,7 @@ void Java_co_optonaut_optonaut_nativecode_TestUtil_push(JNIEnv *env, jobject thi
     image->originalExtrinsics = extrinsics.clone();
     image->intrinsics = intrinsics.clone();
 
+    __android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, "NDK:LC: [%s]", "Bitmap format is not RGBA_8888!");
     recorder->Push(image);
     env->ReleaseDoubleArrayElements(extrinsicsData, (jdouble *) temp, 0);
 

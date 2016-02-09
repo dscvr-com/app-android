@@ -46,6 +46,13 @@ public class CameraUtils {
         }
 
         Camera.Parameters params = camera.getParameters();
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        Camera.getCameraInfo(0, cameraInfo);
+        Timber.v("Orientation: %s", cameraInfo.orientation);
+        int rotate = 90;
+        params.set("orientation", "landscape");
+        params.setRotation(rotate);
+        // height, width are switched
         params.setPreviewSize(size.width, size.height);
         camera.setParameters(params);
 
