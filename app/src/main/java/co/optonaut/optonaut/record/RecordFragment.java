@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.record;
 
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,47 +27,20 @@ public class RecordFragment extends Fragment {
     private Camera camera;
     private RecordPreview recordPreview;
 
-
-    private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
-
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            File pictureFile = CameraUtils.getOutputMediaFile(CameraUtils.MEDIA_TYPE_IMAGE);
-            if (pictureFile == null){
-                Timber.d("Error creating media file, check storage permissions");
-                return;
-            }
-
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Timber.d(e, "File not found!");
-            } catch (IOException e) {
-                Timber.d(e, "Error accessing file!");
-            }
-        }
-    };
-
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-            File pictureFile = CameraUtils.getOutputMediaFile(CameraUtils.MEDIA_TYPE_IMAGE);
-            if (pictureFile == null){
-                Timber.d("Error creating media file, check storage permissions");
-                return;
-            }
+            Camera.Parameters parameters = camera.getParameters();
+            int imageFormat = parameters.getPreviewFormat();
+            if (imageFormat == ImageFormat.NV21) {
+                // TODO - get matrix as int
+                int[] imageAsARGB8888 = CameraUtils.convertYUV420_NV21toARGB8888(data,
+                        parameters.getPreviewSize().width,
+                        parameters.getPreviewSize().height);
 
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Timber.d(e, "File not found!");
-            } catch (IOException e) {
-                Timber.d(e, "Error accessing file!");
+            } else {
+                throw new UnsupportedOperationException("Wrong preview format.");
             }
         }
     };
