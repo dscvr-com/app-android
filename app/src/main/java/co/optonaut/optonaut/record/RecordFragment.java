@@ -11,8 +11,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
+import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.Maths;
 import timber.log.Timber;
 
 /**
@@ -37,12 +40,10 @@ public class RecordFragment extends Fragment {
                         parameters.getPreviewSize().height);
 
                 Bitmap bitmap = Bitmap.createBitmap(Constants.getInstance().getDisplayMetrics(), imageAsARGB8888, parameters.getPreviewSize().width, parameters.getPreviewSize().height, Bitmap.Config.ARGB_8888);
-                double[] extrinsicsData = {
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                };
+
+                // build extrinsics
+                float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+                double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
                 Recorder.pushImage(bitmap, extrinsicsData);
             } else {
@@ -69,13 +70,21 @@ public class RecordFragment extends Fragment {
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
         preview.addView(recordPreview);
 
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        CoreMotionListener.register();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         releaseCamera();
+        CoreMotionListener.unregister();
     }
 
     private void releaseCamera() {

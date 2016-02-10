@@ -2,6 +2,8 @@ package co.optonaut.optonaut.util;
 
 import android.opengl.Matrix;
 
+import timber.log.Timber;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-12-18
@@ -112,5 +114,18 @@ public class Maths {
         float[] inverse = new float[16];
         Matrix.invertM(inverse, 0, matrix, 0);
         return inverse;
+    }
+
+    public static double[] convertFloatsToDoubles(float[] input) {
+        if (input == null) {
+            Timber.e("Tried to convert a null float array to doubles!");
+            return null;
+        }
+
+        double[] output = new double[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = input[i];
+        }
+        return output;
     }
 }
