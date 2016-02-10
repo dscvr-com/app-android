@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
@@ -107,8 +108,13 @@ public class RecordFragment extends Fragment {
 
     private void setupSelectionPoints() {
         SelectionPoint[] rawPoints = Recorder.getSelectionPoints();
-        List<SelectionPoint> points = Arrays.asList(rawPoints);
-        List<SelectionPoint> points2 = Arrays.asList(rawPoints);
+        List<SelectionPoint> points = new LinkedList<>();
+        List<SelectionPoint> points2 = new LinkedList<>();
+
+        for (SelectionPoint p : rawPoints) {
+            points.add(p);
+            points2.add(p);
+        }
 
         points2.remove(0);
 
