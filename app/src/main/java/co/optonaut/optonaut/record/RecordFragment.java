@@ -3,6 +3,7 @@ package co.optonaut.optonaut.record;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.Arrays;
+import java.util.List;
+
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
@@ -102,5 +105,29 @@ public class RecordFragment extends Fragment {
         }
     }
 
+    private void setupSelectionPoints() {
+        SelectionPoint[] rawPoints = Recorder.getSelectionPoints();
+        List<SelectionPoint> points = Arrays.asList(rawPoints);
+        List<SelectionPoint> points2 = Arrays.asList(rawPoints);
+
+        points2.remove(0);
+
+        for (int i = 0; i < points2.size(); ++i) {
+            SelectionPoint a = points.get(i);
+            SelectionPoint b = points2.get(i);
+            if (a.getRingId() == b.getRingId()) {
+                // edge = Edge(a, b);
+                float[] vector = {0, 0, -1, 0};
+                float[] posA = new float[4];
+                float[] posB = new float[4];
+                Matrix.multiplyMV(posA, 0, a.getExtrinsics(), 0, vector, 0);
+                Matrix.multiplyMV(posB, 0, b.getExtrinsics(), 0, vector, 0);
+
+                // edgeNode = createLineNode(posA, posB);
+                // edges[edge] = edgeNode;
+                // scene.rootNode.addChildNode(edgeNode);
+            }
+        }
+    }
 
 }
