@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,8 +28,9 @@ import timber.log.Timber;
 public class RecordFragment extends Fragment {
     private Camera camera;
     private RecordPreview recordPreview;
-
+    private RecorderOverlayView recorderOverlayView;
     private Edge edge;
+
 
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
@@ -58,6 +58,7 @@ public class RecordFragment extends Fragment {
         }
     };
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -73,9 +74,10 @@ public class RecordFragment extends Fragment {
 
         // Create our Preview view and set it as the content of our activity.
         recordPreview = new RecordPreview(getActivity(), camera);
+        recorderOverlayView = new RecorderOverlayView(getActivity());
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
         preview.addView(recordPreview);
-
+        preview.addView(recorderOverlayView);
 
         return view;
     }
@@ -137,5 +139,4 @@ public class RecordFragment extends Fragment {
             }
         }
     }
-
 }

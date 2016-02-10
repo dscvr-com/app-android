@@ -2,9 +2,6 @@ package co.optonaut.optonaut.record;
 
 import android.graphics.Bitmap;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @author Nilan Marktanner
  * @date 2016-02-07
