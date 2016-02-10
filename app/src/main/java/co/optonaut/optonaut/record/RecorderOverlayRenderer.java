@@ -42,8 +42,8 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
                 0.0f, 0.0f, 0.01f, // center
                 0.0f, 1.0f, 0.0f); // up
 
-        // Set the background frame color
-        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        // Set the background frame color as transparent!
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GLES20.glClearDepthf(1.0f);
     }
 

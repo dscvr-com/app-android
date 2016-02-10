@@ -46,7 +46,7 @@ public class LineNode {
 
     public LineNode(float[] posA, float[] posB) {
         this.posA = posA;
-        this.posB= posB;
+        this.posB = posB;
 
         initialize();
     }

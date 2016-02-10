@@ -25,11 +25,14 @@ public class RecorderOverlayView extends GLSurfaceView {
     private void initialize() {
         setEGLContextClientVersion(2);
 
-        // TODO: use as overlay
-        setZOrderOnTop(true);
-        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        // we want to use this as overlay above the camera preview - while not covering other views such as OverlayNavigationFragment
+        setZOrderMediaOverlay(true);
+
+        // not sure why we need this, but without it we can't get transparency!
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
         recorderOverlayRenderer = new RecorderOverlayRenderer();
         setRenderer(recorderOverlayRenderer);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
 }
