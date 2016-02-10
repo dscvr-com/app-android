@@ -30,6 +30,8 @@ public class RecordFragment extends Fragment {
     private Camera camera;
     private RecordPreview recordPreview;
 
+    private Edge edge;
+
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
         @Override
@@ -122,7 +124,7 @@ public class RecordFragment extends Fragment {
             SelectionPoint a = points.get(i);
             SelectionPoint b = points2.get(i);
             if (a.getRingId() == b.getRingId()) {
-                // edge = Edge(a, b);
+                edge = new Edge(a, b);
                 float[] vector = {0, 0, -1, 0};
                 float[] posA = new float[4];
                 float[] posB = new float[4];
