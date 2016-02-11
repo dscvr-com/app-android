@@ -22,10 +22,12 @@ public class Recorder {
     public static native SelectionPoint[] getSelectionPoints();
     public static native void finish();
     public static native void dispose();
+    public static native float[] getBallPosition();
+    public static native boolean isFinished();
+    public static native double getDistanceToBall();
+    public static native float[] getAngularDistanceToBall();
+    public static native void setIdle(boolean idle);
 
-    public static void pushImage(Bitmap bitmap, double[] extrinsicsData) {
-        push(bitmap, extrinsicsData);
-    }
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength) {
         if (!isInitialized) {
             Timber.v("Initialized recorder");

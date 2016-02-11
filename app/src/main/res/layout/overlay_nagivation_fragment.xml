@@ -227,6 +227,14 @@
         </RelativeLayout>
     </RelativeLayout>
 
+    <View
+        android:id="@+id/crosshair"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/rounded_indicator_shape"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </View>
 
 
 </FrameLayout>

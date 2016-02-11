@@ -25,7 +25,8 @@ LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
                    online-stitcher/src/stitcher/simpleSphereStitcher.cpp \
                    online-stitcher/src/stitcher/simplePlaneStitcher.cpp \
                    online-stitcher/src/debug/debugHook.cpp \
-                   Recorder.cpp
+                   RecorderBridge.cpp \
+                   StitcherBridge.cpp
 LOCAL_EXPORT_LDLIBS := -llog
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lz
 LOCAL_LDFLAGS += -ljnigraphics

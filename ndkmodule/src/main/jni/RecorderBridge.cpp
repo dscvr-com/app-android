@@ -14,6 +14,10 @@ int counter = 0;
 
 Mat intrinsics;
 
+std::shared_ptr<CheckpointStore> leftStore;
+std::shared_ptr<CheckpointStore> rightStore;
+std::shared_ptr<StorageSink> sink;
+
 std::shared_ptr<Recorder> recorder;
 
 
@@ -23,22 +27,30 @@ extern "C" {
 
     void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
+    void Java_co_optonaut_optonaut_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle);
+
     jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
 
     void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz);
 
     void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz);
+
+    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz);
+    jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
+    jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
+    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
 }
 
-jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat)
+jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
 {
-    assert(mat.cols == 4 && mat.rows == 4 && mat.type() == CV_64F);
+    assert(mat.cols == width && mat.rows == height && mat.type() == CV_64F);
     double* doubles = (double*)  mat.data;
-    jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(16);
+    int size = width*height;
+    jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(size);
 
     jfloat *body = env->GetFloatArrayElements(javaFloats, false);
 
-    for (int i = 0; i < 16; ++i)
+    for (int i = 0; i < size; ++i)
     {
         body[i] = doubles[i];
     }
@@ -54,10 +66,10 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     std::string path(cString);
     __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
-    CheckpointStore leftStore(path + "left", path + "shared");;
-    CheckpointStore rightStore(path + "right", path + "shared");;
+    leftStore = std::make_shared<CheckpointStore>(path + "left", path + "shared");
+    rightStore = std::make_shared<CheckpointStore>(path + "right", path + "shared");
 
-    StorageSink sink(leftStore, rightStore);
+    sink =std::make_shared<StorageSink>(*leftStore, *rightStore);
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -77,8 +89,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics.clone(), sink, "", 1, true);
-    recorder->SetIdle(false);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, "", 1, true);
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
@@ -116,6 +127,11 @@ void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, j
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
+void Java_co_optonaut_optonaut_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle)
+{
+    recorder->SetIdle(idle);
+}
+
 jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz) {
     std::vector<SelectionPoint> selectionPoints = recorder->GetSelectionPoints();
 
@@ -129,7 +145,7 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
     for(int i = 0; i < selectionPoints.size(); ++i)
     {
         jobject current_point =  env->NewObject(java_selection_point_class, java_selection_point_init,
-                                                matToJFloatArray(env, selectionPoints[i].extrinsics),
+                                                matToJFloatArray(env, selectionPoints[i].extrinsics, 4, 4),
                                                 selectionPoints[i].globalId,
                                                 selectionPoints[i].ringId,
                                                 selectionPoints[i].localId);
@@ -149,5 +165,25 @@ void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz
 {
     recorder->Dispose();
     recorder = NULL;
+}
+
+jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz)
+{
+    return matToJFloatArray(env ,recorder->GetBallPosition(), 4, 4);
+}
+
+jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz)
+{
+    return recorder->IsFinished();
+}
+
+jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz)
+{
+    return recorder->GetDistanceToBall();
+}
+
+jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz)
+{
+    matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
 }
 

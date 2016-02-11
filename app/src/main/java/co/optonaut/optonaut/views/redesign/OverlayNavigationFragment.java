@@ -32,6 +32,8 @@ import timber.log.Timber;
  * @author Nilan Marktanner
  * @date 2016-01-25
  */
+
+// TODO: create OverlayRecordFragment!
 public class OverlayNavigationFragment extends Fragment {
     public static final int GONE = -1;
     public static final int FEED = 0;
@@ -63,6 +65,8 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.profile_group) RelativeLayout profileGroup;
     @Bind(R.id.profile_label) TextView profileLabel;
     @Bind(R.id.profile_button) Button profileButton;
+
+    @Bind(R.id.crosshair) View crosshair;
 
 
     private VRModeExplanationDialog vrModeExplanationDialog;
@@ -279,6 +283,8 @@ public class OverlayNavigationFragment extends Fragment {
         cancelGroup.setVisibility(View.VISIBLE);
         profileGroup.setVisibility(View.INVISIBLE);
 
+        crosshair.setVisibility(View.VISIBLE);
+
 
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
         activity.prepareRecording();
@@ -295,6 +301,8 @@ public class OverlayNavigationFragment extends Fragment {
         homeGroup.setVisibility(View.VISIBLE);
         cancelGroup.setVisibility(View.INVISIBLE);
         profileGroup.setVisibility(View.VISIBLE);
+
+        crosshair.setVisibility(View.INVISIBLE);
     }
 
     public void setTotalVisibility(int visibility) {

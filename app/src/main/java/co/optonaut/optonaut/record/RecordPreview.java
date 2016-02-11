@@ -55,11 +55,13 @@ public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Timber.v("surfaceCreated preview");
         startPreview(holder);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Timber.v("surfaceChanged preview");
         if (surfaceHolder.getSurface() == null){
             // preview surface does not exist
             return;

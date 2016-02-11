@@ -81,10 +81,13 @@ public class Cube {
             FACE_BOTTOM
     };
 
+    private float[] cubeTransform = new float[16];
+
     public Cube() {
         this.cubeTextureSet = new CubeTextureSet();
         initializeTransforms();
         initializePlanes();
+        Matrix.setIdentityM(cubeTransform, 0);
         isInitialized = false;
     }
 
@@ -143,9 +146,12 @@ public class Cube {
         if (!isInitialized)
             throw new RuntimeException("Cube not initialized!");
         float[] modelView = new float[16];
+        float[] finalTransform = new float[16];
         for (int i = 0; i < FACES_PER_CUBE; ++i) {
-            // transform mvpMatrix with the transform specific to this plane
-            Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, transforms.get(i), 0);
+            // transform cubeTransform with the transform specific to this plane
+            Matrix.multiplyMM(finalTransform, 0, cubeTransform, 0, transforms.get(i), 0);
+            Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, finalTransform, 0);
+
             planes[i].draw(modelView);
         }
     }
@@ -194,5 +200,13 @@ public class Cube {
             if (face >= FACES_PER_CUBE)
                 throw new IllegalArgumentException("Illegal face index in texture set!");
         }
+    }
+
+    public float[] getCubeTransform() {
+        return cubeTransform;
+    }
+
+    public void setCubeTransform(float[] cubeTransform) {
+        this.cubeTransform = cubeTransform;
     }
 }

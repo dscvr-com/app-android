@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
@@ -31,6 +32,7 @@ import timber.log.Timber;
  */
 public class RecordFragment extends Fragment {
     private Camera camera;
+    private Cube cube;
     private RecordPreview recordPreview;
     private RecorderOverlayView recorderOverlayView;
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
@@ -39,6 +41,7 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+            Timber.v("new preview frame");
             Camera.Parameters parameters = camera.getParameters();
             int imageFormat = parameters.getPreviewFormat();
             if (imageFormat == ImageFormat.NV21) {
@@ -53,7 +56,13 @@ public class RecordFragment extends Fragment {
                 float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
                 double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
-                Recorder.pushImage(bitmap, extrinsicsData);
+                Recorder.push(bitmap, extrinsicsData);
+                updateBallPosition();
+
+                if (Recorder.isFinished()) {
+                    // TODO: queue finishRecording();
+                    // see http://stackoverflow.com/questions/11123621/running-code-in-main-thread-from-another-thread
+                }
             } else {
                 throw new UnsupportedOperationException("Wrong preview format.");
             }
@@ -71,21 +80,21 @@ public class RecordFragment extends Fragment {
         camera = CameraUtils.getCameraInstance();
 
         if (camera == null) {
-            Timber.d("Could not access camera in Record fragment");
+            Timber.e("Could not access camera in Record fragment");
         } else {
             // initialize recorder
             float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
             Recorder.initializeRecorder(CameraUtils.STORAGE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
+
+            // Create our Preview view and set it as the content of our activity.
+            recordPreview = new RecordPreview(getActivity(), camera);
+            recorderOverlayView = new RecorderOverlayView(getActivity());
+            FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
+            preview.addView(recordPreview);
+            preview.addView(recorderOverlayView);
+
+            setupSelectionPoints();
         }
-
-        // Create our Preview view and set it as the content of our activity.
-        recordPreview = new RecordPreview(getActivity(), camera);
-        recorderOverlayView = new RecorderOverlayView(getActivity());
-        FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
-        preview.addView(recordPreview);
-        preview.addView(recorderOverlayView);
-
-        setupSelectionPoints();
 
         return view;
     }
@@ -94,6 +103,10 @@ public class RecordFragment extends Fragment {
     public void onResume() {
         super.onResume();
         CoreMotionListener.register();
+        if (camera != null) {
+            Timber.v("setting callback");
+
+        }
     }
 
     @Override
@@ -113,9 +126,8 @@ public class RecordFragment extends Fragment {
     public void startRecord() {
         // TODO: rotate camera coordinates like this http://stackoverflow.com/a/18874394/1176596
         // TODO: set size like this http://stackoverflow.com/a/11009422/1176596
-        if (camera != null) {
-            camera.setPreviewCallback(previewCallback);
-        }
+        camera.setPreviewCallback(previewCallback);
+        Recorder.setIdle(false);
     }
 
     private void setupSelectionPoints() {
@@ -153,7 +165,18 @@ public class RecordFragment extends Fragment {
         camera.stopPreview();
         camera.setPreviewCallback(null);
 
+        // TODO: start a background thread
         Recorder.finish();
         Recorder.dispose();
+
+        Stitcher.getResult(CameraUtils.STORAGE_PATH+"left", CameraUtils.STORAGE_PATH+"shared");
+    }
+
+    private void updateBallPosition() {
+        // TODO: use -0.9f - error must be somewhere else
+        float[] vector = {0, 0, 0.9f, 0};
+        float[] newPosition = new float[4];
+        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+        recorderOverlayView.getRecorderOverlayRenderer().setCubePosition(newPosition[0], newPosition[1], newPosition[2]);
     }
 }

@@ -64,7 +64,8 @@ public class CameraUtils {
     }
 
     public static float[] getCameraResolution(Context context, int camNum) {
-        float[] size = {1.0f, 2.0f};
+        // TODO: use default sizes
+        float[] size = {4.6541333f, 3.4623966f};
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
