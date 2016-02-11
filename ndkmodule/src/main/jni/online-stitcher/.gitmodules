@@ -1,3 +1,0 @@
-[submodule "src/lib/control-system-cpp"]
-	path = src/lib/control-system-cpp
-	url = git@github.com:optonaut/control-system-cpp.git
