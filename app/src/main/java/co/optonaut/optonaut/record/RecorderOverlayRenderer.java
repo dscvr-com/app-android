@@ -10,6 +10,7 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import co.optonaut.optonaut.sensors.CoreMotionListener;
 import timber.log.Timber;
 
 /**
@@ -26,6 +27,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private final float[] mvpMatrix = new float[16];
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
+    private float[] rotationMatrix = new float[16];
 
     boolean addedNewLineNode;
 
@@ -69,8 +71,13 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        float[] view = new float[16];
+        rotationMatrix = CoreMotionListener.getInstance().getRotationMatrixInverse();
+
+        Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mvpMatrix, 0, projection, 0, camera, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
 
         // Draw lines
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
