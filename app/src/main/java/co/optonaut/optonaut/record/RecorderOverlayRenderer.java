@@ -27,9 +27,12 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
 
+    boolean addedNewLineNode;
+
 
     public RecorderOverlayRenderer() {
         lineNodes = new LinkedList<>();
+        addedNewLineNode = false;
     }
 
     @Override
@@ -58,6 +61,14 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        if(addedNewLineNode) {
+            for (LineNode node: lineNodes) {
+                if (!node.isProgramInitialized()) {
+                    node.initializeProgram();
+                }
+            }
+        }
+
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, camera, 0);
 
@@ -66,5 +77,10 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         for (LineNode node : lineNodes) {
             node.draw(mvpMatrix);
         }
+    }
+
+    public void addChildNode(LineNode edgeNode) {
+        addedNewLineNode = true;
+        lineNodes.add(edgeNode);
     }
 }

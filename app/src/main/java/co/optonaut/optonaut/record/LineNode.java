@@ -19,6 +19,8 @@ public class LineNode {
 
     private FloatBuffer vertexBuffer;
 
+    boolean isProgramInitialized;
+
     private float[] posA;
     private float[] posB;
 
@@ -47,6 +49,7 @@ public class LineNode {
     public LineNode(float[] posA, float[] posB) {
         this.posA = posA;
         this.posB = posB;
+        isProgramInitialized = false;
 
         initialize();
     }
@@ -91,6 +94,8 @@ public class LineNode {
 
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(program);
+
+        isProgramInitialized = true;
     }
 
     public void draw(float[] mvpMatrix) {
@@ -116,5 +121,9 @@ public class LineNode {
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, VERTICES_PER_LINE);
 
         GLES20.glDisableVertexAttribArray(positionHandle);
+    }
+
+    public boolean isProgramInitialized() {
+        return isProgramInitialized;
     }
 }

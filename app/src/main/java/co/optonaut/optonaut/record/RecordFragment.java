@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
@@ -29,8 +31,7 @@ public class RecordFragment extends Fragment {
     private Camera camera;
     private RecordPreview recordPreview;
     private RecorderOverlayView recorderOverlayView;
-    private Edge edge;
-
+    private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
 
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
@@ -79,6 +80,8 @@ public class RecordFragment extends Fragment {
         preview.addView(recordPreview);
         preview.addView(recorderOverlayView);
 
+        setupSelectionPoints();
+
         return view;
     }
 
@@ -126,16 +129,16 @@ public class RecordFragment extends Fragment {
             SelectionPoint a = points.get(i);
             SelectionPoint b = points2.get(i);
             if (a.getRingId() == b.getRingId()) {
-                edge = new Edge(a, b);
+                Edge edge = new Edge(a, b);
                 float[] vector = {0, 0, -1, 0};
                 float[] posA = new float[4];
                 float[] posB = new float[4];
                 Matrix.multiplyMV(posA, 0, a.getExtrinsics(), 0, vector, 0);
                 Matrix.multiplyMV(posB, 0, b.getExtrinsics(), 0, vector, 0);
 
-                // edgeNode = createLineNode(posA, posB);
-                // edges[edge] = edgeNode;
-                // scene.rootNode.addChildNode(edgeNode);
+                LineNode edgeNode = new LineNode(posA, posB);
+                edgeLineNodeMap.put(edge, edgeNode);
+                recorderOverlayView.addChildNode(edgeNode);
             }
         }
     }

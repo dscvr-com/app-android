@@ -2,6 +2,8 @@ package co.optonaut.optonaut.record;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+
 /**
  * @author Nilan Marktanner
  * @date 2016-02-07
@@ -11,8 +13,9 @@ public class Recorder {
         System.loadLibrary("ndkmodule");
     }
 
-    private static native void initRecorder(String storagePath);
-    private static native void push(Bitmap bitmap, double[] extrinsicsData);
+    public static native void initRecorder(String storagePath);
+    public static native void push(Bitmap bitmap, double[] extrinsicsData);
+    public static native SelectionPoint[] getSelectionPoints();
 
 
     public static void initialize(String storagePath) {
@@ -21,10 +24,5 @@ public class Recorder {
 
     public static void pushImage(Bitmap bitmap, double[] extrinsicsData) {
         push(bitmap, extrinsicsData);
-    }
-
-    public static SelectionPoint[] getSelectionPoints() {
-        SelectionPoint[] selectionPoints = null;
-        return selectionPoints;
     }
 }

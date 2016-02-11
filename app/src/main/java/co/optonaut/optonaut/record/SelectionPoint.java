@@ -6,10 +6,16 @@ package co.optonaut.optonaut.record;
  */
 public class SelectionPoint {
     private float[] extrinsics;
-    private long globalId;
-    private long ringId;
-    private long localId;
+    private int globalId;
+    private int ringId;
+    private int localId;
 
+    public SelectionPoint(float[] extrinsics, int globalId, int ringId, int localId) {
+        this.extrinsics = extrinsics;
+        this.globalId = globalId;
+        this.ringId = ringId;
+        this.localId = localId;
+    }
 
     public long getRingId() {
         return ringId;

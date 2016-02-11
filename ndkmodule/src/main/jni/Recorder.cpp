@@ -22,6 +22,26 @@ extern "C" {
     void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath);
 
     void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
+
+    jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
+}
+
+jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat)
+{
+    assert(mat.cols == 4 && mat.rows == 4 && mat.type() == CV_64F);
+    double* doubles = (double*)  mat.data;
+    jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(16);
+
+    jfloat *body = env->GetFloatArrayElements(javaFloats, false);
+
+    for (int i = 0; i < 16; ++i)
+    {
+        body[i] = doubles[i];
+    }
+
+    env->ReleaseFloatArrayElements(javaFloats, body, 0);
+
+    return javaFloats;
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath)
@@ -94,3 +114,28 @@ void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, j
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }
+
+jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz) {
+    std::vector<SelectionPoint> selectionPoints = recorder->GetSelectionPoints();
+
+    jclass java_selection_point_class = env->FindClass("co/optonaut/optonaut/record/SelectionPoint");
+    jobjectArray javaSelectionPoints = (jobjectArray) env->NewObjectArray(selectionPoints.size(),
+                                                                          java_selection_point_class, 0);
+
+    // [F for float array, III for three ints
+    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
+
+    for(int i = 0; i < selectionPoints.size(); ++i)
+    {
+        jobject current_point =  env->NewObject(java_selection_point_class, java_selection_point_init,
+                                                matToJFloatArray(env, selectionPoints[i].extrinsics),
+                                                selectionPoints[i].globalId,
+                                                selectionPoints[i].ringId,
+                                                selectionPoints[i].localId);
+
+        env->SetObjectArrayElement(javaSelectionPoints, i, current_point);
+    }
+
+    return javaSelectionPoints;
+}
+

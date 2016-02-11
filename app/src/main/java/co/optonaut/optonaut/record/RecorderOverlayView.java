@@ -35,4 +35,8 @@ public class RecorderOverlayView extends GLSurfaceView {
         setRenderer(recorderOverlayRenderer);
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
+
+    public void addChildNode(LineNode edgeNode) {
+        recorderOverlayRenderer.addChildNode(edgeNode);
+    }
 }
