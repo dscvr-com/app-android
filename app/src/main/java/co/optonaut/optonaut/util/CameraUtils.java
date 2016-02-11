@@ -1,15 +1,21 @@
 package co.optonaut.optonaut.util;
 
+import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.util.SizeF;
 
 import com.crashlytics.android.Crashlytics;
 
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -38,7 +44,6 @@ public class CameraUtils {
         }
 
         Camera.Size[] sizes = camera.getParameters().getSupportedPreviewSizes().toArray(new Camera.Size[0]);
-
         Camera.Size size = sizes[0];
 
         // Find smallest HD camera.
@@ -46,15 +51,10 @@ public class CameraUtils {
             if(sizes[i].width < size.width && sizes[i].width >= 1280) {
                 size = sizes[i];
             }
+            Timber.v("size: [%s, %s]", sizes[i].width, sizes[i].height);
         }
 
         Camera.Parameters params = camera.getParameters();
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(0, cameraInfo);
-        Timber.v("Orientation: %s", cameraInfo.orientation);
-        int rotate = 90;
-        params.set("orientation", "landscape");
-        params.setRotation(rotate);
         // height, width are switched
         params.setPreviewSize(size.width, size.height);
         camera.setParameters(params);
@@ -62,6 +62,28 @@ public class CameraUtils {
         // returns null if camera is unavailable
         return camera;
     }
+
+    public static float[] getCameraResolution(Context context, int camNum) {
+        float[] size = {1.0f, 2.0f};
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+
+            CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+            try {
+                String[] cameraIds = manager.getCameraIdList();
+                if (cameraIds.length > camNum) {
+                    CameraCharacteristics character = manager.getCameraCharacteristics(cameraIds[camNum]);
+                    SizeF sizeF = character.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+                    size[0] = sizeF.getWidth();
+                    size[1] = sizeF.getHeight();
+                }
+            } catch (CameraAccessException e) {
+                Timber.e("YourLogString", e.getMessage(), e);
+            }
+            Timber.v("size: [%s, %s]", size[0], size[1]);
+        }
+        return size;
+    }
+
 
     public static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));

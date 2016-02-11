@@ -19,11 +19,15 @@ std::shared_ptr<Recorder> recorder;
 
 extern "C" {
     // storagePath should end on "/"!
-    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath);
+    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength);
 
     void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
     jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
+
+    void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz);
+
+    void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz);
 }
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat)
@@ -44,7 +48,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat)
     return javaFloats;
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath)
+void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
@@ -63,8 +67,8 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     };
 
     double intrinsicsData[9] = {
-            1, 0, 1,
-            0, 1, 1,
+            focalLength, 0, sensorHeight / 2.0,
+            0, focalLength, sensorWidth / 2.0,
             0, 0, 1
     };
 
@@ -73,8 +77,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    // TODO: use "" as debug path
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics.clone(), sink, path + "debug", 1, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics.clone(), sink, "", 1, true);
     recorder->SetIdle(false);
 }
 
@@ -88,8 +91,6 @@ void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, j
     if(info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         __android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, "%s", "Bitmap format is not RGBA_8888!");
     }
-
-    __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "info format: %d", info.format);
 
     AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
 
@@ -137,5 +138,16 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
     }
 
     return javaSelectionPoints;
+}
+
+void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz)
+{
+    recorder->Finish();
+}
+
+void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz)
+{
+    recorder->Dispose();
+    recorder = NULL;
 }
 

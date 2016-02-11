@@ -288,6 +288,9 @@ public class OverlayNavigationFragment extends Fragment {
         Timber.v("switching to feed mode");
         currentMode = FEED;
 
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.finishRecording();
+
         toolbar.setVisibility(View.VISIBLE);
         homeGroup.setVisibility(View.VISIBLE);
         cancelGroup.setVisibility(View.INVISIBLE);

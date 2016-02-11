@@ -4,8 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.SizeF;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,6 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-            Timber.v("new preview image");
             Camera.Parameters parameters = camera.getParameters();
             int imageFormat = parameters.getPreviewFormat();
             if (imageFormat == ImageFormat.NV21) {
@@ -71,6 +72,10 @@ public class RecordFragment extends Fragment {
 
         if (camera == null) {
             Timber.d("Could not access camera in Record fragment");
+        } else {
+            // initialize recorder
+            float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
+            Recorder.initializeRecorder(CameraUtils.STORAGE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
         }
 
         // Create our Preview view and set it as the content of our activity.
@@ -141,5 +146,14 @@ public class RecordFragment extends Fragment {
                 recorderOverlayView.addChildNode(edgeNode);
             }
         }
+    }
+
+    public void finishRecording() {
+        // TODO: mixpanel
+        camera.stopPreview();
+        camera.setPreviewCallback(null);
+
+        Recorder.finish();
+        Recorder.dispose();
     }
 }
