@@ -43,4 +43,6 @@ public class RecorderOverlayView extends GLSurfaceView {
     public RecorderOverlayRenderer getRecorderOverlayRenderer() {
         return recorderOverlayRenderer;
     }
+
+
 }

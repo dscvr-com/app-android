@@ -24,7 +24,7 @@ std::vector<Mat> getCubeFaces(const Mat& sphere)
     {
         CreateCubeMapFace(sphere, cubeFaces[i], i, width, width);
     }
-    cv::imwrite("/storage/emulated/0//Pictures/Optonaut/imwrite/sphere.jpg", sphere);
+    cv::imwrite("/storage/emulated/0/Android/data/co.optonaut.optonaut/cache/imwrite/sphere.jpg", sphere);
 
     return cubeFaces;
 }

@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
 
@@ -37,7 +38,8 @@ import timber.log.Timber;
 public class OverlayNavigationFragment extends Fragment {
     public static final int GONE = -1;
     public static final int FEED = 0;
-    public static final int RECORD = 1;
+    public static final int PREVIEW_RECORD = 1;
+    public static final int RECORDING = 2;
 
     private int currentMode;
     @Bind(R.id.statusbar) RelativeLayout statusbar;
@@ -51,6 +53,7 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.vrmode_button) TextView vrmodeButton;
 
     // Navigation bar
+    @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
     @Bind(R.id.home_group) RelativeLayout homeGroup;
     @Bind(R.id.home_label) TextView homeLabel;
     @Bind(R.id.home_button) Button homeButton;
@@ -164,29 +167,31 @@ public class OverlayNavigationFragment extends Fragment {
         homeIndicator.setVisibility(View.VISIBLE);
         homeButton.setTypeface(Constants.getInstance().getIconTypeface());
         homeButton.setText(String.valueOf((char) 0xe90e));
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: switch to home screen
-                homeIndicator.setVisibility(View.VISIBLE);
-            }
+        homeGroup.setOnClickListener(v -> {
+            Timber.v("Switching to home");
+            homeIndicator.setVisibility(View.VISIBLE);
         });
         cancelButton.setTypeface(Constants.getInstance().getIconTypeface());
         cancelButton.setText(String.valueOf((char) 0xe909));
-        cancelButton.setOnClickListener(v -> {
-            if (currentMode == RECORD) {
+        cancelGroup.setOnClickListener(v -> {
+            if (currentMode == PREVIEW_RECORD) {
+                // TODO: cancel without saving to disk
                 changeMode(FEED);
+                getActivity().onBackPressed();
+            } else if (currentMode == RECORDING) {
+                // TODO: switch to preview_record
+                changeMode(FEED);
+                getActivity().onBackPressed();
             }
-            getActivity().onBackPressed();
         });
 
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
             if (currentMode == FEED) {
-                changeMode(RECORD);
-            } else if (currentMode == RECORD) {
-                ((MainActivityRedesign) getActivity()).takePicture();
+                changeMode(PREVIEW_RECORD);
+            } else if (currentMode == PREVIEW_RECORD) {
+                changeMode(RECORDING);
             }
 
         });
@@ -196,7 +201,7 @@ public class OverlayNavigationFragment extends Fragment {
 
         profileButton.setTypeface(Constants.getInstance().getIconTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
-        profileButton.setOnClickListener(v -> {
+        profileGroup.setOnClickListener(v -> {
             Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
         });
     }
@@ -224,11 +229,9 @@ public class OverlayNavigationFragment extends Fragment {
         getView().setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (currentMode == RECORD) {
-                        changeMode(FEED);
+                    if (currentMode == RECORDING || currentMode == PREVIEW_RECORD) {
+                        return cancelGroup.callOnClick();
                     }
-                    getActivity().onBackPressed();
-                    return true;
                 }
             }
             return false;
@@ -261,33 +264,18 @@ public class OverlayNavigationFragment extends Fragment {
                 // TODO: set invisible
                 break;
             case FEED:
-                // TODO: set feed overlay
                 switchToFeedMode();
                 break;
-            case RECORD:
-                // TODO: set record
-                switchToRecordMode();
+            case PREVIEW_RECORD:
+                switchToPreviewRecordMode();
+                break;
+            case RECORDING:
+                switchToRecordingMode();
                 break;
             default:
                 Timber.e("Unknown mode in OverlayNavigationFragment");
 
         }
-    }
-
-    private void switchToRecordMode() {
-        Timber.v("switching to record mode");
-        currentMode = RECORD;
-
-        toolbar.setVisibility(View.INVISIBLE);
-        homeGroup.setVisibility(View.INVISIBLE);
-        cancelGroup.setVisibility(View.VISIBLE);
-        profileGroup.setVisibility(View.INVISIBLE);
-
-        crosshair.setVisibility(View.VISIBLE);
-
-
-        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.prepareRecording();
     }
 
     private void switchToFeedMode() {
@@ -301,8 +289,33 @@ public class OverlayNavigationFragment extends Fragment {
         homeGroup.setVisibility(View.VISIBLE);
         cancelGroup.setVisibility(View.INVISIBLE);
         profileGroup.setVisibility(View.VISIBLE);
+        recordButton.setVisibility(View.VISIBLE);
 
         crosshair.setVisibility(View.INVISIBLE);
+    }
+
+    private void switchToPreviewRecordMode() {
+        Timber.v("switching to preview record mode");
+        currentMode = PREVIEW_RECORD;
+
+        toolbar.setVisibility(View.INVISIBLE);
+        homeGroup.setVisibility(View.INVISIBLE);
+        cancelGroup.setVisibility(View.VISIBLE);
+        profileGroup.setVisibility(View.INVISIBLE);
+        recordButton.setVisibility(View.VISIBLE);
+
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.prepareRecording();
+    }
+
+    private void switchToRecordingMode() {
+        Timber.v("switching to recording mode");
+        currentMode = RECORDING;
+
+        recordButton.setVisibility(View.INVISIBLE);
+        crosshair.setVisibility(View.VISIBLE);
+
+        ((MainActivityRedesign) getActivity()).startRecording();
     }
 
     public void setTotalVisibility(int visibility) {

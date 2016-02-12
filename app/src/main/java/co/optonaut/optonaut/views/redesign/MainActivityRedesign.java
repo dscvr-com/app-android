@@ -207,19 +207,19 @@ public class MainActivityRedesign extends AppCompatActivity {
         hostFragment.replaceFragment(new RecordFragment(), true);
     }
 
+    public void startRecording() {
+        if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
+            ((RecordFragment) hostFragment.getCurrentFragment()).startRecording();
+        } else {
+            Timber.e("Tried to take picture but no record fragment available");
+        }
+    }
+
     public void finishRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).finishRecording();
         } else {
-            Timber.d("Tried to finish recording, but no record fragment available");
-        }
-    }
-
-    public void takePicture() {
-        if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
-            ((RecordFragment) hostFragment.getCurrentFragment()).startRecord();
-        } else {
-            Timber.d("Tried to take picture but no record fragment available");
+            Timber.e("Tried to finish recording, but no record fragment available");
         }
     }
 }

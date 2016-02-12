@@ -96,6 +96,7 @@
             android:layout_centerVertical="true">
             <Button
                 android:id="@+id/home_button"
+                android:clickable="false"
                 android:textColor="@color/bright"
                 android:background="@color/transparentOverlay"
                 android:layout_centerVertical="true"
@@ -136,6 +137,7 @@
             android:visibility="invisible">
             <Button
                 android:id="@+id/cancel_button"
+                android:clickable="false"
                 android:textColor="@color/bright"
                 android:background="@color/transparentOverlay"
                 android:layout_centerVertical="true"
@@ -195,6 +197,7 @@
 
             <Button
                 android:id="@+id/profile_button"
+                android:clickable="false"
                 android:textColor="@color/bright"
                 android:background="@color/transparentOverlay"
                 android:layout_width="28dp"

@@ -4,20 +4,25 @@ import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.opengl.Matrix;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.SizeF;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.path.android.jobqueue.Job;
+import com.path.android.jobqueue.JobManager;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import co.optonaut.optonaut.OptonautApp;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
@@ -41,7 +46,6 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-            Timber.v("new preview frame");
             Camera.Parameters parameters = camera.getParameters();
             int imageFormat = parameters.getPreviewFormat();
             if (imageFormat == ImageFormat.NV21) {
@@ -56,18 +60,30 @@ public class RecordFragment extends Fragment {
                 float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
                 double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
-                Recorder.push(bitmap, extrinsicsData);
-                updateBallPosition();
-
                 if (Recorder.isFinished()) {
-                    // TODO: queue finishRecording();
-                    // see http://stackoverflow.com/questions/11123621/running-code-in-main-thread-from-another-thread
+                    // TODO: change mode to POST_RECORD
+                    Snackbar.make(recordPreview, "Recording is finished, please wait for the result!", Snackbar.LENGTH_LONG).show();
+
+                    // queue finishing on main thread
+                    queueFinishRecording();
+                } else {
+                    Recorder.push(bitmap, extrinsicsData);
+                    updateBallPosition();
                 }
+
             } else {
                 throw new UnsupportedOperationException("Wrong preview format.");
             }
         }
     };
+
+    private void queueFinishRecording() {
+        // see: http://stackoverflow.com/a/11125271/1176596
+
+        // Get a handler that can be used to post to the main thread
+        Handler mainHandler = new Handler(getActivity().getMainLooper());
+        mainHandler.post(this::finishRecording);
+    }
 
 
     @Override
@@ -77,36 +93,42 @@ public class RecordFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
         // Create an instance of Camera
-        camera = CameraUtils.getCameraInstance();
+        tryToInitializeCamera();
 
-        if (camera == null) {
-            Timber.e("Could not access camera in Record fragment");
-        } else {
-            // initialize recorder
-            float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
-            Recorder.initializeRecorder(CameraUtils.STORAGE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
+        // initialize recorder
+        float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
+        Recorder.initializeRecorder(CameraUtils.STORAGE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
 
-            // Create our Preview view and set it as the content of our activity.
-            recordPreview = new RecordPreview(getActivity(), camera);
-            recorderOverlayView = new RecorderOverlayView(getActivity());
-            FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
-            preview.addView(recordPreview);
-            preview.addView(recorderOverlayView);
+        // Create our Preview view and set it as the content of our activity.
+        recordPreview = new RecordPreview(getActivity(), camera);
+        recorderOverlayView = new RecorderOverlayView(getActivity());
+        FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
+        preview.addView(recordPreview);
+        preview.addView(recorderOverlayView);
 
-            setupSelectionPoints();
-        }
+        setupSelectionPoints();
 
         return view;
+    }
+
+    private void tryToInitializeCamera() {
+        if (camera == null) {
+            // Create an instance of Camera
+            camera = CameraUtils.getCameraInstance();
+        }
+
+        if (camera == null) {
+            throw new RuntimeException("Could not access camera in Record fragment");
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         CoreMotionListener.register();
-        if (camera != null) {
-            Timber.v("setting callback");
 
-        }
+        // Create an instance of Camera
+        tryToInitializeCamera();
     }
 
     @Override
@@ -118,14 +140,18 @@ public class RecordFragment extends Fragment {
 
     private void releaseCamera() {
         if (camera != null) {
+            camera.stopPreview();
+            camera.setPreviewCallback(null);
             camera.release();
             camera = null;
         }
     }
 
-    public void startRecord() {
+    public void startRecording() {
         // TODO: rotate camera coordinates like this http://stackoverflow.com/a/18874394/1176596
         // TODO: set size like this http://stackoverflow.com/a/11009422/1176596
+        Timber.v("Starting recording...");
+        recorderOverlayView.getRecorderOverlayRenderer().startRendering();
         camera.setPreviewCallback(previewCallback);
         Recorder.setIdle(false);
     }
@@ -161,15 +187,11 @@ public class RecordFragment extends Fragment {
     }
 
     public void finishRecording() {
-        // TODO: mixpanel
-        camera.stopPreview();
-        camera.setPreviewCallback(null);
+        releaseCamera();
+        // TODO: open VRModeActivity
 
-        // TODO: start a background thread
-        Recorder.finish();
-        Recorder.dispose();
-
-        Stitcher.getResult(CameraUtils.STORAGE_PATH+"left", CameraUtils.STORAGE_PATH+"shared");
+        // start a background thread to finish recorder
+        OptonautApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob());
     }
 
     private void updateBallPosition() {
@@ -179,4 +201,6 @@ public class RecordFragment extends Fragment {
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
         recorderOverlayView.getRecorderOverlayRenderer().setCubePosition(newPosition[0], newPosition[1], newPosition[2]);
     }
+
+
 }

@@ -31,6 +31,8 @@ public class Constants {
     private static Constants constants;
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";
 
+    private String cachePath;
+
     private DisplayMetrics displayMetrics;
     private Display display;
     private float HFOV;
@@ -59,6 +61,8 @@ public class Constants {
         initializeExpectedStatusBarPixelHeight(activity);
 
         initializeToolbarHeight(activity);
+
+        initializeCachePath(activity);
     }
 
     private void initializeFieldOfView() {
@@ -73,7 +77,7 @@ public class Constants {
 
     private void initializeToolbarHeight(Context context) {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
-                new int[] { android.R.attr.actionBarSize });
+                new int[]{android.R.attr.actionBarSize});
         toolbarHeight = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
     }
@@ -140,6 +144,15 @@ public class Constants {
         }
     }
 
+    private void initializeCachePath(Activity activity) {
+        if (activity.getExternalCacheDir() == null) {
+            // TODO: user dialog
+            throw new RuntimeException("External Storage is currently not mounted!");
+        }
+
+        cachePath = activity.getExternalCacheDir().getPath();
+    }
+
     public static void initializeConstants(Activity activity) {
         if (constants == null) {
             constants = new Constants(activity);
@@ -187,5 +200,9 @@ public class Constants {
 
     public float getHFOV() {
         return HFOV;
+    }
+
+    public String getCachePath() {
+        return cachePath;
     }
 }

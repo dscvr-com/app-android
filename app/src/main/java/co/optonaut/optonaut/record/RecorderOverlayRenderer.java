@@ -31,12 +31,15 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private final float[] camera = new float[16];
     private float[] rotationMatrix = new float[16];
 
-    boolean addedNewLineNode;
+    private boolean addedNewLineNode;
+
+    private boolean shouldRender;
 
 
     public RecorderOverlayRenderer() {
         lineNodes = new LinkedList<>();
         addedNewLineNode = false;
+        shouldRender = false;
         cube = new Cube();
     }
 
@@ -85,6 +88,10 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        if (!shouldRender) {
+            return;
+        }
+
         float[] view = new float[16];
         rotationMatrix = CoreMotionListener.getInstance().getRotationMatrixInverse();
 
@@ -105,5 +112,13 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     public void addChildNode(LineNode edgeNode) {
         addedNewLineNode = true;
         lineNodes.add(edgeNode);
+    }
+
+    public void startRendering() {
+        shouldRender = true;
+    }
+
+    public void stopRendering() {
+        shouldRender = false;
     }
 }
