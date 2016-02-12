@@ -6,16 +6,12 @@ import android.hardware.Camera;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import com.path.android.jobqueue.Job;
-import com.path.android.jobqueue.JobManager;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,6 +25,7 @@ import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import timber.log.Timber;
 
 /**
@@ -37,10 +34,15 @@ import timber.log.Timber;
  */
 public class RecordFragment extends Fragment {
     private Camera camera;
-    private Cube cube;
     private RecordPreview recordPreview;
     private RecorderOverlayView recorderOverlayView;
+
+    // TODO: use this map
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
+
+    private CancelRecordingDialog cancelRecordingDialog;
+
+
 
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
@@ -107,6 +109,8 @@ public class RecordFragment extends Fragment {
         preview.addView(recorderOverlayView);
 
         setupSelectionPoints();
+
+        cancelRecordingDialog = new CancelRecordingDialog();
 
         return view;
     }

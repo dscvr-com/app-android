@@ -30,6 +30,9 @@
     <string name="dialog_vrmode_explanation">Tilt your phone by 90° to the left to enter VR mode!</string>
     <string name="dialog_fire">OK</string>
     <string name="dialog_network_retry">There was a network problem. Please try again later!</string>
+    <string name="dialog_cancel_recording">Cancel recording? This will delete the current recording progress.</string>
+    <string name="dialog_dont_cancel">No</string>
+    <string name="dialog_cancel">Yes</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

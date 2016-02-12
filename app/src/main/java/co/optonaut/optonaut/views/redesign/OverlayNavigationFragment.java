@@ -26,6 +26,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.BackStackFragment;
+import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
 
@@ -71,6 +72,8 @@ public class OverlayNavigationFragment extends Fragment {
 
     @Bind(R.id.crosshair) View crosshair;
 
+    private CancelRecordingDialog cancelRecordingDialog;
+
 
     private VRModeExplanationDialog vrModeExplanationDialog;
 
@@ -93,6 +96,9 @@ public class OverlayNavigationFragment extends Fragment {
         } else {
             statusbar.setVisibility(View.GONE);
         }
+
+        cancelRecordingDialog = new CancelRecordingDialog();
+        cancelRecordingDialog.setTargetFragment(this, 0);
 
         return view;
     }
@@ -180,8 +186,7 @@ public class OverlayNavigationFragment extends Fragment {
                 getActivity().onBackPressed();
             } else if (currentMode == RECORDING) {
                 // TODO: switch to preview_record
-                changeMode(FEED);
-                getActivity().onBackPressed();
+                askToCancel();
             }
         });
 
@@ -257,7 +262,6 @@ public class OverlayNavigationFragment extends Fragment {
         editor.commit();
     }
 
-
     public void changeMode(final int mode) {
         switch (mode) {
             case GONE:
@@ -277,6 +281,7 @@ public class OverlayNavigationFragment extends Fragment {
 
         }
     }
+
 
     private void switchToFeedMode() {
         Timber.v("switching to feed mode");
@@ -338,6 +343,24 @@ public class OverlayNavigationFragment extends Fragment {
                 }
             }
         }
+
+        if (cancelRecordingDialog != null) {
+            if (cancelRecordingDialog.getDialog() != null) {
+                if (cancelRecordingDialog.getDialog().isShowing()) {
+                    cancelRecordingDialog.dismiss();
+                }
+            }
+        }
+    }
+
+    private void askToCancel() {
+        cancelRecordingDialog.show(getFragmentManager(), "cancelRecordingDialog");
+    }
+
+    public void cancel() {
+        // TODO: cancel without saving to disk
+        changeMode(FEED);
+        getActivity().onBackPressed();
     }
 
     public boolean toggleTotalVisibility() {
