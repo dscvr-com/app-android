@@ -9,6 +9,8 @@
     <color name="transparentOverlay">#00777777</color>
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
 
+    <color name="crosshair">#FFFFFF</color>
+
     <color name="bright">#FFFFFF</color>
     <color name="settingsFontColor">#C6C6C6</color>
     <color name="timeAgoFontColor">#BBBBBB</color>

@@ -44,7 +44,7 @@ public class LineNode {
     private int colorHandle;
     private int mvpMatrixHandle;
 
-    private float color[] = {1.0f, 0.0f, 0.0f, 1.0f };
+    private float color[] = {0.9372f, 0.2823f, 0.2117f, 1.0f };
 
     public LineNode(float[] posA, float[] posB) {
         this.posA = posA;

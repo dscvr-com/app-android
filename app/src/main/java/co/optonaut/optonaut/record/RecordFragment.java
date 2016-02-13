@@ -221,7 +221,7 @@ public class RecordFragment extends Fragment {
         float[] vector = {0, 0, 0.9f, 0};
         float[] newPosition = new float[4];
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
-        recorderOverlayView.getRecorderOverlayRenderer().setCubePosition(newPosition[0], newPosition[1], newPosition[2]);
+        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
     }
 
 

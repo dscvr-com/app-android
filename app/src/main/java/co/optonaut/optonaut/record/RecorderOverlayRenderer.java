@@ -10,7 +10,7 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import co.optonaut.optonaut.opengl.Cube;
+import co.optonaut.optonaut.opengl.Sphere;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import timber.log.Timber;
 
@@ -20,7 +20,7 @@ import timber.log.Timber;
  */
 public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private List<LineNode> lineNodes;
-    private Cube cube;
+    private Sphere sphere;
 
     private static final float FIELD_OF_VIEW_Y = 95.0f;
     private static final float Z_NEAR = 0.1f;
@@ -40,14 +40,14 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         lineNodes = new LinkedList<>();
         addedNewLineNode = false;
         shouldRender = false;
-        cube = new Cube();
+        sphere = new Sphere(5, 5);
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Timber.v("onSurfaceCreated");
-        cube.initialize();
-        setCubePosition(0.9f, 0, 0);
+        sphere.initializeProgram();
+        setSpherePosition(0.9f, 0, 0);
 
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
@@ -60,8 +60,8 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearDepthf(1.0f);
     }
 
-    public void setCubePosition(float x, float y, float z) {
-        cube.setCubeTransform(new float[]{
+    public void setSpherePosition(float x, float y, float z) {
+        sphere.setTransform(new float[]{
                 0.01f, 0, 0, 0,
                 0, 0.01f, 0, 0,
                 0, 0, 0.01f, 0,
@@ -106,7 +106,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
             node.draw(mvpMatrix);
         }
 
-        cube.draw(mvpMatrix);
+        sphere.draw(mvpMatrix);
     }
 
     public void addChildNode(LineNode edgeNode) {
