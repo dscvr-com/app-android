@@ -37,6 +37,19 @@ public class Person implements Parcelable {
     private int followed_count;
     private boolean is_followed;
 
+    public Person() {
+        id = "";
+        created_at = "";
+        deleted_at = "";
+        display_name = "";
+        user_name = "";
+        text = "";
+        avatar_asset_id = "";
+        followers_count = 0;
+        followed_count = 0;
+        is_followed = false;
+    }
+
     public Person(Parcel source) {
         // SAME ORDER AS IN writeToParcel!
         this.id = source.readString();

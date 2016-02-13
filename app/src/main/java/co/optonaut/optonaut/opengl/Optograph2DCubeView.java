@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
@@ -73,9 +75,16 @@ public class Optograph2DCubeView extends GLSurfaceView {
 
     public void initializeTextures() {
         for (int i = 0; i < Cube.FACES.length; ++i) {
-            Picasso.with(getContext())
-                    .load(ImageUrlBuilder.buildCubeUrl(this.optograph.getId(), true, Cube.FACES[i]))
-                    .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
+            String uri = ImageUrlBuilder.buildCubeUrl(this.optograph, true, Cube.FACES[i]);
+            if (optograph.is_local()) {
+                Picasso.with(getContext())
+                        .load(new File(uri))
+                        .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
+            } else {
+                Picasso.with(getContext())
+                        .load(uri)
+                        .into(optograph2DCubeRenderer.getTextureTarget(Cube.FACES[i]));
+            }
         }
     }
 

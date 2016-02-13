@@ -1,8 +1,12 @@
 package co.optonaut.optonaut.record;
 
+import android.graphics.Bitmap;
+
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
+
+import java.util.UUID;
 
 import co.optonaut.optonaut.util.CameraUtils;
 import timber.log.Timber;
@@ -25,16 +29,28 @@ public class FinishRecorderJob extends Job {
     @Override
     public void onRun() throws Throwable {
         Timber.v("finishing Recorder...");
-        if (!Recorder.isFinished()) {
-            Timber.e("Recorder is not finished yet, but was tried to finish and dispose!");
-            throw new RuntimeException();
-        }
         Recorder.finish();
         Timber.v("disposing Recorder...");
         Recorder.dispose();
         Timber.v("Stitcher is getting result...");
-        Stitcher.getResult(CameraUtils.STORAGE_PATH + "left", CameraUtils.STORAGE_PATH + "shared");
+
+
+        Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+        UUID id = UUID.randomUUID();
+        for (int i = 0; i < bitmaps.length; ++i) {
+            CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/left/" + i + ".jpg");
+            bitmaps[i].recycle();
+        }
+
+        bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
+        for (int i = 0; i < bitmaps.length; ++i) {
+            CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/right/" + i + ".jpg");
+            bitmaps[i].recycle();
+        }
+
         Timber.v("FinishRecorderJob finished");
+        Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+        Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
     }
 
     @Override

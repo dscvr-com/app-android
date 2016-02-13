@@ -38,6 +38,20 @@ public class Location implements Parcelable {
     private String region;
     private boolean poi;
 
+    public Location() {
+        id = "";
+        created_at = "";
+        updated_at = "";
+        deleted_at = "";
+        latitude = "";
+        longitude = "";
+        text = "";
+        country = "";
+        country_short = "";
+        place = "";
+        region = "";
+        poi = false;
+    }
     public Location(Parcel source) {
         // SAME ORDER AS IN writeToParcel!
         this.id = source.readString();

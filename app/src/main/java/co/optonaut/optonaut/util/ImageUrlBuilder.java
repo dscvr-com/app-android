@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.util;
 
+import android.graphics.Camera;
 import android.opengl.GLES20;
 import android.util.Base64;
 
@@ -10,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import co.optonaut.optonaut.model.Optograph;
 import timber.log.Timber;
 
 /**
@@ -38,11 +40,20 @@ public class ImageUrlBuilder {
         return getSignedUrl(urlPartToSign);
     }
 
-    public static String buildCubeUrl(String id, boolean isLeftId, int face) {
-        String sideLetter = isLeftId ? "l" : "r";
-        String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
-        String signedUrl = getSignedUrl(urlPartToSign);
-        return signedUrl;
+    public static String buildCubeUrl(Optograph optograph, boolean isLeftId, int face) {
+        String id = optograph.getId();
+        if (!optograph.is_local()) {
+            String sideLetter = isLeftId ? "l" : "r";
+            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
+            String signedUrl = getSignedUrl(urlPartToSign);
+            return signedUrl;
+        } else {
+            String side = isLeftId ? "left/" : "right/";
+            String path = CameraUtils.PERSISTENT_STORAGE_PATH + id + "/" + side + face + ".jpg";
+            Timber.v("local optograph path: %s", path);
+            return path;
+        }
+
     }
 
     public static String buildWebViewerUrl(String share_alias) {

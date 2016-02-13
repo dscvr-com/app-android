@@ -17,6 +17,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import java.io.File;
+
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.opengl.Cube;
@@ -99,15 +101,25 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         }
 
         for (int i = 0; i < Cube.FACES.length; ++i) {
-            Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), true, Cube.FACES[i]))
-                    .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
-        }
+            String leftUri = ImageUrlBuilder.buildCubeUrl(this.optograph, true, Cube.FACES[i]);
+            String rightUri  = ImageUrlBuilder.buildCubeUrl(this.optograph, false, Cube.FACES[i]);
+            if (optograph.is_local()) {
+                Picasso.with(this)
+                        .load(new File(leftUri))
+                        .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
 
-        for (int i = 0; i < Cube.FACES.length; ++i) {
-            Picasso.with(this)
-                    .load(ImageUrlBuilder.buildCubeUrl(optograph.getId(), false, Cube.FACES[i]))
-                    .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+                Picasso.with(this)
+                        .load(new File(rightUri))
+                        .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+            } else {
+                Picasso.with(this)
+                        .load(leftUri)
+                        .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+
+                Picasso.with(this)
+                        .load(rightUri)
+                        .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
+            }
         }
     }
 

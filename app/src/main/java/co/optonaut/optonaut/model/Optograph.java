@@ -72,6 +72,31 @@ public class Optograph implements Parcelable {
     private boolean is_starred;
     private String hashtag_string;
 
+    // default value for parsing from JSON
+    private boolean is_local = false;
+
+    public Optograph(String id) {
+        this.id = id;
+        created_at = RFC3339DateFormatter.toRFC3339String(DateTime.now());
+        deleted_at = "";
+        stitcher_version = "";
+        text = "";
+        views_count = 0;
+        is_staff_picked = false;
+        share_alias = "";
+        is_private = false;
+        preview_asset_id = "";
+        left_texture_asset_id = "";
+        right_texture_asset_id = "";
+        location = new Location();
+        person = new Person();
+        stars_count = 0;
+        is_starred = false;
+        hashtag_string = "";
+        is_local = true;
+    }
+
+
     public Optograph(Parcel source) {
         // SAME ORDER AS IN writeToParcel!
         this.id = source.readString();
@@ -92,6 +117,7 @@ public class Optograph implements Parcelable {
         this.comments_count = source.readInt();
         this.is_starred = source.readByte() != 0;
         this.hashtag_string = source.readString();
+        this.is_local = source.readByte() != 0;
     }
 
     public String getId() {
@@ -170,6 +196,10 @@ public class Optograph implements Parcelable {
         return hashtag_string;
     }
 
+    public boolean is_local() {
+        return is_local;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -215,8 +245,9 @@ public class Optograph implements Parcelable {
         dest.writeParcelable(this.person, flags);
         dest.writeInt(this.stars_count);
         dest.writeInt(this.comments_count);
-        dest.writeByte((byte) (this.is_starred ? 1:0));
+        dest.writeByte((byte) (this.is_starred ? 1 : 0));
         dest.writeString(this.hashtag_string);
+        dest.writeByte((byte) (this.is_local ? 1:0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

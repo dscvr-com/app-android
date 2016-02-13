@@ -66,8 +66,11 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     std::string path(cString);
     __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
-    leftStore = std::make_shared<CheckpointStore>(path + "left", path + "shared");
-    rightStore = std::make_shared<CheckpointStore>(path + "right", path + "shared");
+    leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
+    rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+
+    leftStore->Clear();
+    rightStore->Clear();
 
     sink =std::make_shared<StorageSink>(*leftStore, *rightStore);
 

@@ -1,14 +1,20 @@
 package co.optonaut.optonaut.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.os.Environment;
 import android.util.Log;
 import android.util.SizeF;
 
 import com.crashlytics.android.Crashlytics;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import timber.log.Timber;
 
@@ -17,7 +23,9 @@ import timber.log.Timber;
  * @date 2016-02-07
  */
 public class CameraUtils {
-    public static final String STORAGE_PATH = Constants.getInstance().getCachePath().concat("/");
+    public static final String CACHE_PATH = Constants.getInstance().getCachePath().concat("/");
+    public static final String PERSISTENT_STORAGE_PATH = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES).getPath().concat("/").concat("Optonaut").concat("/");
 
     public static Camera getCameraInstance(){
         Camera camera = null;
@@ -31,14 +39,18 @@ public class CameraUtils {
         }
 
         Camera.Size[] sizes = camera.getParameters().getSupportedPreviewSizes().toArray(new Camera.Size[0]);
-        Camera.Size size = sizes[0];
+        Camera.Size size = null;
 
         // Find smallest HD camera.
         for(int i = 1; i < sizes.length; i++) {
-            if(sizes[i].width < size.width && sizes[i].width >= 1280) {
+            if(sizes[i].width == 1280 && sizes[i].height == 720) {
                 size = sizes[i];
             }
             Timber.v("size: [%s, %s]", sizes[i].width, sizes[i].height);
+        }
+
+        if (size == null) {
+            throw new RuntimeException("No suitable camera size found!");
         }
 
         Camera.Parameters params = camera.getParameters();
@@ -47,6 +59,27 @@ public class CameraUtils {
 
         // returns null if camera is unavailable
         return camera;
+    }
+
+    public static void saveBitmapToLocation(Bitmap bitmap, String filename) {
+        FileOutputStream out = null;
+        try {
+            File file = new File(filename);
+            File parent = file.getParentFile();
+            parent.mkdirs();
+            out = new FileOutputStream(filename);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static float[] getCameraResolution(Context context, int camNum) {

@@ -15,6 +15,7 @@ import org.joda.time.Interval;
 
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.viewmodels.LocalOptographManager;
 import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import rx.android.schedulers.AndroidSchedulers;
@@ -79,6 +80,11 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
     @Override
     protected void initializeFeed() {
+        LocalOptographManager.getOptographs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(optographFeedAdapter::addItem);
+
+
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

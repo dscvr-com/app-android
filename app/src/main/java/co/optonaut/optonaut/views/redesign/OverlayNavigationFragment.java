@@ -181,11 +181,9 @@ public class OverlayNavigationFragment extends Fragment {
         cancelButton.setText(String.valueOf((char) 0xe909));
         cancelGroup.setOnClickListener(v -> {
             if (currentMode == PREVIEW_RECORD) {
-                // TODO: cancel without saving to disk
-                changeMode(FEED);
+                changeMode(FEED, false);
                 getActivity().onBackPressed();
             } else if (currentMode == RECORDING) {
-                // TODO: switch to preview_record
                 askToCancel();
             }
         });
@@ -194,9 +192,9 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
             if (currentMode == FEED) {
-                changeMode(PREVIEW_RECORD);
+                changeMode(PREVIEW_RECORD, false);
             } else if (currentMode == PREVIEW_RECORD) {
-                changeMode(RECORDING);
+                changeMode(RECORDING, false);
             }
 
         });
@@ -262,13 +260,13 @@ public class OverlayNavigationFragment extends Fragment {
         editor.commit();
     }
 
-    public void changeMode(final int mode) {
+    public void changeMode(final int mode, boolean cancel) {
         switch (mode) {
             case GONE:
                 // TODO: set invisible
                 break;
             case FEED:
-                switchToFeedMode();
+                switchToFeedMode(cancel);
                 break;
             case PREVIEW_RECORD:
                 switchToPreviewRecordMode();
@@ -283,12 +281,14 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
 
-    private void switchToFeedMode() {
+    public void switchToFeedMode(boolean cancelRecording) {
         Timber.v("switching to feed mode");
         currentMode = FEED;
 
-        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.finishRecording();
+        if (cancelRecording) {
+            MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+            activity.cancelRecording();
+        }
 
         toolbar.setVisibility(View.VISIBLE);
         homeGroup.setVisibility(View.VISIBLE);
@@ -358,8 +358,7 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
     public void cancel() {
-        // TODO: cancel without saving to disk
-        changeMode(FEED);
+        changeMode(FEED, true);
         getActivity().onBackPressed();
     }
 

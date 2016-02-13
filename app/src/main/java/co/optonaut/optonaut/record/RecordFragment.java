@@ -20,12 +20,13 @@ import java.util.Map;
 
 import co.optonaut.optonaut.OptonautApp;
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import co.optonaut.optonaut.views.deprecated.MainActivity;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import timber.log.Timber;
 
 /**
@@ -51,6 +52,10 @@ public class RecordFragment extends Fragment {
             Camera.Parameters parameters = camera.getParameters();
             int imageFormat = parameters.getPreviewFormat();
             if (imageFormat == ImageFormat.NV21) {
+                if (Recorder.isFinished()) {
+                    // sync hack
+                    return;
+                }
                 // TODO - get matrix as int
                 int[] imageAsARGB8888 = CameraUtils.convertYUV420_NV21toARGB8888(data,
                         parameters.getPreviewSize().width,
@@ -62,15 +67,15 @@ public class RecordFragment extends Fragment {
                 float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
                 double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
+                Recorder.push(bitmap, extrinsicsData);
+                updateBallPosition();
+
                 if (Recorder.isFinished()) {
                     // TODO: change mode to POST_RECORD
                     Snackbar.make(recordPreview, "Recording is finished, please wait for the result!", Snackbar.LENGTH_LONG).show();
 
                     // queue finishing on main thread
                     queueFinishRecording();
-                } else {
-                    Recorder.push(bitmap, extrinsicsData);
-                    updateBallPosition();
                 }
 
             } else {
@@ -99,7 +104,7 @@ public class RecordFragment extends Fragment {
 
         // initialize recorder
         float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
-        Recorder.initializeRecorder(CameraUtils.STORAGE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
+        Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
 
         // Create our Preview view and set it as the content of our activity.
         recordPreview = new RecordPreview(getActivity(), camera);
@@ -152,11 +157,15 @@ public class RecordFragment extends Fragment {
     }
 
     public void startRecording() {
-        // TODO: rotate camera coordinates like this http://stackoverflow.com/a/18874394/1176596
-        // TODO: set size like this http://stackoverflow.com/a/11009422/1176596
         Timber.v("Starting recording...");
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+        Camera.Parameters parameters = camera.getParameters();
+        parameters.setAutoExposureLock(true);
+        parameters.setAutoWhiteBalanceLock(true);
+        camera.setParameters(parameters);
+
         camera.setPreviewCallback(previewCallback);
+
         Recorder.setIdle(false);
     }
 
@@ -192,10 +201,18 @@ public class RecordFragment extends Fragment {
 
     public void finishRecording() {
         releaseCamera();
-        // TODO: open VRModeActivity
 
         // start a background thread to finish recorder
         OptonautApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob());
+
+        ((MainActivityRedesign) getActivity()).backToFeed(false);
+    }
+
+    public void cancelRecording() {
+        releaseCamera();
+
+        // start background thread to cancel recorder
+        OptonautApp.getInstance().getJobManager().addJobInBackground(new CancelRecorderJob());
     }
 
     private void updateBallPosition() {

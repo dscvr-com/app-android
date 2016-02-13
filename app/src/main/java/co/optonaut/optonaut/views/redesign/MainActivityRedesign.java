@@ -102,7 +102,9 @@ public class MainActivityRedesign extends AppCompatActivity {
     @Override
     public void onDestroy() {
         // flush mixpanel events before destroying
-        mixpanelAPI.flush();
+        if (mixpanelAPI != null) {
+            mixpanelAPI.flush();
+        }
         super.onDestroy();
     }
 
@@ -215,11 +217,16 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
-    public void finishRecording() {
+    public void cancelRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
-            ((RecordFragment) hostFragment.getCurrentFragment()).finishRecording();
+            ((RecordFragment) hostFragment.getCurrentFragment()).cancelRecording();
         } else {
-            Timber.e("Tried to finish recording, but no record fragment available");
+            Timber.e("Tried to cancel recording, but no record fragment available");
         }
+    }
+
+    public void backToFeed(boolean cancel) {
+        overlayFragment.switchToFeedMode(cancel);
+        onBackPressed();
     }
 }
