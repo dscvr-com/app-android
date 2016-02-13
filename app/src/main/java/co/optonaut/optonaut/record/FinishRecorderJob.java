@@ -8,6 +8,8 @@ import com.path.android.jobqueue.RetryConstraint;
 
 import java.util.UUID;
 
+import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.util.CameraUtils;
 import timber.log.Timber;
 
@@ -31,7 +33,7 @@ public class FinishRecorderJob extends Job {
         Timber.v("finishing Recorder...");
         Recorder.finish();
         Timber.v("disposing Recorder...");
-        Recorder.dispose();
+        Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
 
 
@@ -51,6 +53,11 @@ public class FinishRecorderJob extends Job {
         Timber.v("FinishRecorderJob finished");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
+
+        // TODO: fire event or otherwise handle refresh
+        // BusProvider.getInstance().post(new RecordFinishedEvent());
+        GlobalState.isAnyJobRunning = false;
+        GlobalState.shouldHardRefreshFeed = true;
     }
 
     @Override
@@ -65,6 +72,7 @@ public class FinishRecorderJob extends Job {
 
     @Override
     protected void onCancel() {
+        GlobalState.isAnyJobRunning = false;
         Timber.e("FinishRecorderJob has been canceled");
     }
 }

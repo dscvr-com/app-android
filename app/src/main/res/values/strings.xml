@@ -33,6 +33,7 @@
     <string name="dialog_cancel_recording">Cancel recording? This will delete the current recording progress.</string>
     <string name="dialog_dont_cancel">No</string>
     <string name="dialog_cancel">Yes</string>
+    <string name="dialog_wait_on_record_finish">Wait for the recording process to finish before starting another record session!</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

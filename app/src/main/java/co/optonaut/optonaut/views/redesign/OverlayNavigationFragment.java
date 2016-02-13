@@ -23,9 +23,9 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
-import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
@@ -181,8 +181,7 @@ public class OverlayNavigationFragment extends Fragment {
         cancelButton.setText(String.valueOf((char) 0xe909));
         cancelGroup.setOnClickListener(v -> {
             if (currentMode == PREVIEW_RECORD) {
-                changeMode(FEED, false);
-                getActivity().onBackPressed();
+                cancel();
             } else if (currentMode == RECORDING) {
                 askToCancel();
             }
@@ -191,6 +190,10 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
         recordButton.setOnClickListener(v -> {
+            if (GlobalState.isAnyJobRunning) {
+                Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+                return;
+            }
             if (currentMode == FEED) {
                 changeMode(PREVIEW_RECORD, false);
             } else if (currentMode == PREVIEW_RECORD) {
@@ -280,6 +283,13 @@ public class OverlayNavigationFragment extends Fragment {
         }
     }
 
+    public void hideRecordButton() {
+        recordButton.setVisibility(View.INVISIBLE);
+    }
+
+    public void showRecordButton() {
+        recordButton.setVisibility(View.VISIBLE);
+    }
 
     public void switchToFeedMode(boolean cancelRecording) {
         Timber.v("switching to feed mode");

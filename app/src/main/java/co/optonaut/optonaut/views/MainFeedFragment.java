@@ -7,12 +7,18 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
+
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.bus.RecordFinishedEvent;
+import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
@@ -60,6 +66,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     public void onPause() {
         super.onPause();
         unregisterAccelerationListener();
+        BusProvider.getInstance().unregister(this);
     }
 
     @Override
@@ -67,6 +74,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         super.onResume();
         registerAccelerationListener();
         inVRMode = false;
+        BusProvider.getInstance().register(this);
+        if (GlobalState.shouldHardRefreshFeed) {
+            initializeFeed();
+        }
     }
 
     private void registerAccelerationListener() {
@@ -84,7 +95,6 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
 
-
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -94,6 +104,8 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
+
+        GlobalState.shouldHardRefreshFeed = false;
     }
 
     @Override
@@ -160,5 +172,8 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
     }
 
-
+    @Subscribe
+    public void recordFinished(RecordFinishedEvent event) {
+        initializeFeed();
+    }
 }

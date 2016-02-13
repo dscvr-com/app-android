@@ -1,12 +1,8 @@
 package co.optonaut.optonaut.record;
 
-import android.graphics.Bitmap;
-
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
-
-import java.util.UUID;
 
 import co.optonaut.optonaut.util.CameraUtils;
 import timber.log.Timber;
@@ -30,12 +26,13 @@ public class CancelRecorderJob extends Job {
         Timber.v("finishing Recorder...");
         Recorder.finish();
         Timber.v("disposing Recorder...");
-        Recorder.dispose();
+        Recorder.disposeRecorder();
 
         Timber.v("clearing Stitcher");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left", CameraUtils.CACHE_PATH + "shared");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right", CameraUtils.CACHE_PATH + "shared");
         Timber.v("CancelRecorderJobfinished");
+        GlobalState.isAnyJobRunning = false;
     }
 
     @Override
@@ -50,6 +47,7 @@ public class CancelRecorderJob extends Job {
 
     @Override
     protected void onCancel() {
+        GlobalState.isAnyJobRunning = false;
         Timber.e("CancelRecorderJob has been canceled");
     }
 }

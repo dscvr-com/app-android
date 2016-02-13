@@ -24,7 +24,6 @@ import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
-import co.optonaut.optonaut.views.deprecated.MainActivity;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import timber.log.Timber;
@@ -200,6 +199,7 @@ public class RecordFragment extends Fragment {
     }
 
     public void finishRecording() {
+        GlobalState.isAnyJobRunning = true;
         releaseCamera();
 
         // start a background thread to finish recorder
@@ -209,6 +209,7 @@ public class RecordFragment extends Fragment {
     }
 
     public void cancelRecording() {
+        GlobalState.isAnyJobRunning = true;
         releaseCamera();
 
         // start background thread to cancel recorder
