@@ -19,7 +19,7 @@ std::shared_ptr<CheckpointStore> rightStore;
 std::shared_ptr<StorageSink> sink;
 
 std::shared_ptr<Recorder> recorder;
-
+std::string debugPath;
 
 extern "C" {
     // storagePath should end on "/"!
@@ -39,6 +39,11 @@ extern "C" {
     jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
     jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
+    jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
+
+    void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
+    void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
+
 }
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
@@ -92,7 +97,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, "", 1, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, 1, true);
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
@@ -190,3 +195,19 @@ jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(J
     matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
 }
 
+jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz)
+{
+    return recorder->HasStarted();
+}
+
+void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)
+{
+    const char *cString = env->GetStringUTFChars(storagePath, NULL);
+    std::string path(cString);
+    debugPath = path + "debug/";
+}
+
+void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
+{
+    debugPath = "";
+}

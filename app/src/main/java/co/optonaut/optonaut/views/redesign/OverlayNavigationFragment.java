@@ -71,6 +71,9 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.profile_button) Button profileButton;
 
     @Bind(R.id.crosshair) View crosshair;
+    @Bind(R.id.arrow) View arrow;
+    @Bind(R.id.line) View line;
+    @Bind(R.id.angle) View angle;
 
     private CancelRecordingDialog cancelRecordingDialog;
 
@@ -307,6 +310,9 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setVisibility(View.VISIBLE);
 
         crosshair.setVisibility(View.INVISIBLE);
+        arrow.setVisibility(View.INVISIBLE);
+        line.setVisibility(View.INVISIBLE);
+        angle.setVisibility(View.INVISIBLE);
     }
 
     private void switchToPreviewRecordMode() {
@@ -329,6 +335,9 @@ public class OverlayNavigationFragment extends Fragment {
 
         recordButton.setVisibility(View.INVISIBLE);
         crosshair.setVisibility(View.VISIBLE);
+        arrow.setVisibility(View.INVISIBLE);
+        line.setVisibility(View.VISIBLE);
+        angle.setVisibility(View.VISIBLE);
 
         ((MainActivityRedesign) getActivity()).startRecording();
     }
@@ -414,4 +423,21 @@ public class OverlayNavigationFragment extends Fragment {
         }
         return upperBoundary;
     }
+
+    public void setAngleRotation(float rotation) {
+        line.setRotation(rotation*100);
+    }
+
+    public void setGuideVisible(boolean visible) {
+        if(visible) {
+            line.setVisibility(View.VISIBLE);
+            angle.setVisibility(View.VISIBLE);
+            arrow.setVisibility(View.INVISIBLE);
+        } else {
+            line.setVisibility(View.INVISIBLE);
+            angle.setVisibility(View.INVISIBLE);
+            arrow.setVisibility(View.VISIBLE);
+        }
+    }
+
 }

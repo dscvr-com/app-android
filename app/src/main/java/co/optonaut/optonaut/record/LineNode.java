@@ -118,6 +118,7 @@ public class LineNode {
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
         // Draw the line
+        GLES20.glLineWidth(10);
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, VERTICES_PER_LINE);
 
         GLES20.glDisableVertexAttribArray(positionHandle);

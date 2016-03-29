@@ -2,28 +2,33 @@ package co.optonaut.optonaut.record;
 
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.graphics.drawable.RotateDrawable;
 import android.hardware.Camera;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
 import co.optonaut.optonaut.OptonautApp;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
+import co.optonaut.optonaut.util.Vector3;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import timber.log.Timber;
@@ -33,16 +38,17 @@ import timber.log.Timber;
  * @date 2016-02-08
  */
 public class RecordFragment extends Fragment {
+    private String TAG = RecordFragment.class.getSimpleName();
     private Camera camera;
     private RecordPreview recordPreview;
     private RecorderOverlayView recorderOverlayView;
+    private Vector3 ballPosition = new Vector3();
+    private Vector3 ballSpeed = new Vector3();
 
     // TODO: use this map
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
 
     private CancelRecordingDialog cancelRecordingDialog;
-
-
 
     private Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
 
@@ -67,6 +73,14 @@ public class RecordFragment extends Fragment {
                 double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
                 Recorder.push(bitmap, extrinsicsData);
+
+                // tilt angle
+//                Log.d(TAG, "Ball Distance : " + Recorder.getDistanceToBall());
+//                float[] angularDistanceToBall = Recorder.getAngularDistanceToBall();
+//                for(int i = 0; i < angularDistanceToBall.length; i++)
+//                    Log.d(TAG, "Ball Angular Distance " + i + " : "+ angularDistanceToBall[i]);
+
+                ((MainActivityRedesign) getActivity()).setAngleRotation(Recorder.getAngularDistanceToBall()[2]);
                 updateBallPosition();
 
                 if (Recorder.isFinished()) {
@@ -218,11 +232,58 @@ public class RecordFragment extends Fragment {
 
     private void updateBallPosition() {
         // TODO: use -0.9f - error must be somewhere else
-        float[] vector = {0, 0, 0.9f, 0};
+        float[] vector = {0, 0, 1, 0};
         float[] newPosition = new float[4];
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
-        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
-    }
 
+        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+
+//        float maxSpeed = Recorder.hasStarted() ? 0.008f : 0.08f;
+//        float accelleration = Recorder.hasStarted() ? 0.1f : 0.5f;
+//        float[] vector = {0, 0, 1, 0};
+//        float[] newPosition = new float[4];
+//        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+//        Vector3 target = new Vector3(newPosition[0], newPosition[1], newPosition[2]);
+//
+//        if(ballPosition.x == 0 && ballPosition.y == 0 && ballPosition.z == 0) {
+//            ballPosition = target;
+//        } else {
+//            Vector3 newSpeed = Vector3.subtract(target, ballPosition);
+//            float dist = Vector3.length(newSpeed);
+//
+//            if(dist > maxSpeed) {
+//                newSpeed = Vector3.multiply(Vector3.normalize(newSpeed), maxSpeed);
+//            }
+//
+//            newSpeed.subtract(ballSpeed);
+//            newSpeed.multiply(accelleration);
+//            newSpeed.add(ballSpeed);
+//            ballSpeed = newSpeed;
+//            ballPosition.add(ballSpeed);
+//        }
+//
+//        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(ballPosition.x, ballPosition.y, ballPosition.z);
+
+/** iOS code
+   let maxSpeed = recorder.hasStarted() ? Float(0.008) : Float(0.08)
+        let accelleration = recorder.hasStarted() ? Float(0.1) : Float(0.5)
+        let vec = GLKVector3Make(0, 0, -1)
+        let target = GLKMatrix4MultiplyVector3(recorder.getNextKeyframePosition(), vec)
+        let ball = SCNVector3ToGLKVector3(ballNode.position)
+        if ball.x == 0 && ball.y == 0 && ball.z == 0 {
+            ballNode.position = SCNVector3FromGLKVector3(target)
+        } else {
+            var newSpeed = GLKVector3Subtract(target, ball)
+            let dist = GLKVector3Length(newSpeed)
+            if dist > maxSpeed
+                newSpeed = GLKVector3MultiplyScalar(GLKVector3Normalize(newSpeed), maxSpeed)
+            newSpeed = GLKVector3Subtract(newSpeed, ballSpeed)
+            newSpeed = GLKVector3MultiplyScalar(newSpeed, accelleration)
+            newSpeed = GLKVector3Add(newSpeed, ballSpeed)
+            ballSpeed = newSpeed;
+            ballNode.position = SCNVector3FromGLKVector3(GLKVector3Add(ball, ballSpeed))
+        }
+**/
+    }
 
 }

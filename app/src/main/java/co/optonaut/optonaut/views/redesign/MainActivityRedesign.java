@@ -229,4 +229,13 @@ public class MainActivityRedesign extends AppCompatActivity {
         overlayFragment.switchToFeedMode(cancel);
         onBackPressed();
     }
+
+    public void setAngleRotation(float rotation) {
+        overlayFragment.setAngleRotation(rotation);
+    }
+
+    public void setGuideVisible(boolean isVisible) {
+        overlayFragment.setGuideVisible(isVisible);
+    }
+
 }

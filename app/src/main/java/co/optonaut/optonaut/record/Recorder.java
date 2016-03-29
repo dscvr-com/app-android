@@ -27,10 +27,15 @@ public class Recorder {
     public static native double getDistanceToBall();
     public static native float[] getAngularDistanceToBall();
     public static native void setIdle(boolean idle);
+    public static native boolean hasStarted();
+    public static native void enableDebug(String storagePath);
+    public static native void disableDebug();
 
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength) {
         if (!isInitialized) {
             Timber.v("Initialized recorder");
+//            enableDebug(storagePath);
+            disableDebug();
             initRecorder(storagePath, sensorWidth, sensorHeight, focalLength);
             isInitialized = true;
         } else {

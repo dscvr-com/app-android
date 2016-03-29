@@ -239,5 +239,41 @@
         android:visibility="invisible">
     </View>
 
+    <View
+        android:id="@+id/angle_shade"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/angle_shade"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </View>
+
+    <View
+        android:id="@+id/arrow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/arrow"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:visibility="invisible">
+    </View>
+
+    <View
+        android:id="@+id/angle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/angle"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </View>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/line"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </View>
 
 </FrameLayout>
