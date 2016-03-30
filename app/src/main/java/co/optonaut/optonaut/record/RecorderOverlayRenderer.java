@@ -3,9 +3,12 @@ package co.optonaut.optonaut.record;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,6 +23,10 @@ import timber.log.Timber;
  */
 public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private List<LineNode> lineNodes;
+
+    // Map globalIds of the edge's selection points : LineNode
+    private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
+
     private Sphere sphere;
 
     private static final float FIELD_OF_VIEW_Y = 95.0f;
@@ -102,8 +109,12 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
 
         // Draw lines
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        for (LineNode node : lineNodes) {
-            node.draw(mvpMatrix);
+//        for (LineNode node : lineNodes) {
+//            node.draw(mvpMatrix);
+//        }
+
+        for(int i=0; i<lineNodes.size(); i++) {
+            lineNodes.get(i).draw(mvpMatrix);
         }
 
         sphere.draw(mvpMatrix);
@@ -112,6 +123,11 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     public void addChildNode(LineNode edgeNode) {
         addedNewLineNode = true;
         lineNodes.add(edgeNode);
+    }
+
+    public void colorChildNode(LineNode lineNode) {
+        int index = lineNodes.indexOf(lineNode);
+        if(index >= 0) lineNodes.get(index).isRecordedEdge(true);
     }
 
     public void startRendering() {

@@ -30,6 +30,9 @@ public class Recorder {
     public static native boolean hasStarted();
     public static native void enableDebug(String storagePath);
     public static native void disableDebug();
+    public static native SelectionPoint lastKeyframe();
+//    public static native int getRecordedImagesCount();
+//    public static native int getImagesToRecordCount();
 
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength) {
         if (!isInitialized) {

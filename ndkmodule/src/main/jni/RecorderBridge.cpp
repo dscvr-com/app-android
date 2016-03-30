@@ -31,18 +31,27 @@ extern "C" {
 
     jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
 
+    jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz);
+
     void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz);
 
     void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz);
 
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz);
+
     jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
+
     jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
+
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
+
     jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
 
     void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
+
     void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
+
+    jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height);
 
 }
 
@@ -162,6 +171,24 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
     }
 
     return javaSelectionPoints;
+}
+
+jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz) {
+
+//    assert(recorder != NULL);
+//    SelectionPoint* selectionPoint = ConvertSelectionPoint(env, recorder->GetCurrentKeyframe().closestPoint);
+    SelectionPoint selectionPoint = recorder->GetCurrentKeyframe().closestPoint;
+
+    jclass java_selection_point_class = env->FindClass("co/optonaut/optonaut/record/SelectionPoint");
+    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
+    jobject javaSelectionPoint = env->NewObject(java_selection_point_class, java_selection_point_init,
+                                                 matToJFloatArray(env, selectionPoint.extrinsics, 4, 4),
+                                                 selectionPoint.globalId,
+                                                 selectionPoint.ringId,
+                                                 selectionPoint.localId);
+
+    return javaSelectionPoint;
+
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz)

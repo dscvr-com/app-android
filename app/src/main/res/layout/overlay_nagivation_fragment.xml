@@ -231,15 +231,6 @@
     </RelativeLayout>
 
     <View
-        android:id="@+id/crosshair"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:background="@drawable/crosshair"
-        android:layout_gravity="center"
-        android:visibility="invisible">
-    </View>
-
-    <View
         android:id="@+id/angle_shade"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -275,5 +266,26 @@
         android:layout_gravity="center"
         android:visibility="invisible">
     </View>
+
+    <View
+        android:id="@+id/crosshair"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/crosshair"
+        android:layout_gravity="center"
+        android:visibility="invisible">
+    </View>
+
+    <TextView
+        android:id="@+id/instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        android:text="@string/record_instruction_press"
+        android:textSize="25sp"
+        android:textColor="@android:color/white"
+        android:visibility="invisible">
+    </TextView>
 
 </FrameLayout>

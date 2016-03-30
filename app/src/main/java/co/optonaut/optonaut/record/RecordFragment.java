@@ -44,9 +44,13 @@ public class RecordFragment extends Fragment {
     private RecorderOverlayView recorderOverlayView;
     private Vector3 ballPosition = new Vector3();
     private Vector3 ballSpeed = new Vector3();
+    private SelectionPoint lastKeyframe;
 
     // TODO: use this map
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
+
+    // Map globalIds of the edge's selection points : LineNode
+    private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
 
     private CancelRecordingDialog cancelRecordingDialog;
 
@@ -82,6 +86,20 @@ public class RecordFragment extends Fragment {
 
                 ((MainActivityRedesign) getActivity()).setAngleRotation(Recorder.getAngularDistanceToBall()[2]);
                 updateBallPosition();
+
+                // shading of recorded nodes
+                if (Recorder.hasStarted()) {
+                    SelectionPoint currentKeyframe = Recorder.lastKeyframe();
+
+                    if (lastKeyframe == null) {
+                        lastKeyframe = currentKeyframe;
+                    } else if (currentKeyframe.getGlobalId() != lastKeyframe.getGlobalId()) {
+                        Edge recordedEdge = new Edge(lastKeyframe, currentKeyframe);
+                        if(edgeLineNodeGlobalIdMap.get(recordedEdge.getGlobalIds()) != null)
+                            recorderOverlayView.colorChildNode(edgeLineNodeGlobalIdMap.get(recordedEdge.getGlobalIds()));
+                        lastKeyframe = currentKeyframe;
+                    }
+                }
 
                 if (Recorder.isFinished()) {
                     // TODO: change mode to POST_RECORD
@@ -199,7 +217,7 @@ public class RecordFragment extends Fragment {
             SelectionPoint b = points2.get(i);
             if (a.getRingId() == b.getRingId()) {
                 Edge edge = new Edge(a, b);
-                float[] vector = {0, 0, -1, 0};
+                float[] vector = {0, 0, 1, 0};
                 float[] posA = new float[4];
                 float[] posB = new float[4];
                 Matrix.multiplyMV(posA, 0, a.getExtrinsics(), 0, vector, 0);
@@ -207,6 +225,7 @@ public class RecordFragment extends Fragment {
 
                 LineNode edgeNode = new LineNode(posA, posB);
                 edgeLineNodeMap.put(edge, edgeNode);
+                edgeLineNodeGlobalIdMap.put(edge.getGlobalIds(), edgeNode);
                 recorderOverlayView.addChildNode(edgeNode);
             }
         }

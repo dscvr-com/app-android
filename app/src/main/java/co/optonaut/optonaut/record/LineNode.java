@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.record;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,7 +45,9 @@ public class LineNode {
     private int colorHandle;
     private int mvpMatrixHandle;
 
-    private float color[] = {0.9372f, 0.2823f, 0.2117f, 1.0f };
+    private float colorRed[] = {0.9372f, 0.2823f, 0.2117f, 1.0f };
+    private float colorWhite[] = {1.0f, 1.0f, 1.0f, 1.0f };
+    private float color[] = colorWhite;
 
     public LineNode(float[] posA, float[] posB) {
         this.posA = posA;
@@ -126,5 +129,10 @@ public class LineNode {
 
     public boolean isProgramInitialized() {
         return isProgramInitialized;
+    }
+
+    public void isRecordedEdge(boolean recorded) {
+        if(recorded) color = colorRed;
+        else color = colorWhite;
     }
 }

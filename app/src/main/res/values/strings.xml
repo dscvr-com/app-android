@@ -42,6 +42,10 @@
     <string name="home_label">Home</string>
     <string name="profile_label">Profile</string>
 
+    <!-- Record Overlay -->
+    <string name="record_instruction_press">Press button below\r\nto start recording</string>
+    <string name="record_instruction_follow">Follow the red dot</string>
+
     <!-- Preferences -->
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
     <string name="preference_lowerboundary">co.optonaut.optonaut.feed.lowerboundary</string>

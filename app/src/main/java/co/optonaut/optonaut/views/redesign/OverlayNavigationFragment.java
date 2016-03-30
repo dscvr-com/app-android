@@ -70,6 +70,7 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.profile_label) TextView profileLabel;
     @Bind(R.id.profile_button) Button profileButton;
 
+    @Bind(R.id.instruction) TextView instruction;
     @Bind(R.id.crosshair) View crosshair;
     @Bind(R.id.arrow) View arrow;
     @Bind(R.id.line) View line;
@@ -308,6 +309,7 @@ public class OverlayNavigationFragment extends Fragment {
         cancelGroup.setVisibility(View.INVISIBLE);
         profileGroup.setVisibility(View.VISIBLE);
         recordButton.setVisibility(View.VISIBLE);
+        instruction.setVisibility(View.INVISIBLE);
 
         crosshair.setVisibility(View.INVISIBLE);
         arrow.setVisibility(View.INVISIBLE);
@@ -324,6 +326,8 @@ public class OverlayNavigationFragment extends Fragment {
         cancelGroup.setVisibility(View.VISIBLE);
         profileGroup.setVisibility(View.INVISIBLE);
         recordButton.setVisibility(View.VISIBLE);
+        instruction.setVisibility(View.VISIBLE);
+        instruction.setText(getActivity().getResources().getText(R.string.record_instruction_press));
 
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
         activity.prepareRecording();
@@ -338,6 +342,8 @@ public class OverlayNavigationFragment extends Fragment {
         arrow.setVisibility(View.INVISIBLE);
         line.setVisibility(View.VISIBLE);
         angle.setVisibility(View.VISIBLE);
+
+        instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
 
         ((MainActivityRedesign) getActivity()).startRecording();
     }

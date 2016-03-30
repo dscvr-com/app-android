@@ -40,6 +40,10 @@ public class RecorderOverlayView extends GLSurfaceView {
         recorderOverlayRenderer.addChildNode(edgeNode);
     }
 
+    public void colorChildNode(LineNode edgeNode) {
+        recorderOverlayRenderer.colorChildNode(edgeNode);
+    }
+
     public RecorderOverlayRenderer getRecorderOverlayRenderer() {
         return recorderOverlayRenderer;
     }
