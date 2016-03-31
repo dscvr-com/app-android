@@ -78,6 +78,9 @@ public class RecordFragment extends Fragment {
 
                 Recorder.push(bitmap, extrinsicsData);
 
+                // progress bar
+                ((MainActivityRedesign) getActivity()).setProgressLocation((float)(Recorder.getRecordedImagesCount()) / (float)(Recorder.getImagesToRecordCount()));
+
                 // tilt angle
 //                Log.d(TAG, "Ball Distance : " + Recorder.getDistanceToBall());
 //                float[] angularDistanceToBall = Recorder.getAngularDistanceToBall();

@@ -234,6 +234,10 @@ public class MainActivityRedesign extends AppCompatActivity {
         overlayFragment.setAngleRotation(rotation);
     }
 
+    public void setProgressLocation(float progress) {
+        overlayFragment.setProgress(progress);
+    }
+
     public void setGuideVisible(boolean isVisible) {
         overlayFragment.setGuideVisible(isVisible);
     }

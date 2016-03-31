@@ -53,6 +53,10 @@ extern "C" {
 
     jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height);
 
+    jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz);
+
+    jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz);
+
 }
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
@@ -237,4 +241,12 @@ void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject 
 void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
 {
     debugPath = "";
+}
+
+jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz) {
+    return recorder->GetRecordedImagesCount();
+}
+
+jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
+    return recorder->GetImagesToRecordCount();
 }

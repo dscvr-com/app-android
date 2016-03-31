@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -43,6 +44,8 @@ public class OverlayNavigationFragment extends Fragment {
     public static final int RECORDING = 2;
 
     private int currentMode;
+    private int screenWidth;
+
     @Bind(R.id.statusbar) RelativeLayout statusbar;
 
     // Toolbar
@@ -70,11 +73,13 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.profile_label) TextView profileLabel;
     @Bind(R.id.profile_button) Button profileButton;
 
+    @Bind(R.id.camera_overlay) FrameLayout cameraOverlay;
     @Bind(R.id.instruction) TextView instruction;
     @Bind(R.id.crosshair) View crosshair;
     @Bind(R.id.arrow) View arrow;
     @Bind(R.id.line) View line;
     @Bind(R.id.angle) View angle;
+    @Bind(R.id.progress_point) View progressPoint;
 
     private CancelRecordingDialog cancelRecordingDialog;
 
@@ -103,6 +108,16 @@ public class OverlayNavigationFragment extends Fragment {
 
         cancelRecordingDialog = new CancelRecordingDialog();
         cancelRecordingDialog.setTargetFragment(this, 0);
+
+        ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
+        if(vto.isAlive()){
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    screenWidth = cameraOverlay.getWidth();
+                }
+            });
+        }
 
         return view;
     }
@@ -311,10 +326,8 @@ public class OverlayNavigationFragment extends Fragment {
         recordButton.setVisibility(View.VISIBLE);
         instruction.setVisibility(View.INVISIBLE);
 
-        crosshair.setVisibility(View.INVISIBLE);
-        arrow.setVisibility(View.INVISIBLE);
-        line.setVisibility(View.INVISIBLE);
-        angle.setVisibility(View.INVISIBLE);
+        cameraOverlay.setVisibility(View.INVISIBLE);
+
     }
 
     private void switchToPreviewRecordMode() {
@@ -338,10 +351,7 @@ public class OverlayNavigationFragment extends Fragment {
         currentMode = RECORDING;
 
         recordButton.setVisibility(View.INVISIBLE);
-        crosshair.setVisibility(View.VISIBLE);
-        arrow.setVisibility(View.INVISIBLE);
-        line.setVisibility(View.VISIBLE);
-        angle.setVisibility(View.VISIBLE);
+        cameraOverlay.setVisibility(View.VISIBLE);
 
         instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
 
@@ -444,6 +454,10 @@ public class OverlayNavigationFragment extends Fragment {
             angle.setVisibility(View.INVISIBLE);
             arrow.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setProgress(float progress) {
+        progressPoint.setX((screenWidth - 100) * progress + 50);
     }
 
 }
