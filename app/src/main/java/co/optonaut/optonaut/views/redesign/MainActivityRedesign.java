@@ -242,8 +242,12 @@ public class MainActivityRedesign extends AppCompatActivity {
         overlayFragment.setProgress(progress);
     }
 
-    public void setGuideVisible(boolean isVisible) {
-        overlayFragment.setGuideVisible(isVisible);
+    public void setArrowVisible(boolean visible) {
+        overlayFragment.setArrowVisible(visible);
+    }
+
+    public void setGuideLinesVisible(boolean visible) {
+        overlayFragment.setGuideLinesVisible(visible);
     }
 
 }

@@ -82,11 +82,19 @@ public class RecordFragment extends Fragment {
                 ((MainActivityRedesign) getActivity()).setProgressLocation((float) (Recorder.getRecordedImagesCount()) / (float) (Recorder.getImagesToRecordCount()));
 
                 // normal towards ring
-                ((MainActivityRedesign) getActivity()).setAngleRotation(Recorder.getAngularDistanceToBall()[2]);
+                float angle = Recorder.getAngularDistanceToBall()[2];
+                ((MainActivityRedesign) getActivity()).setAngleRotation(angle);
 
                 float[] unit = {0, 0, 1, 0};
+                Vector3 ballHeading = new Vector3(ballPosition);
+                ballHeading.normalize();
+
                 float[] currentHeading = new float[4];
                 Matrix.multiplyMV(currentHeading, 0, Recorder.getCurrentRotation(), 0, unit, 0);
+                Vector3 currentHeadingVec = new Vector3(currentHeading[0], currentHeading[1], currentHeading[2]);
+
+                Vector3 diff = Vector3.subtract(ballHeading, currentHeadingVec);
+                float distXY = diff.length();
 
                 float[] angularBallHeading = recorderOverlayView.getPointOnScreen(new float[]{ballPosition.x, ballPosition.y, ballPosition.z, 0});
                 float[] angularCurrentHeading = recorderOverlayView.getPointOnScreen(currentHeading);
@@ -97,19 +105,10 @@ public class RecordFragment extends Fragment {
 
                 ((MainActivityRedesign) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
 
-//                float visibleLimit = (float)(Math.PI / 90);
-//                float criticalLimit = (float)(Math.PI / 70);
-//                float distLimit = (float)(Math.PI / 30);
-//                double alpha = 0;
-//                if (Math.abs(Recorder.getAngularDistanceToBall()[2]) < visibleLimit) {
-//                    alpha = 0;
-//                } else {
-//                    alpha = Math.min(0.8, (float)(0.8 * (1 - (criticalLimit - visibleLimit) / (Math.abs(Recorder.getAngularDistanceToBall()[2]) - visibleLimit))));
-//                    alpha = Math.min(alpha, (float)((distLimit - distXY) / distLimit + 1));
-//                    alpha = Math.max(alpha, 0);
-//                }
+                Log.d("angle", "" + distXY + " angle:" + angle);
 
-//                Log.d("ANGLE", Math.atan2(angularDiff[0], angularDiff[1]) + " distXY:" + distXY + " alpha:" + alpha + " errorv:" + Recorder.getAngularDistanceToBall()[2]);
+                ((MainActivityRedesign) getActivity()).setArrowVisible(distXY > 0.15 ? true : false);
+                ((MainActivityRedesign) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15)? true : false);
 
                 updateBallPosition();
 

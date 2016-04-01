@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -448,15 +449,23 @@ public class OverlayNavigationFragment extends Fragment {
         arrow.setRotation((float)Math.toDegrees(rotation));
     }
 
-    public void setGuideVisible(boolean visible) {
+    public void setArrowVisible(boolean visible) {
+        if (visible) {
+            arrow.setVisibility(View.VISIBLE);
+            crosshair.setBackground(getActivity().getResources().getDrawable(R.drawable.crosshair));
+        } else {
+            arrow.setVisibility(View.INVISIBLE);
+            crosshair.setBackground(getActivity().getResources().getDrawable(R.drawable.crosshair_red));
+        }
+    }
+
+    public void setGuideLinesVisible(boolean visible) {
         if(visible) {
             line.setVisibility(View.VISIBLE);
             angle.setVisibility(View.VISIBLE);
-            arrow.setVisibility(View.INVISIBLE);
         } else {
             line.setVisibility(View.INVISIBLE);
             angle.setVisibility(View.INVISIBLE);
-            arrow.setVisibility(View.VISIBLE);
         }
     }
 
