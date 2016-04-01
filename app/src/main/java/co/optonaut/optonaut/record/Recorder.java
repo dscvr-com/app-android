@@ -33,6 +33,7 @@ public class Recorder {
     public static native SelectionPoint lastKeyframe();
     public static native int getRecordedImagesCount();
     public static native int getImagesToRecordCount();
+    public static native float[] getCurrentRotation();
 
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength) {
         if (!isInitialized) {

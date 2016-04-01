@@ -57,6 +57,8 @@ extern "C" {
 
     jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz);
 
+    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz);
+
 }
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
@@ -249,4 +251,9 @@ jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *en
 
 jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
     return recorder->GetImagesToRecordCount();
+}
+
+jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
+{
+    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
 }

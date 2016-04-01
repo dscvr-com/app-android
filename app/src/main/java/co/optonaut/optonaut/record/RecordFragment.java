@@ -79,15 +79,38 @@ public class RecordFragment extends Fragment {
                 Recorder.push(bitmap, extrinsicsData);
 
                 // progress bar
-                ((MainActivityRedesign) getActivity()).setProgressLocation((float)(Recorder.getRecordedImagesCount()) / (float)(Recorder.getImagesToRecordCount()));
+                ((MainActivityRedesign) getActivity()).setProgressLocation((float) (Recorder.getRecordedImagesCount()) / (float) (Recorder.getImagesToRecordCount()));
 
-                // tilt angle
-//                Log.d(TAG, "Ball Distance : " + Recorder.getDistanceToBall());
-//                float[] angularDistanceToBall = Recorder.getAngularDistanceToBall();
-//                for(int i = 0; i < angularDistanceToBall.length; i++)
-//                    Log.d(TAG, "Ball Angular Distance " + i + " : "+ angularDistanceToBall[i]);
-
+                // normal towards ring
                 ((MainActivityRedesign) getActivity()).setAngleRotation(Recorder.getAngularDistanceToBall()[2]);
+
+                float[] unit = {0, 0, 1, 0};
+                float[] currentHeading = new float[4];
+                Matrix.multiplyMV(currentHeading, 0, Recorder.getCurrentRotation(), 0, unit, 0);
+
+                float[] angularBallHeading = recorderOverlayView.getPointOnScreen(new float[]{ballPosition.x, ballPosition.y, ballPosition.z, 0});
+                float[] angularCurrentHeading = recorderOverlayView.getPointOnScreen(currentHeading);
+
+                float[] angularDiff = new float[2];
+                angularDiff[0] = angularBallHeading[0] - angularCurrentHeading[0];
+                angularDiff[1] = angularBallHeading[1] - angularCurrentHeading[1];
+
+                ((MainActivityRedesign) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
+
+//                float visibleLimit = (float)(Math.PI / 90);
+//                float criticalLimit = (float)(Math.PI / 70);
+//                float distLimit = (float)(Math.PI / 30);
+//                double alpha = 0;
+//                if (Math.abs(Recorder.getAngularDistanceToBall()[2]) < visibleLimit) {
+//                    alpha = 0;
+//                } else {
+//                    alpha = Math.min(0.8, (float)(0.8 * (1 - (criticalLimit - visibleLimit) / (Math.abs(Recorder.getAngularDistanceToBall()[2]) - visibleLimit))));
+//                    alpha = Math.min(alpha, (float)((distLimit - distXY) / distLimit + 1));
+//                    alpha = Math.max(alpha, 0);
+//                }
+
+//                Log.d("ANGLE", Math.atan2(angularDiff[0], angularDiff[1]) + " distXY:" + distXY + " alpha:" + alpha + " errorv:" + Recorder.getAngularDistanceToBall()[2]);
+
                 updateBallPosition();
 
                 // shading of recorded nodes
@@ -259,6 +282,7 @@ public class RecordFragment extends Fragment {
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
 
 //        float maxSpeed = Recorder.hasStarted() ? 0.008f : 0.08f;
 //        float accelleration = Recorder.hasStarted() ? 0.1f : 0.5f;

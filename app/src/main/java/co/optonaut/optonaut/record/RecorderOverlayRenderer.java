@@ -120,6 +120,12 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         sphere.draw(mvpMatrix);
     }
 
+    public float[] getPointOnScreen(float[] point) {
+        float[] res = new float[4];
+        Matrix.multiplyMV(res, 0, mvpMatrix, 0, point, 0);
+        return res;
+    }
+
     public void addChildNode(LineNode edgeNode) {
         addedNewLineNode = true;
         lineNodes.add(edgeNode);

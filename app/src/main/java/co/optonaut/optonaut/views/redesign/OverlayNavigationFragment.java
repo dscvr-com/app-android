@@ -441,7 +441,11 @@ public class OverlayNavigationFragment extends Fragment {
     }
 
     public void setAngleRotation(float rotation) {
-        line.setRotation(rotation*100);
+        line.setRotation((float)Math.toDegrees(rotation));
+    }
+
+    public void setArrowRotation(float rotation) {
+        arrow.setRotation((float)Math.toDegrees(rotation));
     }
 
     public void setGuideVisible(boolean visible) {
