@@ -269,9 +269,10 @@
 
         <View
             android:id="@+id/angle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/angle"
+            android:layout_width="2dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="112dp"
+            android:background="@android:color/holo_red_light"
             android:layout_gravity="center"
             android:visibility="visible">
         </View>
@@ -282,7 +283,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/line"
             android:layout_gravity="center"
-            android:visibility="visible">
+            android:visibility="invisible">
         </View>
 
         <View

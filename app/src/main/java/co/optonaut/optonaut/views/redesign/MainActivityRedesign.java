@@ -204,14 +204,20 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
-    public void prepareRecording() {
+    public void prepareRecording(int mode) {
         hideStatusBar();
-        hostFragment.replaceFragment(new RecordFragment(), true);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("mode", mode);
+        RecordFragment recordFragment = new RecordFragment();
+        recordFragment.setArguments(bundle);
+
+        hostFragment.replaceFragment(recordFragment, true);
     }
 
     public void startRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
-            ((RecordFragment) hostFragment.getCurrentFragment()).startRecording();
+            ((RecordFragment) hostFragment.getCurrentFragment()).startRecording(true);
         } else {
             Timber.e("Tried to take picture but no record fragment available");
         }

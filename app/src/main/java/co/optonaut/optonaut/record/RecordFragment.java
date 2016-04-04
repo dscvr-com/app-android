@@ -93,9 +93,11 @@ public class RecordFragment extends Fragment {
                 Matrix.multiplyMV(currentHeading, 0, Recorder.getCurrentRotation(), 0, unit, 0);
                 Vector3 currentHeadingVec = new Vector3(currentHeading[0], currentHeading[1], currentHeading[2]);
 
+                // Use 3D diff as dist
                 Vector3 diff = Vector3.subtract(ballHeading, currentHeadingVec);
                 float distXY = diff.length();
 
+                // Helpers for bearing and distance. Relative to ball.
                 float[] angularBallHeading = recorderOverlayView.getPointOnScreen(new float[]{ballPosition.x, ballPosition.y, ballPosition.z, 0});
                 float[] angularCurrentHeading = recorderOverlayView.getPointOnScreen(currentHeading);
 
@@ -104,9 +106,6 @@ public class RecordFragment extends Fragment {
                 angularDiff[1] = angularBallHeading[1] - angularCurrentHeading[1];
 
                 ((MainActivityRedesign) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
-
-                Log.d("angle", "" + distXY + " angle:" + angle);
-
                 ((MainActivityRedesign) getActivity()).setArrowVisible(distXY > 0.15 ? true : false);
                 ((MainActivityRedesign) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15)? true : false);
 
@@ -153,6 +152,7 @@ public class RecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        int mode = getArguments().getInt("mode");
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
         // Create an instance of Camera
@@ -160,7 +160,7 @@ public class RecordFragment extends Fragment {
 
         // initialize recorder
         float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
-        Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size[0], size[1], camera.getParameters().getFocalLength());
+        Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size[0], size[1], camera.getParameters().getFocalLength(), mode);
 
         // Create our Preview view and set it as the content of our activity.
         recordPreview = new RecordPreview(getActivity(), camera);
@@ -194,6 +194,10 @@ public class RecordFragment extends Fragment {
 
         // Create an instance of Camera
         tryToInitializeCamera();
+        recordPreview.setCamera(camera);
+
+        startRecording(false);
+
     }
 
     @Override
@@ -212,9 +216,15 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    public void startRecording() {
+    /**
+     *
+     */
+    public void startRecording(boolean shouldRender) {
         Timber.v("Starting recording...");
-        recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+
+        if(shouldRender)
+            recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+
         Camera.Parameters parameters = camera.getParameters();
         parameters.setAutoExposureLock(true);
         parameters.setAutoWhiteBalanceLock(true);

@@ -29,6 +29,7 @@ import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
+import co.optonaut.optonaut.views.dialogs.ChooseRecordingModeDialog;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
 
@@ -83,7 +84,7 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.progress_point) View progressPoint;
 
     private CancelRecordingDialog cancelRecordingDialog;
-
+    private ChooseRecordingModeDialog chooseRecordingModeDialog;
 
     private VRModeExplanationDialog vrModeExplanationDialog;
 
@@ -109,6 +110,9 @@ public class OverlayNavigationFragment extends Fragment {
 
         cancelRecordingDialog = new CancelRecordingDialog();
         cancelRecordingDialog.setTargetFragment(this, 0);
+
+        chooseRecordingModeDialog = new ChooseRecordingModeDialog();
+        chooseRecordingModeDialog.setTargetFragment(this, 0);
 
         ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
         if(vto.isAlive()){
@@ -343,8 +347,15 @@ public class OverlayNavigationFragment extends Fragment {
         instruction.setVisibility(View.VISIBLE);
         instruction.setText(getActivity().getResources().getText(R.string.record_instruction_press));
 
+        chooseRecordingModeDialog.show(getFragmentManager(), "chooseRecordingModeDialog");
+
+    }
+
+    public void prepareToRecord(int mode) {
+
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.prepareRecording();
+        activity.prepareRecording(mode);
+
     }
 
     private void switchToRecordingMode() {

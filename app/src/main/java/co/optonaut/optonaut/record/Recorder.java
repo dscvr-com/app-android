@@ -17,7 +17,7 @@ public class Recorder {
 
     private static boolean isInitialized = false;
 
-    private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength);
+    private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode);
     public static native void push(Bitmap bitmap, double[] extrinsicsData);
     public static native SelectionPoint[] getSelectionPoints();
     public static native void finish();
@@ -35,12 +35,12 @@ public class Recorder {
     public static native int getImagesToRecordCount();
     public static native float[] getCurrentRotation();
 
-    public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength) {
+    public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode) {
         if (!isInitialized) {
             Timber.v("Initialized recorder");
 //            enableDebug(storagePath);
             disableDebug();
-            initRecorder(storagePath, sensorWidth, sensorHeight, focalLength);
+            initRecorder(storagePath, sensorWidth, sensorHeight, focalLength, mode);
             isInitialized = true;
         } else {
             throw new RuntimeException("Recorder already initialized");

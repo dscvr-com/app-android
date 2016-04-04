@@ -3,7 +3,5 @@
         android:shape="oval">
     <stroke
         android:width="3dp"
-        android:dashWidth="20dp"
-        android:dashGap="10dp"
         android:color="@color/crosshair" />
 </shape>

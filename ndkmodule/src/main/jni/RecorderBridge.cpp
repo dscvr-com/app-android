@@ -23,7 +23,7 @@ std::string debugPath;
 
 extern "C" {
     // storagePath should end on "/"!
-    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength);
+    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
 
     void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
@@ -80,7 +80,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     return javaFloats;
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength)
+void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
@@ -112,7 +112,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, 1, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode, true);
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
@@ -174,6 +174,7 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
                                                 selectionPoints[i].localId);
 
         env->SetObjectArrayElement(javaSelectionPoints, i, current_point);
+        env->DeleteLocalRef(current_point);
     }
 
     return javaSelectionPoints;
