@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,13 @@ public class RecordFragment extends Fragment {
     private Vector3 ballSpeed = new Vector3();
     private SelectionPoint lastKeyframe;
 
+    private float exposureDuration;
+    private float sensorWidthInMeters = 0.004f;
+    private float time = -1;
+    private int captureWidth;
+
+    private boolean fromPause = false;
+
     // TODO: use this map
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
 
@@ -75,6 +83,8 @@ public class RecordFragment extends Fragment {
                 // build extrinsics
                 float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
                 double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
+
+                captureWidth = parameters.getPictureSize().width;
 
                 Recorder.push(bitmap, extrinsicsData);
 
@@ -194,9 +204,22 @@ public class RecordFragment extends Fragment {
 
         // Create an instance of Camera
         tryToInitializeCamera();
-        recordPreview.setCamera(camera);
 
-        startRecording(false);
+        if(fromPause) {
+//            recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+
+//            Camera.Parameters parameters = camera.getParameters();
+//            parameters.setAutoExposureLock(true);
+//            parameters.setAutoWhiteBalanceLock(true);
+//            camera.setParameters(parameters);
+
+            camera.setPreviewCallback(previewCallback);
+
+            Recorder.setIdle(false);
+            fromPause = false;
+        }
+
+        recordPreview.setCamera(camera);
 
     }
 
@@ -205,6 +228,7 @@ public class RecordFragment extends Fragment {
         super.onPause();
         releaseCamera();
         CoreMotionListener.unregister();
+        fromPause = true;
     }
 
     private void releaseCamera() {
@@ -219,11 +243,10 @@ public class RecordFragment extends Fragment {
     /**
      *
      */
-    public void startRecording(boolean shouldRender) {
+    public void startRecording() {
         Timber.v("Starting recording...");
 
-        if(shouldRender)
-            recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+        recorderOverlayView.getRecorderOverlayRenderer().startRendering();
 
         Camera.Parameters parameters = camera.getParameters();
         parameters.setAutoExposureLock(true);
@@ -293,52 +316,65 @@ public class RecordFragment extends Fragment {
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
 
-//        float maxSpeed = Recorder.hasStarted() ? 0.008f : 0.08f;
-//        float accelleration = Recorder.hasStarted() ? 0.1f : 0.5f;
+         // Quick hack to limit expo duration in calculations, due to unexpected results of CACurrentMediaTime
+//         float exposureDuration = (float)Math.max(this.exposureDuration, 0.006);
+//
+//         float ballSphereRadius = 1.0f; // Don't put it on 1, since it would overlap with the rings then.
+//         float movementPerFrameInPixels = 400;
+//
+//         Calendar calendar = Calendar.getInstance();
+//         float newTime = calendar.getTimeInMillis();
+//
 //        float[] vector = {0, 0, 1, 0};
 //        float[] newPosition = new float[4];
 //        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+//        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+//
 //        Vector3 target = new Vector3(newPosition[0], newPosition[1], newPosition[2]);
+//        Vector3 ball = new Vector3(ballPosition);
 //
-//        if(ballPosition.x == 0 && ballPosition.y == 0 && ballPosition.z == 0) {
-//            ballPosition = target;
-//        } else {
-//            Vector3 newSpeed = Vector3.subtract(target, ballPosition);
-//            float dist = Vector3.length(newSpeed);
+//         if (!Recorder.hasStarted()) {
+//             ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
+//         } else {
+//             // Speed per second
+//             float maxRecordingSpeedInRadiants = sensorWidthInMeters * movementPerFrameInPixels / ((float)(captureWidth) * exposureDuration);
 //
-//            if(dist > maxSpeed) {
-//                newSpeed = Vector3.multiply(Vector3.normalize(newSpeed), maxSpeed);
-//            }
+//             float maxRecordingSpeed = ballSphereRadius * maxRecordingSpeedInRadiants;
 //
-//            newSpeed.subtract(ballSpeed);
-//            newSpeed.multiply(accelleration);
-//            newSpeed.add(ballSpeed);
-//            ballSpeed = newSpeed;
-//            ballPosition.add(ballSpeed);
-//        }
+//             float timeDiff = (newTime - time);
+//             float maxSpeed = maxRecordingSpeed * timeDiff;
 //
-//        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(ballPosition.x, ballPosition.y, ballPosition.z);
+//             float accelleration = (!Recorder.isIdle() ? (maxRecordingSpeed / 10) : (maxRecordingSpeed)) / 30;
+//
+//             Vector3 newHeading = Vector3.subtract(target, ballPosition);
+//
+//             float dist = Vector3.length(newHeading);
+//             float curSpeed = Vector3.length(ballSpeed);
+//
+//             // We have to actually break.
+//             if (Math.sqrt(dist / accelleration) >= dist / curSpeed)
+//                curSpeed -= accelleration;
+//             else curSpeed += accelleration;
+//
+//             // Limit speed
+//             if (curSpeed < 0) curSpeed = 0;
+//
+//             if (curSpeed > maxSpeed)
+//                curSpeed = Math.signum(curSpeed) * maxSpeed;
+//
+//             if (curSpeed > dist)
+//                curSpeed = dist;
+//
+//             if (newHeading.length() != 0)
+//                ballSpeed = Vector3.multiply(Vector3.normalize(newHeading), curSpeed);
+//             else
+//                ballSpeed = newHeading;
+//
+//             ballPosition = Vector3.add(ball, ballSpeed);
+//         }
+//
+//         time = newTime;
 
-/** iOS code
-   let maxSpeed = recorder.hasStarted() ? Float(0.008) : Float(0.08)
-        let accelleration = recorder.hasStarted() ? Float(0.1) : Float(0.5)
-        let vec = GLKVector3Make(0, 0, -1)
-        let target = GLKMatrix4MultiplyVector3(recorder.getNextKeyframePosition(), vec)
-        let ball = SCNVector3ToGLKVector3(ballNode.position)
-        if ball.x == 0 && ball.y == 0 && ball.z == 0 {
-            ballNode.position = SCNVector3FromGLKVector3(target)
-        } else {
-            var newSpeed = GLKVector3Subtract(target, ball)
-            let dist = GLKVector3Length(newSpeed)
-            if dist > maxSpeed
-                newSpeed = GLKVector3MultiplyScalar(GLKVector3Normalize(newSpeed), maxSpeed)
-            newSpeed = GLKVector3Subtract(newSpeed, ballSpeed)
-            newSpeed = GLKVector3MultiplyScalar(newSpeed, accelleration)
-            newSpeed = GLKVector3Add(newSpeed, ballSpeed)
-            ballSpeed = newSpeed;
-            ballNode.position = SCNVector3FromGLKVector3(GLKVector3Add(ball, ballSpeed))
-        }
-**/
     }
 
 }

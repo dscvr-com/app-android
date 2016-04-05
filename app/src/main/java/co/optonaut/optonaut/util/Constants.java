@@ -27,6 +27,13 @@ public class Constants {
     public static final float MINIMUM_AXIS_LENGTH = 4.0f;
 	public static final float VFOV = 95.0f;
 
+    // Modes of the ring
+    public static int MODE_ALL = 0; // Full sphere
+    public static int MODE_CENTER = 1; // Only center ring
+    public static int MODE_TRUNCATED = 2; // Omit top and bottom ring (usually leads three rings)
+    public static int MODE_NOBOT = 3; // Omits bottom ring
+    public static int MODE_TINYDEBUG = 1337; // Three ring slices. Good for debugging state transistions during recording.
+
     private static final String MAIN_ICON_PATH = "logo-text-white-temporary.png";
     private static Constants constants;
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";
@@ -46,7 +53,6 @@ public class Constants {
     private Typeface SF_UI_Regular;
     private int expectedStatusBarHeight;
     private int toolbarHeight;
-
 
     private Constants(Activity activity) {
         initializeDisplay(activity);

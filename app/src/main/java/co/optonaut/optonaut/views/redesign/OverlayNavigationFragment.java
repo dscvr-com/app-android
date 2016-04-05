@@ -39,12 +39,13 @@ import timber.log.Timber;
  */
 
 // TODO: create OverlayRecordFragment!
-public class OverlayNavigationFragment extends Fragment {
+public class OverlayNavigationFragment extends Fragment implements View.OnClickListener{
     public static final int GONE = -1;
     public static final int FEED = 0;
     public static final int PREVIEW_RECORD = 1;
     public static final int RECORDING = 2;
 
+    private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
     private int screenWidth;
 
@@ -83,6 +84,9 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.angle) View angle;
     @Bind(R.id.progress_point) View progressPoint;
 
+    @Bind(R.id.one_ring) RelativeLayout oneRingOpt;
+    @Bind(R.id.three_ring) RelativeLayout threeRingOpt;
+
     private CancelRecordingDialog cancelRecordingDialog;
     private ChooseRecordingModeDialog chooseRecordingModeDialog;
 
@@ -114,6 +118,10 @@ public class OverlayNavigationFragment extends Fragment {
         chooseRecordingModeDialog = new ChooseRecordingModeDialog();
         chooseRecordingModeDialog.setTargetFragment(this, 0);
 
+        oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
+        oneRingOpt.setOnClickListener(this);
+        threeRingOpt.setOnClickListener(this);
+
         ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
         if(vto.isAlive()){
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -134,8 +142,8 @@ public class OverlayNavigationFragment extends Fragment {
             Snackbar.make(v, getResources().getString(R.string.feature_next_version), Snackbar.LENGTH_SHORT).show();
         });
 
-        header.setTypeface(Constants.getInstance().getIconTypeface());
-        header.setText(String.valueOf((char) 0xe91c));
+//        header.setTypeface(Constants.getInstance().getIconTypeface());
+//        header.setText(String.valueOf((char) 0xe91c));
 
         notificationButton.setTypeface(Constants.getInstance().getIconTypeface());
         notificationButton.setText(String.valueOf((char) 0xe90f));
@@ -213,17 +221,34 @@ public class OverlayNavigationFragment extends Fragment {
 
         recordButton.setTypeface(Constants.getInstance().getIconTypeface());
         recordButton.setText(String.valueOf((char) 0xe902));
-        recordButton.setOnClickListener(v -> {
-            if (GlobalState.isAnyJobRunning) {
-                Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
-                return;
-            }
-            if (currentMode == FEED) {
-                changeMode(PREVIEW_RECORD, false);
-            } else if (currentMode == PREVIEW_RECORD) {
-                changeMode(RECORDING, false);
-            }
 
+        recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (GlobalState.isAnyJobRunning) {
+                    Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                if (currentMode == FEED) {
+                    changeMode(PREVIEW_RECORD, false);
+                } else if (currentMode == PREVIEW_RECORD) {
+                    changeMode(RECORDING, false);
+                }
+            }
+        });
+
+        recordButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (GlobalState.isAnyJobRunning) {
+                    Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+                    return false;
+                }
+
+                chooseRecordingModeDialog.show(getFragmentManager(), "chooseRecordingModeDialog");
+
+                return false;
+            }
         });
 
         profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
@@ -296,7 +321,7 @@ public class OverlayNavigationFragment extends Fragment {
                 switchToFeedMode(cancel);
                 break;
             case PREVIEW_RECORD:
-                switchToPreviewRecordMode();
+                switchToPreviewRecordMode(RECORDING_MODE);
                 break;
             case RECORDING:
                 switchToRecordingMode();
@@ -330,12 +355,14 @@ public class OverlayNavigationFragment extends Fragment {
         profileGroup.setVisibility(View.VISIBLE);
         recordButton.setVisibility(View.VISIBLE);
         instruction.setVisibility(View.INVISIBLE);
+        oneRingOpt.setVisibility(View.VISIBLE);
+        threeRingOpt.setVisibility(View.VISIBLE);
 
         cameraOverlay.setVisibility(View.INVISIBLE);
 
     }
 
-    private void switchToPreviewRecordMode() {
+    public void switchToPreviewRecordMode(int ringMode) {
         Timber.v("switching to preview record mode");
         currentMode = PREVIEW_RECORD;
 
@@ -343,19 +370,14 @@ public class OverlayNavigationFragment extends Fragment {
         homeGroup.setVisibility(View.INVISIBLE);
         cancelGroup.setVisibility(View.VISIBLE);
         profileGroup.setVisibility(View.INVISIBLE);
+        oneRingOpt.setVisibility(View.INVISIBLE);
+        threeRingOpt.setVisibility(View.INVISIBLE);
         recordButton.setVisibility(View.VISIBLE);
         instruction.setVisibility(View.VISIBLE);
         instruction.setText(getActivity().getResources().getText(R.string.record_instruction_press));
 
-        chooseRecordingModeDialog.show(getFragmentManager(), "chooseRecordingModeDialog");
-
-    }
-
-    public void prepareToRecord(int mode) {
-
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.prepareRecording(mode);
-
+        activity.prepareRecording(ringMode);
     }
 
     private void switchToRecordingMode() {
@@ -482,6 +504,24 @@ public class OverlayNavigationFragment extends Fragment {
 
     public void setProgress(float progress) {
         progressPoint.setX((screenWidth - 100) * progress + 50);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.one_ring:
+                RECORDING_MODE = Constants.MODE_CENTER;
+                oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
+                threeRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_gray));
+                break;
+            case R.id.three_ring:
+                RECORDING_MODE = Constants.MODE_TRUNCATED;
+                oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_gray));
+                threeRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
+                break;
+        }
+
     }
 
 }

@@ -47,6 +47,8 @@ extern "C" {
 
     jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
 
+    jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz);
+
     void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
 
     void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
@@ -232,6 +234,11 @@ jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(J
 jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz)
 {
     return recorder->HasStarted();
+}
+
+jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
+{
+    return recorder->IsIdle();
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)

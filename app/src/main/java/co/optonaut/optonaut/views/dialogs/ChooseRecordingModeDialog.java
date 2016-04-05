@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.redesign.OverlayNavigationFragment;
 
 /**
@@ -22,10 +23,10 @@ public class ChooseRecordingModeDialog extends DialogFragment {
         builder.setMessage(R.string.dialog_choose_recording_mode)
                 .setPositiveButton(getResources().getString(R.string.dialog_choose_recording_mode_1), (dialog, which) -> {
                     if (getTargetFragment() instanceof OverlayNavigationFragment) {
-                        ((OverlayNavigationFragment) getTargetFragment()).prepareToRecord(1);
+                        ((OverlayNavigationFragment) getTargetFragment()).switchToPreviewRecordMode(Constants.MODE_CENTER);
                     }
                 }).setNegativeButton(getResources().getString(R.string.dialog_choose_recording_mode_3), (dialog, which) -> {
-                        ((OverlayNavigationFragment) getTargetFragment()).prepareToRecord(2);
+                        ((OverlayNavigationFragment) getTargetFragment()).switchToPreviewRecordMode(Constants.MODE_TRUNCATED);
                 });
         builder.setCancelable(false);
         // Create the AlertDialog object and return it

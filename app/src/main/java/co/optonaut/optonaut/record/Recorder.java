@@ -28,6 +28,7 @@ public class Recorder {
     public static native float[] getAngularDistanceToBall();
     public static native void setIdle(boolean idle);
     public static native boolean hasStarted();
+    public static native boolean isIdle();
     public static native void enableDebug(String storagePath);
     public static native void disableDebug();
     public static native SelectionPoint lastKeyframe();
