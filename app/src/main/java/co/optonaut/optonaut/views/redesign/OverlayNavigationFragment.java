@@ -237,19 +237,19 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
             }
         });
 
-        recordButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (GlobalState.isAnyJobRunning) {
-                    Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
-                    return false;
-                }
-
-                chooseRecordingModeDialog.show(getFragmentManager(), "chooseRecordingModeDialog");
-
-                return false;
-            }
-        });
+//        recordButton.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                if (GlobalState.isAnyJobRunning) {
+//                    Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+//                    return false;
+//                }
+//
+//                chooseRecordingModeDialog.show(getFragmentManager(), "chooseRecordingModeDialog");
+//
+//                return false;
+//            }
+//        });
 
         profileLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
         profileLabel.setText(getResources().getString(R.string.profile_label));
@@ -366,6 +366,9 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         Timber.v("switching to preview record mode");
         currentMode = PREVIEW_RECORD;
 
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.prepareRecording(ringMode);
+
         toolbar.setVisibility(View.INVISIBLE);
         homeGroup.setVisibility(View.INVISIBLE);
         cancelGroup.setVisibility(View.VISIBLE);
@@ -376,8 +379,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         instruction.setVisibility(View.VISIBLE);
         instruction.setText(getActivity().getResources().getText(R.string.record_instruction_press));
 
-        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.prepareRecording(ringMode);
     }
 
     private void switchToRecordingMode() {

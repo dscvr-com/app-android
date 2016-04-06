@@ -49,7 +49,7 @@ public class RecordFragment extends Fragment {
 
     private float exposureDuration;
     private float sensorWidthInMeters = 0.004f;
-    private float time = -1;
+    private long time = -1;
     private int captureWidth;
 
     private boolean fromPause = false;
@@ -309,71 +309,76 @@ public class RecordFragment extends Fragment {
 
     private void updateBallPosition() {
         // TODO: use -0.9f - error must be somewhere else
+//        float[] vector = {0, 0, 1, 0};
+//        float[] newPosition = new float[4];
+//        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+//
+//        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+//        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
+
+         // Quick hack to limit expo duration in calculations, due to unexpected results of CACurrentMediaTime
+         float exposureDuration = (float)Math.max(this.exposureDuration, 0.006);
+
+         float ballSphereRadius = 1.0f; // Don't put it on 1, since it would overlap with the rings then.
+         float movementPerFrameInPixels = 5000;
+
+         Calendar calendar = Calendar.getInstance();
+         long newTime = calendar.getTimeInMillis();
+
         float[] vector = {0, 0, 1, 0};
         float[] newPosition = new float[4];
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
 
-        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
-        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
+        Vector3 target = new Vector3(newPosition[0], newPosition[1], newPosition[2]);
+        Vector3 ball = new Vector3(ballPosition);
 
-         // Quick hack to limit expo duration in calculations, due to unexpected results of CACurrentMediaTime
-//         float exposureDuration = (float)Math.max(this.exposureDuration, 0.006);
-//
-//         float ballSphereRadius = 1.0f; // Don't put it on 1, since it would overlap with the rings then.
-//         float movementPerFrameInPixels = 400;
-//
-//         Calendar calendar = Calendar.getInstance();
-//         float newTime = calendar.getTimeInMillis();
-//
-//        float[] vector = {0, 0, 1, 0};
-//        float[] newPosition = new float[4];
-//        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+         if (!Recorder.hasStarted()) {
+             ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
+         } else {
+
+             float timeDiff = (float)(newTime - time) / 1000f;
+             // Speed per second
+             float maxRecordingSpeedInRadiants = sensorWidthInMeters * movementPerFrameInPixels / ((float)(captureWidth) * exposureDuration);
+
+             float maxRecordingSpeed = ballSphereRadius * maxRecordingSpeedInRadiants;
+
+             float maxSpeed = maxRecordingSpeed * timeDiff;
+
+             float accelleration = (!Recorder.isIdle() ? (maxRecordingSpeed / 10) : (maxRecordingSpeed)) / 30;
+
+             Vector3 newHeading = Vector3.subtract(target, ballPosition);
+
+             float dist = Vector3.length(newHeading);
+             float curSpeed = Vector3.length(ballSpeed);
+
+             // We have to actually break.
+             if (Math.sqrt(dist / accelleration) >= dist / curSpeed)
+                curSpeed -= accelleration;
+             else curSpeed += accelleration;
+
+             // Limit speed
+             if (curSpeed < 0) curSpeed = 0;
+
+             if (curSpeed > maxSpeed)
+                curSpeed = Math.signum(curSpeed) * maxSpeed;
+
+             if (curSpeed > dist)
+                curSpeed = dist;
+
+             if (newHeading.length() != 0)
+                ballSpeed = Vector3.multiply(Vector3.normalize(newHeading), curSpeed);
+             else
+                ballSpeed = newHeading;
+
+             ballPosition = Vector3.add(ball, ballSpeed);
+         }
+
+         time = newTime;
+
+        // use ball position
 //        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
-//
-//        Vector3 target = new Vector3(newPosition[0], newPosition[1], newPosition[2]);
-//        Vector3 ball = new Vector3(ballPosition);
-//
-//         if (!Recorder.hasStarted()) {
-//             ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
-//         } else {
-//             // Speed per second
-//             float maxRecordingSpeedInRadiants = sensorWidthInMeters * movementPerFrameInPixels / ((float)(captureWidth) * exposureDuration);
-//
-//             float maxRecordingSpeed = ballSphereRadius * maxRecordingSpeedInRadiants;
-//
-//             float timeDiff = (newTime - time);
-//             float maxSpeed = maxRecordingSpeed * timeDiff;
-//
-//             float accelleration = (!Recorder.isIdle() ? (maxRecordingSpeed / 10) : (maxRecordingSpeed)) / 30;
-//
-//             Vector3 newHeading = Vector3.subtract(target, ballPosition);
-//
-//             float dist = Vector3.length(newHeading);
-//             float curSpeed = Vector3.length(ballSpeed);
-//
-//             // We have to actually break.
-//             if (Math.sqrt(dist / accelleration) >= dist / curSpeed)
-//                curSpeed -= accelleration;
-//             else curSpeed += accelleration;
-//
-//             // Limit speed
-//             if (curSpeed < 0) curSpeed = 0;
-//
-//             if (curSpeed > maxSpeed)
-//                curSpeed = Math.signum(curSpeed) * maxSpeed;
-//
-//             if (curSpeed > dist)
-//                curSpeed = dist;
-//
-//             if (newHeading.length() != 0)
-//                ballSpeed = Vector3.multiply(Vector3.normalize(newHeading), curSpeed);
-//             else
-//                ballSpeed = newHeading;
-//
-//             ballPosition = Vector3.add(ball, ballSpeed);
-//         }
-//
-//         time = newTime;
+        recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(ballPosition.x, ballPosition.y, ballPosition.z);
+
 
     }
 
