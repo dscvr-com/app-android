@@ -313,13 +313,21 @@
 
         <View
             android:id="@+id/angle"
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="150dp"
             android:layout_marginBottom="112dp"
             android:background="@android:color/holo_red_light"
             android:layout_gravity="center"
             android:visibility="visible">
         </View>
+
+        <LinearLayout
+            android:id="@+id/arc"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:visibility="visible">
+        </LinearLayout>
 
         <View
             android:id="@+id/line"

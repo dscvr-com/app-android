@@ -2,7 +2,11 @@ package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -18,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,6 +53,8 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
     private int screenWidth;
+
+//    private TiltView tiltView;
 
     @Bind(R.id.statusbar) RelativeLayout statusbar;
 
@@ -83,6 +90,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     @Bind(R.id.line) View line;
     @Bind(R.id.angle) View angle;
     @Bind(R.id.progress_point) View progressPoint;
+    @Bind(R.id.arc) LinearLayout arc;
 
     @Bind(R.id.one_ring) RelativeLayout oneRingOpt;
     @Bind(R.id.three_ring) RelativeLayout threeRingOpt;
@@ -104,6 +112,8 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 
         currentMode = FEED;
 
+//        tiltView = new TiltView(getActivity());
+//        arc.addView(tiltView);
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             Timber.v("kitkat");
@@ -131,6 +141,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                 }
             });
         }
+
 
         return view;
     }
@@ -476,6 +487,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     }
 
     public void setAngleRotation(float rotation) {
+
         line.setRotation((float)Math.toDegrees(rotation));
     }
 
@@ -523,6 +535,23 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                 break;
         }
 
+    }
+
+    public class TiltView extends View {
+
+        public TiltView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+//            super.onDraw(canvas);
+
+            Paint p = new Paint();
+            RectF rectF = new RectF(0, 0, 200, 200);
+            p.setColor(Color.RED);
+            canvas.drawArc(rectF, 90, 35, true, p);
+        }
     }
 
 }
