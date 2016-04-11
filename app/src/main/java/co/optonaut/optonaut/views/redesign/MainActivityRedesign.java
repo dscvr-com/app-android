@@ -209,6 +209,12 @@ public class MainActivityRedesign extends AppCompatActivity {
         hostFragment.replaceFragment(new RecordFragment(), true);
     }
 
+    public void startProfile() {
+        hideStatusBar();
+        // needs the person
+//        hostFragment.replaceFragment(new ProfileFragment(), true);
+    }
+
     public void startRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).startRecording();

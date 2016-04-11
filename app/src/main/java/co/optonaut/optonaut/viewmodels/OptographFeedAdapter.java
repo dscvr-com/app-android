@@ -1,8 +1,12 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -14,21 +18,42 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
 
 import org.joda.time.DateTime;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.network.ApiEndpoints;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
+import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+import rx.Observable;
+import rx.Observer;
 import timber.log.Timber;
 
 /**
@@ -40,9 +65,37 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     List<Optograph> optographs;
     private SnappyRecyclerView snappyRecyclerView;
 
+    ApiEndpoints service;
+    protected ApiConsumer apiConsumer;
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg5ODBlZjgzLTgxMzMtNGM4Yy04ZWY5LTdjYjkzYmVlNTM4NCJ9.I4q9b5eHUpY-NUgT-_1xlvDeTU9jItSwkzBnh1nKuP4";
+
+    co.optonaut.optonaut.Cache.Cache cache;
+    Boolean[] defaultList = {false,false,false,false,false,false};
+
+    public class OptoData {
+        final String id;
+        final String stitcher_version;
+        final String created_at;
+
+        OptoData(String id, String stitcher_version, String created_at) {
+            this.id = id;
+            this.stitcher_version = stitcher_version;
+            this.created_at = created_at;
+        }
+    }
+
+    public class OptoImageData {
+        final String key;
+        final RequestBody asset;
+        OptoImageData(String key,RequestBody asset) {
+            this.key = key;
+            this.asset = asset;
+        }
+    }
 
     public OptographFeedAdapter() {
         this.optographs = new ArrayList<>();
+        apiConsumer = new ApiConsumer(TOKEN);
     }
 
     @Override
@@ -174,6 +227,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             heart_label.setTypeface(Constants.getInstance().getIconTypeface());
             heart_label.setOnClickListener(v -> {
                 Snackbar.make(holder.itemView, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
+                Log.d("myTag", "id: " + optograph.getId() + " createdAt: " + optograph.getCreated_at() + " createdAtRFC: " + optograph.getCreated_atRFC3339().toString() +
+                        " stitchVersion: " + optograph.getStitcher_version() + " previewAssetId: " +
+                        optograph.getPreview_asset_id() + " isLocal: " + optograph.is_local() + " isPrivate: " +
+                        optograph.is_private() + " isStarred: " + optograph.is_starred() + " leftAssetId: " +
+                        optograph.getLeft_texture_asset_id() + " rightAssetId: " + optograph.getRight_texture_asset_id());
+                if (optograph.is_local()) {
+//                    uploadOptonautData(optograph,holder.itemView);
+                    getLocalImage(optograph.getId());
+                } else {
+                    // star(route)
+                }
             });
 
             // TODO: check if user has starred optograph
@@ -219,6 +283,140 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
         }
+    }
+
+    private void uploadOptonautData(Optograph optograph,View view) {
+        Log.d("myTag", "uploadOptonautData id: " + optograph.getId() + " created_at: " + optograph.getCreated_atRFC3339());
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339());
+        apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
+            @Override
+            public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
+//                        Log.d("myTag"," onResponse body: "+response.body());
+                Log.d("myTag", " onResponse message: " + response.message());
+                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                if (!response.isSuccess()) {
+                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Toast toast = Toast.makeText(view.getContext(), "Failed to upload.", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                    return;
+                }
+                Optograph opto = response.body();
+                if (opto == null) {
+                    Log.d("myTag", "parsing the JSON body failed.");
+                    Toast toast = Toast.makeText(view.getContext(), "Failed to upload", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                    return;
+                }
+                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
+                // do things for success
+                getLocalImage(optograph.getId());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", " onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void getLocalImage(String id) {
+        /*Map<String,List<Map<String,List<Boolean>>>> mainMap = new HashMap<>();
+        List<Map<String,List<Boolean>>> mList = new ArrayList<>();
+        Map<String,List<Boolean>> right = new HashMap<String,List<Boolean>>();
+        Map<String,List<Boolean>> left = new HashMap<>();
+        right.put("right", new ArrayList<>(Arrays.asList(defaultList)));
+        left.put("left", new ArrayList<>(Arrays.asList(defaultList)));
+        mList.add(right);
+        mList.add(left);*/
+        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
+        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
+
+        List<String> filePathList = new ArrayList<>();
+
+        if (dir.exists()) {// remove the not notation here
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
+
+                    for (String s : file.list()) {
+//                        Log.d("myTag", "list of file: " + s);
+                        filePathList.add(file.getPath()+"/"+s);
+                    }
+//                    optographs.add(new Optograph(file.getName()));
+                } else {
+                    // ignore
+                }
+            }
+        }
+
+        Observable<String> myObservable = Observable.from(filePathList);
+        Observer<String> myObserver = new Observer<String>() {
+            @Override
+            public void onCompleted() {
+                Log.d("myTag","onComplete");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d("myTag","onError upload: "+e.getMessage());
+            }
+
+            @Override
+            public void onNext(String s) {
+                Log.d("myTag","fileName: "+s);
+                uploadImage(id, s);
+            }
+        };
+
+        myObservable.subscribe(myObserver);
+
+    }
+
+    private void uploadImage(String id, String filePath) {
+        String type = "";
+        String[] s2 = filePath.split("/");
+        String fileName = "";
+
+        type = filePath.contains("right")?"r":"l";
+        fileName = s2[s2.length-1];
+
+        Bitmap bm = null;
+
+        try {
+            bm = BitmapFactory.decodeFile(filePath);
+        } catch (Exception e) {
+            Log.e(e.getClass().getName(), e.getMessage());
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+        byte[] data = bos.toByteArray();
+
+        RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
+        RequestBody fbodyMain = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("asset", type + fileName, fbody)
+                .addFormDataPart("key", type + fileName.replace(".jpg",""))
+                .build();
+        Log.d("myTag","asset: "+type+fileName+" key: "+type+ fileName.replace(".jpg",""));
+        apiConsumer.uploadOptoImage(id, fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
+                Log.d("myTag", "onResponse message: " + response.message());
+                Log.d("myTag", "onResponse body: " + response.body());
+                Log.d("myTag", "onResponse raw: " + response.raw());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+            }
+        });
     }
 
     @Override

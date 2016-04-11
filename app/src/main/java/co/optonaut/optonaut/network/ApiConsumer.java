@@ -1,22 +1,31 @@
 package co.optonaut.optonaut.network;
 
+import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 
 import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
+import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
+import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
+import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -28,7 +37,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class ApiConsumer {
-    private static final String BASE_URL = "https://api-staging.optonaut.co/";
+//    private static final String BASE_URL = "https://api-staging.optonaut.co/";
+    private static final String BASE_URL = "http://192.168.1.69:3000/";
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
@@ -39,13 +49,45 @@ public class ApiConsumer {
 
     ApiEndpoints service;
 
-    public ApiConsumer() {
+    private boolean flag = false;
+    private boolean finish = false;
+
+    public ApiConsumer(String token) {
         client = new OkHttpClient();
 
+//        client.interceptors().add(new Interceptor() {
+//            @Override
+//            public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
+//                Request newRequest = chain.request().newBuilder().addHeader("User-Agent", "Retrofit-Sample-App").build();
+//                Request request = chain.request();
+//
+//                Timber.v(request.headers().toString());
+//                Timber.v(request.toString());
+//
+//                com.squareup.okhttp.Response response = chain.proceed(request);
+//                Timber.v(response.headers().toString());
+//                Timber.v(response.toString());
+//
+//                return chain.proceed(newRequest);
+//            }
+//        });
         client.interceptors().add(new Interceptor() {
             @Override
             public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
-                Request newRequest = chain.request().newBuilder().addHeader("User-Agent", "Retrofit-Sample-App").build();
+                Request newRequest;
+
+                if(token!=null){// must have condition if the route uses auth token
+                    Log.d("myTag","auth token add as Header");
+                    newRequest = chain.request().newBuilder()
+                            .addHeader("User-Agent", "Retrofit-Sample-App")
+                            .addHeader("Authorization", "Bearer "+token)
+                            .build();
+                }else{
+                    newRequest = chain.request().newBuilder()
+                            .addHeader("User-Agent", "Retrofit-Sample-App")
+                            .build();
+                }
+
                 Request request = chain.request();
 
                 Timber.v(request.headers().toString());
@@ -58,7 +100,6 @@ public class ApiConsumer {
                 return chain.proceed(newRequest);
             }
         });
-
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -97,6 +138,32 @@ public class ApiConsumer {
         Timber.d("get person request: %s", id);
         call.enqueue(callback);
     }
+
+    public void signUp(SignInActivity.SignInData data, Callback<SignUpReturn> callback) {
+        Call<SignUpReturn> call = service.signUp(data);
+        call.enqueue(callback);
+    }
+
+    public void logIn(SignInActivity.SignInData data, Callback<LogInReturn> callback) {
+        Call<LogInReturn> call = service.logIn(data);
+        call.enqueue(callback);
+    }
+
+    public void uploadOptoData(OptographFeedAdapter.OptoData data, Callback<Optograph> callback) {
+//        Call<Optograph> call = service.uploadOptoData("Bearer "+token,data);
+        Call<Optograph> call = service.uploadOptoData(data);
+        call.enqueue(callback);
+    }
+
+    public void uploadOptoImage(String id, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(id, data);
+        call.enqueue(callback);
+    }
+
+    /*public void uploadOptoImageJSON(String id, String key, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(id,key,data);
+        call.enqueue(callback);
+    }*/
 
     public Observable<Optograph> getOptographs(int limit, String older_than) {
         Timber.i("get optographs request: %s older than %s", limit, older_than);

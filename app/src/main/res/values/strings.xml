@@ -31,6 +31,9 @@
     <string name="dialog_fire">OK</string>
     <string name="dialog_network_retry">There was a network problem. Please try again later!</string>
     <string name="dialog_cancel_recording">Cancel recording? This will delete the current recording progress.</string>
+    <string name="dialog_sign_in">In order to see this tab you need to login or signup.</string>
+    <string name="dialog_sign_in_button">Sign In</string>
+    <string name="dialog_later">Later</string>
     <string name="dialog_dont_cancel">No</string>
     <string name="dialog_cancel">Yes</string>
     <string name="dialog_wait_on_record_finish">Wait for the recording process to finish before starting another record session!</string>
@@ -46,4 +49,7 @@
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
     <string name="preference_lowerboundary">co.optonaut.optonaut.feed.lowerboundary</string>
     <string name="preference_file">co.optonaut.optonaut.PREFERENCE_FILE</string>
+
+    <!-- Sign In -->
+    <string name="action_back">Back</string>
 </resources>

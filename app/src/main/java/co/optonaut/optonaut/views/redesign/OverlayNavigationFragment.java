@@ -27,6 +27,7 @@ import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
+import co.optonaut.optonaut.views.dialogs.SignInDialog;
 import co.optonaut.optonaut.views.dialogs.VRModeExplanationDialog;
 import timber.log.Timber;
 
@@ -41,6 +42,7 @@ public class OverlayNavigationFragment extends Fragment {
     public static final int FEED = 0;
     public static final int PREVIEW_RECORD = 1;
     public static final int RECORDING = 2;
+    public static final int PROFILE = 3;
 
     private int currentMode;
     @Bind(R.id.statusbar) RelativeLayout statusbar;
@@ -76,7 +78,7 @@ public class OverlayNavigationFragment extends Fragment {
     @Bind(R.id.angle) View angle;
 
     private CancelRecordingDialog cancelRecordingDialog;
-
+    private SignInDialog signInDialog;
 
     private VRModeExplanationDialog vrModeExplanationDialog;
 
@@ -102,6 +104,9 @@ public class OverlayNavigationFragment extends Fragment {
 
         cancelRecordingDialog = new CancelRecordingDialog();
         cancelRecordingDialog.setTargetFragment(this, 0);
+
+        signInDialog = new SignInDialog();
+        signInDialog.setTargetFragment(this, 0);
 
         return view;
     }
@@ -211,7 +216,12 @@ public class OverlayNavigationFragment extends Fragment {
         profileButton.setTypeface(Constants.getInstance().getIconTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
         profileGroup.setOnClickListener(v -> {
-            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
+//            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
+            if (true) {// check if the user is logged in
+                signInDialog.show(getFragmentManager(),"signDialog");
+            } else {
+                changeMode(PROFILE, false);
+            }
         });
     }
 
@@ -280,6 +290,9 @@ public class OverlayNavigationFragment extends Fragment {
             case RECORDING:
                 switchToRecordingMode();
                 break;
+            case PROFILE:
+                switchToProfileMode();
+                break;
             default:
                 Timber.e("Unknown mode in OverlayNavigationFragment");
 
@@ -340,6 +353,25 @@ public class OverlayNavigationFragment extends Fragment {
         angle.setVisibility(View.VISIBLE);
 
         ((MainActivityRedesign) getActivity()).startRecording();
+    }
+
+    private void switchToProfileMode() {
+        Timber.v("switching to profile mode");
+        currentMode = PROFILE;
+
+        toolbar.setVisibility(View.INVISIBLE);
+        homeGroup.setVisibility(View.VISIBLE);
+        cancelGroup.setVisibility(View.INVISIBLE);
+        profileGroup.setVisibility(View.VISIBLE);
+        recordButton.setVisibility(View.VISIBLE);
+
+        crosshair.setVisibility(View.INVISIBLE);
+        arrow.setVisibility(View.INVISIBLE);
+        line.setVisibility(View.INVISIBLE);
+        angle.setVisibility(View.INVISIBLE);
+
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.startProfile();
     }
 
     public void setTotalVisibility(int visibility) {

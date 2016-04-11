@@ -2,8 +2,14 @@ package co.optonaut.optonaut.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.joda.time.DateTime;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 
@@ -130,6 +136,19 @@ public class Optograph implements Parcelable {
 
     public DateTime getCreated_atDateTime() {
         return RFC3339DateFormatter.fromRFC3339String(getCreated_at());
+    }
+
+    public String getCreated_atRFC3339() {
+        String date = getCreated_at();
+        String convDate = getCreated_at();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            convDate = format.format(formatter.parse(date));
+        } catch (ParseException e) {
+            Log.e("myTag","Error parsing created_at");
+        }
+        return convDate;
     }
 
     public String getDeleted_at() {
