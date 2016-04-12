@@ -23,7 +23,7 @@ std::string debugPath;
 
 extern "C" {
     // storagePath should end on "/"!
-    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength);
+    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
 
     void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
@@ -31,18 +31,35 @@ extern "C" {
 
     jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
 
+    jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz);
+
     void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz);
 
     void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz);
 
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz);
+
     jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
+
     jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
+
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
+
     jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
 
+    jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz);
+
     void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
+
     void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
+
+    jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height);
+
+    jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz);
+
+    jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz);
+
+    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz);
 
 }
 
@@ -65,7 +82,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     return javaFloats;
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength)
+void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
@@ -97,7 +114,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, 1, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode, true);
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
@@ -159,9 +176,28 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
                                                 selectionPoints[i].localId);
 
         env->SetObjectArrayElement(javaSelectionPoints, i, current_point);
+        env->DeleteLocalRef(current_point);
     }
 
     return javaSelectionPoints;
+}
+
+jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz) {
+
+//    assert(recorder != NULL);
+//    SelectionPoint* selectionPoint = ConvertSelectionPoint(env, recorder->GetCurrentKeyframe().closestPoint);
+    SelectionPoint selectionPoint = recorder->GetCurrentKeyframe().closestPoint;
+
+    jclass java_selection_point_class = env->FindClass("co/optonaut/optonaut/record/SelectionPoint");
+    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
+    jobject javaSelectionPoint = env->NewObject(java_selection_point_class, java_selection_point_init,
+                                                 matToJFloatArray(env, selectionPoint.extrinsics, 4, 4),
+                                                 selectionPoint.globalId,
+                                                 selectionPoint.ringId,
+                                                 selectionPoint.localId);
+
+    return javaSelectionPoint;
+
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz)
@@ -200,6 +236,11 @@ jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobje
     return recorder->HasStarted();
 }
 
+jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
+{
+    return recorder->IsIdle();
+}
+
 void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
@@ -210,4 +251,17 @@ void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject 
 void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
 {
     debugPath = "";
+}
+
+jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz) {
+    return recorder->GetRecordedImagesCount();
+}
+
+jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
+    return recorder->GetImagesToRecordCount();
+}
+
+jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
+{
+    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
 }

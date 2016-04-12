@@ -1,6 +1,6 @@
 <resources>
     <!-- General -->
-    <string name="app_name">Optonaut</string>
+    <string name="app_name">IAM360</string>
     <string name="action_settings">Settings</string>
 
     <!-- Menu -->
@@ -37,6 +37,9 @@
     <string name="dialog_dont_cancel">No</string>
     <string name="dialog_cancel">Yes</string>
     <string name="dialog_wait_on_record_finish">Wait for the recording process to finish before starting another record session!</string>
+    <string name="dialog_choose_recording_mode">Choose Recording Mode</string>
+    <string name="dialog_choose_recording_mode_1">1 Ring</string>
+    <string name="dialog_choose_recording_mode_3">3 Rings</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
@@ -44,6 +47,10 @@
     <!-- Main Overlay Layout -->
     <string name="home_label">Home</string>
     <string name="profile_label">Profile</string>
+
+    <!-- Record Overlay -->
+    <string name="record_instruction_press">Press button below\r\nto start recording</string>
+    <string name="record_instruction_follow">Follow the red dot</string>
 
     <!-- Preferences -->
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>

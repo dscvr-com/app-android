@@ -3,6 +3,7 @@ package co.optonaut.optonaut.record;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.AttributeSet;
 
 /**
@@ -38,6 +39,14 @@ public class RecorderOverlayView extends GLSurfaceView {
 
     public void addChildNode(LineNode edgeNode) {
         recorderOverlayRenderer.addChildNode(edgeNode);
+    }
+
+    public void colorChildNode(LineNode edgeNode) {
+        recorderOverlayRenderer.colorChildNode(edgeNode);
+    }
+
+    public float[] getPointOnScreen(float[] point) {
+        return recorderOverlayRenderer.getPointOnScreen(point);
     }
 
     public RecorderOverlayRenderer getRecorderOverlayRenderer() {

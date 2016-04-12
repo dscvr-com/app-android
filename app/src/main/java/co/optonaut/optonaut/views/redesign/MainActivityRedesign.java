@@ -204,9 +204,15 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
-    public void prepareRecording() {
+    public void prepareRecording(int mode) {
         hideStatusBar();
-        hostFragment.replaceFragment(new RecordFragment(), true);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("mode", mode);
+        RecordFragment recordFragment = new RecordFragment();
+        recordFragment.setArguments(bundle);
+
+        hostFragment.replaceFragment(recordFragment, true);
     }
 
     public void startProfile() {
@@ -240,8 +246,20 @@ public class MainActivityRedesign extends AppCompatActivity {
         overlayFragment.setAngleRotation(rotation);
     }
 
-    public void setGuideVisible(boolean isVisible) {
-        overlayFragment.setGuideVisible(isVisible);
+    public void setArrowRotation(float rotation) {
+        overlayFragment.setArrowRotation(rotation);
+    }
+
+    public void setProgressLocation(float progress) {
+        overlayFragment.setProgress(progress);
+    }
+
+    public void setArrowVisible(boolean visible) {
+        overlayFragment.setArrowVisible(visible);
+    }
+
+    public void setGuideLinesVisible(boolean visible) {
+        overlayFragment.setGuideLinesVisible(visible);
     }
 
 }

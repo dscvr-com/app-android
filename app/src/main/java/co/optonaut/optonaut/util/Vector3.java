@@ -106,6 +106,10 @@ public class Vector3 {
         set(0.0f, 0.0f, 0.0f);
     }
 
+    @Override
+    public String toString() {
+        return "{x:" + x + " y:" + y + " z:" + z + "}";
+    }
 
     // static methods for vector operations
 

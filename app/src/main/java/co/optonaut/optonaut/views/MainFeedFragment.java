@@ -99,6 +99,7 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+//                .onErrorReturn(null)
                 .onErrorReturn(throwable -> {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;

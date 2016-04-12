@@ -98,4 +98,14 @@ public class RecordPreview extends SurfaceView implements SurfaceHolder.Callback
             Timber.d(e, "Error setting camera preview");
         }
     }
+
+    public void setCamera(Camera camera) {
+        Timber.v("set camera");
+        this.camera = camera;
+
+        if (camera != null) {
+            // use in portrait mode
+            camera.setDisplayOrientation(90);
+        }
+    }
 }

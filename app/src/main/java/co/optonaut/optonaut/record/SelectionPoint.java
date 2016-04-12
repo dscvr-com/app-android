@@ -24,4 +24,42 @@ public class SelectionPoint {
     public float[] getExtrinsics() {
         return extrinsics;
     }
+
+    public void setExtrinsics(float[] extrinsics) {
+        this.extrinsics = extrinsics;
+    }
+
+    public int getGlobalId() {
+        return globalId;
+    }
+
+    public void setGlobalId(int globalId) {
+        this.globalId = globalId;
+    }
+
+    public void setRingId(int ringId) {
+        this.ringId = ringId;
+    }
+
+    public int getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(int localId) {
+        this.localId = localId;
+    }
+
+    @Override
+    public String toString() {
+        String value = "Selection point : extrinsics=";
+
+        for(int i=0; i<extrinsics.length; i++)
+            value += extrinsics[i] + ":";
+
+        value += " globalId=" + globalId + " " +
+                "ringId=" + ringId + " " +
+                "localId=" + localId + " ";
+
+        return value;
+    }
 }
