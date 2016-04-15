@@ -19,10 +19,15 @@ import timber.log.Timber;
  * @date 2015-11-28
  */
 public class ImageUrlBuilder {
-    private static final String OPTO_SPACE = "http://opto.space/";
-    private static final String THUMBOR_URL = "http://images.optonaut.co";
+//    private static final String OPTO_SPACE = "http://opto.space/";
+//    private static final String OPTO_SPACE = "http://share.iam360.io/";
+    private static final String OPTO_SPACE = "http://192.168.1.69:8004/";
+//    private static final String THUMBOR_URL = "http://images.optonaut.co";
+//    private static final String THUMBOR_URL = "http://images.iam360.io";
+    private static final String THUMBOR_URL = "http://192.168.1.69:11000";
     //private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
-    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
+//    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
+    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
 
     // TODO: use special formula, use different HFOV for VRmode and normal feed

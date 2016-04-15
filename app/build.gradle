@@ -101,6 +101,8 @@ dependencies {
     // see http://jakewharton.github.io/butterknife/
     compile 'com.jakewharton:butterknife:7.0.1'
 
+    compile 'com.facebook.android:facebook-android-sdk:4.8.0'
+
 
 
 

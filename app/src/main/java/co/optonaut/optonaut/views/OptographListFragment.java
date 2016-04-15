@@ -32,7 +32,7 @@ public abstract class OptographListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         apiConsumer = new ApiConsumer(null);
-        optographFeedAdapter = new OptographFeedAdapter();
+        optographFeedAdapter = new OptographFeedAdapter(getActivity());
     }
 
     @Override

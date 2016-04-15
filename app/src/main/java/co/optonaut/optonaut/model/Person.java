@@ -18,6 +18,7 @@ import android.os.Parcelable;
 "text":"@optonaut cofounder, dev, entrepreneur, photographer, KIT MSc student",
 "avatar_asset_id":"5d8793da-0325-4655-b213-5ec97cd7f478",
 "optographs":null,
+"optographs_count": 0,
 "followers_count":23,
 "followed_count":22,
 "is_followed":false
@@ -33,6 +34,7 @@ public class Person implements Parcelable {
     private String user_name;
     private String text;
     private String avatar_asset_id;
+    private int optographs_count;
     private int followers_count;
     private int followed_count;
     private boolean is_followed;
@@ -45,6 +47,7 @@ public class Person implements Parcelable {
         user_name = "";
         text = "";
         avatar_asset_id = "";
+        optographs_count = 0;
         followers_count = 0;
         followed_count = 0;
         is_followed = false;
@@ -59,6 +62,7 @@ public class Person implements Parcelable {
         this.user_name = source.readString();
         this.text = source.readString();
         this.avatar_asset_id = source.readString();
+        this.optographs_count = source.readInt();
         this.followers_count = source.readInt();
         this.followed_count = source.readInt();
         // see http://stackoverflow.com/a/7089687/1176596
@@ -93,6 +97,8 @@ public class Person implements Parcelable {
         return avatar_asset_id;
     }
 
+    public int getOptographs_count() { return optographs_count; }
+
     public int getFollowers_count() {
         return followers_count;
     }
@@ -121,6 +127,7 @@ public class Person implements Parcelable {
         dest.writeString(this.user_name);
         dest.writeString(this.text);
         dest.writeString(this.avatar_asset_id);
+        dest.writeInt(this.optographs_count);
         dest.writeInt(this.followers_count);
         dest.writeInt(this.followed_count);
         // see http://stackoverflow.com/a/7089687/1176596

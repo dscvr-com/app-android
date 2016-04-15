@@ -22,8 +22,8 @@ import co.optonaut.optonaut.network.PersonManager;
  * @author Nilan Marktanner
  * @date 2015-12-04
  */
-public class ProfileFragment extends Fragment {
-    private final String TAG = ProfileFragment.class.getSimpleName();
+public class ProfileOptographsFragment extends Fragment {
+    private final String TAG = ProfileOptographsFragment.class.getSimpleName();
     private static final String DEBUG_TAG = "Optonaut";
     private static final String PROFILE_FEED_FRAGMENT_TAG = "PROFILE_FEED_FRAGMENT_TAG";
     Person person;
@@ -87,14 +87,14 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initializeProfileFeed() {
-        ProfileGridFragment profileFeedFragment = ProfileGridFragment.newInstance(person);
+        ProfileFeedFragment profileFeedFragment = ProfileFeedFragment.newInstance(person, 0);
 
         getChildFragmentManager().beginTransaction().
                 replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
     }
 
-    public static ProfileFragment newInstance(Person person) {
-        ProfileFragment profileFragment = new ProfileFragment();
+    public static ProfileOptographsFragment newInstance(Person person) {
+        ProfileOptographsFragment profileFragment = new ProfileOptographsFragment();
         Bundle args = new Bundle();
         args.putParcelable("person", person);
         profileFragment.setArguments(args);

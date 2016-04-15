@@ -14,22 +14,85 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
+
         <com.triposo.barone.ScalingImageView
             android:id="@+id/person_avatar_asset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:layout_margin="4dp"
-            android:adjustViewBounds="true"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:scaleType="fitStart"
+            android:layout_centerHorizontal="true"
             tools:src="@android:drawable/sym_def_app_icon"
             app:person="@{person}"
             android:layout_gravity="start|top"/>
+
+        <TextView
+            android:id="@+id/person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_avatar_asset"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/optonautMain"
+            android:textStyle="bold"
+            android:text="@{person.display_name}"/>
+
+        <Button
+            android:id="@+id/person_is_followed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_name"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/optonautMain"
+            android:textStyle="bold"
+            android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}" />
+
+        <LinearLayout
+            android:id="@+id/person_following_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_is_followed"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:weightSum="3"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/person_optographs_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textColor="@color/settingsFontColor"
+                android:textStyle="bold"
+                android:text='@{String.valueOf(person.optographs_count) + "\n Posts"}'/>
+
+            <TextView
+                android:id="@+id/person_followers_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textColor="@color/settingsFontColor"
+                android:textStyle="bold"
+                android:text='@{String.valueOf(person.followers_count) + "\n Followers"}'/>
+
+            <TextView
+                android:id="@+id/person_followed_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textColor="@color/settingsFontColor"
+                android:textStyle="bold"
+                android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
+
+
+        </LinearLayout>
+
         <FrameLayout
             android:id="@+id/feed_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/person_avatar_asset"
+            android:layout_below="@id/person_following_bar"
             >
 
         </FrameLayout>

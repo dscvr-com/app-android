@@ -2,6 +2,7 @@
     <!-- General -->
     <string name="app_name">IAM360</string>
     <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">221219334902804</string>
 
     <!-- Menu -->
     <string name="licenses">Licenses</string>
@@ -59,4 +60,9 @@
 
     <!-- Sign In -->
     <string name="action_back">Back</string>
+
+    <!-- Profile -->
+    <string name="profile_follow">Follow</string>
+    <string name="profile_following">Following</string>
+
 </resources>

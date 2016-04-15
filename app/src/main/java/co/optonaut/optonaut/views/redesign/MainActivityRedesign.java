@@ -7,12 +7,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.record.RecordFragment;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.MixpanelHelper;
@@ -20,6 +24,8 @@ import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
+import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
+import co.optonaut.optonaut.views.deprecated.ProfileFragment;
 import timber.log.Timber;
 
 /**
@@ -36,12 +42,21 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     private boolean isStatusBarVisible;
 
+    private Cache cache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // initialize constants
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
         CoreMotionListener.initialize(this);
+
+        // FB Track App Installs and App Opens
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        // instatiate cache on start of application
+        cache = Cache.getInstance(this);
 
         super.onCreate(savedInstanceState);
 
@@ -215,10 +230,27 @@ public class MainActivityRedesign extends AppCompatActivity {
         hostFragment.replaceFragment(recordFragment, true);
     }
 
-    public void startProfile() {
-        hideStatusBar();
+    public void startProfile(Person person) {
+//        hideStatusBar();
         // needs the person
-//        hostFragment.replaceFragment(new ProfileFragment(), true);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("person", person);
+        ProfileFragment profileFragment = new ProfileFragment();
+        profileFragment.setArguments(bundle);
+        hostFragment.replaceFragment(profileFragment, true);
+
+    }
+
+    public void startProfileFeed(Person person, int position) {
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("person", person);
+        bundle.putInt("position", position);
+        ProfileFeedFragment profileFeedFragment = new ProfileFeedFragment();
+        profileFeedFragment.setArguments(bundle);
+        hostFragment.replaceFragment(profileFeedFragment, true);
+
     }
 
     public void startRecording() {

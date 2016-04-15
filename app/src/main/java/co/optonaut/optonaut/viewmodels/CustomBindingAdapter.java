@@ -7,8 +7,11 @@ import android.widget.TextView;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
@@ -39,13 +42,31 @@ public class CustomBindingAdapter {
         String assetId = person.getAvatar_asset_id();
         Picasso.with(imageView.getContext())
                 .load(ImageUrlBuilder.buildImageUrl(personId, assetId, 150, 150))
-                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
+//                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
                 .into(imageView);
     }
 
     @BindingAdapter("app:optograph")
     public static void loadOptograph(Optograph2DCubeView optograph2DCubeView, Optograph optograph) {
         optograph2DCubeView.setOptograph(optograph);
+    }
+
+    @BindingAdapter("app:optograph_preview")
+    public static void loadOptographFace(ImageView imageView, Optograph optograph) {
+
+        String uri = ImageUrlBuilder.buildCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
+        if (optograph.is_local()) {
+            Picasso.with(imageView.getContext())
+                    .load(new File(uri))
+//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
+                    .into(imageView);
+        } else {
+            Picasso.with(imageView.getContext())
+                    .load(uri)
+//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
+                    .into(imageView);
+        }
+
     }
 
     @BindingAdapter("app:createdAt")

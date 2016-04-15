@@ -57,6 +57,9 @@ public interface ApiEndpoints {
     @POST("persons/login")
     Call<LogInReturn> logIn(@Body SignInActivity.SignInData data);
 
+    @POST("persons/facebook/signin")
+    Call<LogInReturn> fbLogin(@Body SignInActivity.FBSignInData data);
+
 //    @Headers("Content-Type: application/json")
     @POST("optographs")
 //    Call<Optograph> uploadOptoData(@Header("Authorization") String authorization,@Body OptographFeedAdapter.OptoData data);

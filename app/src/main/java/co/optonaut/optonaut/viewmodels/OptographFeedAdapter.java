@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.viewmodels;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -30,11 +30,7 @@ import org.joda.time.DateTime;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
@@ -44,6 +40,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.ApiEndpoints;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.GestureDetectors;
@@ -69,8 +66,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     protected ApiConsumer apiConsumer;
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg5ODBlZjgzLTgxMzMtNGM4Yy04ZWY5LTdjYjkzYmVlNTM4NCJ9.I4q9b5eHUpY-NUgT-_1xlvDeTU9jItSwkzBnh1nKuP4";
 
-    co.optonaut.optonaut.Cache.Cache cache;
+    Cache cache;
     Boolean[] defaultList = {false,false,false,false,false,false};
+
+    private Context context;
 
     public class OptoData {
         final String id;
@@ -93,7 +92,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
     }
 
-    public OptographFeedAdapter() {
+    public OptographFeedAdapter(Context context) {
+        this.context = context;
         this.optographs = new ArrayList<>();
         apiConsumer = new ApiConsumer(TOKEN);
     }
@@ -179,13 +179,13 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             }
         });
 
-        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
-        profileView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Snackbar.make(v, v.getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
-            }
-        });
+//        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
+//        profileView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Snackbar.make(v, v.getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
+//            }
+//        });
 
         TextView profileLabel = (TextView) itemView.findViewById(R.id.person_name_label);
         profileLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
@@ -237,6 +237,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     getLocalImage(optograph.getId());
                 } else {
                     // star(route)
+                }
+            });
+
+
+            ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
+            profileView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    MainActivityRedesign activity = (MainActivityRedesign) context;
+                    activity.startProfile(optograph.getPerson());
                 }
             });
 
