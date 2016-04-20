@@ -64,8 +64,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     ApiEndpoints service;
     protected ApiConsumer apiConsumer;
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg5ODBlZjgzLTgxMzMtNGM4Yy04ZWY5LTdjYjkzYmVlNTM4NCJ9.I4q9b5eHUpY-NUgT-_1xlvDeTU9jItSwkzBnh1nKuP4";
-
     Cache cache;
     Boolean[] defaultList = {false,false,false,false,false,false};
 
@@ -95,7 +93,11 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     public OptographFeedAdapter(Context context) {
         this.context = context;
         this.optographs = new ArrayList<>();
-        apiConsumer = new ApiConsumer(TOKEN);
+
+        cache = Cache.open();
+
+        String token = cache.getString(Cache.USER_TOKEN);
+        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
     }
 
     @Override

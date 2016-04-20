@@ -444,7 +444,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 //        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
 //        activity.prepareProfile();
 
-        ((MainActivityRedesign) getActivity()).prepareProfile();
+        ((MainActivityRedesign) getActivity()).prepareProfile(false);
     }
 
     public void setTotalVisibility(int visibility) {

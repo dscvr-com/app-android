@@ -43,6 +43,10 @@ public class HostFragment extends BackStackFragment {
         }
     }
 
+    public void popBackStackImmediate() {
+        getChildFragmentManager().popBackStackImmediate();
+    }
+
     public Fragment getCurrentFragment() {
         if (!getChildFragmentManager().getFragments().isEmpty()) {
             return getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1);

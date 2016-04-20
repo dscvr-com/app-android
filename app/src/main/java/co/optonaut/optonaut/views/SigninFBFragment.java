@@ -1,17 +1,13 @@
 package co.optonaut.optonaut.views;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,13 +18,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import butterknife.Bind;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
-import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -42,6 +37,9 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
     private ApiConsumer apiConsumer;
     private CallbackManager callbackManager;
 
+    private int signInRequestCode = 2;
+    private boolean loggedIn = false;
+
     private Cache cache;
 
     public SigninFBFragment() {
@@ -50,7 +48,6 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
     public static SigninFBFragment newInstance(String param1, String param2) {
         SigninFBFragment fragment = new SigninFBFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,10 +61,6 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
         callbackManager = CallbackManager.Factory.create();
 
         super.onCreate(savedInstanceState);
-
-//        cache.save(Cache.USER_ID, "3a5dcf44-d3bf-42d7-ba84-20096e48e48c");
-//        cache.save(Cache.USER_ID, "31448130-2fda-4f0b-a5ff-4fcfb834ba88");
-//        cache.save(Cache.USER_TOKEN, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjNhNWRjZjQ0LWQzYmYtNDJkNy1iYTg0LTIwMDk2ZTQ4ZTQ4YyJ9.g3nQFDwnIc-QslKAqInz6SuTagtZ3BSwWfwY_1-zHCM");
 
     }
 
@@ -111,7 +104,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                         cache.save(Cache.USER_ID, login.getId());
                         cache.save(Cache.USER_TOKEN, login.getToken());
 
-                        getActivity().getSupportFragmentManager().beginTransaction().remove(getParentFragment()).commit();
+                        ((MainActivityRedesign) getActivity()).prepareProfile(true);
 
                     }
 
@@ -134,64 +127,24 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-//        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                // App code
-//                Log.d(TAG, loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
-//
-//                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
-//                    @Override
-//                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
-//                        Log.d(TAG, "Response : " + response.toString());
-//
-//                        if (!response.isSuccess()) {
-//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-//                            toast.setGravity(Gravity.CENTER,0,0);
-//                            toast.show();
-//                            return;
-//                        }
-//                        LogInReturn login = response.body();
-//                        if (login==null) {
-//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-//                            toast.setGravity(Gravity.CENTER,0,0);
-//                            toast.show();
-//                            return;
-//                        }
-//                        Log.d(TAG, "Login : " + login.getId() + " " + login.getToken());
-//
-//                        cache.save(Cache.USER_ID, login.getId());
-//                        cache.save(Cache.USER_TOKEN, login.getToken());
-//
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Throwable t) {
-//                        Log.d(TAG, "Failure " + t.toString());
-//                    }
-//                });
-//
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//            }
-//
-//            @Override
-//            public void onError(FacebookException exception) {
-//                Log.d(TAG, exception.toString());
-//            }
-//        });
-
-
-
         return view;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == signInRequestCode)
+            if(resultCode == Activity.RESULT_OK) loggedIn = true;
+
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(loggedIn) ((MainActivityRedesign) getActivity()).prepareProfile(true);
     }
 
     @Override
@@ -199,7 +152,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
         switch (v.getId()) {
             case R.id.use_existing_btn:
                 Intent intent= new Intent(getActivity(), SignInActivity.class);
-                getActivity().startActivity(intent);
+                startActivityForResult(intent, signInRequestCode);
                 break;
             default:
                 break;

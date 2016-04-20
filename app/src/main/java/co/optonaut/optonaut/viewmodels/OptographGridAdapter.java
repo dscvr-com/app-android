@@ -64,17 +64,22 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     private static final int ITEM_WIDTH= Constants.getInstance().getDisplayMetrics().widthPixels;
     List<Optograph> optographs;
+
+    protected Cache cache;
 //    private RecyclerView snappyRecyclerView;
 
     protected ApiConsumer apiConsumer;
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg5ODBlZjgzLTgxMzMtNGM4Yy04ZWY5LTdjYjkzYmVlNTM4NCJ9.I4q9b5eHUpY-NUgT-_1xlvDeTU9jItSwkzBnh1nKuP4";
 
     private Context context;
 
     public OptographGridAdapter(Context context) {
         this.context = context;
         this.optographs = new ArrayList<>();
-        apiConsumer = new ApiConsumer(TOKEN);
+
+        cache = Cache.open();
+
+        String token = cache.getString(Cache.USER_TOKEN);
+        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
     }
 
     @Override

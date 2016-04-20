@@ -262,8 +262,12 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     }
 
-    public void prepareProfile() {
+    /**
+     * @param popPreviousFragment true if needs to remove the previous fragment
+     */
+    public void prepareProfile(boolean popPreviousFragment) {
         if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+            if(popPreviousFragment) hostFragment.popBackStackImmediate();
             startProfile(null, cache.getString(Cache.USER_ID));
         } else {
             Bundle bundle = new Bundle();
@@ -287,6 +291,10 @@ public class MainActivityRedesign extends AppCompatActivity {
         } else {
             Timber.e("Tried to cancel recording, but no record fragment available");
         }
+    }
+
+    public void removeCurrentFragment() {
+        hostFragment.popBackStackImmediate();
     }
 
     public void backToFeed(boolean cancel) {
