@@ -13,17 +13,15 @@
         android:id="@+id/coordLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_marginTop="40dp" >
 
         <com.triposo.barone.ScalingImageView
             android:id="@+id/person_avatar_asset"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:scaleType="fitStart"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_centerHorizontal="true"
             tools:src="@android:drawable/sym_def_app_icon"
-            app:person="@{person}"
-            android:layout_gravity="start|top"/>
+            app:person="@{person}" />
 
         <TextView
             android:id="@+id/person_name"

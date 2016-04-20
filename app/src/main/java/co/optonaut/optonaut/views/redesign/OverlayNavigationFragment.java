@@ -365,6 +365,14 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         recordButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     *
+     * @param visibility View.INVISIBLE / VISIBLE / GONE
+     */
+    public void setToolbarVisibility(int visibility) {
+        toolbar.setVisibility(visibility);
+    }
+
     public void switchToFeedMode(boolean cancelRecording) {
         Timber.v("switching to feed mode");
         currentMode = FEED;
@@ -434,7 +442,9 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         angle.setVisibility(View.INVISIBLE);
 
 //        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-//        activity.startProfile();
+//        activity.prepareProfile();
+
+        ((MainActivityRedesign) getActivity()).prepareProfile();
     }
 
     public void setTotalVisibility(int visibility) {

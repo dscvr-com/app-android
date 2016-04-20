@@ -6,9 +6,11 @@ import com.squareup.okhttp.RequestBody;
 import java.util.List;
 import java.util.Map;
 
+import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.SignInActivity;
@@ -52,13 +54,13 @@ public interface ApiEndpoints {
     Observable<List<Optograph>> getOptographsAsObservable(@Query("limit") int limit, @Query("older_than") String older_than);
 
     @POST("persons")
-    Call<SignUpReturn> signUp(@Body SignInActivity.SignInData data);
+    Call<SignUpReturn> signUp(@Body SignInData data);
 
     @POST("persons/login")
-    Call<LogInReturn> logIn(@Body SignInActivity.SignInData data);
+    Call<LogInReturn> logIn(@Body SignInData data);
 
     @POST("persons/facebook/signin")
-    Call<LogInReturn> fbLogin(@Body SignInActivity.FBSignInData data);
+    Call<LogInReturn> fbLogin(@Body FBSignInData data);
 
 //    @Headers("Content-Type: application/json")
     @POST("optographs")

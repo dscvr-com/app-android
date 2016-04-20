@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
@@ -140,17 +142,17 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void signUp(SignInActivity.SignInData data, Callback<SignUpReturn> callback) {
+    public void signUp(SignInData data, Callback<SignUpReturn> callback) {
         Call<SignUpReturn> call = service.signUp(data);
         call.enqueue(callback);
     }
 
-    public void logIn(SignInActivity.SignInData data, Callback<LogInReturn> callback) {
+    public void logIn(SignInData data, Callback<LogInReturn> callback) {
         Call<LogInReturn> call = service.logIn(data);
         call.enqueue(callback);
     }
 
-    public void fbLogIn(SignInActivity.FBSignInData data, Callback<LogInReturn> callback) {
+    public void fbLogIn(FBSignInData data, Callback<LogInReturn> callback) {
         Call<LogInReturn> call = service.fbLogin(data);
         call.enqueue(callback);
     }

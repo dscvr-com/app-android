@@ -38,12 +38,14 @@ public class CustomBindingAdapter {
 
     @BindingAdapter("app:person")
     public static void loadSmallImage(ImageView imageView, Person person) {
-        String personId = person.getId();
-        String assetId = person.getAvatar_asset_id();
-        Picasso.with(imageView.getContext())
-                .load(ImageUrlBuilder.buildImageUrl(personId, assetId, 150, 150))
-//                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
-                .into(imageView);
+        if (person != null) {
+            String personId = person.getId();
+            String assetId = person.getAvatar_asset_id();
+            Picasso.with(imageView.getContext())
+                    .load(ImageUrlBuilder.buildImageUrl(personId, assetId, 150, 150))
+                            //                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
+                    .into(imageView);
+        }
     }
 
     @BindingAdapter("app:optograph")

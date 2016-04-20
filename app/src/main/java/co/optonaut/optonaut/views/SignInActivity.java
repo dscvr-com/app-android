@@ -27,7 +27,9 @@ import org.json.JSONObject;
 
 import butterknife.Bind;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
+import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
@@ -73,6 +75,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         okButton = (Button) findViewById(R.id.signin_ok);
         fbButton = (LoginButton) findViewById(R.id.fb_button);
 
+        fbButton.setReadPermissions("user_friends");
+
+
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -105,40 +110,40 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Log.d(TAG, loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
-
-                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
-                    @Override
-                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
-                        Log.d(TAG, "Response : " + response.toString());
-
-                        if (!response.isSuccess()) {
-                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER,0,0);
-                            toast.show();
-                            return;
-                        }
-                        LogInReturn login = response.body();
-                        if (login==null) {
-                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER,0,0);
-                            toast.show();
-                            return;
-                        }
-                        Log.d(TAG, "Login : " + login.getId() + " " + login.getToken());
-
-                        cache.save(Cache.USER_ID, login.getId());
-                        cache.save(Cache.USER_TOKEN, login.getToken());
-
-                        flag = true;
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        Log.d(TAG, "Failure " + t.toString());
-                    }
-                });
+//                Log.d(TAG, loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
+//
+//                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
+//                    @Override
+//                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
+//                        Log.d(TAG, "Response : " + response.toString());
+//
+//                        if (!response.isSuccess()) {
+//                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER,0,0);
+//                            toast.show();
+//                            return;
+//                        }
+//                        LogInReturn login = response.body();
+//                        if (login==null) {
+//                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER,0,0);
+//                            toast.show();
+//                            return;
+//                        }
+//                        Log.d(TAG, "Login : " + login.getId() + " " + login.getToken());
+//
+//                        cache.save(Cache.USER_ID, login.getId());
+//                        cache.save(Cache.USER_TOKEN, login.getToken());
+//
+//                        flag = true;
+//                        finish();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable t) {
+//                        Log.d(TAG, "Failure " + t.toString());
+//                    }
+//                });
 
             }
 
@@ -229,26 +234,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             default:
                 break;
-        }
-    }
-
-    public class SignInData {
-        final String email;
-        final String password;
-
-        SignInData(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
-    }
-
-    public class FBSignInData {
-        final String facebook_user_id;
-        final String facebook_token;
-
-        FBSignInData(String facebook_user_id, String facebook_token) {
-            this.facebook_user_id = facebook_user_id;
-            this.facebook_token = facebook_token;
         }
     }
 

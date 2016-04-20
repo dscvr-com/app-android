@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
         }
 
 
-        Log.d(TAG, "Person1 : " + person.getDisplay_name());
+//        Log.d(TAG, "Person1 : " + person.getDisplay_name());
 //        PersonManager.loadPerson("3a5dcf44-d3bf-42d7-ba84-20096e48e48c");
 
     }
@@ -52,10 +52,10 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
-        binding.setVariable(BR.person, person);
-        binding.executePendingBindings();
 
         if (person != null) {
+            binding.setVariable(BR.person, person);
+            binding.executePendingBindings();
             initializeProfileFeed();
         }
 
@@ -76,7 +76,7 @@ public class ProfileFragment extends Fragment {
 
     @Subscribe
     public void reveicePerson(PersonReceivedEvent personReceivedEvent) {
-        Log.d("Optonaut", "Registered person");
+        Log.d("Optonaut", "Registered person " + personReceivedEvent.getPerson());
         person = personReceivedEvent.getPerson();
         binding.setVariable(BR.person, person);
 

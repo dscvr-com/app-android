@@ -24,6 +24,7 @@ import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
+import co.optonaut.optonaut.views.SigninFBFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFragment;
 import timber.log.Timber;
@@ -230,12 +231,19 @@ public class MainActivityRedesign extends AppCompatActivity {
         hostFragment.replaceFragment(recordFragment, true);
     }
 
-    public void startProfile(Person person) {
+    /**
+     * Send the person object or the ID of the person, whichever is available. Set the other as null.
+     * @param person
+     * @param id
+     */
+    public void startProfile(Person person, String id) {
 //        hideStatusBar();
-        // needs the person
+
+        overlayFragment.setToolbarVisibility(View.INVISIBLE);
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable("person", person);
+        if(person != null) bundle.putParcelable("person", person);
+        else if(id != null) bundle.putString("id", id);
         ProfileFragment profileFragment = new ProfileFragment();
         profileFragment.setArguments(bundle);
         hostFragment.replaceFragment(profileFragment, true);
@@ -243,6 +251,7 @@ public class MainActivityRedesign extends AppCompatActivity {
     }
 
     public void startProfileFeed(Person person, int position) {
+        overlayFragment.setToolbarVisibility(View.VISIBLE);
 
         Bundle bundle = new Bundle();
         bundle.putParcelable("person", person);
@@ -251,6 +260,17 @@ public class MainActivityRedesign extends AppCompatActivity {
         profileFeedFragment.setArguments(bundle);
         hostFragment.replaceFragment(profileFeedFragment, true);
 
+    }
+
+    public void prepareProfile() {
+        if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+            startProfile(null, cache.getString(Cache.USER_ID));
+        } else {
+            Bundle bundle = new Bundle();
+            SigninFBFragment signinFBFragment = new SigninFBFragment();
+            signinFBFragment.setArguments(bundle);
+            hostFragment.addFragment(signinFBFragment, true);
+        }
     }
 
     public void startRecording() {

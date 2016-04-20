@@ -247,7 +247,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 public void onClick(View v) {
 
                     MainActivityRedesign activity = (MainActivityRedesign) context;
-                    activity.startProfile(optograph.getPerson());
+                    activity.startProfile(optograph.getPerson(), null);
                 }
             });
 
