@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,12 +28,15 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.UUID;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.OptoImagePreviewActivity;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.dialogs.SignInDialog;
 import co.optonaut.optonaut.views.dialogs.ChooseRecordingModeDialog;
@@ -51,6 +55,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     public static final int PREVIEW_RECORD = 1;
     public static final int RECORDING = 2;
     public static final int PROFILE = 3;
+    public static final int IMAGE_PREVIEW = 4;
 
     private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
@@ -62,6 +67,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 
     // Toolbar
     @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.header_overlay) RelativeLayout headerOverlay;
     @Bind(R.id.search_button) Button searchButton;
     @Bind(R.id.header) TextView header;
     @Bind(R.id.notification_button) Button notificationButton;
@@ -147,7 +153,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                 }
             });
         }
-
 
         return view;
     }
@@ -384,7 +389,19 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         threeRingOpt.setVisibility(View.VISIBLE);
 
         cameraOverlay.setVisibility(View.INVISIBLE);
+    }
 
+    public void switchToImagePreview(UUID id) {
+        Timber.v("switching to image_preview mode");
+        currentMode = IMAGE_PREVIEW;
+
+//        toolbar.setVisibility(View.INVISIBLE);
+        headerOverlay.setVisibility(View.INVISIBLE);
+        instruction.setVisibility(View.INVISIBLE);
+        cameraOverlay.setVisibility(View.INVISIBLE);
+
+        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+        activity.startImagePreview(id);
     }
 
     public void switchToPreviewRecordMode(int ringMode) {

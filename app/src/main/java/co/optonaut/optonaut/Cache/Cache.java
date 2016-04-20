@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public class Cache {
 
-    //<ID,<face,6faces(boolean)>>
-    public Map<String,Map<String,List<Boolean>>> upload = new HashMap<>();
+    //<id-face,6faces(boolean)>
+    public Map<String,List<Boolean>> uploadRight = new HashMap<>();
+    public Map<String,List<Boolean>> uploadLeft = new HashMap<>();
 }

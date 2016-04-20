@@ -18,9 +18,12 @@ import timber.log.Timber;
  * @date 2016-02-12
  */
 public class FinishRecorderJob extends Job {
-    protected FinishRecorderJob() {
+
+    private UUID id;
+    protected FinishRecorderJob(UUID uuid) {
         // TODO: persist job?
         super(new Params(1));
+        this.id = uuid;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class FinishRecorderJob extends Job {
 
 
         Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
-        UUID id = UUID.randomUUID();
+//        UUID id = UUID.randomUUID();
         for (int i = 0; i < bitmaps.length; ++i) {
             CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/left/" + i + ".jpg");
             bitmaps[i].recycle();
