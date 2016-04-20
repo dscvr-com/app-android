@@ -14,25 +14,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email Address"/>
+
     <EditText
         android:id="@+id/password_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textPassword"
         android:hint="Choose a password"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Log In"/>
+
     <EditText
         android:id="@+id/email_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email address or username"/>
+
     <EditText
         android:id="@+id/password_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textPassword"
         android:hint="Password"/>
 
     <Button
@@ -40,5 +45,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/abc_action_bar_default_padding_material"
+        android:onClick="onClick"
         android:text="OK"/>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/fb_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
+
 </LinearLayout>

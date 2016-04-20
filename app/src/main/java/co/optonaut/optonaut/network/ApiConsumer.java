@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
@@ -38,11 +40,12 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class ApiConsumer {
-//    private static final String BASE_URL = "https://api-staging.optonaut.co/";
+//    private static final String BASE_URL = "https://api-staging.iam360.io/";
     private static final String BASE_URL = "http://192.168.1.69:3000/";
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
+    public static final int PROFILE_GRID_LIMIT = 10;
 
     OkHttpClient client;
 
@@ -77,7 +80,7 @@ public class ApiConsumer {
             public com.squareup.okhttp.Response intercept(Chain chain) throws IOException {
                 Request newRequest;
 
-                if(token!=null){
+                if(token!=null){// must have condition if the route uses auth token
                     Log.d("myTag","auth token add as Header");
                     newRequest = chain.request().newBuilder()
                             .addHeader("User-Agent", "Retrofit-Sample-App")
@@ -140,16 +143,22 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void signUp(SignInActivity.SignInData data, Callback<SignUpReturn> callback) {
+    public void signUp(SignInData data, Callback<SignUpReturn> callback) {
         Call<SignUpReturn> call = service.signUp(data);
         call.enqueue(callback);
     }
 
-    public void logIn(SignInActivity.SignInData data, Callback<LogInReturn> callback) {
+    public void logIn(SignInData data, Callback<LogInReturn> callback) {
         Call<LogInReturn> call = service.logIn(data);
         call.enqueue(callback);
     }
 
+    public void fbLogIn(FBSignInData data, Callback<LogInReturn> callback) {
+        Call<LogInReturn> call = service.fbLogin(data);
+        call.enqueue(callback);
+    }
+
+    
     public void uploadOptoData(OptoImagePreviewFragment.OptoData data, Callback<Optograph> callback) {
 //        Call<Optograph> call = service.uploadOptoData("Bearer "+token,data);
         Call<Optograph> call = service.uploadOptoData(data);
@@ -180,7 +189,7 @@ public class ApiConsumer {
     }
 
     public Observable<Optograph> getOptographsFromPerson(String id, int limit, String older_than) {
-        Timber.i("get optographs request: %i older than %s from person %s", limit, older_than, id);
+//        Timber.i("get optographs request: %i older than %s from person %s", limit, older_than, id);
         return service.getOptographsFromPerson(id, limit, older_than).flatMap(Observable::from);
     }
 

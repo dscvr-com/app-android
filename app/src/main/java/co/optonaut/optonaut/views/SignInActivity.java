@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,10 +14,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONObject;
+
+import butterknife.Bind;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
+import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.util.Cache;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -24,15 +40,20 @@ import retrofit.Retrofit;
 /**
  * Created by Mariel on 3/30/2016.
  */
-public class SignInActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private final String TAG = "SignInActivityPage";
     private EditText emailSignUp;
     private EditText passwordSignUp;
     private EditText emailLogIn;
     private EditText passwordLogIn;
     private Button okButton;
+    private LoginButton fbButton;
 
     protected ApiConsumer apiConsumer;
+    CallbackManager callbackManager;
+
+    private Cache cache;
 
     boolean flag = false;
 
@@ -41,6 +62,22 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         apiConsumer = new ApiConsumer(null);
         setContentView(R.layout.activity_sign_in_temporary);
+
+        cache = Cache.open();
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
+        emailSignUp = (EditText) findViewById(R.id.email_signup);
+        passwordSignUp = (EditText) findViewById(R.id.password_signup);
+        emailLogIn = (EditText) findViewById(R.id.email_login);
+        passwordLogIn = (EditText) findViewById(R.id.password_login);
+        okButton = (Button) findViewById(R.id.signin_ok);
+        fbButton = (LoginButton) findViewById(R.id.fb_button);
+
+        fbButton.setReadPermissions("user_friends");
+
+
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -69,26 +106,75 @@ public class SignInActivity extends AppCompatActivity {
             }
         });*/
 
-        emailSignUp = (EditText) findViewById(R.id.email_signup);
-        passwordSignUp = (EditText) findViewById(R.id.password_signup);
-        emailLogIn = (EditText) findViewById(R.id.email_login);
-        passwordLogIn = (EditText) findViewById(R.id.password_login);
-        okButton = (Button) findViewById(R.id.signin_ok);
-
-        okButton.setOnClickListener(new View.OnClickListener() {
+        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onClick(View v) {
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+//                Log.d(TAG, loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
+//
+//                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
+//                    @Override
+//                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
+//                        Log.d(TAG, "Response : " + response.toString());
+//
+//                        if (!response.isSuccess()) {
+//                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER,0,0);
+//                            toast.show();
+//                            return;
+//                        }
+//                        LogInReturn login = response.body();
+//                        if (login==null) {
+//                            Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER,0,0);
+//                            toast.show();
+//                            return;
+//                        }
+//                        Log.d(TAG, "Login : " + login.getId() + " " + login.getToken());
+//
+//                        cache.save(Cache.USER_ID, login.getId());
+//                        cache.save(Cache.USER_TOKEN, login.getToken());
+//
+//                        flag = true;
+//                        finish();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable t) {
+//                        Log.d(TAG, "Failure " + t.toString());
+//                    }
+//                });
+
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.signin_ok:
+
                 if (!emailSignUp.getText().toString().isEmpty()) {
                     apiConsumer.signUp(new SignInData(emailSignUp.getText().toString(), passwordSignUp.getText().toString()),new Callback<SignUpReturn>() {
                         @Override
                         public void onResponse(Response<SignUpReturn> response, Retrofit retrofit) {
-                            Log.d("myTag", "response on Sign up: " + response.toString());
-                            Log.d("myTag", "response message: " + response.message());
-                            Log.d("myTag", "response body: " + response.body());
-                            Log.d("myTag", "response raw: " + response.raw().toString());
-                            Log.d("myTag", "sign up isSuccess? " + response.isSuccess());
                             if (!response.isSuccess()) {
-                                Log.d("myTag", "response errorBody: " + response.errorBody());
                                 Toast toast = Toast.makeText(SignInActivity.this, "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER,0,0);
                                 toast.show();
@@ -96,21 +182,17 @@ public class SignInActivity extends AppCompatActivity {
                             }
                             SignUpReturn signUpReturn = response.body();
                             if (signUpReturn==null) {
-                                Log.d("myTag","parsing the JSON body failed.");
                                 Toast toast = Toast.makeText(SignInActivity.this, "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER,0,0);
                                 toast.show();
                                 return;
                             }
-                            Log.d("myTag","id: "+signUpReturn.getMessage());
                             flag = true;
-                            Log.d("myTag","sign up successful.");
                             finish();
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-                            Log.d("myTag","failed Signing up "+t.getMessage());
                             Toast toast = Toast.makeText(SignInActivity.this, "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
@@ -120,13 +202,7 @@ public class SignInActivity extends AppCompatActivity {
                     apiConsumer.logIn(new SignInData(emailLogIn.getText().toString(), passwordLogIn.getText().toString()),new Callback<LogInReturn>() {
                         @Override
                         public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
-                            Log.d("myTag", "response on logIn: " + response.toString());
-                            Log.d("myTag", "response message: " + response.message());
-                            Log.d("myTag", "response body: " + response.body());
-                            Log.d("myTag", "response raw: " + response.raw().toString());
-                            Log.d("myTag", "log in isSuccess? " + response.isSuccess());
                             if (!response.isSuccess()) {
-                                Log.d("myTag", "response errorBody: " + response.errorBody());
                                 Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER,0,0);
                                 toast.show();
@@ -134,38 +210,30 @@ public class SignInActivity extends AppCompatActivity {
                             }
                             LogInReturn login = response.body();
                             if (login==null) {
-                                Log.d("myTag","parsing the JSON body failed.");
                                 Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
                                 toast.setGravity(Gravity.CENTER,0,0);
                                 toast.show();
                                 return;
                             }
-                            Log.d("myTag","id: "+login.getId()+" token: "+login.getToken()+" oBV: "+login.getOnBoardingVersion());
+
+                            cache.save(Cache.USER_ID, login.getId());
+                            cache.save(Cache.USER_TOKEN, login.getToken());
+
                             flag = true;
-                            Log.d("myTag","login successful.");
                             finish();
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-                            Log.d("myTag","failed Logging in "+t.getMessage());
                             Toast toast = Toast.makeText(SignInActivity.this, "Failed to log in.", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
                         }
                     });
                 }
-            }
-        });
-    }
-
-    public class SignInData {
-        final String email;
-        final String password;
-
-        SignInData(String email, String password) {
-            this.email = email;
-            this.password = password;
+                break;
+            default:
+                break;
         }
     }
 

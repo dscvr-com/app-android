@@ -22,8 +22,8 @@ import co.optonaut.optonaut.network.PersonManager;
  * @author Nilan Marktanner
  * @date 2015-12-04
  */
-public class ProfileFragment extends Fragment {
-    private final String TAG = ProfileFragment.class.getSimpleName();
+public class ProfileOptographsFragment extends Fragment {
+    private final String TAG = ProfileOptographsFragment.class.getSimpleName();
     private static final String DEBUG_TAG = "Optonaut";
     private static final String PROFILE_FEED_FRAGMENT_TAG = "PROFILE_FEED_FRAGMENT_TAG";
     Person person;
@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
         }
 
 
-//        Log.d(TAG, "Person1 : " + person.getDisplay_name());
+        Log.d(TAG, "Person1 : " + person.getDisplay_name());
 //        PersonManager.loadPerson("3a5dcf44-d3bf-42d7-ba84-20096e48e48c");
 
     }
@@ -52,10 +52,10 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
+        binding.setVariable(BR.person, person);
+        binding.executePendingBindings();
 
         if (person != null) {
-            binding.setVariable(BR.person, person);
-            binding.executePendingBindings();
             initializeProfileFeed();
         }
 
@@ -76,7 +76,7 @@ public class ProfileFragment extends Fragment {
 
     @Subscribe
     public void reveicePerson(PersonReceivedEvent personReceivedEvent) {
-        Log.d("Optonaut", "Registered person " + personReceivedEvent.getPerson());
+        Log.d("Optonaut", "Registered person");
         person = personReceivedEvent.getPerson();
         binding.setVariable(BR.person, person);
 
@@ -87,14 +87,14 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initializeProfileFeed() {
-        ProfileGridFragment profileFeedFragment = ProfileGridFragment.newInstance(person);
+        ProfileFeedFragment profileFeedFragment = ProfileFeedFragment.newInstance(person, 0);
 
         getChildFragmentManager().beginTransaction().
                 replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
     }
 
-    public static ProfileFragment newInstance(Person person) {
-        ProfileFragment profileFragment = new ProfileFragment();
+    public static ProfileOptographsFragment newInstance(Person person) {
+        ProfileOptographsFragment profileFragment = new ProfileOptographsFragment();
         Bundle args = new Bundle();
         args.putParcelable("person", person);
         profileFragment.setArguments(args);

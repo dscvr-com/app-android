@@ -36,6 +36,14 @@ public class HostFragment extends BackStackFragment {
         }
     }
 
+    public void addFragment(Fragment fragment, boolean addToBackstack) {
+        if (addToBackstack) {
+            getChildFragmentManager().beginTransaction().add(R.id.root_frame, fragment).addToBackStack(null).commit();
+        } else {
+            getChildFragmentManager().beginTransaction().add(R.id.root_frame, fragment).commit();
+        }
+    }
+
     public Fragment getCurrentFragment() {
         if (!getChildFragmentManager().getFragments().isEmpty()) {
             return getChildFragmentManager().getFragments().get(getChildFragmentManager().getFragments().size() - 1);

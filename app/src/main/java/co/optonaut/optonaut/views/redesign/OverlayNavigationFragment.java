@@ -280,11 +280,11 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         profileButton.setText(String.valueOf((char) 0xe910));
         profileGroup.setOnClickListener(v -> {
 //            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
-            if (true) {// check if the user is logged in
-                signInDialog.show(getFragmentManager(),"signDialog");
-            } else {
+//            if (true) {// check if the user is logged in
+//                signInDialog.show(getFragmentManager(),"signDialog");
+//            } else {
                 changeMode(PROFILE, false);
-            }
+//            }
         });
     }
 
@@ -370,6 +370,14 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         recordButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     *
+     * @param visibility View.INVISIBLE / VISIBLE / GONE
+     */
+    public void setToolbarVisibility(int visibility) {
+        toolbar.setVisibility(visibility);
+    }
+
     public void switchToFeedMode(boolean cancelRecording) {
         Timber.v("switching to feed mode");
         currentMode = FEED;
@@ -450,8 +458,10 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         line.setVisibility(View.INVISIBLE);
         angle.setVisibility(View.INVISIBLE);
 
-        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.startProfile();
+//        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+//        activity.prepareProfile();
+
+        ((MainActivityRedesign) getActivity()).prepareProfile();
     }
 
     public void setTotalVisibility(int visibility) {

@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.util.List;
@@ -18,8 +20,10 @@ import java.util.UUID;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.database.DBHelper;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.record.RecordFragment;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.MixpanelHelper;
@@ -28,6 +32,9 @@ import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
 import co.optonaut.optonaut.views.OptoImagePreviewFragment;
+import co.optonaut.optonaut.views.SigninFBFragment;
+import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
+import co.optonaut.optonaut.views.deprecated.ProfileFragment;
 import timber.log.Timber;
 
 /**
@@ -45,6 +52,8 @@ public class MainActivityRedesign extends AppCompatActivity {
     private boolean isStatusBarVisible;
     private boolean fromFragment=false;
 
+    private Cache cache;
+
     DBHelper mydb;
 
     @Override
@@ -53,6 +62,13 @@ public class MainActivityRedesign extends AppCompatActivity {
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
         CoreMotionListener.initialize(this);
+
+        // FB Track App Installs and App Opens
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        // instatiate cache on start of application
+        cache = Cache.getInstance(this);
 
         super.onCreate(savedInstanceState);
         mydb = new DBHelper(this);
@@ -243,6 +259,48 @@ public class MainActivityRedesign extends AppCompatActivity {
         hostFragment.replaceFragment(recordFragment, true);
     }
 
+    /**
+     * Send the person object or the ID of the person, whichever is available. Set the other as null.
+     * @param person
+     * @param id
+     */
+    public void startProfile(Person person, String id) {
+//        hideStatusBar();
+
+        overlayFragment.setToolbarVisibility(View.INVISIBLE);
+
+        Bundle bundle = new Bundle();
+        if(person != null) bundle.putParcelable("person", person);
+        else if(id != null) bundle.putString("id", id);
+        ProfileFragment profileFragment = new ProfileFragment();
+        profileFragment.setArguments(bundle);
+        hostFragment.replaceFragment(profileFragment, true);
+
+    }
+
+    public void startProfileFeed(Person person, int position) {
+        overlayFragment.setToolbarVisibility(View.VISIBLE);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("person", person);
+        bundle.putInt("position", position);
+        ProfileFeedFragment profileFeedFragment = new ProfileFeedFragment();
+        profileFeedFragment.setArguments(bundle);
+        hostFragment.replaceFragment(profileFeedFragment, true);
+
+    }
+
+    public void prepareProfile() {
+        if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+            startProfile(null, cache.getString(Cache.USER_ID));
+        } else {
+            Bundle bundle = new Bundle();
+            SigninFBFragment signinFBFragment = new SigninFBFragment();
+            signinFBFragment.setArguments(bundle);
+            hostFragment.addFragment(signinFBFragment, true);
+        }
+    }
+
     public void startImagePreview(UUID id) {
         hideStatusBar();
 //        hostFragment.replaceFragment(new OptoImagePreviewFragment(),true);
@@ -252,13 +310,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         prevFrag.setArguments(bundle);
         hostFragment.getFragmentManager().beginTransaction().replace(R.id.feed_placeholder,prevFrag).addToBackStack("preview").commit();
     }
-
-    public void startProfile() {
-        hideStatusBar();
-        // needs the person
-//        hostFragment.replaceFragment(new ProfileFragment(), true);
-    }
-
+    
     public void startRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).startRecording();

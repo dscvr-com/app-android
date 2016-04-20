@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data class=".GridItemBinding">
+        <import type="co.optonaut.optonaut.model.Optograph" />
+        <variable
+            name="optograph"
+            type="Optograph" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/optograph2dview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:scaleType="fitStart"
+            android:layout_gravity="start|top"
+            app:optograph_preview="@{optograph}"/>
+
+    </FrameLayout>
+</layout>
