@@ -7,6 +7,7 @@ import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.views.OptographGridFragment;
 import co.optonaut.optonaut.views.OptographListFragment;
+import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -16,6 +17,7 @@ import rx.schedulers.Schedulers;
  */
 public class ProfileGridFragment extends OptographGridFragment {
     private Person person;
+    private NetworkProblemDialog networkProblemDialog;
 
     public static ProfileGridFragment newInstance(Person person) {
         ProfileGridFragment profileFeedFragment = new ProfileGridFragment();
@@ -28,6 +30,9 @@ public class ProfileGridFragment extends OptographGridFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        networkProblemDialog = new NetworkProblemDialog();
+
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
@@ -43,6 +48,10 @@ public class ProfileGridFragment extends OptographGridFragment {
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
 
     }
@@ -52,6 +61,10 @@ public class ProfileGridFragment extends OptographGridFragment {
         apiConsumer.getOptographsFromPerson(person.getId(), optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
     }
 

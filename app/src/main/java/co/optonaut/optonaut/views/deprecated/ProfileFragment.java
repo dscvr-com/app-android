@@ -38,6 +38,7 @@ public class ProfileFragment extends Fragment {
     //290fae3e-6d30-41a8-8331-4eeafbdcd206
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         cache = Cache.open();
