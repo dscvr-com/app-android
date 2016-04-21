@@ -28,6 +28,7 @@
         app:contentInsetEnd="0dp">
 
         <RelativeLayout
+            android:id="@+id/header_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="16dp"

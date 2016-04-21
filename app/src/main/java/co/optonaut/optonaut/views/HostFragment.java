@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.record.RecordFragment;
 
 /**
  * @author Nilan Marktanner

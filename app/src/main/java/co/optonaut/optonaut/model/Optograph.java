@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.model;
 
+import android.hardware.camera2.params.Face;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -9,7 +10,10 @@ import org.joda.time.DateTime;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 
@@ -80,12 +84,62 @@ public class Optograph implements Parcelable {
 
     // default value for parsing from JSON
     private boolean is_local = false;
+    private FaceStatus rightFace;
+    private FaceStatus leftFace;
+
+    public class FaceStatus implements Parcelable {
+        private boolean[] defaultStatus = {false,false,false,false,false,false};
+        private List<Boolean> defStat = new ArrayList<>(Arrays.asList(false,false,false,false,false,false));
+        private boolean[] status;
+        private FaceStatus() {
+            this.status = defaultStatus;
+        }
+
+        private FaceStatus(Parcel source) {
+            source.readBooleanArray(this.status);
+        }
+
+        public boolean[] getStatus() {
+            return status;
+        }
+
+        public void setStatus(boolean[] status) {
+            this.status = status;
+        }
+
+        public void setStatusByIndex(int index,boolean bool) {
+            this.status[index] = bool;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            // SAME ORDER AS IN FaceStatus(Parcel source)!
+            dest.writeBooleanArray(this.status);
+        }
+
+        public final Parcelable.Creator<FaceStatus> CREATOR = new Parcelable.Creator<FaceStatus>(){
+            @Override
+            public FaceStatus createFromParcel(Parcel source) {
+                return new FaceStatus(source);
+            }
+
+            @Override
+            public FaceStatus[] newArray(int size) {
+                return new FaceStatus[size];
+            }
+        };
+    }
 
     public Optograph(String id) {
         this.id = id;
         created_at = RFC3339DateFormatter.toRFC3339String(DateTime.now());
         deleted_at = "";
-        stitcher_version = "";
+        stitcher_version = "0.7.0";
         text = "";
         views_count = 0;
         is_staff_picked = false;
@@ -100,6 +154,8 @@ public class Optograph implements Parcelable {
         is_starred = false;
         hashtag_string = "";
         is_local = true;
+        rightFace = new FaceStatus();
+        leftFace = new FaceStatus();
     }
 
 
@@ -124,6 +180,8 @@ public class Optograph implements Parcelable {
         this.is_starred = source.readByte() != 0;
         this.hashtag_string = source.readString();
         this.is_local = source.readByte() != 0;
+        this.rightFace = source.readParcelable(FaceStatus.class.getClassLoader());
+        this.leftFace = source.readParcelable(FaceStatus.class.getClassLoader());
     }
 
     public String getId() {
@@ -149,6 +207,14 @@ public class Optograph implements Parcelable {
             Log.e("myTag","Error parsing created_at");
         }
         return convDate;
+    }
+
+    public FaceStatus getRightFace() {
+        return rightFace;
+    }
+
+    public FaceStatus getLeftFace() {
+        return leftFace;
     }
 
     public String getDeleted_at() {
@@ -266,7 +332,9 @@ public class Optograph implements Parcelable {
         dest.writeInt(this.comments_count);
         dest.writeByte((byte) (this.is_starred ? 1 : 0));
         dest.writeString(this.hashtag_string);
-        dest.writeByte((byte) (this.is_local ? 1:0));
+        dest.writeByte((byte) (this.is_local ? 1 : 0));
+        dest.writeParcelable(this.rightFace, flags);
+        dest.writeParcelable(this.leftFace,flags);
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

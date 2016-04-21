@@ -24,6 +24,7 @@ import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
+import co.optonaut.optonaut.views.OptoImagePreviewFragment;
 import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.Callback;
@@ -160,7 +161,8 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void uploadOptoData(OptographFeedAdapter.OptoData data, Callback<Optograph> callback) {
+    
+    public void uploadOptoData(OptoImagePreviewFragment.OptoData data, Callback<Optograph> callback) {
 //        Call<Optograph> call = service.uploadOptoData("Bearer "+token,data);
         Call<Optograph> call = service.uploadOptoData(data);
         call.enqueue(callback);

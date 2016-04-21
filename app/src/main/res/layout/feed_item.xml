@@ -143,6 +143,33 @@
                 android:layout_alignBottom="@+id/description_label"
                 android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"/>
+
+            <TextView
+                android:id="@+id/feed_upload_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:paddingBottom="3dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@+id/description_label"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="upload"
+                android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/feed_upload_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:paddingBottom="3dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@+id/description_label"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                style="@android:style/Widget.ProgressBar.Inverse"
+                android:visibility="gone"/>
         </RelativeLayout>
 
     </FrameLayout>

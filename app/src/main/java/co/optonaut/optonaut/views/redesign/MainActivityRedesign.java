@@ -1,17 +1,24 @@
 package co.optonaut.optonaut.views.redesign;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
+import java.util.List;
+import java.util.UUID;
+
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.database.DBHelper;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.record.RecordFragment;
@@ -24,6 +31,7 @@ import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
+import co.optonaut.optonaut.views.OptoImagePreviewFragment;
 import co.optonaut.optonaut.views.SigninFBFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFragment;
@@ -42,8 +50,11 @@ public class MainActivityRedesign extends AppCompatActivity {
     private OverlayNavigationFragment overlayFragment;
 
     private boolean isStatusBarVisible;
+    private boolean fromFragment=false;
 
     private Cache cache;
+
+    DBHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +71,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         cache = Cache.getInstance(this);
 
         super.onCreate(savedInstanceState);
+        mydb = new DBHelper(this);
 
         setContentView(R.layout.activity_main_redesign);
 
@@ -154,7 +166,18 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(!BackStackFragment.handleBackPressed(getSupportFragmentManager())){
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        if (fragmentList != null && !fromFragment) {
+            //TODO: Perform your logic to pass back press here
+            for(Fragment fragment : fragmentList){
+                if(fragment instanceof OptoImagePreviewFragment){
+                    ((OptoImagePreviewFragment)fragment).onBackPressed();
+                    fromFragment = true;
+                    return;
+                }
+            }
+        }
+        if(!BackStackFragment.handleBackPressed(getSupportFragmentManager())) {
             super.onBackPressed();
         } else {
             // TODO: find better solution
@@ -220,6 +243,11 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
+    public void retryRecording() {
+        overlayFragment.switchToPreviewRecordMode(Constants.MODE_CENTER);
+//        onBackPressed();
+    }
+
     public void prepareRecording(int mode) {
         hideStatusBar();
 
@@ -277,6 +305,16 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
+    public void startImagePreview(UUID id) {
+        hideStatusBar();
+//        hostFragment.replaceFragment(new OptoImagePreviewFragment(),true);
+        Bundle bundle = new Bundle();
+        bundle.putString("id", id.toString());
+        OptoImagePreviewFragment prevFrag = new OptoImagePreviewFragment();
+        prevFrag.setArguments(bundle);
+        hostFragment.getFragmentManager().beginTransaction().replace(R.id.feed_placeholder,prevFrag).addToBackStack("preview").commit();
+    }
+    
     public void startRecording() {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).startRecording();
@@ -299,6 +337,11 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     public void backToFeed(boolean cancel) {
         overlayFragment.switchToFeedMode(cancel);
+        onBackPressed();
+    }
+
+    public void startPreview(UUID id) {
+        overlayFragment.switchToImagePreview(id);
         onBackPressed();
     }
 

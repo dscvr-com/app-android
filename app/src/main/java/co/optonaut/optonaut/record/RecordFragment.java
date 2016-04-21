@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import butterknife.Bind;
 import co.optonaut.optonaut.OptonautApp;
@@ -292,11 +293,13 @@ public class RecordFragment extends Fragment {
     public void finishRecording() {
         GlobalState.isAnyJobRunning = true;
         releaseCamera();
+        UUID id = UUID.randomUUID();
 
         // start a background thread to finish recorder
-        OptonautApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob());
+        OptonautApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
 
-        ((MainActivityRedesign) getActivity()).backToFeed(false);
+//        ((MainActivityRedesign) getActivity()).backToFeed(false);//original
+        ((MainActivityRedesign) getActivity()).startPreview(id);
     }
 
     public void cancelRecording() {

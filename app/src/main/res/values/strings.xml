@@ -41,6 +41,11 @@
     <string name="dialog_choose_recording_mode">Choose Recording Mode</string>
     <string name="dialog_choose_recording_mode_1">1 Ring</string>
     <string name="dialog_choose_recording_mode_3">3 Rings</string>
+    <string name="dialog_retry_recording">If you go back now,the current recording will be discarded.</string>
+    <string name="dialog_exit_from_preview">If you go back now,the recording will be discarded.</string>
+    <string name="dialog_keep">Keep</string>
+    <string name="dialog_discard">Discard</string>
+    <string name="dialog_retry">Retry</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
@@ -79,4 +84,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!-- Preview -->
+    <string name="preview_retry">Retry</string>
+    <string name="preview_post_later">Post Later</string>
 </resources>
