@@ -81,59 +81,13 @@ public class Optograph implements Parcelable {
     private int comments_count;
     private boolean is_starred;
     private String hashtag_string;
+    private boolean should_be_published;
+    private boolean is_on_server;
 
     // default value for parsing from JSON
     private boolean is_local = false;
     private FaceStatus rightFace;
     private FaceStatus leftFace;
-
-    public class FaceStatus implements Parcelable {
-        private boolean[] defaultStatus = {false,false,false,false,false,false};
-        private List<Boolean> defStat = new ArrayList<>(Arrays.asList(false,false,false,false,false,false));
-        private boolean[] status;
-        private FaceStatus() {
-            this.status = defaultStatus;
-        }
-
-        private FaceStatus(Parcel source) {
-            source.readBooleanArray(this.status);
-        }
-
-        public boolean[] getStatus() {
-            return status;
-        }
-
-        public void setStatus(boolean[] status) {
-            this.status = status;
-        }
-
-        public void setStatusByIndex(int index,boolean bool) {
-            this.status[index] = bool;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            // SAME ORDER AS IN FaceStatus(Parcel source)!
-            dest.writeBooleanArray(this.status);
-        }
-
-        public final Parcelable.Creator<FaceStatus> CREATOR = new Parcelable.Creator<FaceStatus>(){
-            @Override
-            public FaceStatus createFromParcel(Parcel source) {
-                return new FaceStatus(source);
-            }
-
-            @Override
-            public FaceStatus[] newArray(int size) {
-                return new FaceStatus[size];
-            }
-        };
-    }
 
     public Optograph(String id) {
         this.id = id;
@@ -156,6 +110,8 @@ public class Optograph implements Parcelable {
         is_local = true;
         rightFace = new FaceStatus();
         leftFace = new FaceStatus();
+        should_be_published = true;
+        is_on_server = false;
     }
 
 
@@ -182,6 +138,8 @@ public class Optograph implements Parcelable {
         this.is_local = source.readByte() != 0;
         this.rightFace = source.readParcelable(FaceStatus.class.getClassLoader());
         this.leftFace = source.readParcelable(FaceStatus.class.getClassLoader());
+        this.should_be_published = source.readByte()!=0;
+        this.is_on_server = source.readByte()!=0;
     }
 
     public String getId() {
@@ -192,8 +150,28 @@ public class Optograph implements Parcelable {
         return created_at;
     }
 
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
     public DateTime getCreated_atDateTime() {
         return RFC3339DateFormatter.fromRFC3339String(getCreated_at());
+    }
+
+    public boolean isShould_be_published() {
+        return should_be_published;
+    }
+
+    public void setShould_be_published(boolean should_be_published) {
+        this.should_be_published = should_be_published;
+    }
+
+    public boolean is_on_server() {
+        return is_on_server;
+    }
+
+    public void setIs_on_server(boolean is_on_server) {
+        this.is_on_server = is_on_server;
     }
 
     public String getCreated_atRFC3339() {
@@ -225,8 +203,16 @@ public class Optograph implements Parcelable {
         return stitcher_version;
     }
 
+    public void setStitcher_version(String stitcher_version) {
+        this.stitcher_version = stitcher_version;
+    }
+
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public int getViews_count() {
@@ -335,6 +321,7 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte) (this.is_local ? 1 : 0));
         dest.writeParcelable(this.rightFace, flags);
         dest.writeParcelable(this.leftFace,flags);
+        dest.writeByte((byte)(this.should_be_published?1:0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

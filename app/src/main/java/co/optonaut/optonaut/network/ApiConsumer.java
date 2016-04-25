@@ -218,4 +218,14 @@ public class ApiConsumer {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());
     }
 
+    public void postStar(String id,Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.postStar(id);
+        call.enqueue(callback);
+    }
+
+    public void deleteStar(String id,Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.deleteStar(id);
+        call.enqueue(callback);
+    }
+
 }

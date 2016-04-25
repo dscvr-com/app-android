@@ -17,6 +17,7 @@ import co.optonaut.optonaut.views.OptoImagePreviewFragment;
 import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -70,4 +71,10 @@ public interface ApiEndpoints {
 
     @POST("optographs/{id}/upload-asset")
     Call<LogInReturn.EmptyResponse> uploadOptoImage(@Path("id") String id,@Body RequestBody asset);
+
+    @POST("optographs/{id}/star")
+    Call<LogInReturn.EmptyResponse> postStar(@Path("id") String id);
+
+    @DELETE("optographs/{id}/star")
+    Call<LogInReturn.EmptyResponse> deleteStar(@Path("id") String id);
 }

@@ -28,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String OPTOGRAPH_IS_IN_FEED = "optograph_is_in_feed";
     public static final String OPTOGRAPH_IS_ON_SERVER = "optograph_is_on_server";
     public static final String OPTOGRAPH_UPDATED_AT = "optograph_updated_at";
+    public static final String OPTOGRAPH_SHOULD_BE_PUBLISHED = "optograph_should_be_published";
     public static final String FACES_TABLE_NAME = "OptoCubeFaces";
     public static final String FACES_ID = "faces_optograph_id";
     public static final String FACES_LEFT_ZERO = "faces_left_zero";
@@ -62,7 +63,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_starred integer not null, optograph_stars_count integer not null," +
                         "optograph_is_published integer not null, optograph_is_private integer not null," +
                         "optograph_is_stitcher_version text not null, optograph_is_in_feed integer not null," +
-                        "optograph_is_on_server integer not null, optograph_updated_at text not null)"
+                        "optograph_is_on_server integer not null, optograph_updated_at text not null," +
+                        "optograph_should_be_published integer not null)"
 
         );
 
@@ -86,7 +88,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean insertOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    int isStarred,int sCount,int isPub,int isPri,String stitchVer,int isFeed,
-                                   int onServer,String uAt) {
+                                   int onServer,String uAt,int shouldPublished) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -103,6 +105,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_IN_FEED, isFeed);
         contentValues.put(OPTOGRAPH_IS_ON_SERVER, onServer);
         contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
+        contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED,shouldPublished);
         db.insert(OPTO_TABLE_NAME, null, contentValues);
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put(FACES_ID,id);
@@ -135,9 +138,25 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updateColumnOptograph(String id,String column, int value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(column,value);
+        db.update(OPTO_TABLE_NAME,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
+        return  true;
+    }
+
+    public boolean updateColumnOptograph(String id,String column, String value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(column,value);
+        db.update(OPTO_TABLE_NAME,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {id});
+        return  true;
+    }
+
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    int isStarred,int sCount,int isPub,int isPri,String stitchVer,int isFeed,
-                                   int onServer,String uAt) {
+                                   int onServer,String uAt,String shouldPublished) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -154,6 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_IN_FEED, isFeed);
         contentValues.put(OPTOGRAPH_IS_ON_SERVER, onServer);
         contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
+        contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED,shouldPublished);
         db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
         return true;
     }

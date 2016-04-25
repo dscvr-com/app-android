@@ -59,7 +59,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 
     private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
-    private int screenWidth;
+    private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;
 
 //    private TiltView tiltView;
 
@@ -144,7 +144,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         oneRingOpt.setOnClickListener(this);
         threeRingOpt.setOnClickListener(this);
 
-        ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
+        /*ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
         if(vto.isAlive()){
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -152,7 +152,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                     screenWidth = cameraOverlay.getWidth();
                 }
             });
-        }
+        }*/
 
         return view;
     }
@@ -197,8 +197,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                 popupMenu.show();
             }
         });
-
-
 
         vrModeExplanationDialog = new VRModeExplanationDialog();
         vrmodeButton.setTypeface(Constants.getInstance().getIconTypeface());
@@ -399,14 +397,14 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         cameraOverlay.setVisibility(View.INVISIBLE);
     }
 
+    public void switchToFeedModeFromPreview() {
+        Timber.v("switching to feed mode");
+        currentMode = FEED;
+    }
+
     public void switchToImagePreview(UUID id) {
         Timber.v("switching to image_preview mode");
         currentMode = IMAGE_PREVIEW;
-
-//        toolbar.setVisibility(View.INVISIBLE);
-        headerOverlay.setVisibility(View.INVISIBLE);
-        instruction.setVisibility(View.INVISIBLE);
-        cameraOverlay.setVisibility(View.INVISIBLE);
 
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
         activity.startImagePreview(id);

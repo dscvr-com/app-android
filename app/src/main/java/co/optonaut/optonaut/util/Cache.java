@@ -26,6 +26,8 @@ public class Cache {
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_ID = "USER_ID";
 
+    public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
+
     //<ID,<face,6faces(boolean)>>
     public Map<String,Map<String,List<Boolean>>> upload = new HashMap<>();
 
