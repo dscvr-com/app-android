@@ -40,11 +40,14 @@ public class FinishRecorderJob extends Job {
 
 //TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
 
+        Bitmap previewBitmap = null;
         if(Recorder.previewAvailable()) {
-            Bitmap bitmap = Recorder.getPreviewImage();
-            BusProvider.getInstance().post(new RecordFinishedEvent(bitmap));
+            previewBitmap = Recorder.getPreviewImage();
+            BusProvider.getInstance().post(new RecordFinishedEvent(previewBitmap));
         }
 
+        if(previewBitmap != null)
+            CameraUtils.saveBitmapToLocation(previewBitmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "/preview/placeholder.jpg");
 
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
@@ -64,6 +67,7 @@ public class FinishRecorderJob extends Job {
         }
 
         Timber.v("FinishRecorderJob finished");
+        Stitcher.clear(CameraUtils.CACHE_PATH + "preview/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
 

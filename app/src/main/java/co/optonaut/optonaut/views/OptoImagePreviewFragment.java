@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -74,7 +75,7 @@ public class OptoImagePreviewFragment extends Fragment {
     @Bind(R.id.post_later_progress) ProgressBar postLaterProgress;
     @Bind(R.id.upload_progress) ProgressBar uploadProgress;
     @Bind(R.id.upload_group) RelativeLayout uploadButton;
-    @Bind(R.id.preview_image) ImageView previewImage;
+    @Bind(R.id.preview_image) KenBurnsView previewImage;
 
     private Optograph optographGlobal;
     private String optographId;
@@ -131,8 +132,6 @@ public class OptoImagePreviewFragment extends Fragment {
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
-
-//        Recorder.getPreviewImage();
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             Timber.v("kitkat");
@@ -610,8 +609,9 @@ public class OptoImagePreviewFragment extends Fragment {
     @Subscribe
     public void receivePreviewImage(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("receivePreviewImage");
+//https://github.com/flavioarfaria/KenBurnsView
+        previewImage.setImageBitmap(recordFinishedEvent.getPreviewImage());
 
-            previewImage.setImageBitmap(recordFinishedEvent.getPreviewImage());
     }
 
 }
