@@ -7,9 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.squareup.otto.Subscribe;
 
+import butterknife.Bind;
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.ProfileBinding;
 import co.optonaut.optonaut.R;
@@ -17,6 +20,8 @@ import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.PersonManager;
+import co.optonaut.optonaut.util.Cache;
+import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 
 /**
  * @author Nilan Marktanner
@@ -28,10 +33,16 @@ public class ProfileFragment extends Fragment {
     private static final String PROFILE_FEED_FRAGMENT_TAG = "PROFILE_FEED_FRAGMENT_TAG";
     Person person;
     ProfileBinding binding;
+    Cache cache;
 
+    //290fae3e-6d30-41a8-8331-4eeafbdcd206
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        cache = Cache.open();
+
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
@@ -40,10 +51,6 @@ public class ProfileFragment extends Fragment {
         } else {
             throw new RuntimeException();
         }
-
-
-//        Log.d(TAG, "Person1 : " + person.getDisplay_name());
-//        PersonManager.loadPerson("3a5dcf44-d3bf-42d7-ba84-20096e48e48c");
 
     }
 
@@ -58,6 +65,21 @@ public class ProfileFragment extends Fragment {
             binding.executePendingBindings();
             initializeProfileFeed();
         }
+
+        binding.signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // logs out
+                // remove user cache, remove this fragment
+                cache.save(Cache.USER_ID, "");
+                cache.save(Cache.USER_TOKEN, "");
+
+                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+                LoginManager.getInstance().logOut();
+
+            }
+        });
 
         return binding.getRoot();
     }

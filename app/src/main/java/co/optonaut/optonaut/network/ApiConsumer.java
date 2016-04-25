@@ -21,6 +21,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.OptoImagePreviewFragment;
@@ -40,24 +41,26 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class ApiConsumer {
-//    private static final String BASE_URL = "https://api-staging.iam360.io/";
-    private static final String BASE_URL = "http://192.168.1.69:3000/";
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
+    private static final String BASE_URL = "https://api-staging.iam360.io/";
+//    private static final String BASE_URL = "http://192.168.1.69:3000/";
+//    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
-    public static final int PROFILE_GRID_LIMIT = 10;
+    public static final int PROFILE_GRID_LIMIT = 13;
 
     OkHttpClient client;
 
     Retrofit retrofit;
 
     ApiEndpoints service;
+    Cache cache;
 
     private boolean flag = false;
     private boolean finish = false;
 
     public ApiConsumer(String token) {
         client = new OkHttpClient();
+        cache = Cache.open();
 
 //        client.interceptors().add(new Interceptor() {
 //            @Override
@@ -116,7 +119,7 @@ public class ApiConsumer {
 
 
     private String getAuthorizationToken() {
-        return "Bearer " + TOKEN;
+        return "Bearer " + cache.getString(Cache.USER_TOKEN);
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {

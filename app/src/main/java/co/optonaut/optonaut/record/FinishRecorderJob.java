@@ -33,12 +33,25 @@ public class FinishRecorderJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
+
         Timber.v("finishing Recorder...");
         Recorder.finish();
+        Timber.v("Sending event");
+
+//TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
+
+        Bitmap previewBitmap = null;
+        if(Recorder.previewAvailable()) {
+            previewBitmap = Recorder.getPreviewImage();
+            BusProvider.getInstance().post(new RecordFinishedEvent(previewBitmap));
+        }
+
+        if(previewBitmap != null)
+            CameraUtils.saveBitmapToLocation(previewBitmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "/preview/placeholder.jpg");
+
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
-
 
         Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
 //        UUID id = UUID.randomUUID();
@@ -54,11 +67,12 @@ public class FinishRecorderJob extends Job {
         }
 
         Timber.v("FinishRecorderJob finished");
+        Stitcher.clear(CameraUtils.CACHE_PATH + "preview/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
 
         // TODO: fire event or otherwise handle refresh
-        // BusProvider.getInstance().post(new RecordFinishedEvent());
+//         BusProvider.getInstance().post(new RecordFinishedEvent());
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
     }

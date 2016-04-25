@@ -15,11 +15,13 @@ import android.view.ViewGroup;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.viewmodels.OptographGridAdapter;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -31,6 +33,8 @@ public abstract class OptographGridFragment extends Fragment {
     protected RecyclerView recList;
     public static final int NUM_COLUMNS = 3;
 
+    protected Cache cache;
+
 
     public OptographGridFragment() {
     }
@@ -39,7 +43,12 @@ public abstract class OptographGridFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apiConsumer = new ApiConsumer(null);
+        cache = Cache.open();
+
+        String token = cache.getString(Cache.USER_TOKEN);
+        Timber.d("USERID " + cache.getString(Cache.USER_ID));
+        Timber.d("USERID " + cache.getString(Cache.USER_TOKEN));
+        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         optographFeedAdapter = new OptographGridAdapter(getActivity());
     }
 
@@ -54,19 +63,11 @@ public abstract class OptographGridFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recList = (RecyclerView) view.findViewById(R.id.optographFeed);
-        // our children have fixed size
         recList.setHasFixedSize(true);
-//        SnappyLinearLayoutManager llm = new SnappyLinearLayoutManager(view.getContext());
-//        llm.setOrientation(SnappyLinearLayoutManager.VERTICAL);
         GridLayoutManager llm = new GridLayoutManager(view.getContext(), NUM_COLUMNS);
-//        llm.setOrientation(GridLayoutManager.VERTICAL);
-
-//        recList.setLayoutManager(new GridLayoutManager(view.getContext(), NUM_COLUMNS));
-//        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(view.getContext(), R.dimen.item_offset);
-//        recList.addItemDecoration(itemDecoration);
         recList.setLayoutManager(llm);
         recList.setAdapter(optographFeedAdapter);
-//        recList.setItemViewCacheSize(10);
+        recList.setItemViewCacheSize(10);
 
         recList.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
@@ -97,25 +98,5 @@ public abstract class OptographGridFragment extends Fragment {
     protected abstract void initializeFeed();
     protected abstract void loadMore();
     protected abstract void refresh();
-
-    public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
-
-        private int mItemOffset;
-
-        public ItemOffsetDecoration(int itemOffset) {
-            mItemOffset = itemOffset;
-        }
-
-        public ItemOffsetDecoration(@NonNull Context context, @DimenRes int itemOffsetId) {
-            this(context.getResources().getDimensionPixelSize(itemOffsetId));
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                                   RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
-            outRect.set(mItemOffset, mItemOffset, mItemOffset, mItemOffset);
-        }
-    }
 
 }

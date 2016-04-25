@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
 import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -21,6 +23,7 @@ import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
 public abstract class OptographListFragment extends Fragment {
     protected OptographFeedAdapter optographFeedAdapter;
     protected ApiConsumer apiConsumer;
+    protected Cache cache;
     protected SnappyRecyclerView recList;
 
 
@@ -31,7 +34,10 @@ public abstract class OptographListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apiConsumer = new ApiConsumer(null);
+
+        cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         optographFeedAdapter = new OptographFeedAdapter(getActivity());
     }
 

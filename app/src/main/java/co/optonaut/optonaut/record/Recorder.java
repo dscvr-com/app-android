@@ -35,6 +35,8 @@ public class Recorder {
     public static native int getRecordedImagesCount();
     public static native int getImagesToRecordCount();
     public static native float[] getCurrentRotation();
+    public static native Bitmap getPreviewImage();
+    public static native boolean previewAvailable();
 
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode) {
         if (!isInitialized) {
