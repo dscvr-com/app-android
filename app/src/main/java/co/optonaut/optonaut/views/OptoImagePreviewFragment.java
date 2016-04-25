@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.otto.Subscribe;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,11 +40,16 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.bus.PersonReceivedEvent;
+import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.database.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.record.Recorder;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
@@ -67,6 +74,7 @@ public class OptoImagePreviewFragment extends Fragment {
     @Bind(R.id.post_later_progress) ProgressBar postLaterProgress;
     @Bind(R.id.upload_progress) ProgressBar uploadProgress;
     @Bind(R.id.upload_group) RelativeLayout uploadButton;
+    @Bind(R.id.preview_image) ImageView previewImage;
 
     private Optograph optographGlobal;
     private String optographId;
@@ -123,6 +131,9 @@ public class OptoImagePreviewFragment extends Fragment {
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
+
+//        Recorder.getPreviewImage();
+
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             Timber.v("kitkat");
             statusbar.setVisibility(View.VISIBLE);
@@ -582,6 +593,25 @@ public class OptoImagePreviewFragment extends Fragment {
         else if (side == 5) column += "five";
 
         mydb.updateFace(opto.getId(), column, value);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void receivePreviewImage(RecordFinishedEvent recordFinishedEvent) {
+        Timber.d("receivePreviewImage");
+
+            previewImage.setImageBitmap(recordFinishedEvent.getPreviewImage());
     }
 
 }

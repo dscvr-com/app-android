@@ -59,7 +59,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 
     private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
-    private int screenWidth;
+    private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;;
 
 //    private TiltView tiltView;
 
@@ -143,16 +143,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
         oneRingOpt.setOnClickListener(this);
         threeRingOpt.setOnClickListener(this);
-
-        ViewTreeObserver vto = cameraOverlay.getViewTreeObserver();
-        if(vto.isAlive()){
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    screenWidth = cameraOverlay.getWidth();
-                }
-            });
-        }
 
         return view;
     }

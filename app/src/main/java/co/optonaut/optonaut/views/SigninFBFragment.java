@@ -15,6 +15,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -23,6 +24,8 @@ import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
+import co.optonaut.optonaut.views.deprecated.ProfileFragment;
+import co.optonaut.optonaut.views.dialogs.GenericOKDialog;
 import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
 import retrofit.Callback;
 import retrofit.Response;
@@ -111,6 +114,14 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onFailure(Throwable t) {
                         Timber.d("Failure " + t.toString());
+                        LoginManager.getInstance().logOut();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
+
+                        GenericOKDialog genericOKDialog = new GenericOKDialog();
+                        genericOKDialog.setArguments(bundle);
+                        genericOKDialog.show(getFragmentManager(), "Error");
                     }
                 });
 

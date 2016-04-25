@@ -61,6 +61,10 @@ extern "C" {
 
     jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz);
 
+    jobject Java_co_optonaut_optonaut_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz);
+
+    jboolean Java_co_optonaut_optonaut_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz);
+
 }
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
@@ -264,4 +268,43 @@ jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *en
 jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
 {
     return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
+}
+
+jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
+{
+    jclass bitmapConfig = env->FindClass("android/graphics/Bitmap$Config");
+    jfieldID rgba8888FieldID = env->GetStaticFieldID(bitmapConfig, "ARGB_8888", "Landroid/graphics/Bitmap$Config;");
+    jobject rgba8888Obj = env->GetStaticObjectField(bitmapConfig, rgba8888FieldID);
+
+    jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
+    jmethodID createBitmapMethodID = env->GetStaticMethodID(bitmapClass,"createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
+    jobject bitmapObj = env->CallStaticObjectMethod(bitmapClass, createBitmapMethodID, mat.cols, mat.rows, rgba8888Obj);
+
+    jintArray pixels = env->NewIntArray(mat.cols * mat.rows);
+
+    jint *body = env->GetIntArrayElements(pixels, false);
+
+    cv::cvtColor(
+            mat,
+            cv::Mat(mat.rows, mat.cols, CV_8UC4, body),
+            cv::COLOR_RGB2RGBA);
+
+    env->ReleaseIntArrayElements(pixels, body, 0);
+
+    jmethodID setPixelsMid = env->GetMethodID(bitmapClass, "setPixels", "([IIIIIII)V");
+    env->CallVoidMethod(bitmapObj, setPixelsMid, pixels, 0, mat.cols, 0, 0, mat.cols, mat.rows);
+
+    return bitmapObj;
+}
+
+jobject Java_co_optonaut_optonaut_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz)
+{
+
+    Mat result = recorder->FinishPreview()->image.data;
+    return matrixToBitmap(env, result);
+}
+
+jboolean Java_co_optonaut_optonaut_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
+{
+    return recorder->PreviewAvailable();
 }
