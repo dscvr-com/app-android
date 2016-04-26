@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,22 +24,22 @@ public class HostFragment extends BackStackFragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.host_fragment, container, false);
         if (fragment != null ) {
-            replaceFragment(fragment, false);
+            replaceFragment(fragment, false, title);
         }
         return view;
     }
 
-    public void replaceFragment(Fragment fragment, boolean addToBackstack) {
+    public void replaceFragment(Fragment fragment, boolean addToBackstack, String name) {
         if (addToBackstack) {
-            getChildFragmentManager().beginTransaction().replace(R.id.root_frame, fragment).addToBackStack(null).commit();
+            getChildFragmentManager().beginTransaction().replace(R.id.root_frame, fragment).addToBackStack(name).commit();
         } else {
             getChildFragmentManager().beginTransaction().replace(R.id.root_frame, fragment).commit();
         }
     }
 
-    public void addFragment(Fragment fragment, boolean addToBackstack) {
+    public void addFragment(Fragment fragment, boolean addToBackstack, String name) {
         if (addToBackstack) {
-            getChildFragmentManager().beginTransaction().add(R.id.root_frame, fragment).addToBackStack(null).commit();
+            getChildFragmentManager().beginTransaction().add(R.id.root_frame, fragment).addToBackStack(name).commit();
         } else {
             getChildFragmentManager().beginTransaction().add(R.id.root_frame, fragment).commit();
         }
@@ -46,6 +47,10 @@ public class HostFragment extends BackStackFragment {
 
     public void popBackStackImmediate() {
         getChildFragmentManager().popBackStackImmediate();
+    }
+
+    public void popBackStack(String name) {
+        getChildFragmentManager().popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     public Fragment getCurrentFragment() {

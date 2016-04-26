@@ -622,4 +622,9 @@ public class OptoImagePreviewFragment extends Fragment {
         doneUpload = true;
     }
 
+    @Subscribe
+    public void receiveFinishEvent(RecordFinishedEvent recordFinishedEvent) {
+        Timber.d("recordFinishedEvent");
+    }
+
 }

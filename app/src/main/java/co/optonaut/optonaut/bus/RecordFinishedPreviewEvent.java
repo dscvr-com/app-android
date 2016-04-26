@@ -3,10 +3,10 @@ package co.optonaut.optonaut.bus;
 import android.graphics.Bitmap;
 
 /**
- * Created by Mariel on 4/26/2016.
+ * @author Nilan Marktanner
+ * @date 2016-02-13
  */
 public class RecordFinishedPreviewEvent {
-
     Bitmap previewImage;
 
     public RecordFinishedPreviewEvent(Bitmap previewImage) {

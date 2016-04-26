@@ -34,6 +34,7 @@ import timber.log.Timber;
  * @date 2015-12-15
  */
 public class MainFeedFragment extends OptographListFragment implements SensorEventListener {
+    public static final String TAG = MainFeedFragment.class.getSimpleName();
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
 
     NetworkProblemDialog networkProblemDialog;
