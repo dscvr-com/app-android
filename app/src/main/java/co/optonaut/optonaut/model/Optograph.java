@@ -83,6 +83,7 @@ public class Optograph implements Parcelable {
     private String hashtag_string;
     private boolean should_be_published;
     private boolean is_on_server;
+    private boolean is_place_holder_uploaded;
 
     // default value for parsing from JSON
     private boolean is_local = false;
@@ -112,6 +113,7 @@ public class Optograph implements Parcelable {
         leftFace = new FaceStatus();
         should_be_published = true;
         is_on_server = false;
+        is_place_holder_uploaded = false;
     }
 
 
@@ -140,6 +142,7 @@ public class Optograph implements Parcelable {
         this.leftFace = source.readParcelable(FaceStatus.class.getClassLoader());
         this.should_be_published = source.readByte()!=0;
         this.is_on_server = source.readByte()!=0;
+        this.is_place_holder_uploaded = source.readByte()!=0;
     }
 
     public String getId() {
@@ -156,6 +159,14 @@ public class Optograph implements Parcelable {
 
     public DateTime getCreated_atDateTime() {
         return RFC3339DateFormatter.fromRFC3339String(getCreated_at());
+    }
+
+    public boolean is_place_holder_uploaded() {
+        return is_place_holder_uploaded;
+    }
+
+    public void setIs_place_holder_uploaded(boolean is_place_holder_uploaded) {
+        this.is_place_holder_uploaded = is_place_holder_uploaded;
     }
 
     public boolean isShould_be_published() {
@@ -255,6 +266,14 @@ public class Optograph implements Parcelable {
         return stars_count;
     }
 
+    public void setIs_starred(boolean is_starred) {
+        this.is_starred = is_starred;
+    }
+
+    public void setStars_count(int stars_count) {
+        this.stars_count = stars_count;
+    }
+
     public int getComments_count() {
         return comments_count;
     }
@@ -322,6 +341,8 @@ public class Optograph implements Parcelable {
         dest.writeParcelable(this.rightFace, flags);
         dest.writeParcelable(this.leftFace,flags);
         dest.writeByte((byte)(this.should_be_published?1:0));
+        dest.writeByte((byte)(this.is_on_server?1:0));
+        dest.writeByte((byte)(this.is_place_holder_uploaded?1:0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

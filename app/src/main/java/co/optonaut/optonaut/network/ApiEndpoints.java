@@ -1,32 +1,23 @@
 package co.optonaut.optonaut.network;
 
-import com.google.gson.JsonObject;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
-import java.util.Map;
 
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
+import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
-import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import co.optonaut.optonaut.views.OptoImagePreviewFragment;
-import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
-import retrofit.http.Multipart;
 import retrofit.http.POST;
-import retrofit.http.Part;
-import retrofit.http.PartMap;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
@@ -67,7 +58,7 @@ public interface ApiEndpoints {
 //    @Headers("Content-Type: application/json")
     @POST("optographs")
 //    Call<Optograph> uploadOptoData(@Header("Authorization") String authorization,@Body OptographFeedAdapter.OptoData data);
-    Call<Optograph> uploadOptoData(@Body OptoImagePreviewFragment.OptoData data);
+    Call<Optograph> uploadOptoData(@Body OptoData data);
 
     @POST("optographs/{id}/upload-asset")
     Call<LogInReturn.EmptyResponse> uploadOptoImage(@Path("id") String id,@Body RequestBody asset);

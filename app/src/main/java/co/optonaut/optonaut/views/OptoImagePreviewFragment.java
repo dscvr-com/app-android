@@ -1,31 +1,24 @@
 package co.optonaut.optonaut.views;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
@@ -37,21 +30,19 @@ import com.squareup.otto.Subscribe;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
-import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
+import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
 import co.optonaut.optonaut.database.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
+import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.record.Recorder;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
@@ -80,26 +71,11 @@ public class OptoImagePreviewFragment extends Fragment {
     private Optograph optographGlobal;
     private String optographId;
     protected ApiConsumer apiConsumer;
-    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg5ODBlZjgzLTgxMzMtNGM4Yy04ZWY5LTdjYjkzYmVlNTM4NCJ9.I4q9b5eHUpY-NUgT-_1xlvDeTU9jItSwkzBnh1nKuP4";
 
     DBHelper mydb;
     boolean doneUpload;
     private Cache cache;
     private String userToken="";
-
-    public class OptoData {
-        final String id;
-        final String stitcher_version;
-        final String created_at;
-        final String optograph_type;//value must be optograph or theta
-
-        OptoData(String id, String stitcher_version, String created_at,String optograph_type) {
-            this.id = id;
-            this.stitcher_version = stitcher_version;
-            this.created_at = created_at;
-            this.optograph_type = optograph_type;
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,19 +90,20 @@ public class OptoImagePreviewFragment extends Fragment {
         doneUpload = false;
         optographId = getArguments().getString("id");//randomUUID
         Optograph optograph = new Optograph(optographId);
-        final Handler handler = new Handler();
+        optographGlobal = optograph;
+        /*final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 //Do something after 1min
-                if (userToken != null || !userToken.isEmpty()) {
+                if (userToken != null && !userToken.isEmpty()) {
                     uploadOptonautData(optograph);
                 } else {
                     Snackbar.make(view, "Must login to upload.", Snackbar.LENGTH_SHORT);
                 }
                 createDefaultOptograph(optograph);
             }
-        }, 60000);
+        }, 60000);*/
 
         ButterKnife.bind(this, view);
 
@@ -154,12 +131,11 @@ public class OptoImagePreviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (userToken==null || userToken.isEmpty()) {
-                    Snackbar.make(uploadButton,"Must login to upload.",Snackbar.LENGTH_SHORT);
-                } else if (cache.getBoolean(Cache.UPLOAD_ON_GOING)) {
-                    Snackbar.make(uploadButton,"Upload of other optograph is still ongoing.",Snackbar.LENGTH_LONG);
+                    Snackbar.make(v,"Must login to upload.",Snackbar.LENGTH_SHORT);
                 } else if (doneUpload) {
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 1);
+                    mydb.updateColumnOptograph(optographId,DBHelper.OPTOGRAPH_PERSON_ID,cache.getString(Cache.USER_ID));
                     getLocalImage(optograph);
-                    mydb.updateColumnOptograph(optographId,DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED,1);
                 }
             }
         });
@@ -189,24 +165,12 @@ public class OptoImagePreviewFragment extends Fragment {
             }
         });
 
-        /*view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-//                    getActivity().getSupportFragmentManager().popBackStack();
-                    exitDialog();
-                    return true;
-                }
-                return false;
-            }
-        });*/
-
         return view;
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
-        return mydb.insertOptograph(opto.getId(),"","","",opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(),0,0,0,0,opto.getStitcher_version(),0,0,"",1);
+        return mydb.insertOptograph(opto.getId(),"",cache.getString(Cache.USER_ID),"",opto.getCreated_atRFC3339(),
+                opto.getDeleted_at(),0,0,0,0,opto.getStitcher_version(),0,0,"",1,0);
     }
 
     private void uploadOptonautData(Optograph optograph) {
@@ -243,6 +207,9 @@ public class OptoImagePreviewFragment extends Fragment {
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag", " onFailure: " + t.getMessage());
+                uploadProgress.setVisibility(View.INVISIBLE);
+                uploadButton.setVisibility(View.VISIBLE);
+                Toast.makeText(getActivity(),"No Internet Connection.",Toast.LENGTH_SHORT);
             }
         });
 
@@ -269,8 +236,9 @@ public class OptoImagePreviewFragment extends Fragment {
             File[] files = dir.listFiles();
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
-                if (file.isDirectory()) {
+                if (file.isDirectory() && file.getName().equals("preview")) {
                     for (String s : file.list()) {
+                        Log.d("myTag"," placeholder path to upload.");
                         holder = file.getPath()+"/"+s;
                         break;
                     }
@@ -305,12 +273,10 @@ public class OptoImagePreviewFragment extends Fragment {
             for (String s : params) {
                     String[] s3 = s.split("/");
                     Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
-                    int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
-                    String face = s.contains("right") ? "r" : "l";
+                String face = s3[s3.length - 1];
                     Log.d("myTag", " face: " + face);
 
-                    uploadImage(optographGlobal, s, face, side);
+                    uploadImage(optographGlobal, s, face);
             }
             return null;
         }
@@ -325,7 +291,7 @@ public class OptoImagePreviewFragment extends Fragment {
     }
 
     private int flag=2;
-    private boolean uploadImage(Optograph opto, String filePath,String face,int side) {
+    private boolean uploadImage(Optograph opto, String filePath,String face) {
         flag = 2;
         String[] s2 = filePath.split("/");
         String fileName = s2[s2.length-1];
@@ -345,7 +311,7 @@ public class OptoImagePreviewFragment extends Fragment {
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("asset", face + fileName, fbody)
-                .addFormDataPart("key", face + side)
+                .addFormDataPart("key", face)
                 .build();
         Log.d("myTag","asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
@@ -357,7 +323,9 @@ public class OptoImagePreviewFragment extends Fragment {
                 Log.d("myTag", "onResponse raw: " + response.raw());
 
                 flag = response.isSuccess() ? 1 : 0;
+                optographGlobal.setIs_place_holder_uploaded(true);
                 doneUpload = true;
+                mydb.updateColumnOptograph(optographId,DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED,1);
             }
 
             @Override
@@ -382,6 +350,9 @@ public class OptoImagePreviewFragment extends Fragment {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbar.getLayoutParams();
         lp.setMargins(0, marginTop, 0, 0);
         toolbar.setLayoutParams(lp);
+//        FrameLayout.LayoutParams lp1 = (FrameLayout.LayoutParams) previewImage.getLayoutParams();
+//        lp1.setMargins(0,marginTop+,0,0);
+//        previewImage.setLayoutParams(lp1);
     }
 
     private void deleteOptographFromDB() {
@@ -464,10 +435,8 @@ public class OptoImagePreviewFragment extends Fragment {
                     Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
 
                     for (String s : file.list()) {
-//                        Log.d("myTag", "list of file: " + s);
                         filePathList.add(file.getPath()+"/"+s);
                     }
-//                    optographs.add(new Optograph(file.getName()));
                 } else {
                     // ignore
                 }
@@ -485,7 +454,7 @@ public class OptoImagePreviewFragment extends Fragment {
             ctr2+=1;
         }
 
-        new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
+        new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, filePathList);
     }
 
     // try using AbstractQueuedSynchronizer
@@ -632,11 +601,25 @@ public class OptoImagePreviewFragment extends Fragment {
     }
 
     @Subscribe
-    public void receivePreviewImage(RecordFinishedEvent recordFinishedEvent) {
+    public void receivePreviewImage(RecordFinishedPreviewEvent recordFinishedPreviewEvent) {
         Timber.d("receivePreviewImage");
 //https://github.com/flavioarfaria/KenBurnsView
-        previewImage.setImageBitmap(recordFinishedEvent.getPreviewImage());
+        previewImage.setImageBitmap(recordFinishedPreviewEvent.getPreviewImage());
 
+        createDefaultOptograph(optographGlobal);
+        if (userToken != null && !userToken.isEmpty()) {
+            uploadOptonautData(optographGlobal);
+        } else {
+            Log.d("myTag"," must login to upload data");
+        }
+    }
+
+    @Subscribe
+    public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
+        Timber.d("receiveFinishedImage");
+        postLaterProgress.setVisibility(View.GONE);
+        uploadProgress.setVisibility(View.GONE);
+        doneUpload = true;
     }
 
 }

@@ -69,8 +69,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_above="@+id/record_group">
+        android:layout_marginTop="64dp">
 
         <com.flaviofaria.kenburnsview.KenBurnsView
             android:id="@+id/preview_image"
@@ -201,5 +200,4 @@
                 android:textColor="@color/bright"/>
         </RelativeLayout>
     </RelativeLayout>
-
 </FrameLayout>
