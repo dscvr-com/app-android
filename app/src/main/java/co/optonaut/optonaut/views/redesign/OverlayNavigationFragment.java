@@ -55,9 +55,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
 
     private int RECORDING_MODE = Constants.MODE_CENTER;
     private int currentMode;
-    private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;;
-
-//    private TiltView tiltView;
+    private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;
 
     @Bind(R.id.statusbar) RelativeLayout statusbar;
 
@@ -86,6 +84,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     @Bind(R.id.profile_group) RelativeLayout profileGroup;
     @Bind(R.id.profile_label) TextView profileLabel;
     @Bind(R.id.profile_button) Button profileButton;
+    @Bind(R.id.profile_button_indicator) View profileIndicator;
 
     @Bind(R.id.camera_overlay) FrameLayout cameraOverlay;
     @Bind(R.id.instruction) TextView instruction;
@@ -213,8 +212,11 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         homeButton.setText(String.valueOf((char) 0xe90e));
         homeGroup.setOnClickListener(v -> {
             Timber.v("Switching to home");
+            changeMode(FEED, true);
             homeIndicator.setVisibility(View.VISIBLE);
+            profileIndicator.setVisibility(View.INVISIBLE);
         });
+
         cancelButton.setTypeface(Constants.getInstance().getIconTypeface());
         cancelButton.setText(String.valueOf((char) 0xe909));
         cancelGroup.setOnClickListener(v -> {
@@ -263,12 +265,9 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         profileButton.setTypeface(Constants.getInstance().getIconTypeface());
         profileButton.setText(String.valueOf((char) 0xe910));
         profileGroup.setOnClickListener(v -> {
-//            Snackbar.make(v, getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
-//            if (true) {// check if the user is logged in
-//                signInDialog.show(getFragmentManager(),"signDialog");
-//            } else {
-                changeMode(PROFILE, false);
-//            }
+            homeIndicator.setVisibility(View.INVISIBLE);
+            profileIndicator.setVisibility(View.VISIBLE);
+            changeMode(PROFILE, false);
         });
     }
 
@@ -441,9 +440,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         arrow.setVisibility(View.INVISIBLE);
         line.setVisibility(View.INVISIBLE);
         angle.setVisibility(View.INVISIBLE);
-
-//        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-//        activity.prepareProfile();
 
         ((MainActivityRedesign) getActivity()).prepareProfile(false);
     }

@@ -99,10 +99,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-                .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                    return null;
-                })
+//                .onErrorReturn(throwable -> {
+//                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    return null;
+//                })
                 .subscribe(optographFeedAdapter::addItem);
 
         GlobalState.shouldHardRefreshFeed = false;
@@ -113,10 +113,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         apiConsumer.getOptographs(50, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                    return null;
-                })
+//                .onErrorReturn(throwable -> {
+//                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    return null;
+//                })
                 .subscribe(optographFeedAdapter::addItem);
 
         // TODO: prefetch textures

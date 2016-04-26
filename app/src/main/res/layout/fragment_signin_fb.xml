@@ -2,8 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="70dp"
-    android:background="@android:color/white"
+    android:layout_marginTop="50dp"
+    android:layout_marginBottom="50dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:background="@drawable/login"
     tools:context="co.optonaut.optonaut.views.SigninFBFragment">
 
     <com.facebook.login.widget.LoginButton

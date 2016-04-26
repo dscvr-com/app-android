@@ -49,7 +49,6 @@
                 android:textColor="@color/bright"
                 android:drawableLeft="@mipmap/ic_logo_head"
                 android:drawablePadding="7dp"
-                android:text="@string/app_name"
                 android:textSize="24dp"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
