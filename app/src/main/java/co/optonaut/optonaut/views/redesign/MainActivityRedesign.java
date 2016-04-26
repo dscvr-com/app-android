@@ -327,6 +327,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).cancelRecording();
         } else {
+            removeCurrentFragment();
             Timber.e("Tried to cancel recording, but no record fragment available");
         }
     }

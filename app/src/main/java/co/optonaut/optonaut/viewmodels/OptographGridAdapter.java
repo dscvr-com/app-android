@@ -159,7 +159,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         }
 
         // if optograph is oldest, simply append to list
-        if (created_at.isBefore(getOldest().getCreated_atDateTime())) {
+        if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
             notifyItemInserted(getItemCount());
             return;
@@ -169,7 +169,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         // TODO: allow for "breaks" between new optograph and others...
         for (int i = 0; i < optographs.size(); i++) {
             Optograph current = optographs.get(i);
-            if (created_at.isAfter(current.getCreated_atDateTime())) {
+            if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
                 notifyItemInserted(i);
                 return;
