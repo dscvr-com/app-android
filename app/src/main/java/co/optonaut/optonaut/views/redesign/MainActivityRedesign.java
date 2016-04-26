@@ -341,6 +341,11 @@ public class MainActivityRedesign extends AppCompatActivity {
         onBackPressed();
     }
 
+    public void backToFeed() {
+        overlayFragment.switchToFeedModeFromPreview();
+        onBackPressed();
+    }
+
     public void startPreview(UUID id) {
         overlayFragment.switchToImagePreview(id);
         onBackPressed();

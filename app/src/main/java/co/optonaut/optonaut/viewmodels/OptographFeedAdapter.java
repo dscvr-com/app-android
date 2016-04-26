@@ -218,6 +218,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
+        if (optograph.is_local()) {
+            String strings = " ID: "+optograph.getId()+" isOnServer? "+optograph.is_on_server()+" \n" +
+                    "shouldBePub? "+optograph.isShould_be_published()+" L0: "+optograph.getLeftFace().getStatus()[0]+
+                    "\n L1: "+optograph.getLeftFace().getStatus()[1]+" L2: "+optograph.getLeftFace().getStatus()[2]+
+                    "\n L3: "+optograph.getLeftFace().getStatus()[3]+" L4: "+optograph.getLeftFace().getStatus()[4]+
+                    "\n L5: "+optograph.getLeftFace().getStatus()[5]+" R0: "+optograph.getRightFace().getStatus()[0]+
+                    "\n R1: "+optograph.getRightFace().getStatus()[1]+" R2: "+optograph.getRightFace().getStatus()[2]+
+                    "\n R3: "+optograph.getRightFace().getStatus()[3]+" R4: "+optograph.getRightFace().getStatus()[4]+
+                    "\n R5: "+optograph.getRightFace().getStatus()[5];
+            Log.d("myTag","onBindViewHolder: "+strings);
+        }
 
         // reset view holder if we got new optograh
         if (!optograph.equals(holder.getBinding().getOptograph())) {
@@ -238,6 +249,22 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                         optograph.getPreview_asset_id() + " isLocal: " + optograph.is_local() + " isPrivate: " +
                         optograph.is_private() + " isStarred: " + optograph.is_starred() + " leftAssetId: " +
                         optograph.getLeft_texture_asset_id() + " rightAssetId: " + optograph.getRight_texture_asset_id());
+                if (!cache.getString(Cache.USER_ID).equals("")) {
+                    Log.d("myTag","user_id: "+cache.getString(Cache.USER_ID));
+                    apiConsumer.postStar(cache.getString(Cache.USER_ID), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+
+                        }
+                    });
+                } else {
+                    Snackbar.make(heart_label,"Login first.",Snackbar.LENGTH_SHORT);
+                }
                 /*if (optograph.is_local()) {
 //                    uploadOptonautData(optograph,holder.itemView);
                     getLocalImage(optograph);
@@ -252,7 +279,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             profileView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     MainActivityRedesign activity = (MainActivityRedesign) context;
                     activity.startProfile(optograph.getPerson(), null);
                 }
@@ -261,7 +287,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             upload_progress = (ProgressBar) holder.itemView.findViewById(R.id.feed_upload_progress);
             uploadButton = (TextView) holder.itemView.findViewById(R.id.feed_upload_label);
 
-            if (optograph.is_local() && !mydb.checkIfAllImagesUploaded(optograph.getId())) {
+//            if (optograph.is_local() && !mydb.checkIfAllImagesUploaded(optograph.getId())) {//original
+            if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
                 heart_label.setVisibility(View.GONE);
                 uploadButton.setVisibility(View.VISIBLE);
             } else {
@@ -272,10 +299,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    upload_progress.setVisibility(View.VISIBLE);
-                    uploadButton.setVisibility(View.GONE);
-                    getLocalImage(optograph);
-                    optoUpload = optograph;
+                    if (cache.getString(Cache.USER_TOKEN).equals("")) {
+                        Snackbar.make(uploadButton,"Must login to upload.",Snackbar.LENGTH_SHORT);
+                    } else if (cache.getBoolean(Cache.UPLOAD_ON_GOING)) {
+                        Snackbar.make(uploadButton,"Upload of other optograph is still ongoing.",Snackbar.LENGTH_LONG);
+                    } else {
+                        upload_progress.setVisibility(View.VISIBLE);
+                        uploadButton.setVisibility(View.GONE);
+                        optoUpload = optograph;
+                        getLocalImage(optograph);
+                    }
                 }
             });
 
@@ -325,6 +358,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
     private void getLocalImage(Optograph opto) {
+        cache.save(Cache.UPLOAD_ON_GOING, true);
         Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
@@ -474,7 +508,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     String face = s.contains("right") ? "r" : "l";
                     Log.d("myTag", " face: " + face);
 
-                    uploadImage(optoUpload, s, face, side);
+                    if (face.equals("l") && optoUpload.getLeftFace().getStatus()[side]) {
+                        //pass
+                    } else if (optoUpload.getRightFace().getStatus()[side]) {
+                        //pass
+                    } else if (!cache.getString(Cache.USER_TOKEN).equals("")) {
+                        if (apiConsumer==null) apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
+                        uploadImage(optoUpload, s, face, side);
+                    }
                 }
             }
             return null;
@@ -504,11 +545,13 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
             }*/
             if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
+                mydb.updateColumnOptograph(optoUpload.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
                 heart_label.setVisibility(View.VISIBLE);
             } else {
                 uploadButton.setVisibility(View.VISIBLE);
             }
             upload_progress.setVisibility(View.GONE);
+            cache.save(Cache.UPLOAD_ON_GOING, false);
         }
     }
 
@@ -611,6 +654,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             return;
         }
 
+        Log.d("myTag"," before checkToDB ID: "+optograph.getId()+" isLocal: "+optograph.is_local());
+        if (optograph.is_local()) optograph = checkToDB(optograph);
+        Log.d("myTag"," from checkToDB ID: "+optograph.getId());
+
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
             optographs.add(optograph);
@@ -653,6 +700,32 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         return this.optographs;
     }
 
+    public Optograph checkToDB(Optograph optograph) {
+        Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()==0) return optograph;
+        optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
+        optograph.setText(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+//        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
+        optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
+        optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
+        Cursor face = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
+        face.moveToFirst();
+        if (face.getCount()==0) return optograph;
+        optograph.getLeftFace().setStatusByIndex(0, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_ZERO)) != 0);
+        optograph.getLeftFace().setStatusByIndex(1, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_ONE)) != 0);
+        optograph.getLeftFace().setStatusByIndex(2, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_TWO)) != 0);
+        optograph.getLeftFace().setStatusByIndex(3, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_THREE)) != 0);
+        optograph.getLeftFace().setStatusByIndex(4, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_FOUR)) != 0);
+        optograph.getLeftFace().setStatusByIndex(5,face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_FIVE))!=0);
+        optograph.getRightFace().setStatusByIndex(0,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))!=0);
+        optograph.getRightFace().setStatusByIndex(1,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_ONE))!=0);
+        optograph.getRightFace().setStatusByIndex(2,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_TWO))!=0);
+        optograph.getRightFace().setStatusByIndex(3,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_THREE))!=0);
+        optograph.getRightFace().setStatusByIndex(4,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))!=0);
+        optograph.getRightFace().setStatusByIndex(5,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FIVE))!=0);
+        return optograph;
+    }
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private FeedItemBinding binding;

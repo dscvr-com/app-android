@@ -187,8 +187,6 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
             }
         });
 
-
-
         vrModeExplanationDialog = new VRModeExplanationDialog();
         vrmodeButton.setTypeface(Constants.getInstance().getIconTypeface());
         vrmodeButton.setText(String.valueOf((char) 0xe920));
@@ -388,14 +386,14 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         cameraOverlay.setVisibility(View.INVISIBLE);
     }
 
+    public void switchToFeedModeFromPreview() {
+        Timber.v("switching to feed mode");
+        currentMode = FEED;
+    }
+
     public void switchToImagePreview(UUID id) {
         Timber.v("switching to image_preview mode");
         currentMode = IMAGE_PREVIEW;
-
-//        toolbar.setVisibility(View.INVISIBLE);
-        headerOverlay.setVisibility(View.INVISIBLE);
-        instruction.setVisibility(View.INVISIBLE);
-        cameraOverlay.setVisibility(View.INVISIBLE);
 
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
         activity.startImagePreview(id);
