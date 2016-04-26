@@ -14,6 +14,7 @@ import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignUpReturn;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Callback;
 import retrofit.Response;
@@ -30,7 +31,9 @@ public class PersonManager {
     public static void loadPerson(String id) {
         Log.v(DEBUG_TAG, "Load Person " + id);
 
-        ApiConsumer apiConsumer = new ApiConsumer(null);
+        Cache cache = Cache.open();
+        String userId = cache.getString(Cache.USER_ID);
+        ApiConsumer apiConsumer = new ApiConsumer(userId.equals("") ? null : userId);
         try {
             apiConsumer.getPerson(id, new Callback<Person>() {
                 @Override

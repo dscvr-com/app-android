@@ -81,7 +81,7 @@ public class MainActivityRedesign extends AppCompatActivity {
             }
 
             MainFeedFragment mainSnappyFeedFragment = new MainFeedFragment();
-            hostFragment = HostFragment.newInstance(mainSnappyFeedFragment, "Main Snappy Feed Fragment");
+            hostFragment = HostFragment.newInstance(mainSnappyFeedFragment, MainFeedFragment.TAG);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.feed_placeholder, hostFragment).commit();
 
@@ -256,7 +256,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         RecordFragment recordFragment = new RecordFragment();
         recordFragment.setArguments(bundle);
 
-        hostFragment.replaceFragment(recordFragment, true);
+        hostFragment.replaceFragment(recordFragment, true, null);
     }
 
     /**
@@ -274,7 +274,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         else if(id != null) bundle.putString("id", id);
         ProfileFragment profileFragment = new ProfileFragment();
         profileFragment.setArguments(bundle);
-        hostFragment.replaceFragment(profileFragment, true);
+        hostFragment.replaceFragment(profileFragment, true, ProfileFragment.TAG);
 
     }
 
@@ -286,7 +286,7 @@ public class MainActivityRedesign extends AppCompatActivity {
         bundle.putInt("position", position);
         ProfileFeedFragment profileFeedFragment = new ProfileFeedFragment();
         profileFeedFragment.setArguments(bundle);
-        hostFragment.replaceFragment(profileFeedFragment, true);
+        hostFragment.replaceFragment(profileFeedFragment, true, null);
 
     }
 
@@ -295,13 +295,14 @@ public class MainActivityRedesign extends AppCompatActivity {
      */
     public void prepareProfile(boolean popPreviousFragment) {
         if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+            clearFragmentStack(ProfileFragment.TAG);
             if(popPreviousFragment) hostFragment.popBackStackImmediate();
             startProfile(null, cache.getString(Cache.USER_ID));
         } else {
             Bundle bundle = new Bundle();
             SigninFBFragment signinFBFragment = new SigninFBFragment();
             signinFBFragment.setArguments(bundle);
-            hostFragment.addFragment(signinFBFragment, true);
+            hostFragment.addFragment(signinFBFragment, true, null);
         }
     }
 
@@ -327,13 +328,22 @@ public class MainActivityRedesign extends AppCompatActivity {
         if (hostFragment.getCurrentFragment() instanceof RecordFragment) {
             ((RecordFragment) hostFragment.getCurrentFragment()).cancelRecording();
         } else {
-            removeCurrentFragment();
+            clearFragmentStack(ProfileFragment.TAG);
             Timber.e("Tried to cancel recording, but no record fragment available");
         }
     }
 
     public void removeCurrentFragment() {
         hostFragment.popBackStackImmediate();
+    }
+
+
+    /**
+     * Pop up stack up to the fragment to be retained. For Home and Profile
+     * @param removeFragment fragment stack to be removeFragment
+     */
+    public void clearFragmentStack(String removeFragment) {
+        hostFragment.popBackStack(removeFragment);
     }
 
     public void backToFeed(boolean cancel) {

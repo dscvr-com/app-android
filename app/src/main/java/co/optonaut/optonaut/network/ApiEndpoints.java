@@ -77,4 +77,10 @@ public interface ApiEndpoints {
 
     @DELETE("optographs/{id}/star")
     Call<LogInReturn.EmptyResponse> deleteStar(@Path("id") String id);
+
+    @POST("persons/{id}/follow")
+    Call<LogInReturn.EmptyResponse> follow(@Path("id") String id);
+
+    @DELETE("persons/{id}/follow")
+    Call<LogInReturn.EmptyResponse> unfollow(@Path("id") String id);
 }

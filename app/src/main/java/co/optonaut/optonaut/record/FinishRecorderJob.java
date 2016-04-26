@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
+import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
 import co.optonaut.optonaut.util.CameraUtils;
 import timber.log.Timber;
 
@@ -43,7 +44,7 @@ public class FinishRecorderJob extends Job {
         Bitmap previewBitmap = null;
         if(Recorder.previewAvailable()) {
             previewBitmap = Recorder.getPreviewImage();
-            BusProvider.getInstance().post(new RecordFinishedEvent(previewBitmap));
+            BusProvider.getInstance().post(new RecordFinishedPreviewEvent(previewBitmap));
         }
 
         if(previewBitmap != null)
@@ -72,7 +73,7 @@ public class FinishRecorderJob extends Job {
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
 
         // TODO: fire event or otherwise handle refresh
-//         BusProvider.getInstance().post(new RecordFinishedEvent());
+         BusProvider.getInstance().post(new RecordFinishedEvent());
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
     }

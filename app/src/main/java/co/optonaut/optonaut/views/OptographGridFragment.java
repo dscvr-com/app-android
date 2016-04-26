@@ -46,8 +46,6 @@ public abstract class OptographGridFragment extends Fragment {
         cache = Cache.open();
 
         String token = cache.getString(Cache.USER_TOKEN);
-        Timber.d("USERID " + cache.getString(Cache.USER_ID));
-        Timber.d("USERID " + cache.getString(Cache.USER_TOKEN));
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         optographFeedAdapter = new OptographGridAdapter(getActivity());
     }

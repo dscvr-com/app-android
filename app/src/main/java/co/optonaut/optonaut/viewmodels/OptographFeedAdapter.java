@@ -244,11 +244,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             heart_label.setTypeface(Constants.getInstance().getIconTypeface());
             heart_label.setOnClickListener(v -> {
                 Snackbar.make(holder.itemView, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
-                Log.d("myTag", "id: " + optograph.getId() + " createdAt: " + optograph.getCreated_at() + " createdAtRFC: " + optograph.getCreated_atRFC3339().toString() +
-                        " stitchVersion: " + optograph.getStitcher_version() + " previewAssetId: " +
-                        optograph.getPreview_asset_id() + " isLocal: " + optograph.is_local() + " isPrivate: " +
-                        optograph.is_private() + " isStarred: " + optograph.is_starred() + " leftAssetId: " +
-                        optograph.getLeft_texture_asset_id() + " rightAssetId: " + optograph.getRight_texture_asset_id());
                 if (!cache.getString(Cache.USER_ID).equals("")) {
                     Log.d("myTag","user_id: "+cache.getString(Cache.USER_ID));
                     apiConsumer.postStar(cache.getString(Cache.USER_ID), new Callback<LogInReturn.EmptyResponse>() {

@@ -231,4 +231,14 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void follow(String id,Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.follow(id);
+        call.enqueue(callback);
+    }
+
+    public void unfollow(String id,Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.unfollow(id);
+        call.enqueue(callback);
+    }
+
 }

@@ -9,14 +9,4 @@ import co.optonaut.optonaut.model.Person;
  * @date 2016-02-13
  */
 public class RecordFinishedEvent {
-    Bitmap previewImage;
-
-    public RecordFinishedEvent(Bitmap previewImage) {
-        this.previewImage = previewImage;
-    }
-
-    public Bitmap getPreviewImage() {
-        return previewImage;
-    }
-
 }

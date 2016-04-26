@@ -47,6 +47,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
+import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
 import co.optonaut.optonaut.database.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
@@ -632,11 +633,16 @@ public class OptoImagePreviewFragment extends Fragment {
     }
 
     @Subscribe
-    public void receivePreviewImage(RecordFinishedEvent recordFinishedEvent) {
+    public void receivePreviewImage(RecordFinishedPreviewEvent recordFinishedPreviewEvent) {
         Timber.d("receivePreviewImage");
 //https://github.com/flavioarfaria/KenBurnsView
-        previewImage.setImageBitmap(recordFinishedEvent.getPreviewImage());
+        previewImage.setImageBitmap(recordFinishedPreviewEvent.getPreviewImage());
 
+    }
+
+    @Subscribe
+    public void receiveFinishEvent(RecordFinishedEvent recordFinishedEvent) {
+        Timber.d("recordFinishedEvent");
     }
 
 }

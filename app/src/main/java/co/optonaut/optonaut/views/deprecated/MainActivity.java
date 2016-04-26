@@ -37,17 +37,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void openOptograph2DView(Optograph optograph) {
         HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-        hostFragment.replaceFragment(Optograph2DFragment.newInstance(optograph), true);
+        hostFragment.replaceFragment(Optograph2DFragment.newInstance(optograph), true, null);
     }
 
     public void openProfileFragment(Person person) {
         HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-        hostFragment.replaceFragment(ProfileFragment.newInstance(person), true);
+        hostFragment.replaceFragment(ProfileFragment.newInstance(person), true, null);
     }
 
     public void openSearchFeed(String keyword) {
         HostFragment hostFragment = (HostFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-        hostFragment.replaceFragment(SearchFeedFragment.newInstance(keyword), true);
+        hostFragment.replaceFragment(SearchFeedFragment.newInstance(keyword), true, null);
     }
 
     @Override
