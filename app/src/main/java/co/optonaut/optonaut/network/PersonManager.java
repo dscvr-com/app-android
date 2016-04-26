@@ -32,8 +32,8 @@ public class PersonManager {
         Log.v(DEBUG_TAG, "Load Person " + id);
 
         Cache cache = Cache.open();
-        String userId = cache.getString(Cache.USER_ID);
-        ApiConsumer apiConsumer = new ApiConsumer(userId.equals("") ? null : userId);
+        String token = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         try {
             apiConsumer.getPerson(id, new Callback<Person>() {
                 @Override
