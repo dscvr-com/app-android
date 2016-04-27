@@ -1,11 +1,9 @@
 package co.optonaut.optonaut.views.redesign;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -72,6 +70,8 @@ public class MainActivityRedesign extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         mydb = new DBHelper(this);
+
+        Log.d("myTag"," user_id: "+cache.getString(Cache.USER_ID)+" token: "+cache.getString(Cache.USER_TOKEN));
 
         setContentView(R.layout.activity_main_redesign);
 

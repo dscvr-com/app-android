@@ -1,19 +1,16 @@
 package co.optonaut.optonaut.views.redesign;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -36,7 +33,6 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
-import co.optonaut.optonaut.views.OptoImagePreviewActivity;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.dialogs.SignInDialog;
 import co.optonaut.optonaut.views.dialogs.ChooseRecordingModeDialog;
