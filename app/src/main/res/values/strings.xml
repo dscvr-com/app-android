@@ -80,7 +80,8 @@
     <string name="profile_follow">Follow</string>
     <string name="profile_following">Following</string>
     <string name="profile_sign_out">Sign out</string>
-    <string name="profile_edit">EDIT</string>
+    <string name="profile_edit">Edit</string>
+    <string name="profile_save">Save</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

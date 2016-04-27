@@ -19,6 +19,7 @@ import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -50,6 +51,37 @@ public class PersonManager {
             });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void updatePerson(String displayName, String text) {
+
+        Cache cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        try {
+            apiConsumer.updatePerson(new UpdatePersonData(displayName, text), new Callback<Person>() {
+                @Override
+                public void onResponse(Response<Person> response, Retrofit retrofit) {
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Timber.e("Failed to update person : %s.", displayName);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class UpdatePersonData {
+        final String display_name;
+        final String text;
+
+        public UpdatePersonData(String display_name, String text) {
+            this.display_name = display_name;
+            this.text = text;
         }
     }
 }

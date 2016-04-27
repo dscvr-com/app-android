@@ -25,6 +25,7 @@ import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Part;
 import retrofit.http.PartMap;
 import retrofit.http.Path;
@@ -48,6 +49,9 @@ public interface ApiEndpoints {
 
     @GET("persons/{id}")
     Call<Person> getPerson(@Path("id") String id);
+
+    @PUT("/persons/me")
+    Call<Person> updatePerson(@Body PersonManager.UpdatePersonData data);
 
     @GET("persons/{id}/optographs")
     Observable<List<Optograph>> getOptographsFromPerson(@Path("id") String id, @Query("limit") int limit, @Query("older_than") String older_than);

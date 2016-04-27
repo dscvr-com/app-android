@@ -146,6 +146,11 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void updatePerson(PersonManager.UpdatePersonData data, Callback<Person> callback) throws IOException {
+        Call<Person> call = service.updatePerson(data);
+        call.enqueue(callback);
+    }
+
     public void signUp(SignInData data, Callback<SignUpReturn> callback) {
         Call<SignUpReturn> call = service.signUp(data);
         call.enqueue(callback);

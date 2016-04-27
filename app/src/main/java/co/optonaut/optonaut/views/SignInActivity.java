@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
+import timber.log.Timber;
 
 /**
  * Created by Mariel on 3/30/2016.
@@ -30,6 +31,7 @@ public class SignInActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager_signin);
         setupViewPager(viewPager);
@@ -59,8 +61,8 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_back) {
+
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }

@@ -12,20 +12,25 @@
     <RelativeLayout
         android:id="@+id/coordLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="40dp" >
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/sign_out"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/profile_sign_out"/>
+            android:background="@color/optonautMain"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="25dp"
+            android:title=""
+            android:elevation="6dp"/>
 
         <com.triposo.barone.ScalingImageView
             android:id="@+id/person_avatar_asset"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
+            android:layout_below="@+id/toolbar"
             tools:src="@android:drawable/sym_def_app_icon"
             app:person="@{person}" />
 
@@ -39,11 +44,46 @@
             android:textStyle="bold"
             android:text="@{person.display_name}"/>
 
+        <EditText
+            android:id="@+id/person_name_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_avatar_asset"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:textColor="@color/optonautMain"
+            android:textSize="12sp"
+            android:text="@{person.display_name}"/>
+
+        <TextView
+            android:id="@+id/person_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/optonautMain"
+            android:textStyle="bold"
+            android:text="@{person.text}"/>
+
+        <EditText
+            android:id="@+id/person_desc_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_name_edit"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/optonautMain"
+            android:visibility="invisible"
+            android:text="@{person.text}"/>
+
         <Button
             android:id="@+id/person_is_followed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/person_name"
+            android:layout_below="@+id/person_desc_edit"
             android:layout_centerHorizontal="true"
             android:textColor="@color/optonautMain"
             android:textStyle="bold"
