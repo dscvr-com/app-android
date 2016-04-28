@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.record;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -46,7 +46,7 @@ import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;

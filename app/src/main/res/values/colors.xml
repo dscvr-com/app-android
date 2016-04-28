@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#EF4836</color>
+
+<!--    <color name="colorPrimary">#EF4836</color>
     <color name="colorPrimaryText">#000000</color>
     <color name="colorPrimaryDark">#EF4836</color>
     <color name="colorAccent">#EF4836</color>
+-->
 
-    <color name="optonautMain">#EF4836</color>
+    <color name="colorPrimary">#343434</color>
+    <color name="colorPrimaryText">#000000</color>
+    <color name="colorPrimaryDark">#343434</color>
+    <color name="colorAccent">#343434</color>
+
+    <color name="optonautMain_bkp">#EF4836</color>
+
+    <!-- New IAM360 Colors -->
+    <color name="optonautMain">#343434</color>
+    <color name="optonautMain_1">#8e8e8d</color>
+    <color name="optonautMain_2">#ffbc00</color>
+
     <color name="transparentOverlay">#00777777</color>
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
 

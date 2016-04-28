@@ -33,7 +33,7 @@
                  android:theme="@style/AppTheme"
                  android:debuggable="true" >
         <activity
-            android:name=".views.redesign.MainActivityRedesign"
+            android:name=".views.MainActivityRedesign"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:label="@string/app_name">
@@ -53,7 +53,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.SignInActivity"
+        <activity android:name=".views.profile.SignInActivity"
             android:label="@string/app_name"/>
 
         <activity android:name="com.facebook.FacebookActivity"
@@ -62,7 +62,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="@string/app_name" />
 
-        <activity android:name=".views.OptoImagePreviewActivity"
+        <activity android:name=".views.record.OptoImagePreviewActivity"
             android:label="@string/app_name"/>
 
         <!-- change to true to debug mixpanel -->

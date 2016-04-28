@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.network;
 
+import com.google.gson.JsonObject;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import retrofit.Call;
+import retrofit.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -76,7 +78,7 @@ public interface ApiEndpoints {
     Call<LogInReturn.EmptyResponse> deleteStar(@Path("id") String id);
 
     @POST("persons/{id}/follow")
-    Call<LogInReturn.EmptyResponse> follow(@Path("id") String id);
+    Call<LogInReturn.EmptyResponse> follow(@Path("id") String id, @Body String body);
 
     @DELETE("persons/{id}/follow")
     Call<LogInReturn.EmptyResponse> unfollow(@Path("id") String id);

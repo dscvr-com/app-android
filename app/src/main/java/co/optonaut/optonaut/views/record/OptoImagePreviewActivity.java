@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.record;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.views.profile.SignInActivity;
 
 /**
  * Created by Mariel on 4/13/2016.

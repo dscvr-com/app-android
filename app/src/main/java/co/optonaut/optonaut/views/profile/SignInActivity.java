@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.R;
-import timber.log.Timber;
 
 /**
  * Created by Mariel on 3/30/2016.

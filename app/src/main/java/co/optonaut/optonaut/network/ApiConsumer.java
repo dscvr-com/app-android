@@ -1,9 +1,7 @@
 package co.optonaut.optonaut.network;
 
-import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.gson.JsonObject;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -13,7 +11,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
@@ -24,17 +21,12 @@ import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
-import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import co.optonaut.optonaut.views.OptoImagePreviewFragment;
-import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
-import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -238,7 +230,7 @@ public class ApiConsumer {
     }
 
     public void follow(String id,Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.follow(id);
+        Call<LogInReturn.EmptyResponse> call = service.follow(id, "");
         call.enqueue(callback);
     }
 

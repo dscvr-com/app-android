@@ -1,11 +1,9 @@
-package co.optonaut.optonaut.views.deprecated;
+package co.optonaut.optonaut.views.profile;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,12 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.squareup.otto.Subscribe;
 
-import butterknife.Bind;
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.ProfileBinding;
 import co.optonaut.optonaut.R;
@@ -30,7 +26,7 @@ import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -42,8 +38,6 @@ import timber.log.Timber;
  */
 public class ProfileFragment extends Fragment {
     public static final String TAG = ProfileFragment.class.getSimpleName();
-    private static final String DEBUG_TAG = "Optonaut";
-    private static final String PROFILE_FEED_FRAGMENT_TAG = "PROFILE_FEED_FRAGMENT_TAG";
     private Person person;
     private ProfileBinding binding;
     private Cache cache;
@@ -53,7 +47,8 @@ public class ProfileFragment extends Fragment {
     private boolean isEditMode = false;
     private ApiConsumer apiConsumer;
 
-    //290fae3e-6d30-41a8-8331-4eeafbdcd206
+    private String follow, following;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -63,7 +58,8 @@ public class ProfileFragment extends Fragment {
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
 
-        Timber.d("USERID : %s", cache.getString(Cache.USER_ID));
+        follow = getActivity().getResources().getString(R.string.profile_follow);
+        following = getActivity().getResources().getString(R.string.profile_following);
 
         Bundle args = getArguments();
         if (args.containsKey("person")) {
@@ -83,8 +79,7 @@ public class ProfileFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (person != null) {
             binding.setVariable(BR.person, person);
@@ -132,7 +127,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_signout:                // logs out
+            case R.id.action_signout:
+                // logs out
                 // remove user cache, remove this fragment
                 cache.save(Cache.USER_ID, "");
                 cache.save(Cache.USER_TOKEN, "");
@@ -152,21 +148,31 @@ public class ProfileFragment extends Fragment {
                 PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
                 getActivity().invalidateOptionsMenu();
                 return true;
+            case android.R.id.home:
+                ((MainActivityRedesign)getActivity()).removeCurrentFragment();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     @Subscribe
-    public void reveicePerson(PersonReceivedEvent personReceivedEvent) {
+    public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         Log.d("Optonaut", "Registered person " + personReceivedEvent.getPerson());
         person = personReceivedEvent.getPerson();
-        binding.setVariable(BR.person, person);
-        binding.executePendingBindings();
-        initializeProfileFeed();
+
+        if(person != null) {
+            binding.setVariable(BR.person, person);
+            binding.executePendingBindings();
+            initializeProfileFeed();
+        }
     }
 
     private void initializeProfileFeed() {
+
+        Timber.d("USERID : %s", person.getId());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(person.getDisplay_name());
+
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
             binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
@@ -185,12 +191,14 @@ public class ProfileFragment extends Fragment {
                     binding.personNameEdit.setVisibility(View.VISIBLE);
                     isEditMode = true;
                     getActivity().invalidateOptionsMenu();
-                } else if(person.is_followed()) {
-                    apiConsumer.unfollow(cache.getString(Cache.USER_ID), new Callback<LogInReturn.EmptyResponse>() {
+                } else if(binding.personIsFollowed.getText().equals(following)) {
+                    apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Timber.d("Response : " + response);
-                            binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_follow));
+                            Timber.d("Unfollow : " + response);
+                            binding.getPerson().setIs_followed(false);
+                            binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() - 1);
+                            binding.invalidateAll();
                         }
 
                         @Override
@@ -198,12 +206,14 @@ public class ProfileFragment extends Fragment {
                             Timber.e("Error on unfollowing.");
                         }
                     });
-                } else if(!person.is_followed()) {
-                    apiConsumer.follow(cache.getString(Cache.USER_ID), new Callback<LogInReturn.EmptyResponse>() {
+                } else if(binding.personIsFollowed.getText().equals(follow)) {
+                    apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Timber.d("Response : " + response);
-                            binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_following));
+                            Timber.d("Follow : " + response.message() + " " + retrofit.baseUrl() + " ");
+                            binding.getPerson().setIs_followed(true);
+                            binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() + 1);
+                            binding.invalidateAll();
                         }
 
                         @Override

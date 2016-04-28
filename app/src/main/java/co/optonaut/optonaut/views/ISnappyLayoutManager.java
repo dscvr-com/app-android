@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.redesign;
+package co.optonaut.optonaut.views;
 
 /**
  * @author Nilan Marktanner

@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.redesign;
+package co.optonaut.optonaut.views;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,11 +28,12 @@ import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.BackStackFragment;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
-import co.optonaut.optonaut.views.MainFeedFragment;
-import co.optonaut.optonaut.views.OptoImagePreviewFragment;
-import co.optonaut.optonaut.views.SigninFBFragment;
-import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
-import co.optonaut.optonaut.views.deprecated.ProfileFragment;
+import co.optonaut.optonaut.views.feed.MainFeedFragment;
+import co.optonaut.optonaut.views.record.OptoImagePreviewFragment;
+import co.optonaut.optonaut.views.profile.SigninFBFragment;
+import co.optonaut.optonaut.views.profile.ProfileFeedFragment;
+import co.optonaut.optonaut.views.profile.ProfileFragment;
+import co.optonaut.optonaut.views.OverlayNavigationFragment;
 import timber.log.Timber;
 
 /**

@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.redesign;
+package co.optonaut.optonaut.views;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,6 +33,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
 import co.optonaut.optonaut.views.dialogs.SignInDialog;
 import co.optonaut.optonaut.views.dialogs.ChooseRecordingModeDialog;

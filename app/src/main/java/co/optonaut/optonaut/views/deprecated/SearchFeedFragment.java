@@ -2,7 +2,7 @@ package co.optonaut.optonaut.views.deprecated;
 
 import android.os.Bundle;
 
-import co.optonaut.optonaut.views.OptographListFragment;
+import co.optonaut.optonaut.views.feed.OptographListFragment;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.feed;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;
@@ -22,8 +21,9 @@ import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
+import co.optonaut.optonaut.views.VRModeActivity;
 import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -100,10 +100,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-//                .onErrorReturn(throwable -> {
-//                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-//                    return null;
-//                })
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
 
         GlobalState.shouldHardRefreshFeed = false;
@@ -114,10 +114,10 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         apiConsumer.getOptographs(50, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-//                .onErrorReturn(throwable -> {
-//                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-//                    return null;
-//                })
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
                 .subscribe(optographFeedAdapter::addItem);
 
         // TODO: prefetch textures

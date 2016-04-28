@@ -1,21 +1,13 @@
 package co.optonaut.optonaut.network;
 
-import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
 
-import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
-import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Person;
-import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;

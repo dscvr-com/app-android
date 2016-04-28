@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.profile;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

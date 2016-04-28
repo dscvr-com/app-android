@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.deprecated;
+package co.optonaut.optonaut.views.profile;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
