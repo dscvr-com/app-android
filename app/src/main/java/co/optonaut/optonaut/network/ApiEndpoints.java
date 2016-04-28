@@ -82,4 +82,7 @@ public interface ApiEndpoints {
 
     @DELETE("persons/{id}/follow")
     Call<LogInReturn.EmptyResponse> unfollow(@Path("id") String id);
+
+    @POST("/persons/me/upload-profile-image")
+    Call<LogInReturn.EmptyResponse> uploadAvatar(@Body RequestBody asset);
 }

@@ -24,6 +24,7 @@ import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -47,11 +48,13 @@ public class ApiConsumer {
 
     ApiEndpoints service;
     Cache cache;
+    String token = null;
 
     private boolean flag = false;
     private boolean finish = false;
 
     public ApiConsumer(String token) {
+        this.token = token;
         client = new OkHttpClient();
         cache = Cache.open();
 
@@ -111,8 +114,8 @@ public class ApiConsumer {
     }
 
 
-    private String getAuthorizationToken() {
-        return "Bearer " + cache.getString(Cache.USER_TOKEN);
+    public String getAuthorizationToken() {
+        return "Bearer " + token;
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {
@@ -236,6 +239,11 @@ public class ApiConsumer {
 
     public void unfollow(String id,Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.unfollow(id);
+        call.enqueue(callback);
+    }
+
+    public void uploadAvatar(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadAvatar(data);
         call.enqueue(callback);
     }
 

@@ -1,7 +1,12 @@
 package co.optonaut.optonaut.views.profile;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,9 +17,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.facebook.login.LoginManager;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.otto.Subscribe;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.UUID;
 
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.ProfileBinding;
@@ -22,6 +35,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.model.LogInReturn;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
@@ -48,6 +62,7 @@ public class ProfileFragment extends Fragment {
     private ApiConsumer apiConsumer;
 
     private String follow, following;
+    private int PICK_IMAGE_REQUEST = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -180,18 +195,32 @@ public class ProfileFragment extends Fragment {
 
         getActivity().invalidateOptionsMenu();
 
+        binding.personAvatarAsset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isEditMode) {
+                    Intent intent = new Intent();
+                    // Show only images, no videos or anything else
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    // Always show the chooser (if there are multiple options available)
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                }
+            }
+        });
+
         binding.personIsFollowed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // edit profile
-                if(isCurrentUser) {
+                if (isCurrentUser) {
                     binding.personDesc.setVisibility(View.INVISIBLE);
                     binding.personName.setVisibility(View.INVISIBLE);
                     binding.personDescEdit.setVisibility(View.VISIBLE);
                     binding.personNameEdit.setVisibility(View.VISIBLE);
                     isEditMode = true;
                     getActivity().invalidateOptionsMenu();
-                } else if(binding.personIsFollowed.getText().equals(following)) {
+                } else if (binding.personIsFollowed.getText().equals(following)) {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -206,7 +235,7 @@ public class ProfileFragment extends Fragment {
                             Timber.e("Error on unfollowing.");
                         }
                     });
-                } else if(binding.personIsFollowed.getText().equals(follow)) {
+                } else if (binding.personIsFollowed.getText().equals(follow)) {
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -230,6 +259,54 @@ public class ProfileFragment extends Fragment {
 
         getChildFragmentManager().beginTransaction().
                 replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                binding.personAvatarAsset.setImageBitmap(bitmap);
+                uploadAvatar(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void uploadAvatar(Bitmap bitmap) {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+        byte[] data = bos.toByteArray();
+
+        String avatar = UUID.randomUUID().toString();
+        RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
+        RequestBody fbodyMain = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("avatar_asset", "avatar.jpg", fbody)
+                .addFormDataPart("avatar_asset_id",  avatar)
+                .build();
+
+        Timber.d("Avatar " + avatar);
+        apiConsumer.uploadAvatar(fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Timber.d("Response : " + response.message());
+                binding.getPerson().setAvatar_asset_id(avatar);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Timber.d("OnFailure: " + t.getMessage());
+            }
+        });
+
     }
 
     public static ProfileFragment newInstance(Person person) {
