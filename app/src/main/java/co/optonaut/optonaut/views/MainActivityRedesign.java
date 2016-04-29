@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.database.DBHelper;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.record.RecordFragment;
@@ -25,15 +25,11 @@ import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.MixpanelHelper;
-import co.optonaut.optonaut.views.BackStackFragment;
-import co.optonaut.optonaut.views.GestureDetectors;
-import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.feed.MainFeedFragment;
 import co.optonaut.optonaut.views.record.OptoImagePreviewFragment;
 import co.optonaut.optonaut.views.profile.SigninFBFragment;
 import co.optonaut.optonaut.views.profile.ProfileFeedFragment;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
-import co.optonaut.optonaut.views.OverlayNavigationFragment;
 import timber.log.Timber;
 
 /**
@@ -53,7 +49,7 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     private Cache cache;
 
-    DBHelper mydb;
+    private DBHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

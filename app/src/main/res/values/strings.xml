@@ -3,6 +3,7 @@
     <string name="app_name">IAM360</string>
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">221219334902804</string>
+    <string name="google_api_key">AIzaSyAz5HCNfeJwm52pVx_XFK3ZZb-JVfVQVAY</string>
 
     <!-- Menu -->
     <string name="licenses">Licenses</string>

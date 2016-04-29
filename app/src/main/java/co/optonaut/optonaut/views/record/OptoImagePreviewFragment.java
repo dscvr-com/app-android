@@ -17,11 +17,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.Places;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -38,7 +48,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
-import co.optonaut.optonaut.database.DBHelper;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.Optograph;
@@ -55,7 +65,7 @@ import timber.log.Timber;
 /**
  * Created by Mariel on 4/13/2016.
  */
-public class OptoImagePreviewFragment extends Fragment {
+public class OptoImagePreviewFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener{
 
     @Bind(R.id.statusbar) RelativeLayout statusbar;
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -68,14 +78,18 @@ public class OptoImagePreviewFragment extends Fragment {
     @Bind(R.id.upload_group) RelativeLayout uploadButton;
     @Bind(R.id.preview_image) KenBurnsView previewImage;
 
+    private LinearLayout locationLayout;
+
     private Optograph optographGlobal;
     private String optographId;
     protected ApiConsumer apiConsumer;
 
-    DBHelper mydb;
+    private DBHelper mydb;
     boolean doneUpload;
     private Cache cache;
     private String userToken="";
+
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,6 +97,14 @@ public class OptoImagePreviewFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_image_preview,container,false);
         cache = Cache.open();
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(getActivity())
+//                .enableAutoManage(getActivity(), 0, this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         mydb = new DBHelper(getActivity());
         userToken = cache.getString(Cache.USER_TOKEN);
@@ -116,6 +138,7 @@ public class OptoImagePreviewFragment extends Fragment {
         postLaterProgress = (ProgressBar) view.findViewById(R.id.post_later_progress);
         uploadProgress = (ProgressBar) view.findViewById(R.id.upload_progress);
         uploadButton = (RelativeLayout) view.findViewById(R.id.upload_group);
+        locationLayout = (LinearLayout) view.findViewById(R.id.location_layout);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         statusbar = (RelativeLayout) view.findViewById(R.id.statusbar);
@@ -165,7 +188,44 @@ public class OptoImagePreviewFragment extends Fragment {
             }
         });
 
+        getNearbyLocations();
         return view;
+    }
+
+    private void getNearbyLocations() {
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    addView(locationLayout, placeLikelihood.getPlace().getName().toString());
+                    Timber.d("Place '%s' has likelihood: %g",
+                            placeLikelihood.getPlace().getName(),
+                            placeLikelihood.getLikelihood());
+                }
+                likelyPlaces.release();
+            }
+        });
+
+    }
+
+    private void addView(final LinearLayout view, final String txt) {
+        final View itemView = LayoutInflater.from(getActivity()).inflate(
+                R.layout.item_location, view, false);
+
+        TextView mLoc = (TextView) itemView.findViewById(R.id.contact);
+        ImageView mDelete = (ImageView) itemView.findViewById(R.id.contact_del);
+
+        mLoc.setText(txt);
+        view.addView(itemView);
+
+        mDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                view.removeView(itemView);
+            }
+        });
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
@@ -260,6 +320,11 @@ public class OptoImagePreviewFragment extends Fragment {
         }
 
         new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     class UploadPlaceHolder extends AsyncTask<String,Void,Void> {
@@ -591,13 +656,20 @@ public class OptoImagePreviewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Register for preview image generation event
         BusProvider.getInstance().register(this);
+
+        if( mGoogleApiClient != null )
+            mGoogleApiClient.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
+
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() )
+            mGoogleApiClient.disconnect();
     }
 
     @Subscribe
