@@ -37,6 +37,12 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "0.1"
+//        multiDexEnabled true
+    }
+//    dexOptions { javaMaxHeapSize "4g" }
+    packagingOptions {
+        exclude 'META-INF/NOTICE' // will not include NOTICE file
+        exclude 'META-INF/LICENSE.txt' // will not include LICENSE file
     }
     buildTypes {
         release {
@@ -121,6 +127,13 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.1'
     // panning image https://github.com/flavioarfaria/KenBurnsView
     compile 'com.flaviofaria:kenburnsview:1.0.7'
+//    compile files('libs/twitter4j-core-4.0.4.jar')
+    compile ('de.psdev.licensesdialog:licensesdialog:1.4.0') {
+        exclude group: 'com.google.android', module: 'support-v4'
+    }
+    compile (group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.3') {
+        exclude group: 'com.google.android', module: 'support-v7'
+    }
 }
 
 configurations {

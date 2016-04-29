@@ -25,6 +25,10 @@ public class Cache {
 
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_ID = "USER_ID";
+    public static final String USER_FB_LOGGED_IN = "USER_FB_LOGGED_IN";
+    public static final String USER_TWITTER_TOKEN = "USER_TWITTER_TOKEN";
+    public static final String USER_TWITTER_SECRET = "USER_TWITTER_SECRET";
+    public static final String USER_TWITTER_LOGGED_IN = "USER_TWITTER_LOGGED_IN";
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 

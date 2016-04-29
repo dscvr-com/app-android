@@ -30,9 +30,11 @@ import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.HostFragment;
 import co.optonaut.optonaut.views.MainFeedFragment;
 import co.optonaut.optonaut.views.OptoImagePreviewFragment;
+import co.optonaut.optonaut.views.SignUpFragment;
 import co.optonaut.optonaut.views.SigninFBFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFeedFragment;
 import co.optonaut.optonaut.views.deprecated.ProfileFragment;
+import co.optonaut.optonaut.views.dialogs.SignInDialog;
 import timber.log.Timber;
 
 /**
@@ -48,7 +50,7 @@ public class MainActivityRedesign extends AppCompatActivity {
     private OverlayNavigationFragment overlayFragment;
 
     private boolean isStatusBarVisible;
-    private boolean fromFragment=false;
+    public boolean fromFragment=false;
 
     private Cache cache;
 
@@ -168,11 +170,19 @@ public class MainActivityRedesign extends AppCompatActivity {
     public void onBackPressed() {
         List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
         if (fragmentList != null && !fromFragment) {
-            //TODO: Perform your logic to pass back press here
-            for(Fragment fragment : fragmentList){
-                if(fragment instanceof OptoImagePreviewFragment){
+                for (Fragment fragment : fragmentList) {
+                    if (fragment instanceof SigninFBFragment) {
+                        Log.d("myTag", "instanceof SigninFB");
+                        super.onBackPressed();
+                        return;
+                    }
+                }
+        }
+        if (fragmentList != null && !fromFragment) {
+            for (Fragment fragment : fragmentList) {
+                if (fragment instanceof OptoImagePreviewFragment) {
+                    Log.d("myTag", "instanceof PreviewFrag");
                     ((OptoImagePreviewFragment)fragment).onBackPressed();
-                    fromFragment = true;
                     return;
                 }
             }
@@ -306,6 +316,11 @@ public class MainActivityRedesign extends AppCompatActivity {
         }
     }
 
+    public void profileDialog() {
+        hostFragment.getFragmentManager().beginTransaction().add(R.id.feed_placeholder, new SigninFBFragment())
+                .addToBackStack("profileDialog").commit();
+    }
+
     public void startImagePreview(UUID id) {
         hideStatusBar();
 //        hostFragment.replaceFragment(new OptoImagePreviewFragment(),true);
@@ -313,7 +328,8 @@ public class MainActivityRedesign extends AppCompatActivity {
         bundle.putString("id", id.toString());
         OptoImagePreviewFragment prevFrag = new OptoImagePreviewFragment();
         prevFrag.setArguments(bundle);
-        hostFragment.getFragmentManager().beginTransaction().replace(R.id.feed_placeholder,prevFrag).addToBackStack("preview").commit();
+        hostFragment.getFragmentManager().beginTransaction().replace(R.id.feed_placeholder,prevFrag)
+                .addToBackStack("preview").commit();
     }
     
     public void startRecording() {
@@ -353,6 +369,7 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     public void backToFeed() {
         overlayFragment.switchToFeedModeFromPreview();
+        fromFragment = true;
         onBackPressed();
     }
 

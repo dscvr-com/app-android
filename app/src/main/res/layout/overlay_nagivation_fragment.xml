@@ -209,6 +209,15 @@
                 android:layout_height="wrap_content"
                 android:textSize="9dp"/>
 
+            <ProgressBar
+                android:id="@+id/record_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"
+                android:visibility="gone"/>
+
         </RelativeLayout>
 
         <RelativeLayout
