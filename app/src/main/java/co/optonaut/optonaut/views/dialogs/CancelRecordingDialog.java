@@ -8,7 +8,7 @@ import android.support.v7.app.AlertDialog;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.record.RecordFragment;
-import co.optonaut.optonaut.views.redesign.OverlayNavigationFragment;
+import co.optonaut.optonaut.views.OverlayNavigationFragment;
 
 /**
  * @author Nilan Marktanner

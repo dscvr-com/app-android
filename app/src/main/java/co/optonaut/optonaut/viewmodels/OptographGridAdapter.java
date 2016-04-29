@@ -2,58 +2,27 @@ package co.optonaut.optonaut.viewmodels;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
 
 import org.joda.time.DateTime;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.BR;
-import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.GridItemBinding;
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
-import co.optonaut.optonaut.network.ApiEndpoints;
-import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.views.GestureDetectors;
-import co.optonaut.optonaut.views.OptographGridFragment;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
-import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import rx.Observable;
-import rx.Observer;
+import co.optonaut.optonaut.views.feed.OptographGridFragment;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import timber.log.Timber;
 
 /**

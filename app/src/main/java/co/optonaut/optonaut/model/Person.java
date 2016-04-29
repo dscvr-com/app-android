@@ -111,6 +111,37 @@ public class Person implements Parcelable {
         return is_followed;
     }
 
+    public void setDisplay_name(String display_name) {
+        this.display_name = display_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setAvatar_asset_id(String avatar_asset_id) {
+        this.avatar_asset_id = avatar_asset_id;
+    }
+
+    public void setOptographs_count(int optographs_count) {
+        this.optographs_count = optographs_count;
+    }
+
+    public void setFollowers_count(int followers_count) {
+        this.followers_count = followers_count;
+    }
+
+    public void setFollowed_count(int followed_count) {
+        this.followed_count = followed_count;
+    }
+
+    public void setIs_followed(boolean is_followed) {
+        this.is_followed = is_followed;
+    }
 
     @Override
     public int describeContents() {

@@ -1,9 +1,7 @@
 package co.optonaut.optonaut.network;
 
-import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.gson.JsonObject;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -13,7 +11,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
@@ -24,9 +21,6 @@ import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
-import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import co.optonaut.optonaut.views.OptoImagePreviewFragment;
-import co.optonaut.optonaut.views.SignInActivity;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -34,7 +28,6 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -42,8 +35,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class ApiConsumer {
-    private static final String BASE_URL = "https://api-staging.iam360.io/";
-//    private static final String BASE_URL = "http://192.168.1.69:3000/";
+//    private static final String BASE_URL = "https://api-staging.iam360.io/";
+    private static final String BASE_URL = "http://192.168.1.69:3000/";
 //    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
@@ -55,11 +48,13 @@ public class ApiConsumer {
 
     ApiEndpoints service;
     Cache cache;
+    String token = null;
 
     private boolean flag = false;
     private boolean finish = false;
 
     public ApiConsumer(String token) {
+        this.token = token;
         client = new OkHttpClient();
         cache = Cache.open();
 
@@ -119,8 +114,8 @@ public class ApiConsumer {
     }
 
 
-    private String getAuthorizationToken() {
-        return "Bearer " + cache.getString(Cache.USER_TOKEN);
+    public String getAuthorizationToken() {
+        return "Bearer " + token;
     }
 
     public void getOptographs(Callback<List<Optograph>> callback) throws IOException {
@@ -144,6 +139,11 @@ public class ApiConsumer {
     public void getPerson(String id, Callback<Person> callback) throws IOException {
         Call<Person> call = service.getPerson(id);
         Timber.d("get person request: %s", id);
+        call.enqueue(callback);
+    }
+
+    public void updatePerson(PersonManager.UpdatePersonData data, Callback<Person> callback) throws IOException {
+        Call<Person> call = service.updatePerson(data);
         call.enqueue(callback);
     }
 
@@ -233,12 +233,17 @@ public class ApiConsumer {
     }
 
     public void follow(String id,Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.follow(id);
+        Call<LogInReturn.EmptyResponse> call = service.follow(id, "");
         call.enqueue(callback);
     }
 
     public void unfollow(String id,Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.unfollow(id);
+        call.enqueue(callback);
+    }
+
+    public void uploadAvatar(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadAvatar(data);
         call.enqueue(callback);
     }
 }

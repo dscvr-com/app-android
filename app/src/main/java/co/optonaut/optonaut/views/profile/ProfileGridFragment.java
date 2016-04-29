@@ -1,10 +1,11 @@
-package co.optonaut.optonaut.views.deprecated;
+package co.optonaut.optonaut.views.profile;
 
 import android.os.Bundle;
 
 import co.optonaut.optonaut.model.Person;
+import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
-import co.optonaut.optonaut.views.OptographListFragment;
+import co.optonaut.optonaut.views.feed.OptographGridFragment;
 import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -13,16 +14,14 @@ import rx.schedulers.Schedulers;
  * @author Nilan Marktanner
  * @date 2015-12-15
  */
-public class ProfileFeedFragment extends OptographListFragment {
+public class ProfileGridFragment extends OptographGridFragment {
     private Person person;
-    private int position;
     private NetworkProblemDialog networkProblemDialog;
 
-    public static ProfileFeedFragment newInstance(Person person, int position) {
-        ProfileFeedFragment profileFeedFragment = new ProfileFeedFragment();
+    public static ProfileGridFragment newInstance(Person person) {
+        ProfileGridFragment profileFeedFragment = new ProfileGridFragment();
         Bundle args = new Bundle();
         args.putParcelable("person", person);
-        args.putInt("position", position);
         profileFeedFragment.setArguments(args);
         return profileFeedFragment;
     }
@@ -36,7 +35,6 @@ public class ProfileFeedFragment extends OptographListFragment {
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
-            position = args.getInt("position");
         } else if (args.containsKey("id")) {
             PersonManager.loadPerson(args.getString("id"));
         } else {
@@ -46,7 +44,7 @@ public class ProfileFeedFragment extends OptographListFragment {
 
     @Override
     protected void initializeFeed() {
-        apiConsumer.getOptographsFromPerson(person.getId())
+        apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {

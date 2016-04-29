@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.network;
 
+import com.google.gson.JsonObject;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
@@ -12,12 +13,16 @@ import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import retrofit.Call;
+import retrofit.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
+import retrofit.http.PUT;
+import retrofit.http.Part;
+import retrofit.http.PartMap;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
@@ -39,6 +44,9 @@ public interface ApiEndpoints {
 
     @GET("persons/{id}")
     Call<Person> getPerson(@Path("id") String id);
+
+    @PUT("/persons/me")
+    Call<Person> updatePerson(@Body PersonManager.UpdatePersonData data);
 
     @GET("persons/{id}/optographs")
     Observable<List<Optograph>> getOptographsFromPerson(@Path("id") String id, @Query("limit") int limit, @Query("older_than") String older_than);
@@ -70,8 +78,11 @@ public interface ApiEndpoints {
     Call<LogInReturn.EmptyResponse> deleteStar(@Path("id") String id);
 
     @POST("persons/{id}/follow")
-    Call<LogInReturn.EmptyResponse> follow(@Path("id") String id);
+    Call<LogInReturn.EmptyResponse> follow(@Path("id") String id, @Body String body);
 
     @DELETE("persons/{id}/follow")
     Call<LogInReturn.EmptyResponse> unfollow(@Path("id") String id);
+
+    @POST("/persons/me/upload-profile-image")
+    Call<LogInReturn.EmptyResponse> uploadAvatar(@Body RequestBody asset);
 }

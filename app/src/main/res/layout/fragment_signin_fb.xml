@@ -7,7 +7,7 @@
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     android:background="@drawable/login"
-    tools:context="co.optonaut.optonaut.views.SigninFBFragment">
+    tools:context=".views.profile.SigninFBFragment">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fb_button"

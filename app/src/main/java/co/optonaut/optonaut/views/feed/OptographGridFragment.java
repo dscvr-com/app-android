@@ -1,10 +1,6 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.feed;
 
-import android.content.Context;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.DimenRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,11 +13,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
-import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
 import co.optonaut.optonaut.viewmodels.OptographGridAdapter;
-import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
-import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
-import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner

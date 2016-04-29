@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +52,7 @@ public class SignUpFragment extends Fragment{
                     apiConsumer.signUp(new SignInData(emailSignUp.getText().toString(), passwordSignUp.getText().toString()),new Callback<SignUpReturn>() {
                         @Override
                         public void onResponse(Response<SignUpReturn> response, Retrofit retrofit) {
-                            Timber.d(response.toString());
+                            Timber.d(response.isSuccess() + " " + response.body());
 
                             if (!response.isSuccess()) {
                                 Toast toast = Toast.makeText(getActivity(), "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);

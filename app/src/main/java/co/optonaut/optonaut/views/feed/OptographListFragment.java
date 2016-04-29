@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.feed;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,9 +12,8 @@ import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
 import co.optonaut.optonaut.viewmodels.OptographFeedAdapter;
-import co.optonaut.optonaut.views.redesign.SnappyLinearLayoutManager;
-import co.optonaut.optonaut.views.redesign.SnappyRecyclerView;
-import timber.log.Timber;
+import co.optonaut.optonaut.views.SnappyLinearLayoutManager;
+import co.optonaut.optonaut.views.SnappyRecyclerView;
 
 /**
  * @author Nilan Marktanner

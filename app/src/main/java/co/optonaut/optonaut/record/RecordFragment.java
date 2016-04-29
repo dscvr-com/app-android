@@ -2,28 +2,23 @@ package co.optonaut.optonaut.record;
 
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
-import android.graphics.drawable.RotateDrawable;
 import android.hardware.Camera;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import butterknife.Bind;
 import co.optonaut.optonaut.OptonautApp;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
@@ -32,7 +27,7 @@ import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.Maths;
 import co.optonaut.optonaut.util.Vector3;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import timber.log.Timber;
 
 /**

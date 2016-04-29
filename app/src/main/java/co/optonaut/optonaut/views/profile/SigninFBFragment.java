@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.profile;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,9 +24,8 @@ import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.views.deprecated.ProfileFragment;
 import co.optonaut.optonaut.views.dialogs.GenericOKDialog;
-import co.optonaut.optonaut.views.redesign.MainActivityRedesign;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;

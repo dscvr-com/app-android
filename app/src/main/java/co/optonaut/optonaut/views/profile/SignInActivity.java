@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views;
+package co.optonaut.optonaut.views.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ public class SignInActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager_signin);
         setupViewPager(viewPager);
@@ -59,8 +60,8 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_back) {
+
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }

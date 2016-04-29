@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.redesign;
+package co.optonaut.optonaut.views;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import co.optonaut.optonaut.util.MixpanelHelper;
+import co.optonaut.optonaut.views.ISnappyLayoutManager;
 import timber.log.Timber;
 
 /**

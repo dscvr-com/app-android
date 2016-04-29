@@ -1,7 +1,6 @@
 package co.optonaut.optonaut.views.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,8 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.views.SignInActivity;
-import co.optonaut.optonaut.views.redesign.OverlayNavigationFragment;
+import co.optonaut.optonaut.views.profile.SignInActivity;
 
 /**
  * Created by Mariel on 3/29/2016.
