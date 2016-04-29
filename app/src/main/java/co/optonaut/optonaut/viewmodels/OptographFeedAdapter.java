@@ -212,7 +212,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     "\n R3: "+optograph.getRightFace().getStatus()[3]+" R4: "+optograph.getRightFace().getStatus()[4]+
                     "\n R5: "+optograph.getRightFace().getStatus()[5];
             Log.d("myTag","onBindViewHolder: "+strings);
-        } else if (!optograph.is_local()) {
+        } else {
             Log.d("myTag"," star counts: "+optograph.getStars_count()+ " is_starredByUser: "+optograph.is_starred());
         }
 
@@ -264,7 +264,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                         }
                     });
                 } else {
-                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT);
+                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
+                    MainActivityRedesign activity = (MainActivityRedesign) context;
+                    activity.prepareProfile(false);
                 }
             });
 
@@ -773,11 +775,11 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount()==0) {
-            deleteOptographFromPhone(optograph.getId());
+//            deleteOptographFromPhone(optograph.getId());
             return null;
         }
         if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1) {
-            deleteOptographFromPhone(optograph.getId());
+//            deleteOptographFromPhone(optograph.getId());
             return null;
         }
         optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));

@@ -45,10 +45,12 @@ public class FinishRecorderJob extends Job {
         if(Recorder.previewAvailable()) {
             previewBitmap = Recorder.getPreviewImage();
             BusProvider.getInstance().post(new RecordFinishedPreviewEvent(previewBitmap));
+            Timber.v("post of placeholder");
         }
 
         if(previewBitmap != null)
             CameraUtils.saveBitmapToLocation(previewBitmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "/preview/placeholder.jpg");
+        Timber.v("after save of placeholder");
 
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
@@ -76,6 +78,7 @@ public class FinishRecorderJob extends Job {
          BusProvider.getInstance().post(new RecordFinishedEvent());
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
+        Timber.v("finish all job");
     }
 
     @Override

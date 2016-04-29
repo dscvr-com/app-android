@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -81,6 +82,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     @Bind(R.id.cancel_button) Button cancelButton;
 
     @Bind(R.id.record_button) Button recordButton;
+    @Bind(R.id.record_progress) ProgressBar recordProgress;
 
     @Bind(R.id.profile_group) RelativeLayout profileGroup;
     @Bind(R.id.profile_label) TextView profileLabel;
@@ -595,4 +597,11 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (GlobalState.isAnyJobRunning) {
+            recordProgress.setVisibility(View.VISIBLE);
+        }
+    }
 }

@@ -84,6 +84,9 @@ public class Optograph implements Parcelable {
     private boolean should_be_published;
     private boolean is_on_server;
     private boolean is_place_holder_uploaded;
+    private boolean postFacebook;
+    private boolean postTwitter;
+    private boolean postInstagram;
 
     // default value for parsing from JSON
     private boolean is_local = false;
@@ -114,8 +117,10 @@ public class Optograph implements Parcelable {
         should_be_published = true;
         is_on_server = false;
         is_place_holder_uploaded = false;
+        postFacebook = false;
+        postTwitter = false;
+        postInstagram = false;
     }
-
 
     public Optograph(Parcel source) {
         // SAME ORDER AS IN writeToParcel!
@@ -143,6 +148,9 @@ public class Optograph implements Parcelable {
         this.should_be_published = source.readByte()!=0;
         this.is_on_server = source.readByte()!=0;
         this.is_place_holder_uploaded = source.readByte()!=0;
+        this.postFacebook = source.readByte()!=0;
+        this.postTwitter = source.readByte()!=0;
+        this.postInstagram = source.readByte()!=0;
     }
 
     public String getId() {
@@ -167,6 +175,30 @@ public class Optograph implements Parcelable {
 
     public void setIs_place_holder_uploaded(boolean is_place_holder_uploaded) {
         this.is_place_holder_uploaded = is_place_holder_uploaded;
+    }
+
+    public boolean isPostTwitter() {
+        return postTwitter;
+    }
+
+    public void setPostTwitter(boolean postTwitter) {
+        this.postTwitter = postTwitter;
+    }
+
+    public boolean isPostFacebook() {
+        return postFacebook;
+    }
+
+    public void setPostFacebook(boolean postFacebook) {
+        this.postFacebook = postFacebook;
+    }
+
+    public boolean isPostInstagram() {
+        return postInstagram;
+    }
+
+    public void setPostInstagram(boolean postInstagram) {
+        this.postInstagram = postInstagram;
     }
 
     public boolean isShould_be_published() {
@@ -343,6 +375,9 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte)(this.should_be_published?1:0));
         dest.writeByte((byte)(this.is_on_server?1:0));
         dest.writeByte((byte)(this.is_place_holder_uploaded?1:0));
+        dest.writeByte((byte)(this.postFacebook?1:0));
+        dest.writeByte((byte)(this.postTwitter?1:0));
+        dest.writeByte((byte)(this.postInstagram?1:0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

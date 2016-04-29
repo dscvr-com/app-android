@@ -4,6 +4,9 @@
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">221219334902804</string>
     <string name="google_api_key">AIzaSyAz5HCNfeJwm52pVx_XFK3ZZb-JVfVQVAY</string>
+    <string name="twitter_consumer_key">U7QqNijP0dOXO7cc0s4mp7G6R</string>
+    <string name="twitter_consumer_secret">PQylWTM0m84WIdTRojU0AqWYGFXO7xDoRCTcCGyroPkw4nlwQd</string>
+    <string name="twitter_callback_url">com.optonaut.optonaut://callback</string>
 
     <!-- Menu -->
     <string name="licenses">Licenses</string>
@@ -47,6 +50,9 @@
     <string name="dialog_keep">Keep</string>
     <string name="dialog_discard">Discard</string>
     <string name="dialog_retry">Retry</string>
+    <string name="dialog_login_needed">Login Needed</string>
+    <string name="dialog_share_not_login">In order to share your comment you need to create an account. Your image won\'t be lost and can be shared afterwards.</string>
+    <string name="dialog_continue">Continue</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

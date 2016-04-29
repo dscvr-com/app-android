@@ -246,5 +246,4 @@ public class ApiConsumer {
         Call<LogInReturn.EmptyResponse> call = service.uploadAvatar(data);
         call.enqueue(callback);
     }
-
 }
