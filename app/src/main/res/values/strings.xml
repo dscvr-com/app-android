@@ -3,7 +3,7 @@
     <string name="app_name">IAM360</string>
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">221219334902804</string>
-    <!--<string name="facebook_app_id">872844159510659</string>&lt;!&ndash;mariel's key&ndash;&gt;-->
+    <string name="google_api_key">AIzaSyAz5HCNfeJwm52pVx_XFK3ZZb-JVfVQVAY</string>
     <string name="twitter_consumer_key">U7QqNijP0dOXO7cc0s4mp7G6R</string>
     <string name="twitter_consumer_secret">PQylWTM0m84WIdTRojU0AqWYGFXO7xDoRCTcCGyroPkw4nlwQd</string>
     <string name="twitter_callback_url">com.optonaut.optonaut://callback</string>

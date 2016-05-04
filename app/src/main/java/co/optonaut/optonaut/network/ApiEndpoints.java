@@ -6,6 +6,8 @@ import com.squareup.okhttp.RequestBody;
 import java.util.List;
 
 import co.optonaut.optonaut.model.FBSignInData;
+import co.optonaut.optonaut.model.GeocodeDetails;
+import co.optonaut.optonaut.model.GeocodeReverse;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;
@@ -92,4 +94,11 @@ public interface ApiEndpoints {
 
     @POST("/persons/me/upload-profile-image")
     Call<LogInReturn.EmptyResponse> uploadAvatar(@Body RequestBody asset);
+
+    @GET("locations/geocode-reverse")
+    Call<List<GeocodeReverse>> getNearbyPlaces(@Query("lat") String lat, @Query("lon") String lon);
+
+    @GET("locations/geocode-reverse/{placeid}")
+    Call<GeocodeDetails> getLocationDetails(@Path("placeid") String placeid);
+
 }

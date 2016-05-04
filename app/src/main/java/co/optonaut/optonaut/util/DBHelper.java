@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.database;
+package co.optonaut.optonaut.util;
 
 import android.content.ContentValues;
 import android.content.Context;

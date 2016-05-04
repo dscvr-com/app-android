@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.List;
 
 import co.optonaut.optonaut.model.FBSignInData;
+import co.optonaut.optonaut.model.GeocodeDetails;
+import co.optonaut.optonaut.model.GeocodeReverse;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;
@@ -256,4 +258,15 @@ public class ApiConsumer {
         Call<LogInReturn.EmptyResponse> call = service.uploadAvatar(data);
         call.enqueue(callback);
     }
+
+    public void getNearbyPlaces(String lat, String lon, Callback<List<GeocodeReverse>> callback) {
+        Call<List<GeocodeReverse>> call = service.getNearbyPlaces(lat, lon);
+        call.enqueue(callback);
+    }
+
+    public void getLocationDetails(String placeid, Callback<GeocodeDetails> callback) {
+        Call<GeocodeDetails> call = service.getLocationDetails(placeid);
+        call.enqueue(callback);
+    }
+
 }

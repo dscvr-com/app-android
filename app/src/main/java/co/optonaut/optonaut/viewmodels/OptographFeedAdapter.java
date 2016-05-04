@@ -37,7 +37,7 @@ import java.util.List;
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.FeedItemBinding;
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.database.DBHelper;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;

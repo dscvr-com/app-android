@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.database.DBHelper;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.record.RecordFragment;
@@ -55,7 +55,7 @@ public class MainActivityRedesign extends AppCompatActivity {
 
     private Cache cache;
 
-    DBHelper mydb;
+    private DBHelper mydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
