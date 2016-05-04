@@ -9,8 +9,8 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +22,6 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -41,12 +40,14 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
+import co.optonaut.optonaut.model.OptoDataUpdate;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.SnappyRecyclerView;
@@ -83,6 +84,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         cache = Cache.open();
 
         String token = cache.getString(Cache.USER_TOKEN);
+        Log.d("myTag", "token: " + token);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         mydb = new DBHelper(context);
     }
@@ -201,6 +203,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
+        Log.d("myTag","feed optograhPersonId: "+optograph.getPerson().getId()+" optoId: "+optograph.getId());
 
         if (optograph.is_local()) {
             String strings = " ID: "+optograph.getId()+" isOnServer? "+optograph.is_on_server()+" \n" +
@@ -216,7 +219,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             Log.d("myTag"," star counts: "+optograph.getStars_count()+ " is_starredByUser: "+optograph.is_starred());
         }
 
-        userLikesOptograph = optograph.is_starred();
+//        userLikesOptograph = optograph.is_starred();
         // reset view holder if we got new optograh
         if (!optograph.equals(holder.getBinding().getOptograph())) {
             // cancel the request for the old texture
@@ -231,40 +234,58 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             heart_label.setTypeface(Constants.getInstance().getIconTypeface());
             heart_label.setOnClickListener(v -> {
 //                Snackbar.make(v, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
-                if (!cache.getString(Cache.USER_TOKEN).equals("") && !userLikesOptograph) {
+                if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
+//                    userLikesOptograph = true;
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                    optograph.setIs_starred(true);
+                    optograph.setStars_count(optograph.getStars_count()+1);
+                    updateHeartLabel(optograph,holder);
                     apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            userLikesOptograph = response.isSuccess();
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                            optograph.setIs_starred(response.isSuccess());
-                            optograph.setStars_count(optograph.getStars_count()+1);
-                            updateHeartLabel(optograph,holder);
+//                            userLikesOptograph = response.isSuccess();
+                            if (!response.isSuccess()) {
+                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                                optograph.setIs_starred(response.isSuccess());
+                                optograph.setStars_count(optograph.getStars_count() -1);
+//                                updateHeartLabel(optograph,holder);
+                            }
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-
+//                            userLikesOptograph = false;
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                            optograph.setIs_starred(false);
+                            optograph.setStars_count(optograph.getStars_count() -1);
                         }
                     });
-                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && userLikesOptograph) {
+                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                    optograph.setIs_starred(false);
+                    optograph.setStars_count(optograph.getStars_count()-1);
+                    updateHeartLabel(optograph,holder);
                     apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            userLikesOptograph = !response.isSuccess();
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                            optograph.setIs_starred(!response.isSuccess());
-                            optograph.setStars_count(optograph.getStars_count()-1);
-                            updateHeartLabel(optograph,holder);
+//                            userLikesOptograph = !response.isSuccess();
+                            if (!response.isSuccess()) {
+                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                                optograph.setIs_starred(response.isSuccess());
+                                optograph.setStars_count(optograph.getStars_count() + 1);
+//                                updateHeartLabel(optograph, holder);
+                            }
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                            optograph.setIs_starred(true);
+                            optograph.setStars_count(optograph.getStars_count() + 1);
                         }
                     });
                 } else {
-                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
+//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
                     MainActivityRedesign activity = (MainActivityRedesign) context;
                     activity.prepareProfile(false);
                 }
@@ -306,7 +327,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                             uploadOptonautData(optograph);
                         } else {
                             Log.d("myTag","upload the 12 images");
-                            getLocalImage(optograph);
+                            updateOptograph(optograph);
+//                            getLocalImage(optograph);
                         }
                     }
                 }
@@ -321,6 +343,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 public void onClick(View v) {
                     PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
                     popupMenu.inflate(R.menu.feed_item_menu);
+                    Menu menu = popupMenu.getMenu();
+                    MenuItem deleteItem = menu.findItem(R.id.delete_item);
+
+                    if (optograph.is_local() || optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+                        deleteItem.setVisible(true);
+                    }
 
                     //registering popup with OnMenuItemClickListener
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -330,6 +358,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                                 return true;
                             } else if (item.getItemId() == R.id.report_item) {
                                 Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
+                                return true;
+                            } else if (item.getItemId() == R.id.delete_item) {
+                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                                 return true;
                             }
                             return false;
@@ -347,6 +378,41 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.getBinding().executePendingBindings();
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
+        }
+    }
+
+    private void updateOptograph(Optograph opto) {
+        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+        apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
+                Log.d("myTag"," onResponse body: "+response.body());
+                Log.d("myTag", " onResponse message: " + response.message());
+                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                if (!response.isSuccess()) {
+                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                getLocalImage(opto);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void toUploadOrToHeart(Optograph optograph) {
+        if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
+            heart_label.setVisibility(View.GONE);
+            uploadButton.setVisibility(View.VISIBLE);
+            upload_progress.setVisibility(View.GONE);
+        } else {
+            heart_label.setVisibility(View.VISIBLE);
+            uploadButton.setVisibility(View.GONE);
+            upload_progress.setVisibility(View.GONE);
         }
     }
 
@@ -371,17 +437,21 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
-                    Toast toast = Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+//                    Toast toast = Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT);
+//                    toast.setGravity(Gravity.CENTER, 0, 0);
+//                    toast.show();
+                    Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
+                    toUploadOrToHeart(optograph);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
                     Log.d("myTag", "parsing the JSON body failed.");
-                    Toast toast = Toast.makeText(context, "Failed to upload", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+//                    Toast toast = Toast.makeText(context, "Failed to upload", Toast.LENGTH_SHORT);
+//                    toast.setGravity(Gravity.CENTER, 0, 0);
+//                    toast.show();
+                    Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
+                    toUploadOrToHeart(optograph);
                     return;
                 }
                 Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
@@ -393,6 +463,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag", " onFailure: " + t.getMessage());
+                toUploadOrToHeart(optograph);
             }
         });
 
@@ -467,15 +538,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            getLocalImage(optoUpload);
+            updateOptograph(optoUpload);
+//            getLocalImage(optoUpload);
         }
     }
 
     private int flag=2;
-    private boolean uploadPlaceHolderImage(Optograph opto, String filePath,String face) {
+    private boolean uploadPlaceHolderImage(Optograph opto, String filePath,String fileName) {
         flag = 2;
-        String[] s2 = filePath.split("/");
-        String fileName = s2[s2.length-1];
+//        String[] s2 = filePath.split("/");
+//        String fileName = s2[s2.length-1];
 
         Bitmap bm = null;
 
@@ -491,10 +563,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
-                .addFormDataPart("asset", face + fileName, fbody)
-                .addFormDataPart("key", face)
+                .addFormDataPart("asset", fileName, fbody)
+                .addFormDataPart("key", fileName.replace(".jpg",""))
                 .build();
-        Log.d("myTag","asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
+        Log.d("myTag","asset: "+fileName+" key: "+ fileName.replace(".jpg",""));
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -504,14 +576,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 Log.d("myTag", "onResponse raw: " + response.raw());
 
                 flag = response.isSuccess() ? 1 : 0;
-                optoUpload.setIs_place_holder_uploaded(true);
-                mydb.updateColumnOptograph(optoUpload.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, 1);
+                optoUpload.setIs_place_holder_uploaded(response.isSuccess());
+                mydb.updateColumnOptograph(optoUpload.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, flag);
+                toUploadOrToHeart(optoUpload);
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
                 flag = 0;
+                toUploadOrToHeart(optoUpload);
             }
         });
         while (flag==2) {
@@ -535,7 +609,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             File[] files = dir.listFiles();
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
-                if (file.isDirectory()) {
+                if (file.isDirectory() && !file.getName().contains("preview")) {
                     Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
 
                     for (String s : file.list()) {
@@ -631,6 +705,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         String[] s2 = filePath.split("/");
         String fileName = s2[s2.length-1];
 
+        if (face.equals("l") && opto.getLeftFace().getStatus()[side]) return true;
+        else if (opto.getRightFace().getStatus()[side]) return true;
+
         Bitmap bm = null;
 
         try {
@@ -679,6 +756,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
                 if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side,false);
                 else opto.getRightFace().setStatusByIndex(side,false);
+                toUploadOrToHeart(opto);
                 flag = 0;
             }
         });
@@ -724,6 +802,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             return;
         }
 
+        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+            saveToSQLite(optograph);
+        }
         if (optograph.is_local()) optograph = checkToDB(optograph);
         if (optograph==null) {
             return;
@@ -771,6 +852,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         return this.optographs;
     }
 
+    public void saveToSQLite(Optograph opto) {
+        Cursor res = mydb.getData(opto.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()!=0) return;
+        String loc = opto.getLocation()==null?"":opto.getLocation().getId();
+        mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
+                opto.getCreated_at(),opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
+                opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
+                opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0);
+    }
+
     public Optograph checkToDB(Optograph optograph) {
         Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
@@ -778,7 +870,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
-        if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1) {
+        if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
@@ -787,6 +879,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
         optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
+        optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);
         Cursor face = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
         face.moveToFirst();
         if (face.getCount()==0) return optograph;

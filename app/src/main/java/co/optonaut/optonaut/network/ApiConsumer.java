@@ -17,6 +17,7 @@ import co.optonaut.optonaut.model.GeocodeDetails;
 import co.optonaut.optonaut.model.GeocodeReverse;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
+import co.optonaut.optonaut.model.OptoDataUpdate;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
@@ -149,6 +150,11 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void updatePersonSocial(PersonManager.UpdatePersonSocialData data, Callback<Person> callback) throws IOException {
+        Call<Person> call = service.updatePersonSocial(data);
+        call.enqueue(callback);
+    }
+
     public void signUp(SignInData data, Callback<SignUpReturn> callback) {
         Call<SignUpReturn> call = service.signUp(data);
         call.enqueue(callback);
@@ -163,7 +169,6 @@ public class ApiConsumer {
         Call<LogInReturn> call = service.fbLogin(data);
         call.enqueue(callback);
     }
-
     
     public void uploadOptoData(OptoData data, Callback<Optograph> callback) {
 //        Call<Optograph> call = service.uploadOptoData("Bearer "+token,data);
@@ -171,8 +176,13 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void uploadOptoImage(String id, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(id, data);
+    public void uploadOptoImage(String optographId, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(optographId, data);
+        call.enqueue(callback);
+    }
+
+    public void updateOptoData(String optographId,OptoDataUpdate data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.updateOptograph(optographId, data);
         call.enqueue(callback);
     }
 

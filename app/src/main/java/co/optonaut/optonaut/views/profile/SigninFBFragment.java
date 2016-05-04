@@ -105,6 +105,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
 
                         cache.save(Cache.USER_ID, login.getId());
                         cache.save(Cache.USER_TOKEN, login.getToken());
+                        cache.save(Cache.USER_FB_ID,loginResult.getAccessToken().getUserId());
+                        cache.save(Cache.USER_FB_TOKEN,loginResult.getAccessToken().getToken());
                         cache.save(Cache.USER_FB_LOGGED_IN,true);
 
                         ((MainActivityRedesign) getActivity()).prepareProfile(true);

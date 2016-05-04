@@ -38,6 +38,10 @@ public class Person implements Parcelable {
     private int followers_count;
     private int followed_count;
     private boolean is_followed;
+    private String facebook_user_id;
+    private String facebook_token;
+    private String twitter_token;
+    private String twitter_secret;
 
     public Person() {
         id = "";
@@ -51,6 +55,10 @@ public class Person implements Parcelable {
         followers_count = 0;
         followed_count = 0;
         is_followed = false;
+        facebook_user_id = "";
+        facebook_token = "";
+        twitter_token = "";
+        twitter_secret = "";
     }
 
     public Person(Parcel source) {
@@ -67,6 +75,10 @@ public class Person implements Parcelable {
         this.followed_count = source.readInt();
         // see http://stackoverflow.com/a/7089687/1176596
         this.is_followed = source.readByte() != 0;
+        this.facebook_user_id = source.readString();
+        this.facebook_token = source.readString();
+        this.twitter_token = source.readString();
+        this.twitter_secret = source.readString();
     }
 
     public String getId() {
@@ -143,6 +155,38 @@ public class Person implements Parcelable {
         this.is_followed = is_followed;
     }
 
+    public String getTwitter_secret() {
+        return twitter_secret;
+    }
+
+    public void setTwitter_secret(String twitter_secret) {
+        this.twitter_secret = twitter_secret;
+    }
+
+    public String getTwitter_token() {
+        return twitter_token;
+    }
+
+    public void setTwitter_token(String twitter_token) {
+        this.twitter_token = twitter_token;
+    }
+
+    public String getFacebook_token() {
+        return facebook_token;
+    }
+
+    public void setFacebook_token(String facebook_token) {
+        this.facebook_token = facebook_token;
+    }
+
+    public String getFacebook_user_id() {
+        return facebook_user_id;
+    }
+
+    public void setFacebook_user_id(String facebook_user_id) {
+        this.facebook_user_id = facebook_user_id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -163,6 +207,10 @@ public class Person implements Parcelable {
         dest.writeInt(this.followed_count);
         // see http://stackoverflow.com/a/7089687/1176596
         dest.writeByte((byte) (this.is_followed ? 1 : 0));
+        dest.writeString(this.facebook_user_id);
+        dest.writeString(this.facebook_token);
+        dest.writeString(this.twitter_token);
+        dest.writeString(this.twitter_secret);
     }
 
     public static final Parcelable.Creator<Person> CREATOR =
