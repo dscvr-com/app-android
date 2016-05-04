@@ -127,9 +127,10 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     protected ApiConsumer apiConsumer;
 
     private DBHelper mydb;
-    boolean doneUpload;
+    private boolean doneUpload;
     private Cache cache;
     private String userToken = "";
+    private String imagePath;
 
     private boolean isFBShare = false;
     private boolean isTwitterShare = false;
@@ -165,6 +166,7 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
         apiConsumer = new ApiConsumer(userToken);
         doneUpload = false;
         optographId = getArguments().getString("id");//randomUUID
+        imagePath = getArguments().getString("path");//randomUUID
         Optograph optograph = new Optograph(optographId);
         optographGlobal = optograph;
         /*final Handler handler = new Handler();

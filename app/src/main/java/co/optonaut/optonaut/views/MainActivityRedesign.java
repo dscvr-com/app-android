@@ -316,11 +316,17 @@ public class MainActivityRedesign extends AppCompatActivity {
                 .addToBackStack("profileDialog").commit();
     }
 
-    public void startImagePreview(UUID id) {
+    /**
+     *
+     * @param id randomized ID for the optograph
+     * @param imagePath absolute path if image is not from iam360 i.e Theta upload. Null if from iam360
+     */
+    public void startImagePreview(UUID id, String imagePath) {
         hideStatusBar();
 //        hostFragment.replaceFragment(new OptoImagePreviewFragment(),true);
         Bundle bundle = new Bundle();
         bundle.putString("id", id.toString());
+        if(imagePath != null) bundle.putString("path", imagePath);
         OptoImagePreviewFragment prevFrag = new OptoImagePreviewFragment();
         prevFrag.setArguments(bundle);
         hostFragment.getFragmentManager().beginTransaction().replace(R.id.feed_placeholder,prevFrag)

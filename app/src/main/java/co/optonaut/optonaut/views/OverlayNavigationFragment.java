@@ -1,13 +1,17 @@
 package co.optonaut.optonaut.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -26,13 +30,20 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.GeneralUtils;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
@@ -59,6 +70,8 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     private int currentMode;
     private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;
 
+    private int PICK_IMAGE_REQUEST = 1;
+
     @Bind(R.id.statusbar) RelativeLayout statusbar;
 
     // Toolbar
@@ -76,6 +89,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
     @Bind(R.id.home_label) TextView homeLabel;
     @Bind(R.id.home_button) Button homeButton;
     @Bind(R.id.home_button_indicator) View homeIndicator;
+    @Bind(R.id.upload_btn) Button uploadBtn;
 
     @Bind(R.id.cancel_group) RelativeLayout cancelGroup;
     @Bind(R.id.cancel_label) TextView cancelLabel;
@@ -141,6 +155,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
         oneRingOpt.setOnClickListener(this);
         threeRingOpt.setOnClickListener(this);
+        uploadBtn.setOnClickListener(this);
 
         return view;
     }
@@ -306,6 +321,27 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+
+                MainActivityRedesign activity = (MainActivityRedesign) getActivity();
+                activity.startImagePreview(UUID.randomUUID(), new GeneralUtils().getRealPathFromURI(getActivity(), uri));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     @Override public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
@@ -395,7 +431,7 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         currentMode = IMAGE_PREVIEW;
 
         MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.startImagePreview(id);
+        activity.startImagePreview(id, null);
     }
 
     public void switchToPreviewRecordMode(int ringMode) {
@@ -576,25 +612,17 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
                 oneRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_gray));
                 threeRingOpt.setBackground(getResources().getDrawable(R.drawable.ring_selector_red));
                 break;
+            case R.id.upload_btn:
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
+                break;
         }
 
-    }
-
-    public class TiltView extends View {
-
-        public TiltView(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-//            super.onDraw(canvas);
-
-            Paint p = new Paint();
-            RectF rectF = new RectF(0, 0, 200, 200);
-            p.setColor(Color.RED);
-            canvas.drawArc(rectF, 90, 35, true, p);
-        }
     }
 
     @Override
