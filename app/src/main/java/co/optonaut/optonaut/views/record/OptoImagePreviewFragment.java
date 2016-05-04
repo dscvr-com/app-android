@@ -1,10 +1,14 @@
 package co.optonaut.optonaut.views.record;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +38,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
@@ -53,6 +60,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.bus.RecordFinishedPreviewEvent;
+import co.optonaut.optonaut.model.GeocodeReverse;
 import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
@@ -63,6 +71,7 @@ import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.MainActivityRedesign;
+import co.optonaut.optonaut.views.WebViewActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -79,7 +88,7 @@ import twitter4j.conf.ConfigurationBuilder;
 /**
  * Created by Mariel on 4/13/2016.
  */
-public class OptoImagePreviewFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener{
+public class OptoImagePreviewFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
 
     @Bind(R.id.statusbar)
     RelativeLayout statusbar;
@@ -122,8 +131,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     private Cache cache;
     private String userToken = "";
 
-    private GoogleApiClient mGoogleApiClient;
-
     private boolean isFBShare = false;
     private boolean isTwitterShare = false;
     private boolean isInstaShare = false;
@@ -132,6 +139,8 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     private static Twitter twitter;
     private static RequestToken requestToken;
     private AccessToken accessToken;
+
+    private GeocodeReverse chosenLoc;
 
     /**
      * Register your here app https://dev.twitter.com/apps/new and get your
@@ -147,14 +156,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         View view = inflater.inflate(R.layout.fragment_image_preview, container, false);
         cache = Cache.open();
-
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(getActivity())
-//                .enableAutoManage(getActivity(), 0, this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addOnConnectionFailedListener(this)
-                .build();
 
         TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
         TWITTER_CONSUMER_SECRET = getString(R.string.twitter_consumer_secret);
@@ -253,7 +254,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
             }
         });
 
-        getNearbyLocations();
         fbShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -277,9 +277,9 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
                     sharedNotLoginDialog();
                     return;
                 } else if (cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN, false)) {
-                    isTwitterShare = cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN,false);
+                    isTwitterShare = cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN, false);
                     optographGlobal.setPostTwitter(isTwitterShare);
-                    mydb.updateColumnOptograph(optographId,DBHelper.OPTOGRAPH_POST_TWITTER,isTwitterShare?1:0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
                     return;
                 }
                 loginTwitter();
@@ -296,43 +296,67 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
 
             }
         });
+
+        // get current location
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String provider = locationManager.getBestProvider(criteria, false);
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        getNearbyLocations(location.getLatitude(), location.getLongitude());
+
         return view;
     }
 
-    private void getNearbyLocations() {
-        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(mGoogleApiClient, null);
-        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+    private void getNearbyLocations(double latitude, double longitude) {
+
+        apiConsumer.getNearbyPlaces(String.valueOf(latitude), String.valueOf(longitude), new Callback<List<GeocodeReverse>>() {
             @Override
-            public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    addView(locationLayout, placeLikelihood.getPlace().getName().toString());
-                    Timber.d("Place '%s' has likelihood: %g",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood());
+            public void onResponse(Response<List<GeocodeReverse>> response, Retrofit retrofit) {
+
+                List<GeocodeReverse> locations = response.body();
+
+                for(GeocodeReverse loc : locations) {
+                    addView(locationLayout, loc);
                 }
-                likelyPlaces.release();
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+                Timber.d("GEOCODE ERROR " + t.getMessage());
+
             }
         });
-
     }
 
-    private void addView(final LinearLayout view, final String txt) {
+    private void addView(final LinearLayout view, final GeocodeReverse loc) {
         final View itemView = LayoutInflater.from(getActivity()).inflate(
                 R.layout.item_location, view, false);
 
-        TextView mLoc = (TextView) itemView.findViewById(R.id.contact);
+        Button mLoc = (Button) itemView.findViewById(R.id.contact);
         ImageView mDelete = (ImageView) itemView.findViewById(R.id.contact_del);
 
-        mLoc.setText(txt);
+        mLoc.setText(loc.getName());
         view.addView(itemView);
 
-        mDelete.setOnClickListener(new View.OnClickListener() {
+        mLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                view.removeView(itemView);
+                chosenLoc = loc;
+                mLoc.setPressed(true);
+//                mLoc.isPressed() ? mLoc.
+//                view.removeView(itemView);
             }
         });
+
+//        mDelete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                view.removeView(itemView);
+//            }
+//        });
     }
 
 
@@ -502,7 +526,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
 
     }
 
-    class UploadPlaceHolder extends AsyncTask<String,Void,Void> {
     class UploadPlaceHolder extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -852,20 +875,17 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
             uploadProgress.setVisibility(View.GONE);
             doneUpload = true;
         }
+
         // Register for preview image generation event
         BusProvider.getInstance().register(this);
-
-        if( mGoogleApiClient != null )
-            mGoogleApiClient.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        BusProvider.getInstance().unregister(this);
 
-        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() )
-            mGoogleApiClient.disconnect();
+        // Unregister for preview image generation event
+        BusProvider.getInstance().unregister(this);
     }
 
     @Subscribe

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.List;
 
 import co.optonaut.optonaut.model.FBSignInData;
+import co.optonaut.optonaut.model.GeocodeDetails;
+import co.optonaut.optonaut.model.GeocodeReverse;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.Optograph;
@@ -35,8 +37,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class ApiConsumer {
-//    private static final String BASE_URL = "https://api-staging.iam360.io/";
-    private static final String BASE_URL = "http://192.168.1.69:3000/";
+    private static final String BASE_URL = "https://api-staging.iam360.io/";
+//    private static final String BASE_URL = "http://192.168.1.69:3000/";
 //    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
@@ -246,4 +248,15 @@ public class ApiConsumer {
         Call<LogInReturn.EmptyResponse> call = service.uploadAvatar(data);
         call.enqueue(callback);
     }
+
+    public void getNearbyPlaces(String lat, String lon, Callback<List<GeocodeReverse>> callback) {
+        Call<List<GeocodeReverse>> call = service.getNearbyPlaces(lat, lon);
+        call.enqueue(callback);
+    }
+
+    public void getLocationDetails(String placeid, Callback<GeocodeDetails> callback) {
+        Call<GeocodeDetails> call = service.getLocationDetails(placeid);
+        call.enqueue(callback);
+    }
+
 }
