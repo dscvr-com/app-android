@@ -8,6 +8,7 @@ import java.util.List;
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
+import co.optonaut.optonaut.model.OptoDataUpdate;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.model.SignInData;
@@ -48,6 +49,9 @@ public interface ApiEndpoints {
     @PUT("/persons/me")
     Call<Person> updatePerson(@Body PersonManager.UpdatePersonData data);
 
+    @PUT("/persons/me")
+    Call<Person> updatePersonSocial(@Body PersonManager.UpdatePersonSocialData data);
+
     @GET("persons/{id}/optographs")
     Observable<List<Optograph>> getOptographsFromPerson(@Path("id") String id, @Query("limit") int limit, @Query("older_than") String older_than);
 
@@ -70,6 +74,9 @@ public interface ApiEndpoints {
 
     @POST("optographs/{id}/upload-asset")
     Call<LogInReturn.EmptyResponse> uploadOptoImage(@Path("id") String id,@Body RequestBody asset);
+
+    @PUT("/optographs/{id}")
+    Call<LogInReturn.EmptyResponse> updateOptograph(@Path("id") String id,@Body OptoDataUpdate data);
 
     @POST("optographs/{id}/star")
     Call<LogInReturn.EmptyResponse> postStar(@Path("id") String id);

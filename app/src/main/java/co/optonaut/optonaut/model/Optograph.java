@@ -87,6 +87,7 @@ public class Optograph implements Parcelable {
     private boolean postFacebook;
     private boolean postTwitter;
     private boolean postInstagram;
+    private boolean is_published;
 
     // default value for parsing from JSON
     private boolean is_local = false;
@@ -120,6 +121,7 @@ public class Optograph implements Parcelable {
         postFacebook = false;
         postTwitter = false;
         postInstagram = false;
+        is_published = false;
     }
 
     public Optograph(Parcel source) {
@@ -151,6 +153,7 @@ public class Optograph implements Parcelable {
         this.postFacebook = source.readByte()!=0;
         this.postTwitter = source.readByte()!=0;
         this.postInstagram = source.readByte()!=0;
+        this.is_published = source.readByte()!=0;
     }
 
     public String getId() {
@@ -199,6 +202,14 @@ public class Optograph implements Parcelable {
 
     public void setPostInstagram(boolean postInstagram) {
         this.postInstagram = postInstagram;
+    }
+
+    public boolean is_published() {
+        return is_published;
+    }
+
+    public void setIs_published(boolean is_published) {
+        this.is_published = is_published;
     }
 
     public boolean isShould_be_published() {
@@ -378,6 +389,7 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte)(this.postFacebook?1:0));
         dest.writeByte((byte)(this.postTwitter?1:0));
         dest.writeByte((byte)(this.postInstagram?1:0));
+        dest.writeByte((byte)(this.is_published?1:0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =
