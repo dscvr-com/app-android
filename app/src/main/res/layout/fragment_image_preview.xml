@@ -73,8 +73,9 @@
         <com.flaviofaria.kenburnsview.KenBurnsView
             android:id="@+id/preview_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="150dp"
             android:scaleType="centerCrop" />
+
         <LinearLayout
             android:id="@+id/location_box"
             android:layout_width="match_parent"
@@ -95,33 +96,39 @@
             android:paddingRight="@dimen/snackbar_padding_vertical_2lines">
             <Button
                 android:id="@+id/fb_share"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:text="Facebook"/>
             <Button
                 android:id="@+id/twitter_share"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:text="twitter"
                 android:layout_alignParentRight="true"/>
             <Button
                 android:id="@+id/insta_share"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:text="insta"
                 android:layout_below="@id/fb_share"/>
             <Button
                 android:id="@+id/more_share"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:text="more"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/twitter_share"/>
+
         </RelativeLayout>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_below="@+id/preview_image" >
 
             <LinearLayout
@@ -132,7 +139,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="location : "/>
+                    android:text="Location : "/>
 
                 <LinearLayout
                     android:id="@+id/location_layout"
@@ -153,6 +160,7 @@
             android:padding="@dimen/snackbar_padding_vertical"
             android:layout_below="@id/location_box"
             android:layout_above="@id/share_group"
+            android:textSize="14sp"
             android:hint="Tell something about what you see..." />
 
     </RelativeLayout>

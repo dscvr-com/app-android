@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -94,40 +95,26 @@ import twitter4j.conf.ConfigurationBuilder;
 /**
  * Created by Mariel on 4/13/2016.
  */
-public class OptoImagePreviewFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
+public class OptoImagePreviewFragment extends Fragment implements View.OnClickListener {
 
-    @Bind(R.id.statusbar)
-    RelativeLayout statusbar;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.exit_button)
-    Button exitButton;
-    @Bind(R.id.retry_button)
-    Button retryButton;
-    @Bind(R.id.description_box)
-    EditText descBox;
-    @Bind(R.id.post_later_group)
-    RelativeLayout postLaterButton;
-    @Bind(R.id.post_later_progress)
-    ProgressBar postLaterProgress;
-    @Bind(R.id.upload_progress)
-    ProgressBar uploadProgress;
-    @Bind(R.id.upload_button)
-    Button uploadButton;
-    @Bind(R.id.preview_image)
-    KenBurnsView previewImage;
-    @Bind(R.id.navigation_buttons)
-    RelativeLayout navigationButtons;
+    @Bind(R.id.statusbar) RelativeLayout statusbar;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.exit_button) Button exitButton;
+    @Bind(R.id.retry_button) Button retryButton;
+    @Bind(R.id.description_box) EditText descBox;
+    @Bind(R.id.post_later_group) RelativeLayout postLaterButton;
+    @Bind(R.id.post_later_progress) ProgressBar postLaterProgress;
+    @Bind(R.id.upload_progress) ProgressBar uploadProgress;
+    @Bind(R.id.upload_button) Button uploadButton;
+    @Bind(R.id.preview_image) KenBurnsView previewImage;
+    @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
+    @Bind(R.id.location_layout) LinearLayout locationLayout;
 
-    private LinearLayout locationLayout;
+    @Bind(R.id.fb_share) Button fbShareButton;
+    @Bind(R.id.twitter_share) Button twitterShareButton;
+    @Bind(R.id.insta_share) Button instaShareButton;
 
-    @Bind(R.id.fb_share)
-    Button fbShareButton;
-    @Bind(R.id.twitter_share)
-    Button twitterShareButton;
-    @Bind(R.id.insta_share)
-    Button instaShareButton;
-
+//    private LinearLayout locationLayout;
     private Optograph optographGlobal;
     private String optographId;
     protected ApiConsumer apiConsumer;
@@ -143,12 +130,19 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     private boolean isTwitterShare = false;
     private boolean isInstaShare = false;
 
+    // if mode is upload image i.e theta upload
+    private boolean UPLOAD_IMAGE_MODE = false;
+
     // Twitter
     private static Twitter twitter;
     private static RequestToken requestToken;
     private AccessToken accessToken;
 
     private GeocodeReverse chosenLoc;
+
+    public static final int WEBVIEW_REQUEST_CODE = 100;
+    public final static String optoType360 = "optograph";
+    public final static String optoTypeTheta = "theta";
 
     /**
      * Register your here app https://dev.twitter.com/apps/new and get your
@@ -161,20 +155,29 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
+
         View view = inflater.inflate(R.layout.fragment_image_preview, container, false);
         cache = Cache.open();
 
+        // get bundles
+        optographId = getArguments().getString("id");
+        imagePath = getArguments().getString("path");//randomUUID
+
+        // fb initialization
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
+        // twitter
         TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
         TWITTER_CONSUMER_SECRET = getString(R.string.twitter_consumer_secret);
         CALLBACK_URL = getString(R.string.twitter_callback_url);
+
         mydb = new DBHelper(getActivity());
         userToken = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(userToken.equals("")? null:userToken);
         doneUpload = false;
-        optographId = getArguments().getString("id");//randomUUID
-        imagePath = getArguments().getString("path");//randomUUID
+
+
         Optograph optograph = new Optograph(optographId);
         optographGlobal = optograph;
         /*final Handler handler = new Handler();
@@ -203,101 +206,21 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
             statusbar.setVisibility(View.GONE);
         }
 
-        uploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("myTag", " upload: userToken: " + userToken + " doneUpload: " + doneUpload);
-                if ((userToken == null || userToken.equals("")) && doneUpload) {
-                    ((MainActivityRedesign) getActivity()).profileDialog();
-                } else if (doneUpload) {
-                    uploadProgress.setVisibility(View.VISIBLE);
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
-                    optograph.setText(descBox.getText().toString());
-//                    getLocalImage(optograph);
-                    updateOptograph(optograph);
-                }
-            }
-        });
+        uploadButton.setOnClickListener(this);
+        postLaterButton.setOnClickListener(this);
+        exitButton.setOnClickListener(this);
+        retryButton.setOnClickListener(this);
+        fbShareButton.setOnClickListener(this);
+        twitterShareButton.setOnClickListener(this);
+        instaShareButton.setOnClickListener(this);
 
-        postLaterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if ((userToken == null || userToken.equals("")) && doneUpload) {
-                    ((MainActivityRedesign) getActivity()).profileDialog();
-                } else if (doneUpload) {
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
-                    ((MainActivityRedesign) getActivity()).backToFeed();
-                }
-            }
-        });
-
-        exitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                exitDialog();
-            }
-        });
-
-        retryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                retryDialog();
-                exitDialog();
-            }
-        });
-
-        fbShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userToken == null || userToken.equals("")) {
-                    sharedNotLoginDialog();
-                    return;
-                } else if (cache.getBoolean(Cache.USER_FB_LOGGED_IN, false)) {
-                    isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
-                    cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
-                    optographGlobal.setPostFacebook(isFBShare);
-                    initializeShareButtons();
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
-                    PersonManager.updatePerson();
-                    return;
-                }
-                loginFacebook();
-                Log.d("myTag","fbShareClicked.");
-            }
-        });
-
-        twitterShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userToken == null || userToken.equals("")) {
-                    sharedNotLoginDialog();
-                    return;
-                } else if (cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN, false)) {
-                    isTwitterShare = !cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
-                    cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
-                    optographGlobal.setPostTwitter(isTwitterShare);
-                    initializeShareButtons();
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
-                    PersonManager.updatePerson();
-                    return;
-                }
-                loginTwitter();
-            }
-        });
-
-        instaShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userToken == null || userToken.equals("")) {
-                    sharedNotLoginDialog();
-                    return;
-                }
-                Snackbar.make(v, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        if(imagePath != null) {
+            UPLOAD_IMAGE_MODE = true;
+            // force this true
+            doneUpload = true;
+            Uri imageUri = Uri.parse(imagePath);
+            previewImage.setImageURI(imageUri);
+        }
 
         // get current location
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -305,12 +228,13 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
         String provider = locationManager.getBestProvider(criteria, false);
         Location location = locationManager.getLastKnownLocation(provider);
 
-        getNearbyLocations(location.getLatitude(), location.getLongitude());
+//        getNearbyLocations(location.getLatitude(), location.getLongitude());
 
         return view;
     }
 
     private void updateOptograph(Optograph opto) {
+        Log.d("myTag", "update optograph");
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
@@ -324,17 +248,23 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
                     Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                getLocalImage(opto);
+                if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
             }
 
             @Override
             public void onFailure(Throwable t) {
                 uploadProgress.setVisibility(View.INVISIBLE);
+                Log.d("myTag", t.getMessage());
                 Snackbar.make(getView(), "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
     }
-    
+
+    /**
+     *  Api call for nearby places. Will add the locations to the view.
+     * @param latitude
+     * @param longitude
+     */
     private void getNearbyLocations(double latitude, double longitude) {
 
         apiConsumer.getNearbyPlaces(String.valueOf(latitude), String.valueOf(longitude), new Callback<List<GeocodeReverse>>() {
@@ -342,7 +272,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
             public void onResponse(Response<List<GeocodeReverse>> response, Retrofit retrofit) {
 
                 List<GeocodeReverse> locations = response.body();
-
                 for(GeocodeReverse loc : locations) {
                     addView(locationLayout, loc);
                 }
@@ -351,13 +280,16 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
 
             @Override
             public void onFailure(Throwable t) {
-
-                Timber.d("GEOCODE ERROR " + t.getMessage());
-
+                Timber.d(t.getMessage());
             }
         });
     }
 
+    /**
+     * Adds the new itemview to the given view. In this case, all location views will be added to the given Linearlayout
+     * @param view
+     * @param loc
+     */
     private void addView(final LinearLayout view, final GeocodeReverse loc) {
         final View itemView = LayoutInflater.from(getActivity()).inflate(
                 R.layout.item_location, view, false);
@@ -385,9 +317,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
 //            }
 //        });
     }
-
-
-    public static final int WEBVIEW_REQUEST_CODE = 100;
 
     private void loginFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
@@ -496,34 +425,22 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     }
 
     private void uploadOptonautData(Optograph optograph) {
-        Log.d("myTag", "uploadOptonautData id: " + optograph.getId() + " created_at: " + optograph.getCreated_atRFC3339());
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), "optograph");
+        String optographType;
+        if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
+
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-//                        Log.d("myTag"," onResponse body: "+response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
-                    Log.d("myTag", "response errorBody: " + response.errorBody());
-//                    Toast toast = Toast.makeText(getActivity(), "Failed to upload.", Toast.LENGTH_SHORT);
-//                    toast.setGravity(Gravity.CENTER, 0, 0);
-//                    toast.show();
                     Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
-                    Log.d("myTag", "parsing the JSON body failed.");
-//                    Toast toast = Toast.makeText(getActivity(), "Failed to upload", Toast.LENGTH_SHORT);
-//                    toast.setGravity(Gravity.CENTER, 0, 0);
-//                    toast.show();
                     Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
-                // do things for success
                 optograph.setIs_published(true);
                 optographGlobal = optograph;
                 uploadPlaceHolder(optograph);
@@ -531,7 +448,6 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", " onFailure: " + t.getMessage());
                 uploadProgress.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.VISIBLE);
 //                Toast.makeText(getActivity(), "No Internet Connection.", Toast.LENGTH_SHORT).show();
@@ -557,39 +473,130 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
         String holder = "";
-
-        if (dir.exists()) {// remove the not notation here
-            File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; ++i) {
-                File file = files[i];
-                if (file.isDirectory() && file.getName().equals("preview")) {
-                    for (String s : file.list()) {
-                        Log.d("myTag", " placeholder path to upload.");
-                        holder = file.getPath() + "/" + s;
-                        break;
+        if(UPLOAD_IMAGE_MODE) {
+            dir = new File(imagePath);
+            holder = dir.getAbsolutePath();
+        } else {
+            if (dir.exists()) {// remove the not notation here
+                File[] files = dir.listFiles();
+                for (int i = 0; i < files.length; ++i) {
+                    File file = files[i];
+                    if (file.isDirectory() && file.getName().equals("preview")) {
+                        for (String s : file.list()) {
+                            Log.d("myTag", " placeholder path to upload.");
+                            holder = file.getPath() + "/" + s;
+                            break;
+                        }
+                    } else {
+                        // ignore
                     }
-                } else {
-                    // ignore
                 }
             }
-        }
-        Log.d("myTag", "before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag", "left " + ctr + ": " + i);
-            ctr += 1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag", "right " + ctr2 + ": " + i);
-            ctr2 += 1;
+            Log.d("myTag", "before: ");
+            int ctr = 0;
+            for (boolean i : opto.getLeftFace().getStatus()) {
+                Log.d("myTag", "left " + ctr + ": " + i);
+                ctr += 1;
+            }
+            int ctr2 = 0;
+            for (boolean i : opto.getRightFace().getStatus()) {
+                Log.d("myTag", "right " + ctr2 + ": " + i);
+                ctr2 += 1;
+            }
         }
 
         new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.upload_button:
+                if ((userToken == null || userToken.equals("")) && doneUpload) {
+                    ((MainActivityRedesign) getActivity()).profileDialog();
+                } else if (doneUpload) {
+                    uploadProgress.setVisibility(View.VISIBLE);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
+
+                    optographGlobal.setText(descBox.getText().toString());
+//                    getLocalImage(optograph);
+
+                    if(UPLOAD_IMAGE_MODE) {
+                        createDefaultOptograph(optographGlobal);
+                        if (userToken != null && !userToken.isEmpty()) {
+                            Log.d("myTag", " Upload");
+                            uploadOptonautData(optographGlobal);
+                            Log.d("myTag", "done upload");
+                            updateOptograph(optographGlobal);
+                            Log.d("myTag", "done update");
+                            ((MainActivityRedesign) getActivity()).backToFeed();
+                        } else {
+                            Log.d("myTag", " must login to upload data");
+                        }
+                    } else
+                        updateOptograph(optographGlobal);
+                }
+                break;
+            case R.id.post_later_group:
+                if ((userToken == null || userToken.equals("")) && doneUpload) {
+                    ((MainActivityRedesign) getActivity()).profileDialog();
+                } else if (doneUpload) {
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
+                    ((MainActivityRedesign) getActivity()).backToFeed();
+                }
+                break;
+            case R.id.exit_button:
+                exitDialog();
+                break;
+            case R.id.retry_button:
+                //retryDialog();
+                exitDialog();
+                break;
+            case R.id.fb_share:
+                if (userToken == null || userToken.equals("")) {
+                    sharedNotLoginDialog();
+                    return;
+                } else if (cache.getBoolean(Cache.USER_FB_LOGGED_IN, false)) {
+                    isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+                    cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                    optographGlobal.setPostFacebook(isFBShare);
+                    initializeShareButtons();
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
+                    PersonManager.updatePerson();
+                    return;
+                }
+                loginFacebook();
+                Log.d("myTag","fbShareClicked.");
+                break;
+            case R.id.twitter_share:
+                if (userToken == null || userToken.equals("")) {
+                    sharedNotLoginDialog();
+                    return;
+                } else if (cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN, false)) {
+                    isTwitterShare = !cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+                    cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                    optographGlobal.setPostTwitter(isTwitterShare);
+                    initializeShareButtons();
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
+                    PersonManager.updatePerson();
+                    return;
+                }
+                loginTwitter();
+                break;
+            case R.id.insta_share:
+                if (userToken == null || userToken.equals("")) {
+                    sharedNotLoginDialog();
+                    return;
+                }
+                Snackbar.make(v, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+
+        }
 
     }
 
@@ -645,10 +652,11 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("asset", fileName, fbody)
-                .addFormDataPart("key", fileName.replace(".jpg", ""))
+                .addFormDataPart("key", "placeholder") //fileName.replace(".jpg", ""))
                 .build();
         Log.d("myTag", "asset: " + fileName + " key: " + fileName.replace(".jpg", ""));
-        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, (UPLOAD_IMAGE_MODE ? optoTypeTheta : optoType360), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Log.d("myTag", "onResponse uploadPlaceHolderImage isSuccess? " + response.isSuccess());
@@ -660,11 +668,14 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
                 optographGlobal.setIs_place_holder_uploaded(true);
                 doneUpload = true;
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, 1);
+
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                Snackbar.make(uploadButton, "Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
+                Log.d("myTag", "onFailure uploadImage: " + t.getMessage() + " ");
+                t.printStackTrace();
                 flag = 0;
             }
         });
@@ -918,7 +929,7 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
                 .addFormDataPart("key", face + side)
                 .build();
         Log.d("myTag", "asset: " + face + fileName + " key: " + face + fileName.replace(".jpg", ""));
-        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, (UPLOAD_IMAGE_MODE ? optoTypeTheta : optoType360), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
@@ -1024,4 +1035,5 @@ public class OptoImagePreviewFragment extends Fragment implements GoogleApiClien
     public void receiveFinishEvent(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("recordFinishedEvent");
     }
+
 }

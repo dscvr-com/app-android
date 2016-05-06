@@ -77,6 +77,9 @@ public interface ApiEndpoints {
     @POST("optographs/{id}/upload-asset")
     Call<LogInReturn.EmptyResponse> uploadOptoImage(@Path("id") String id,@Body RequestBody asset);
 
+    @POST("optographs/{id}/upload-asset-theta")
+    Call<LogInReturn.EmptyResponse> uploadThetaImage(@Path("id") String id,@Body RequestBody asset);
+
     @PUT("/optographs/{id}")
     Call<LogInReturn.EmptyResponse> updateOptograph(@Path("id") String id,@Body OptoDataUpdate data);
 

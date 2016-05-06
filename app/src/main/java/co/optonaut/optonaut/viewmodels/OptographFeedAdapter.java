@@ -51,6 +51,7 @@ import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.SnappyRecyclerView;
+import co.optonaut.optonaut.views.record.OptoImagePreviewFragment;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -566,8 +567,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 .addFormDataPart("asset", fileName, fbody)
                 .addFormDataPart("key", fileName.replace(".jpg",""))
                 .build();
-        Log.d("myTag","asset: "+fileName+" key: "+ fileName.replace(".jpg",""));
-        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+        Log.d("myTag", "asset: " + fileName + " key: " + fileName.replace(".jpg", ""));
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, OptoImagePreviewFragment.optoType360, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Log.d("myTag", "onResponse uploadPlaceHolderImage isSuccess? " + response.isSuccess());
@@ -726,7 +727,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 .addFormDataPart("key", face + side)
                 .build();
         Log.d("myTag","asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
-        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, OptoImagePreviewFragment.optoType360, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());

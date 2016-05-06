@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import co.optonaut.optonaut.model.FBSignInData;
 import co.optonaut.optonaut.model.GeocodeDetails;
@@ -59,6 +60,8 @@ public class ApiConsumer {
     public ApiConsumer(String token) {
         this.token = token;
         client = new OkHttpClient();
+        client.setConnectTimeout(10, TimeUnit.MINUTES);
+        client.setReadTimeout(10, TimeUnit.MINUTES);
         cache = Cache.open();
 
 //        client.interceptors().add(new Interceptor() {
@@ -83,7 +86,7 @@ public class ApiConsumer {
                 Request newRequest;
 
                 if(token!=null){// must have condition if the route uses auth token
-                    Log.d("myTag","auth token add as Header");
+                    Log.d("myTag","auth token add as Header " + token);
                     newRequest = chain.request().newBuilder()
                             .addHeader("User-Agent", "Retrofit-Sample-App")
                             .addHeader("Authorization", "Bearer "+token)
@@ -176,8 +179,19 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void uploadOptoImage(String optographId, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(optographId, data);
+    public void uploadOptoImage(String optographId, RequestBody data, String mode, Callback<LogInReturn.EmptyResponse> callback) {
+
+        Call<LogInReturn.EmptyResponse> call = null;
+
+        Timber.d("uploadOptoImage " + mode);
+        if(mode.equals("optograph")) call = service.uploadOptoImage(optographId, data);
+        else if (mode.equals("theta")) call = service.uploadThetaImage(optographId, data);
+
+        call.enqueue(callback);
+    }
+
+    public void uploadThetaImage(String optographId, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadThetaImage(optographId, data);
         call.enqueue(callback);
     }
 
