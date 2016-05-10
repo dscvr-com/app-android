@@ -83,6 +83,7 @@ public class Optograph implements Parcelable {
     private String hashtag_string;
     private boolean should_be_published;
     private boolean is_on_server;
+    private boolean is_data_uploaded;
     private boolean is_place_holder_uploaded;
     private boolean postFacebook;
     private boolean postTwitter;
@@ -117,6 +118,7 @@ public class Optograph implements Parcelable {
         leftFace = new FaceStatus();
         should_be_published = true;
         is_on_server = false;
+        is_data_uploaded = false;
         is_place_holder_uploaded = false;
         postFacebook = false;
         postTwitter = false;
@@ -149,6 +151,7 @@ public class Optograph implements Parcelable {
         this.leftFace = source.readParcelable(FaceStatus.class.getClassLoader());
         this.should_be_published = source.readByte()!=0;
         this.is_on_server = source.readByte()!=0;
+        this.is_data_uploaded = source.readByte()!=0;
         this.is_place_holder_uploaded = source.readByte()!=0;
         this.postFacebook = source.readByte()!=0;
         this.postTwitter = source.readByte()!=0;
@@ -170,6 +173,14 @@ public class Optograph implements Parcelable {
 
     public DateTime getCreated_atDateTime() {
         return RFC3339DateFormatter.fromRFC3339String(getCreated_at());
+    }
+
+    public boolean is_data_uploaded() {
+        return is_data_uploaded;
+    }
+
+    public void setIs_data_uploaded(boolean is_data_uploaded) {
+        this.is_data_uploaded = is_data_uploaded;
     }
 
     public boolean is_place_holder_uploaded() {
@@ -383,8 +394,9 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte) (this.is_local ? 1 : 0));
         dest.writeParcelable(this.rightFace, flags);
         dest.writeParcelable(this.leftFace,flags);
-        dest.writeByte((byte)(this.should_be_published?1:0));
+        dest.writeByte((byte) (this.should_be_published ? 1 : 0));
         dest.writeByte((byte)(this.is_on_server?1:0));
+        dest.writeByte((byte)(this.is_data_uploaded?1:0));
         dest.writeByte((byte)(this.is_place_holder_uploaded?1:0));
         dest.writeByte((byte)(this.postFacebook?1:0));
         dest.writeByte((byte)(this.postTwitter?1:0));

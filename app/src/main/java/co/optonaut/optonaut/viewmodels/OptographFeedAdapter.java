@@ -202,8 +202,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
-        Optograph optograph = optographs.get(position);
-        Log.d("myTag","feed optograhPersonId: "+optograph.getPerson().getId()+" optoId: "+optograph.getId());
+        Optograph optograph = optographs.get(position);//original
 
         if (optograph.is_local()) {
             String strings = " ID: "+optograph.getId()+" isOnServer? "+optograph.is_on_server()+" \n" +
@@ -316,15 +315,36 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.d("myTag", "isFbShare? " + optograph.isPostFacebook() + " isTwitShare? " + optograph.isPostTwitter()+" optoId: "+optograph.getId());
                     if (cache.getString(Cache.USER_TOKEN).equals("")) {
                         Snackbar.make(v,"Must login to upload.",Snackbar.LENGTH_SHORT);
                     } else {
+                        Log.d("myTag","upload bfore  optoId: "+optograph.getId()+" optograhPersonId: " +
+                                optograph.getPerson().getId()+" dataUpload? "+optograph.is_data_uploaded()+
+                                " placeHolderUpload? "+optograph.is_place_holder_uploaded()+" isFBShare? "+
+                                optograph.isPostFacebook()+" isTwitShare? "+optograph.isPostTwitter());
+                        apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
                         upload_progress.setVisibility(View.VISIBLE);
                         uploadButton.setVisibility(View.GONE);
+                        /*Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+                        res.moveToFirst();
+                        optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
+                        optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
+                        optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
+                        optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
+                        optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);*/
+                        Log.d("myTag", "upload after  optoId: " + optograph.getId() + " optograhPersonId: " +
+                                optograph.getPerson().getId() + " dataUpload? " + optograph.is_data_uploaded() +
+                                " placeHolderUpload? " + optograph.is_place_holder_uploaded() + " isFBShare? " +
+                                optograph.isPostFacebook() + " isTwitShare? " + optograph.isPostTwitter());
                         optoUpload = optograph;
-                        if (!optograph.is_place_holder_uploaded()) {
-                            Log.d("myTag","upload the data first.");
+                        if (!optograph.is_data_uploaded()) {
+                            Log.d("myTag", "upload the data first.");
                             uploadOptonautData(optograph);
+                        } else if (!optograph.is_place_holder_uploaded()) {
+                            Log.d("myTag", "upload the placeholder first.");
+                            optoUpload = optograph;
+                            uploadPlaceHolder(optograph);
                         } else {
                             Log.d("myTag","upload the 12 images");
                             updateOptograph(optograph);
@@ -382,6 +402,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
     private void updateOptograph(Optograph opto) {
+        Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
@@ -393,6 +414,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    uploadButton.setVisibility(View.VISIBLE);
+                upload_progress.setVisibility(View.GONE);
+                cache.save(Cache.UPLOAD_ON_GOING, false);
                     return;
                 }
                 getLocalImage(opto);
@@ -401,6 +425,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             @Override
             public void onFailure(Throwable t) {
                 Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
+                uploadButton.setVisibility(View.VISIBLE);
+                upload_progress.setVisibility(View.GONE);
+                cache.save(Cache.UPLOAD_ON_GOING, false);
             }
         });
     }
@@ -437,9 +464,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
-//                    Toast toast = Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT);
-//                    toast.setGravity(Gravity.CENTER, 0, 0);
-//                    toast.show();
                     Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
                     toUploadOrToHeart(optograph);
                     return;
@@ -447,9 +471,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 Optograph opto = response.body();
                 if (opto == null) {
                     Log.d("myTag", "parsing the JSON body failed.");
-//                    Toast toast = Toast.makeText(context, "Failed to upload", Toast.LENGTH_SHORT);
-//                    toast.setGravity(Gravity.CENTER, 0, 0);
-//                    toast.show();
                     Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
                     toUploadOrToHeart(optograph);
                     return;
@@ -539,7 +560,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             updateOptograph(optoUpload);
-//            getLocalImage(optoUpload);
         }
     }
 
@@ -858,9 +878,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         if (res.getCount()!=0) return;
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
         mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
-                opto.getCreated_at(),opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
+                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                 opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
-                opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0);
+                opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
+                opto.is_data_uploaded()?1:0);
     }
 
     public Optograph checkToDB(Optograph optograph) {
@@ -880,6 +901,11 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
         optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);
+        optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
+        Timber.d("checkToDB isFBShare? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0)+" Twit? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0)+" optoId: "+optograph.getId());
+        optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
+        optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
+        optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
         Cursor face = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
         face.moveToFirst();
         if (face.getCount()==0) return optograph;
