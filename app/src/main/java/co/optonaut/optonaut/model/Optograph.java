@@ -6,14 +6,17 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 
@@ -96,7 +99,7 @@ public class Optograph implements Parcelable {
 
     public Optograph(String id) {
         this.id = id;
-        created_at = RFC3339DateFormatter.toRFC3339String(DateTime.now());
+        created_at = RFC3339DateFormatter.toRFC3339String(DateTime.now().withZone(DateTimeZone.UTC));
         deleted_at = "";
         stitcher_version = "0.7.0";
         text = "";
@@ -229,16 +232,24 @@ public class Optograph implements Parcelable {
     }
 
     public String getCreated_atRFC3339() {
-        String date = getCreated_at();
-        String convDate = getCreated_at();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        try {
-            convDate = format.format(formatter.parse(date));
-        } catch (ParseException e) {
-            Log.e("myTag","Error parsing created_at");
-        }
-        return convDate;
+
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Date currentLocalTime = cal.getTime();
+        DateFormat date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        date.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        return date.format(currentLocalTime);
+
+//        String date = getCreated_at();
+//        String convDate = getCreated_at();
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//        try {
+//            convDate = format.format(formatter.parse(date));
+//        } catch (ParseException e) {
+//            Log.e("myTag","Error parsing created_at");
+//        }
+//        return convDate;
     }
 
     public FaceStatus getRightFace() {

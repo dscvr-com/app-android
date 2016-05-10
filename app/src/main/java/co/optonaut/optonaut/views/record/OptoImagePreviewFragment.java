@@ -114,7 +114,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
     @Bind(R.id.twitter_share) Button twitterShareButton;
     @Bind(R.id.insta_share) Button instaShareButton;
 
-//    private LinearLayout locationLayout;
+    //    private LinearLayout locationLayout;
     private Optograph optographGlobal;
     private String optographId;
     protected ApiConsumer apiConsumer;
@@ -236,6 +236,8 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
     private void updateOptograph(Optograph opto) {
         Log.d("myTag", "update optograph");
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+
+        Log.d("myTag", opto.getId() + " " + data.toString());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -427,6 +429,8 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
     private void uploadOptonautData(Optograph optograph) {
         String optographType;
         if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
+
+        Log.d("mytag", "TIME : " + optograph.getCreated_atRFC3339());
 
         OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
@@ -891,7 +895,8 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
             } else {
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
-                Snackbar.make(uploadButton,"Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
+                Log.d("myTag", "Not uploaded");
+//                Snackbar.make(uploadButton,"Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
             }
             ((MainActivityRedesign) getActivity()).backToFeed();
         }

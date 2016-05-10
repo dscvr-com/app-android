@@ -6,7 +6,7 @@ package co.optonaut.optonaut.model;
 public class OptoDataUpdate {
     final String text;
     final boolean is_private;
-    final boolean is_published;
+//    final boolean is_published;
     final boolean post_facebook;
     final boolean post_twitter;
 
@@ -14,8 +14,14 @@ public class OptoDataUpdate {
                           boolean post_twitter) {
         this.text = text;
         this.is_private = is_private;
-        this.is_published = is_published;
+//        this.is_published = is_published;
         this.post_facebook = post_facebook;
         this.post_twitter = post_twitter;
+    }
+
+    @Override
+    public String toString() {
+
+        return "{text:" + text + " is_private:" + is_private + " is_published:" + /*is_published */ " post_facebook:" + post_facebook + " post_twitter:" + post_twitter +"}";
     }
 }

@@ -15,12 +15,14 @@ import java.util.Locale;
 public class RFC3339DateFormatter {
     private static final DateTimeFormatter rfc3339Formatter1 = DateTimeFormat
                                                         .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSZ")
-                                                        .withZone(DateTimeZone.getDefault())
+//                                                        .withZone(DateTimeZone.getDefault())
+                                                        .withZone(DateTimeZone.UTC)
                                                         .withLocale(Locale.US)
                                                         .withChronology(ISOChronology.getInstance());
     private static final DateTimeFormatter rfc3339Formatter2 = DateTimeFormat
                                                         .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ssZ")
-                                                        .withZone(DateTimeZone.getDefault())
+//                                                        .withZone(DateTimeZone.getDefault())
+                                                        .withZone(DateTimeZone.UTC)
                                                         .withLocale(Locale.US)
                                                         .withChronology(ISOChronology.getInstance());
 

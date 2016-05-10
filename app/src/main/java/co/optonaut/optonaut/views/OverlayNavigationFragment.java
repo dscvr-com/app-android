@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.views;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -251,15 +253,36 @@ public class OverlayNavigationFragment extends Fragment implements View.OnClickL
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (GlobalState.isAnyJobRunning) {
                     Snackbar.make(view, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
                     return;
                 }
                 if (currentMode == FEED) {
-                    changeMode(PREVIEW_RECORD, false);
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Choose action")
+//                        .setMessage("Are you sure you want to delete this entry?")
+                            .setPositiveButton("Optograph", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    changeMode(PREVIEW_RECORD, false);
+                                }
+                            })
+                            .setNegativeButton("Upload Theta", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent();
+                                    // Show only images, no videos or anything else
+                                    intent.setType("image/*");
+                                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                                    // Always show the chooser (if there are multiple options available)
+                                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                                }
+                            })
+//                        .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
                 } else if (currentMode == PREVIEW_RECORD) {
                     changeMode(RECORDING, false);
                 }
+
             }
         });
 
