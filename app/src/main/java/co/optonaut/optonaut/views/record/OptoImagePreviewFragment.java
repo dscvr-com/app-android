@@ -254,7 +254,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
-                    Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
@@ -459,12 +459,12 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
-                    Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 optographGlobal.setIs_data_uploaded(true);
@@ -480,7 +480,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 uploadProgress.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.VISIBLE);
 //                Toast.makeText(getActivity(), "No Internet Connection.", Toast.LENGTH_SHORT).show();
-                Snackbar.make(getView(), "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -628,7 +628,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                     sharedNotLoginDialog();
                     return;
                 }
-                Snackbar.make(v, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(instaShareButton, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
                 break;
             default:
                 break;
