@@ -29,6 +29,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String OPTOGRAPH_IS_ON_SERVER = "optograph_is_on_server";
     public static final String OPTOGRAPH_UPDATED_AT = "optograph_updated_at";
     public static final String OPTOGRAPH_SHOULD_BE_PUBLISHED = "optograph_should_be_published";
+    public static final String OPTOGRAPH_IS_DATA_UPLOADED = "optograph_is_data_uploaded";
     public static final String OPTOGRAPH_IS_PLACEHOLDER_UPLOADED = "optograph_is_place_holder_uploaded";
     public static final String OPTOGRAPH_POST_FACEBOOK = "post_facebook";
     public static final String OPTOGRAPH_POST_TWITTER = "post_twitter";
@@ -68,6 +69,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_published integer not null, optograph_is_private integer not null," +
                         "optograph_is_stitcher_version text not null, optograph_is_in_feed integer not null," +
                         "optograph_is_on_server integer not null, optograph_updated_at text not null," +
+                        "optograph_is_data_uploaded integer not null,"+
                         "optograph_should_be_published integer not null, optograph_is_place_holder_uploaded integer not null," +
                         "post_facebook integer not null, post_twitter integer not null, post_instagram integer not null )"
 
@@ -94,7 +96,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    int isStarred,int sCount,int isPub,int isPri,String stitchVer,int isFeed,
                                    int onServer,String uAt,int shouldPublished,int isPHUploaded,int postFB,
-                                   int postTwit,int postInsta) {
+                                   int postTwit,int postInsta, int isDataUploaded) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -112,6 +114,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_ON_SERVER, onServer);
         contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
         contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED,shouldPublished);
+        contentValues.put(OPTOGRAPH_IS_DATA_UPLOADED,isDataUploaded);
         contentValues.put(OPTOGRAPH_IS_PLACEHOLDER_UPLOADED,isPHUploaded);
         contentValues.put(OPTOGRAPH_POST_FACEBOOK,postFB);
         contentValues.put(OPTOGRAPH_POST_TWITTER,postTwit);

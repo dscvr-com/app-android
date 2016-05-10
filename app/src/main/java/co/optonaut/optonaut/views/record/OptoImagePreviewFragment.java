@@ -28,8 +28,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -136,7 +134,6 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
     // Twitter
     private static Twitter twitter;
     private static RequestToken requestToken;
-    private AccessToken accessToken;
 
     private GeocodeReverse chosenLoc;
 
@@ -154,6 +151,11 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        // fb initialization
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.fragment_image_preview, container, false);
@@ -162,10 +164,6 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
         // get bundles
         optographId = getArguments().getString("id");
         imagePath = getArguments().getString("path");//randomUUID
-
-        // fb initialization
-        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
 
         // twitter
         TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
@@ -195,6 +193,14 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
         }, 60000);*/
 
         ButterKnife.bind(this, view);
+
+        isFBShare = cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+        isTwitterShare = cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+        Log.d("myTag","Preview isFbShare? "+isFBShare+" isTwitShare? "+isTwitterShare);
+        optographGlobal.setPostFacebook(isFBShare);
+        optographGlobal.setPostTwitter(isTwitterShare);
+        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
+        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
 
         initializeToolbar();
         initializeShareButtons();
@@ -235,6 +241,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
 
     private void updateOptograph(Optograph opto) {
         Log.d("myTag", "update optograph");
+        Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
 
         Log.d("myTag", opto.getId() + " " + data.toString());
@@ -257,7 +264,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
             public void onFailure(Throwable t) {
                 uploadProgress.setVisibility(View.INVISIBLE);
                 Log.d("myTag", t.getMessage());
-                Snackbar.make(getView(), "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -332,6 +339,8 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 cache.save(Cache.USER_FB_LOGGED_IN, true);
                 isFBShare = true;
                 cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                optographGlobal.setPostFacebook(isFBShare);
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, 1);
                 PersonManager.updatePerson();
                 initializeShareButtons();
             }
@@ -386,44 +395,57 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
         Log.d("myTag","resultCode "+Activity.RESULT_OK+" = "+resultCode+"? requestCode: "+requestCode);
         if (resultCode == Activity.RESULT_OK && requestCode==100) {
             String verifier = data.getExtras().getString("oauth_verifier");
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
-
-                        long userID = accessToken.getUserId();
-                        final User user = twitter.showUser(userID);
-                        String username = user.getName();
-                        cache.save(Cache.USER_TWITTER_TOKEN, accessToken.getToken());
-                        cache.save(Cache.USER_TWITTER_SECRET, accessToken.getTokenSecret());
-                        cache.save(Cache.USER_TWITTER_LOGGED_IN, true);
-
-                        Log.d("myTag", " screenName: " + accessToken.getScreenName() + " userId: " + accessToken.getUserId() + " " + accessToken.getTokenSecret());
-
-                        Log.d("myTag", "Hello " + username);
-                        isTwitterShare = true;
-                        cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
-                        optographGlobal.setPostTwitter(isTwitterShare);
-                        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, 1);
-                        initializeShareButtons();
-                    } catch (Exception e) {
-                        Log.e("Twitter Login Failed", " Error: " + e.toString());
-                        Snackbar.make(twitterShareButton, "Twitter Login Failed.", Snackbar.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            thread.start();
+            new TwitterLoggedIn().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, verifier);
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    class TwitterLoggedIn extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String verifier : params) {
+                try {
+                    AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
+
+                    long userID = accessToken.getUserId();
+                    final User user = twitter.showUser(userID);
+                    String username = user.getName();
+                    cache.save(Cache.USER_TWITTER_TOKEN, accessToken.getToken());
+                    cache.save(Cache.USER_TWITTER_SECRET, accessToken.getTokenSecret());
+                    cache.save(Cache.USER_TWITTER_LOGGED_IN, true);
+
+                    Log.d("myTag", " screenName: " + accessToken.getScreenName() + " userId: " + accessToken.getUserId() + " " + accessToken.getTokenSecret());
+
+                    Log.d("myTag", "Hello " + username);
+                } catch (Exception e) {
+                    Log.e("Twitter Login Failed", " Error: " + e.toString());
+                    Snackbar.make(twitterShareButton, "Twitter Login Failed.", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            isTwitterShare = true;
+            cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+            optographGlobal.setPostTwitter(isTwitterShare);
+            mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, 1);
+            initializeShareButtons();
+        }
+    }
+
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0);
+                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0);
     }
 
     private void uploadOptonautData(Optograph optograph) {
@@ -445,9 +467,12 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                     Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                optograph.setIs_published(true);
-                optographGlobal = optograph;
-                uploadPlaceHolder(optograph);
+                optographGlobal.setIs_data_uploaded(true);
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, 1);
+                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
+                // do things for success
+                optographGlobal.setIs_published(true);
+                uploadPlaceHolder(optographGlobal);
             }
 
             @Override
@@ -516,14 +541,15 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.upload_button:
+                userToken = cache.getString(Cache.USER_TOKEN);
                 if ((userToken == null || userToken.equals("")) && doneUpload) {
                     ((MainActivityRedesign) getActivity()).profileDialog();
                 } else if (doneUpload) {
+                    apiConsumer = new ApiConsumer(userToken);
                     uploadProgress.setVisibility(View.VISIBLE);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
-
                     optographGlobal.setText(descBox.getText().toString());
 //                    getLocalImage(optograph);
 
@@ -542,13 +568,17 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                     } else
                         updateOptograph(optographGlobal);
                 }
+
                 break;
             case R.id.post_later_group:
+                userToken = cache.getString(Cache.USER_TOKEN);
                 if ((userToken == null || userToken.equals("")) && doneUpload) {
                     ((MainActivityRedesign) getActivity()).profileDialog();
                 } else if (doneUpload) {
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, optographGlobal.isPostFacebook() ? 1 : 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, optographGlobal.isPostTwitter() ? 1 : 0);
                     ((MainActivityRedesign) getActivity()).backToFeed();
                 }
                 break;
@@ -560,6 +590,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 exitDialog();
                 break;
             case R.id.fb_share:
+                userToken = cache.getString(Cache.USER_TOKEN);
                 if (userToken == null || userToken.equals("")) {
                     sharedNotLoginDialog();
                     return;
@@ -573,9 +604,10 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                     return;
                 }
                 loginFacebook();
-                Log.d("myTag","fbShareClicked.");
+                Log.d("myTag", "fbShareClicked.");
                 break;
             case R.id.twitter_share:
+                userToken = cache.getString(Cache.USER_TOKEN);
                 if (userToken == null || userToken.equals("")) {
                     sharedNotLoginDialog();
                     return;
@@ -591,6 +623,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 loginTwitter();
                 break;
             case R.id.insta_share:
+                userToken = cache.getString(Cache.USER_TOKEN);
                 if (userToken == null || userToken.equals("")) {
                     sharedNotLoginDialog();
                     return;
