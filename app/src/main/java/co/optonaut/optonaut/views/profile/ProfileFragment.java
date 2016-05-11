@@ -310,9 +310,19 @@ public class ProfileFragment extends Fragment {
     }
 
     public static ProfileFragment newInstance(Person person) {
+
         ProfileFragment profileFragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putParcelable("person", person);
+        profileFragment.setArguments(args);
+        return profileFragment;
+    }
+
+    public static ProfileFragment newInstance(String id) {
+
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putString("id", id);
         profileFragment.setArguments(args);
         return profileFragment;
     }

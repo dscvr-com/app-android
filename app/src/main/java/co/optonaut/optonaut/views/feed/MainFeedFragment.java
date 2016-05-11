@@ -39,7 +39,6 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
 
     NetworkProblemDialog networkProblemDialog;
 
-
     private SensorManager sensorManager;
     private boolean inVRMode;
 

@@ -963,7 +963,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             profileBar = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
             descriptionBar = (RelativeLayout) itemView.findViewById(R.id.description_bar);
             optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
-            setInformationBarsVisible();
+//            setInformationBarsVisible();
         }
 
         private void setInformationBarsVisible() {
