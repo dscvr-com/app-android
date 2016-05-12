@@ -1,11 +1,13 @@
-package co.optonaut.optonaut.viewmodels;
+package co.optonaut.optonaut.views.new_design;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,9 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.optonaut.optonaut.BR;
-import co.optonaut.optonaut.FeedItemBinding;
+import co.optonaut.optonaut.NewFeedItemBinding;
 import co.optonaut.optonaut.R;
-import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;
@@ -47,6 +48,7 @@ import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.util.RFC3339DateFormatter;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.MainActivityRedesign;
@@ -94,40 +96,40 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     public OptographViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.
                 from(parent.getContext()).
-                inflate(R.layout.feed_item, parent, false);
+                inflate(R.layout.new_feed_item, parent, false);
 
         Optograph2DCubeView optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
 
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
         // TODO: add touch navigation and don't allow scrolling
-        optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (viewHolder.isNavigationModeCombined) {
-                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        Timber.v("detected single click in combined navigation");
-                        viewHolder.toggleNavigationMode();
-                        snappyRecyclerView.enableScrolling();
-                        // still return optograph2DCubeView for registering end of touching
-                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
-                    } else {
-                        Timber.v("pipe touch in combined navigation to optograph view");
-                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
-                    }
-                } else {
-                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        Timber.v("detected single click in simple navigation");
-                        viewHolder.toggleNavigationMode();
-                        snappyRecyclerView.disableScrolling();
-                        return true;
-                    } else {
-                        // need to return true here to prevent touch-stealing of parent!
-                        return true;
-                    }
-                }
-            }
-        });
+//        optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (viewHolder.isNavigationModeCombined) {
+//                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+//                        Timber.v("detected single click in combined navigation");
+//                        viewHolder.toggleNavigationMode();
+//                        snappyRecyclerView.enableScrolling();
+//                        // still return optograph2DCubeView for registering end of touching
+//                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
+//                    } else {
+//                        Timber.v("pipe touch in combined navigation to optograph view");
+//                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
+//                    }
+//                } else {
+//                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+//                        Timber.v("detected single click in simple navigation");
+//                        viewHolder.toggleNavigationMode();
+//                        snappyRecyclerView.disableScrolling();
+//                        return true;
+//                    } else {
+//                        // need to return true here to prevent touch-stealing of parent!
+//                        return true;
+//                    }
+//                }
+//            }
+//        });
 
         initializeProfileBar(itemView);
         initializeDescriptionBar(itemView);
@@ -139,8 +141,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         RelativeLayout rl = (RelativeLayout) itemView.findViewById(R.id.description_bar);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
 
-        int newMarginBottom = ITEM_HEIGHT - ((MainActivityRedesign) itemView.getContext()).getLowerBoundary() + lp.bottomMargin;
-        lp.setMargins(lp.leftMargin, lp.topMargin, lp.rightMargin, newMarginBottom);
+//        int newMarginBottom = ITEM_HEIGHT - ((MainActivityRedesign) itemView.getContext()).getLowerBoundary() + lp.bottomMargin;
+//        lp.setMargins(lp.leftMargin, lp.topMargin, lp.rightMargin, newMarginBottom);
         rl.setLayoutParams(lp);
 
         rl.setOnTouchListener(new View.OnTouchListener() {
@@ -158,8 +160,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
 
         // set margin and height
-        int newMarginTop = ((MainActivityRedesign) itemView.getContext()).getUpperBoundary();
-        lp.setMargins(0, newMarginTop, 0, 0);
+//        int newMarginTop = ((MainActivityRedesign) itemView.getContext()).getUpperBoundary();
+//        lp.setMargins(0, newMarginTop, 0, 0);
         rl.setLayoutParams(lp);
 
         rl.setOnTouchListener(new View.OnTouchListener() {
@@ -201,6 +203,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         snappyRecyclerView = (SnappyRecyclerView) recyclerView;
     }
 
+
+
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
@@ -226,9 +230,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             if (holder.getBinding().getOptograph() != null) {
                 // TODO: cancel request
             }
-            // span complete screen
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT); // (width, height)
+            // span half screen
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
             holder.itemView.setLayoutParams(params);
+
+            holder.optograph2DCubeView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, OptographDetailsActivity.class);
+                    intent.putExtra("opto", optograph);
+                    context.startActivity(intent);
+                }
+            });
 
             heart_label = (TextView) holder.itemView.findViewById(R.id.heart_label);
             heart_label.setTypeface(Constants.getInstance().getIconTypeface());
@@ -286,8 +299,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     });
                 } else {
 //                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
-                    MainActivityRedesign activity = (MainActivityRedesign) context;
-                    activity.prepareProfile(false);
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.prepareProfile(false);
                 }
             });
 
@@ -296,8 +309,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             profileView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainActivityRedesign activity = (MainActivityRedesign) context;
-                    activity.startProfile(optograph.getPerson(), null);
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.startProfile(optograph.getPerson(), null);
                 }
             });
 
@@ -362,33 +375,35 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             settingsLabel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
-                    popupMenu.inflate(R.menu.feed_item_menu);
-                    Menu menu = popupMenu.getMenu();
-                    MenuItem deleteItem = menu.findItem(R.id.delete_item);
 
-                    if (optograph.is_local() || optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
-                        deleteItem.setVisible(true);
-                    }
-
-                    //registering popup with OnMenuItemClickListener
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (item.getItemId() == R.id.share_item) {
-                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
-                                return true;
-                            } else if (item.getItemId() == R.id.report_item) {
-                                Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
-                                return true;
-                            } else if (item.getItemId() == R.id.delete_item) {
-                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
-                                return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    popupMenu.show();
+                    Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
+//                    PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
+//                    popupMenu.inflate(R.menu.feed_item_menu);
+//                    Menu menu = popupMenu.getMenu();
+//                    MenuItem deleteItem = menu.findItem(R.id.delete_item);
+//
+//                    if (optograph.is_local() || optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+//                        deleteItem.setVisible(true);
+//                    }
+//
+//                    //registering popup with OnMenuItemClickListener
+//                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                        public boolean onMenuItemClick(MenuItem item) {
+//                            if (item.getItemId() == R.id.share_item) {
+////                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
+//                                return true;
+//                            } else if (item.getItemId() == R.id.report_item) {
+//                                Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
+//                                return true;
+//                            } else if (item.getItemId() == R.id.delete_item) {
+//                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+//                                return true;
+//                            }
+//                            return false;
+//                        }
+//                    });
+//
+//                    popupMenu.show();
                 }
             });
 
@@ -950,7 +965,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
-        private FeedItemBinding binding;
+        private NewFeedItemBinding binding;
         RelativeLayout profileBar;
         RelativeLayout descriptionBar;
         private Optograph2DCubeView optograph2DCubeView;
@@ -969,7 +984,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         private void setInformationBarsVisible() {
             profileBar.setVisibility(View.VISIBLE);
             descriptionBar.setVisibility(View.VISIBLE);
-            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
+//            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
             // todo: unregister touch listener
             optograph2DCubeView.registerRendererOnSensors();
             isNavigationModeCombined = false;
@@ -978,13 +993,13 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         private void setInformationBarsInvisible() {
             profileBar.setVisibility(View.INVISIBLE);
             descriptionBar.setVisibility(View.INVISIBLE);
-            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
+//            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
             // todo: register touch listener
             optograph2DCubeView.unregisterRendererOnSensors();
             isNavigationModeCombined = true;
         }
 
-        public FeedItemBinding getBinding() {
+        public NewFeedItemBinding getBinding() {
             return binding;
         }
 

@@ -1,4 +1,4 @@
-package co.optonaut.optonaut.views.feed;
+package co.optonaut.optonaut.views.new_design;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,15 +15,16 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
+import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.VRModeActivity;
 import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
-import co.optonaut.optonaut.views.MainActivityRedesign;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -33,7 +34,7 @@ import timber.log.Timber;
  * @author Nilan Marktanner
  * @date 2015-12-15
  */
-public class MainFeedFragment extends OptographListFragment implements SensorEventListener {
+public class MainFeedFragment extends OptographListFragment implements View.OnClickListener {
     public static final String TAG = MainFeedFragment.class.getSimpleName();
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
 
@@ -49,45 +50,34 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         networkProblemDialog = new NetworkProblemDialog();
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        registerAccelerationListener();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        profileButton.setOnClickListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        unregisterAccelerationListener();
         BusProvider.getInstance().unregister(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        registerAccelerationListener();
         inVRMode = false;
         BusProvider.getInstance().register(this);
         if (GlobalState.shouldHardRefreshFeed) {
             initializeFeed();
         }
     }
-
-    private void registerAccelerationListener() {
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    private void unregisterAccelerationListener() {
-        sensorManager.unregisterListener(this);
-    }
-
 
     @Override
     protected void initializeFeed() {
@@ -127,53 +117,18 @@ public class MainFeedFragment extends OptographListFragment implements SensorEve
         // TODO: actually refresh data
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // only listen for Accelerometer if we did not yet start VR-activity and if we got an optograph
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && !inVRMode && !optographFeedAdapter.isEmpty()) {
-            // fire VRModeActivity if phone was turned
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-
-            float length = (float) Math.sqrt(x*x + y*y);
-            if (length < Constants.MINIMUM_AXIS_LENGTH) {
-                inVRPositionSince = null;
-
-                return;
-            }
-            if (x > y + Constants.ACCELERATION_EPSILON) {
-                if (inVRPositionSince == null) {
-                    inVRPositionSince = DateTime.now();
-                }
-                Interval timePassed = new Interval(inVRPositionSince, DateTime.now());
-                Duration duration = timePassed.toDuration();
-                long milliseconds = duration.getMillis();
-                if (milliseconds > MILLISECONDS_THRESHOLD_FOR_SWITCH) {
-                    switchToVRMode();
-                }
-            }
-        }
-    }
-
-    private void switchToVRMode() {
-        Timber.v("switching to VR mode");
-        inVRMode = true;
-        MainActivityRedesign activity = (MainActivityRedesign) getActivity();
-        activity.prepareVRMode();
-
-        Intent intent = new Intent(activity, VRModeActivity.class);
-        intent.putExtra("optograph", getCurrentOptograph());
-        activity.startActivity(intent);
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
     @Subscribe
     public void recordFinished(RecordFinishedEvent event) {
         initializeFeed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.profile_btn:
+                ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
+                break;
+        }
+
     }
 }
