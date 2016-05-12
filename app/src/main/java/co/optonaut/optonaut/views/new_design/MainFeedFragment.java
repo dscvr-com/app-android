@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;
@@ -19,6 +20,7 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.record.GlobalState;
+import co.optonaut.optonaut.record.Recorder;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
@@ -61,6 +63,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         super.onViewCreated(view, savedInstanceState);
 
         profileButton.setOnClickListener(this);
+        cameraButton.setOnClickListener(this);
+
     }
 
     @Override
@@ -127,6 +131,15 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         switch (v.getId()) {
             case R.id.profile_btn:
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
+                break;
+            case R.id.camera_btn:
+                if (GlobalState.isAnyJobRunning) {
+                    Snackbar.make(cameraButton, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), RecorderActivity.class);
+                startActivity(intent);
                 break;
         }
 

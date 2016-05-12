@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:background="@color/transparentOverlay"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/record_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal">
+
+        <ImageButton
+            android:id="@+id/record_button"
+            android:textColor="@color/bright"
+            android:background="@drawable/camera_selector"
+            android:layout_centerVertical="true"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:textSize="33dp"/>
+
+        <TextView
+            android:layout_below="@+id/record_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text=" "
+            android:textColor="@color/bright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9dp"/>
+
+        <ProgressBar
+            android:id="@+id/record_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:text="@string/record_instruction_press"
+        android:textSize="25sp"
+        android:textColor="@android:color/white"
+        android:visibility="visible">
+    </TextView>
+
+    <FrameLayout
+        android:id="@+id/camera_overlay"
+        android:background="@color/transparentOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" >
+
+        <View
+            android:id="@+id/angle_shade"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/angle_shade"
+            android:layout_gravity="center"
+            android:visibility="invisible">
+        </View>
+
+        <View
+            android:id="@+id/arrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@mipmap/arrow_img"
+            android:visibility="visible">
+        </View>
+
+        <View
+            android:id="@+id/angle"
+            android:layout_width="1dp"
+            android:layout_height="150dp"
+            android:layout_marginBottom="112dp"
+            android:background="@android:color/holo_red_light"
+            android:layout_gravity="center"
+            android:visibility="visible">
+        </View>
+
+        <View
+            android:id="@+id/arc"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:visibility="visible">
+        </View>
+
+        <View
+            android:id="@+id/line"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/line"
+            android:layout_gravity="center"
+            android:visibility="invisible">
+        </View>
+
+        <View
+            android:id="@+id/crosshair"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:background="@drawable/crosshair"
+            android:layout_gravity="center"
+            android:visibility="visible">
+        </View>
+
+        <View
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_margin="14dp"
+            android:background="@android:color/white"
+            android:visibility="visible">
+        </View>
+
+        <View
+            android:id="@+id/progress_point"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="50px"
+            android:layout_marginLeft="50px"
+            android:background="@drawable/tracking_point"
+            android:visibility="visible">
+        </View>
+
+    </FrameLayout>
+
+
+</FrameLayout>
