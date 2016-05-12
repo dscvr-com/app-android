@@ -18,6 +18,7 @@
     <color name="optonautMain">#343434</color>
     <color name="optonautMain_1">#8e8e8d</color>
     <color name="optonautMain_2">#ffbc00</color>
+    <color name="optonautMain_3">#99353535</color>
 
     <color name="transparentOverlay">#00777777</color>
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
@@ -38,4 +39,8 @@
     <color name="debugView2">#FF0000</color>
     <color name="debugView3">#FFFF00</color>
     <color name="debugView4">#00AA05</color>
+
+    <!-- Settings -->
+    <color name="text_active">#fecf5d</color>
+    <color name="text_inactive">#a5a5a5</color>
 </resources>

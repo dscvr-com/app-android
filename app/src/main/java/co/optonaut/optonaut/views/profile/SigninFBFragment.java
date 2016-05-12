@@ -71,7 +71,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_signin_fb, container, false);
 
-        useExistingBtn = (TextView) view.findViewById(R.id.use_existing_btn);
+//        useExistingBtn = (TextView) view.findViewById(R.id.use_existing_btn);
         useExistingBtn.setOnClickListener(this);
 
         fbButton = (LoginButton) view.findViewById(R.id.fb_button);
@@ -162,13 +162,13 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        /*switch (v.getId()) {
             case R.id.use_existing_btn:
                 Intent intent= new Intent(getActivity(), SignInActivity.class);
                 startActivityForResult(intent, signInRequestCode);
                 break;
             default:
                 break;
-        }
+        }*/
     }
 }

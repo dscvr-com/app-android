@@ -34,6 +34,12 @@ public class Constants {
     public static int MODE_NOBOT = 3; // Omits bottom ring
     public static int MODE_TINYDEBUG = 1337; // Three ring slices. Good for debugging state transistions during recording.
 
+    // Camera Settings
+    public static int ONE_RING_MODE = 0;
+    public static int THREE_RING_MODE = 1;
+    public static int MANUAL_MODE = 0;
+    public static int MOTOR_MODE = 1;
+
     private static final String MAIN_ICON_PATH = "logo-text-white-temporary.png";
     private static Constants constants;
     private static final String BLACK_DEFAULT_TEXTURE_PATH = "default_black.bmp";

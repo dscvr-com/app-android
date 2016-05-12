@@ -25,14 +25,16 @@
         android:contentInsetRight="0dp"
         android:contentInsetEnd="0dp"
         app:contentInsetRight="0dp"
-        app:contentInsetEnd="0dp">
+        app:contentInsetEnd="0dp"
+        android:visibility="gone">
 
         <RelativeLayout
             android:id="@+id/header_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp">
+            android:layout_marginRight="16dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/search_button"
@@ -84,6 +86,43 @@
     </android.support.v7.widget.Toolbar>
 
     <RelativeLayout
+        android:id="@+id/toolbar_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:layout_marginTop="25dp">
+
+        <RelativeLayout
+            android:id="@+id/header_overlay_bkp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <TextView
+                android:id="@+id/header_bkp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:drawableLeft="@drawable/logo_arrow_small_dark"
+                android:drawablePadding="7dp"
+                android:textSize="24dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"/>
+
+            <TextView
+                android:id="@+id/ptofile_button_toolbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:textSize="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:drawableStart="@drawable/profile_icn"/>
+        </RelativeLayout>
+    </RelativeLayout>
+    <RelativeLayout
         android:id="@+id/navigation_buttons"
         android:layout_width="match_parent"
         android:layout_height="126dp"
@@ -97,7 +136,8 @@
             android:layout_toLeftOf="@+id/record_group"
             android:layout_marginRight="40dp"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:visibility="gone">
             <Button
                 android:id="@+id/home_button"
                 android:clickable="false"
@@ -177,7 +217,8 @@
             android:layout_toLeftOf="@+id/record_group"
             android:background="@drawable/ring_selector"
             android:layout_margin="5dp"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:visibility="gone">
 
             <Button
                 android:background="@mipmap/ic_1ring"
@@ -234,7 +275,8 @@
             android:layout_toRightOf="@+id/record_group"
             android:background="@drawable/ring_selector"
             android:layout_margin="5dp"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:visibility="gone">
 
             <Button
                 android:layout_centerVertical="true"
@@ -253,7 +295,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="40dp">
+            android:layout_marginLeft="40dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/profile_button"

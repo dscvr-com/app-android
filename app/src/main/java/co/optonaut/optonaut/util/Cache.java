@@ -33,6 +33,8 @@ public class Cache {
     public static final String USER_TWITTER_LOGGED_IN = "USER_TWITTER_LOGGED_IN";
     public static final String POST_OPTO_TO_FB = "POST_OPTO_TO_FB";
     public static final String POST_OPTO_TO_TWITTER = "POST_OPTO_TO_TWITTER";
+    public static final String CAMERA_MODE = "CAMERA_MODE";
+    public static final String CAMERA_CAPTURE_TYPE = "CAMERA_CAPTURE_TYPE";
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 

@@ -2,28 +2,124 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="50dp"
-    android:layout_marginBottom="50dp"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    android:background="@drawable/login"
+    android:paddingTop="43.5dp"
+    android:paddingBottom="7.5dp"
+    android:paddingLeft="42.5dp"
+    android:paddingRight="42.5dp"
+    android:background="@color/optonautMain_3"
     tools:context=".views.profile.SigninFBFragment">
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo_big"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="44dp"/>
+
+    <EditText
+        android:id="@+id/username_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13.3sp"
+        android:drawableStart="@drawable/username_icn"
+        android:drawablePadding="12.5dp"
+        android:hint="Username"
+        android:paddingLeft="13.5dp"
+        android:layout_below="@id/logo"
+        android:layout_marginBottom="19dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <EditText
+        android:id="@+id/password_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13.3sp"
+        android:drawableStart="@drawable/password_icn"
+        android:drawablePadding="12.5dp"
+        android:hint="Password"
+        android:paddingLeft="13.5dp"
+        android:inputType="textPassword"
+        android:layout_below="@id/username_edit"
+        android:layout_marginBottom="23dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <ImageButton
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_btn"
+        android:layout_below="@id/password_edit"
+        android:layout_marginBottom="19dp"/>
+
+    <ImageButton
+        android:id="@+id/register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/register_btn"
+        android:layout_below="@id/login_button"
+        android:layout_marginBottom="22dp"/>
+
+    <LinearLayout
+        android:id="@+id/reset_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/register_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="3.5dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Forgot your password? "
+        android:textSize="10sp"
+        android:textColor="@android:color/white"/>
+    <TextView
+        android:id="@+id/reset_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:text="Reset here"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"
+        android:layout_below="@id/reset_layout"
+        android:layout_marginBottom="16.5dp"/>
+    
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fb_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/use_existing_btn"/>
+        android:layout_below="@id/line"/>
 
-    <TextView
+    <ImageButton
+        android:id="@+id/arrow_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/arrow_up_pulldown"
+        android:layout_centerHorizontal="true"/>
+
+    <!--<TextView
         android:id="@+id/use_existing_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="70dp"
-        android:text="@string/sign_in_use_existing" />
+        android:text="@string/sign_in_use_existing" />-->
 
 </RelativeLayout>
