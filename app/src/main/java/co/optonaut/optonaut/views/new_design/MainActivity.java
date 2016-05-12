@@ -19,8 +19,9 @@ import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int FEED_MODE = 0;
-    public static final int PROFILE_MODE = 1;
+    public static final int SHARING_MODE = 0;
+    public static final int FEED_MODE = 1;
+    public static final int PROFILE_MODE = 2;
     private FragmentPagerAdapter adapterViewPager;
     private ViewPager viewPager;
     private Cache cache;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.vpPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
+        viewPager.setCurrentItem(FEED_MODE, false);
 
     }
 
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 2;
+        private static int NUM_ITEMS = 3;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -75,9 +77,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: // Fragment # 0 - This will show FirstFragment
+                case 0:
+                    return SharingFragment.newInstance();
+                case 1:
                     return new MainFeedFragment();
-                case 1: // Fragment # 0 - This will show FirstFragment
+                case 2:
                     return ProfileFragment.newInstance("c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a");
 
                 default:
