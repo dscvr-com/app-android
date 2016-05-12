@@ -12,19 +12,48 @@
     <RelativeLayout
         android:id="@+id/coordLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/profile_bg">
 
+        <!--android:layout_marginTop="25dp"-->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/optonautMain"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="25dp"
             android:title=""
-            android:elevation="6dp"/>
+            android:elevation="6dp"
+            android:visibility="gone"/>
 
-        <com.triposo.barone.ScalingImageView
+        <RelativeLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="39dp">
+
+            <ImageButton
+                android:id="@+id/home_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_arrow_small_light"
+                android:background="@color/transparentOverlay"
+                android:layout_marginLeft="@dimen/fab_margin"
+                android:layout_marginTop="@dimen/fab_elevation"/>
+
+            <TextView
+                android:id="@+id/sign_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign out"
+                android:textStyle="bold"
+                android:textColor="@color/optonautMain_2"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:paddingTop="@dimen/fab_elevation"/>
+        </RelativeLayout>
+
+        <!--tools:src="@android:drawable/sym_def_app_icon"-->
+        <!--<com.triposo.barone.ScalingImageView
             android:id="@+id/person_avatar_asset"
             android:layout_width="75dp"
             android:layout_height="75dp"
@@ -32,8 +61,23 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/toolbar"
             android:clickable="true"
-            tools:src="@android:drawable/sym_def_app_icon"
-            app:person="@{person}" />
+            tools:src="@drawable/avatar_big"
+            app:person="@{person}" />-->
+
+        <!--android:background="@color/transparentOverlay"-->
+        <!--tools:src="@drawable/avatar_big"-->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/person_avatar_asset"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/toolbar_layout"
+            android:padding="2dp"
+            android:clickable="true"
+            app:person="@{person}"
+            app:civ_border_width="0dp"
+            android:background="@drawable/profile_avatar_background"/>
 
         <TextView
             android:id="@+id/person_name"
@@ -41,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/person_avatar_asset"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/optonautMain"
+            android:textColor="@color/optonautMain_2"
             android:textStyle="bold"
             android:text="@{person.display_name}"/>
 
@@ -57,14 +101,34 @@
             android:textSize="12sp"
             android:text="@{person.display_name}"/>
 
+        <!--android:background="@{person.is_followed == true? @drawable/login_btn:@drawable/register_btn}"-->
+        <Button
+            android:id="@+id/person_is_followed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/person_name_edit"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/optonautMain"
+            android:textStyle="bold"
+            android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
+
+        <View
+            android:id="@+id/line_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/optonautMain_2"
+            android:layout_below="@id/person_is_followed"
+            android:layout_marginBottom="@dimen/navigation_padding_bottom"
+            android:layout_marginTop="@dimen/navigation_padding_bottom"/>
+
         <TextView
             android:id="@+id/person_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/person_name"
+            android:layout_below="@+id/line_1"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:textColor="@color/optonautMain"
+            android:textColor="@color/bright"
             android:textStyle="bold"
             android:text="@{person.text}"/>
 
@@ -72,33 +136,34 @@
             android:id="@+id/person_desc_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/person_name_edit"
+            android:layout_below="@+id/line_1"
             android:layout_centerHorizontal="true"
             android:textStyle="bold"
             android:textSize="12sp"
-            android:textColor="@color/optonautMain"
+            android:textColor="@color/bright"
             android:visibility="invisible"
             android:text="@{person.text}"/>
 
-        <Button
-            android:id="@+id/person_is_followed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/person_desc_edit"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/optonautMain"
-            android:textStyle="bold"
-            android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}" />
+        <View
+            android:id="@+id/line_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/optonautMain_2"
+            android:layout_below="@id/person_desc_edit"
+            android:layout_marginTop="@dimen/navigation_padding_bottom"/>
 
+        <!--android:layout_marginLeft="50dp"-->
+        <!--android:layout_marginRight="50dp"-->
         <LinearLayout
             android:id="@+id/person_following_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/person_is_followed"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_below="@+id/line_2"
+            android:paddingBottom="@dimen/navigation_padding_top_default"
+            android:paddingTop="@dimen/navigation_padding_top_default"
             android:weightSum="3"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/profile_columns_bg">
 
             <TextView
                 android:id="@+id/person_optographs_count"
@@ -106,9 +171,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textColor="@color/settingsFontColor"
+                android:textColor="@color/bright"
                 android:textStyle="bold"
                 android:text='@{String.valueOf(person.optographs_count) + "\n Posts"}'/>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"/>
 
             <TextView
                 android:id="@+id/person_followers_count"
@@ -116,9 +186,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textColor="@color/settingsFontColor"
+                android:textColor="@color/bright"
                 android:textStyle="bold"
                 android:text='@{String.valueOf(person.followers_count) + "\n Followers"}'/>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"/>
 
             <TextView
                 android:id="@+id/person_followed_count"
@@ -126,11 +201,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textColor="@color/settingsFontColor"
+                android:textColor="@color/bright"
                 android:textStyle="bold"
                 android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
-
-
         </LinearLayout>
 
         <FrameLayout

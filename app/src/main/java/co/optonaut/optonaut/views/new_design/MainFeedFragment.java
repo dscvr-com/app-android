@@ -61,6 +61,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         super.onViewCreated(view, savedInstanceState);
 
         profileButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(this);
     }
 
     @Override
@@ -127,6 +128,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         switch (v.getId()) {
             case R.id.profile_btn:
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
+                break;
+            case R.id.settings_btn:
+                ((MainActivity) getActivity()).setSettings();
                 break;
         }
 

@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views.new_design;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,7 @@ import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.GestureDetectors;
+import co.optonaut.optonaut.views.SettingsActivity;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void setPage(int page) {
         viewPager.setCurrentItem(page, true);
+    }
+
+    public void setSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void initializeComponents() {
@@ -91,5 +98,12 @@ public class MainActivity extends AppCompatActivity {
             return "Page " + position;
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem()==PROFILE_MODE) {
+            setPage(FEED_MODE);
+        } else super.onBackPressed();
     }
 }

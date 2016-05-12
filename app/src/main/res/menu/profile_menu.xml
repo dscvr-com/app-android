@@ -6,12 +6,13 @@
         android:id="@+id/action_signout"
         android:orderInCategory="100"
         android:title="@string/profile_sign_out"
-        app:showAsAction="never" />
+        app:showAsAction="always"
+        android:icon="@drawable/share_icn"/>
     <item
         android:id="@+id/action_save"
         android:orderInCategory="200"
         android:title="Save"
         app:showAsAction="always"
-        android:visible="false" />
+        android:visible="false"/>
 
 </menu>

@@ -36,7 +36,6 @@
     <color name="locationFontColor">#3C3C3C</color>
     <color name="ringSelector">#555555</color>
 
-
     <!-- Feed -->
     <color name="informationBar">#333333</color>
 
@@ -48,4 +47,8 @@
     <!-- Settings -->
     <color name="text_active">#fecf5d</color>
     <color name="text_inactive">#a5a5a5</color>
+
+    <!-- Profile -->
+    <color name="profile_columns_bg">#5e5e5e</color>
+    <color name="profile_bg">#252525</color>
 </resources>
