@@ -64,7 +64,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
         profileButton.setOnClickListener(this);
         cameraButton.setOnClickListener(this);
-
+        settingsButton.setOnClickListener(this);
     }
 
     @Override
@@ -140,6 +140,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
                 Intent intent = new Intent(getActivity(), RecorderActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.settings_btn:
+                ((MainActivity) getActivity()).setSettings();
                 break;
         }
 

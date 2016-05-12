@@ -41,6 +41,7 @@ import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.views.MainActivityRedesign;
+import co.optonaut.optonaut.views.new_design.MainActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -50,7 +51,7 @@ import timber.log.Timber;
  * @author Nilan Marktanner
  * @date 2015-12-04
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = ProfileFragment.class.getSimpleName();
     private Person person;
     private ProfileBinding binding;
@@ -94,13 +95,16 @@ public class ProfileFragment extends Fragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment, container, false);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (person != null) {
             binding.setVariable(BR.person, person);
             binding.executePendingBindings();
             initializeProfileFeed();
         }
+
+        binding.homeBtn.setOnClickListener(this);
+        binding.signOut.setOnClickListener(this);
 
         return binding.getRoot();
     }
@@ -186,11 +190,13 @@ public class ProfileFragment extends Fragment {
     private void initializeProfileFeed() {
 
         Timber.d("USERID : %s", person.getId());
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(person.getDisplay_name());
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(person.getDisplay_name());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
 
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
             binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
+//            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
         }
 
         getActivity().invalidateOptionsMenu();
@@ -327,6 +333,19 @@ public class ProfileFragment extends Fragment {
         return profileFragment;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.home_btn:
+                ((MainActivity)getActivity()).onBackPressed();
+                break;
+            case R.id.sign_out:
+                cache.save(Cache.USER_ID, "");
+                cache.save(Cache.USER_TOKEN, "");
 
-
+                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+                LoginManager.getInstance().logOut();
+                break;
+        }
+    }
 }
