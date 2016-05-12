@@ -18,6 +18,7 @@
     <color name="feed_bar">#77343434</color>
     <color name="feed_text_yellow">#ffbc00</color>
     <color name="feed_text_white">#ffffff</color>
+    <color name="sharing">#353535</color>
 
     <!-- New IAM360 Colors -->
     <color name="optonautMain">#343434</color>

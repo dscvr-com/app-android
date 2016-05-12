@@ -37,8 +37,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/logo_arrow_small_light"
                 android:background="@color/transparentOverlay"
-                android:layout_marginLeft="@dimen/fab_margin"
-                android:layout_marginTop="@dimen/fab_elevation"/>
+                android:layout_marginLeft="@dimen/fab_margin"/>
 
             <TextView
                 android:id="@+id/sign_out"

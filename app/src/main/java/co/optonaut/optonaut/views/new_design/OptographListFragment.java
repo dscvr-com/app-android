@@ -32,6 +32,7 @@ public abstract class OptographListFragment extends Fragment {
 
     @Bind(R.id.optographFeed) protected SnappyRecyclerView recList;
     @Bind(R.id.profile_btn) protected ImageButton profileButton;
+    @Bind(R.id.camera_btn) protected ImageButton cameraButton;
     @Bind(R.id.settings_btn) protected ImageButton settingsButton;
 
     public OptographListFragment() {
