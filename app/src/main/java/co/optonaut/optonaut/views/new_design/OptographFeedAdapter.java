@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -65,20 +66,20 @@ import timber.log.Timber;
  */
 public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdapter.OptographViewHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
-    List<Optograph> optographs;
+    private List<Optograph> optographs;
     private SnappyRecyclerView snappyRecyclerView;
 
     protected ApiConsumer apiConsumer;
-    Cache cache;
-    Optograph optoUpload;
-    Context context;
+    private Cache cache;
+    private Optograph optoUpload;
+    private Context context;
+    private DBHelper mydb;
 
-    DBHelper mydb;
-
-    ProgressBar upload_progress;
-    TextView uploadButton;
-    TextView heart_label;
-    boolean userLikesOptograph = false;
+    private ProgressBar upload_progress;
+    private TextView uploadButton;
+    private TextView heart_label;
+    private SwipeLayout swipeLayout;
+    private boolean userLikesOptograph = false;
 
     public OptographFeedAdapter(Context context) {
         this.context = context;
@@ -87,7 +88,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         cache = Cache.open();
 
         String token = cache.getString(Cache.USER_TOKEN);
-        Log.d("myTag", "token: " + token);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         mydb = new DBHelper(context);
     }
@@ -190,7 +190,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         TextView timeAgoLabel = (TextView) itemView.findViewById(R.id.time_ago);
         timeAgoLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
 
-
         TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_button);
         settingsLabel.setTypeface(Constants.getInstance().getIconTypeface());
         settingsLabel.setText(String.valueOf((char) 0xe904));
@@ -208,20 +207,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
-
-        if (optograph.is_local()) {
-            String strings = " ID: "+optograph.getId()+" isOnServer? "+optograph.is_on_server()+" \n" +
-                    "shouldBePub? "+optograph.isShould_be_published()+" L0: "+optograph.getLeftFace().getStatus()[0]+
-                    "\n L1: "+optograph.getLeftFace().getStatus()[1]+" L2: "+optograph.getLeftFace().getStatus()[2]+
-                    "\n L3: "+optograph.getLeftFace().getStatus()[3]+" L4: "+optograph.getLeftFace().getStatus()[4]+
-                    "\n L5: "+optograph.getLeftFace().getStatus()[5]+" R0: "+optograph.getRightFace().getStatus()[0]+
-                    "\n R1: "+optograph.getRightFace().getStatus()[1]+" R2: "+optograph.getRightFace().getStatus()[2]+
-                    "\n R3: "+optograph.getRightFace().getStatus()[3]+" R4: "+optograph.getRightFace().getStatus()[4]+
-                    "\n R5: "+optograph.getRightFace().getStatus()[5];
-            Log.d("myTag","onBindViewHolder: "+strings);
-        } else {
-            Log.d("myTag"," star counts: "+optograph.getStars_count()+ " is_starredByUser: "+optograph.is_starred());
-        }
 
 //        userLikesOptograph = optograph.is_starred();
         // reset view holder if we got new optograh
