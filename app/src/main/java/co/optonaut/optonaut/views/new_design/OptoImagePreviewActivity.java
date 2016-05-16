@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -96,9 +97,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
     @Bind(R.id.location_layout) LinearLayout locationLayout;
 
-    @Bind(R.id.fb_share) Button fbShareButton;
-    @Bind(R.id.twitter_share) Button twitterShareButton;
-    @Bind(R.id.insta_share) Button instaShareButton;
+    @Bind(R.id.fb_share) ImageButton fbShareButton;
+    @Bind(R.id.twitter_share) ImageButton twitterShareButton;
+    @Bind(R.id.insta_share) ImageButton instaShareButton;
 
     private Optograph optographGlobal;
     private String optographId;
@@ -173,7 +174,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
         mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
 
-        initializeToolbar();
+//        initializeToolbar();
         initializeShareButtons();
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
@@ -706,12 +707,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     private void initializeShareButtons() {
         Log.d("myTag", "initializeShare fb: " + cache.getBoolean(Cache.POST_OPTO_TO_FB, false) + " twitter: " + cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
         if (cache.getBoolean(Cache.POST_OPTO_TO_FB, false)) {
-            fbShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
-        } else fbShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));
+//            fbShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
+            fbShareButton.setBackgroundResource(R.drawable.facebook_share_active);
+        } else /*fbShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));*/ fbShareButton.setBackgroundResource(R.drawable.facebook_share_inactive);
         if (cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false)) {
-            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
+//            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
+            twitterShareButton.setBackgroundResource(R.drawable.twitter_share_active);
         } else
-            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));
+//            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));
+        twitterShareButton.setBackgroundResource(R.drawable.twitter_share_inactive);
     }
 
     class UpdatePersonSocialData extends AsyncTask<Void,Void,Void> {

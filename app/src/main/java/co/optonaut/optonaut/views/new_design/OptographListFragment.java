@@ -34,6 +34,7 @@ public abstract class OptographListFragment extends Fragment {
     @Bind(R.id.profile_btn) protected ImageButton profileButton;
     @Bind(R.id.camera_btn) protected ImageButton cameraButton;
     @Bind(R.id.settings_btn) protected ImageButton settingsButton;
+    @Bind(R.id.theta_btn) protected ImageButton thetaButton;
 
     public OptographListFragment() {
     }

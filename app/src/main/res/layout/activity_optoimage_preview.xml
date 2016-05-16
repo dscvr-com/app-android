@@ -9,126 +9,48 @@
         android:id="@+id/statusbar"
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:background="@color/colorPrimaryDark"></RelativeLayout>
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="39dp"
-        android:background="@color/colorPrimary"
-        android:contentInsetEnd="0dp"
-        android:contentInsetLeft="0dp"
-        android:contentInsetRight="0dp"
-        android:contentInsetStart="0dp"
-        android:elevation="0dp"
-        android:theme="@style/AppTheme.ActionBar"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp">
-
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
-                android:drawablePadding="7dp"
-                android:text="SAVE THE MOMENT"
-                android:textColor="@color/bright"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/exit_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/transparentOverlay"
-                android:drawableStart="@drawable/abc_ic_clear_mtrl_alpha"
-                android:textColor="@color/bright" />
-
-            <Button
-                android:id="@+id/settings_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:background="@color/transparentOverlay"
-                android:drawableRight="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
-                android:textColor="@color/bright" />
-
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+        android:background="@color/colorPrimaryDark"
+        android:visibility="gone"></RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="64dp">
+        android:layout_height="match_parent">
 
         <com.flaviofaria.kenburnsview.KenBurnsView
             android:id="@+id/preview_image"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="253dp"
             android:scaleType="centerCrop" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:drawableStart="@drawable/location_hand_icn"
+            android:drawablePadding="@dimen/fab_elevation"
+            android:text="Move the Image to select your favorite spot."
+            android:textColor="@android:color/white"
+            android:layout_alignBottom="@id/preview_image"
+            android:layout_marginBottom="15dp"
+            android:textSize="12sp"
+            android:visibility="gone"/>
 
+        <!--android:padding="@dimen/snackbar_padding_vertical"-->
         <LinearLayout
             android:id="@+id/location_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@id/preview_image"
-            android:padding="@dimen/snackbar_padding_vertical">
+            android:paddingLeft="9.5dp"
+            android:layout_marginTop="12dp">
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/share_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="126dp"
-            android:layout_alignParentBottom="true"
-            android:paddingLeft="@dimen/snackbar_padding_vertical_2lines"
-            android:paddingRight="@dimen/snackbar_padding_vertical_2lines">
-            <Button
-                android:id="@+id/fb_share"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Facebook"/>
-            <Button
-                android:id="@+id/twitter_share"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="twitter"
-                android:layout_alignParentRight="true"/>
-            <Button
-                android:id="@+id/insta_share"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="insta"
-                android:layout_below="@id/fb_share"/>
-            <Button
-                android:id="@+id/more_share"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="more"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/twitter_share"/>
-
-        </RelativeLayout>
-
         <HorizontalScrollView
+            android:id="@+id/location_scroll_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="9.5dp"
             android:layout_below="@+id/preview_image" >
 
             <LinearLayout
@@ -136,10 +58,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/place_icn"
+                    android:layout_marginRight="@dimen/fab_elevation"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Location : "/>
+                    android:text="Add Location"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"/>
 
                 <LinearLayout
                     android:id="@+id/location_layout"
@@ -153,23 +82,11 @@
 
         </HorizontalScrollView>
 
-        <EditText
-            android:id="@+id/description_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/snackbar_padding_vertical"
-            android:layout_below="@id/location_box"
-            android:layout_above="@id/share_group"
-            android:textSize="14sp"
-            android:hint="Tell something about what you see..." />
-
-    </RelativeLayout>
-
-    <RelativeLayout
+        <RelativeLayout
         android:id="@+id/navigation_buttons"
         android:layout_width="match_parent"
-        android:layout_height="126dp"
-        android:layout_gravity="bottom"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/black_gradient">
 
         <RelativeLayout
@@ -213,16 +130,16 @@
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
             android:clickable="true"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:layout_marginTop="28dp">
 
             <Button
                 android:id="@+id/upload_button"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_centerVertical="true"
-                android:background="@drawable/record_button_shape"
-                android:textColor="@color/bright"
-                android:textSize="33dp" />
+                android:background="@drawable/save_arrow_icn"
+                android:textColor="@color/bright"/>
 
             <ProgressBar
                 android:id="@+id/upload_progress"
@@ -241,7 +158,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@+id/upload_group">
+            android:layout_toRightOf="@+id/upload_group"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/post_later_button"
@@ -276,4 +194,113 @@
 
         </RelativeLayout>
     </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/share_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="24dp"
+            android:paddingTop="@dimen/fab_margin"
+            android:paddingBottom="@dimen/fab_margin"
+            android:layout_above="@id/navigation_buttons">
+            <ImageButton
+                android:id="@+id/fb_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/facebook_share_inactive"/>
+            <ImageButton
+                android:id="@+id/twitter_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/twitter_share_inactive"/>
+            <ImageButton
+                android:id="@+id/insta_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_below="@id/fb_share"
+                android:background="@drawable/instagram_share_inactive"/>
+            <ImageButton
+                android:id="@+id/more_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/twitter_share"
+                android:background="@drawable/more_share_inactive"/>
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/description_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/fab_elevation"
+            android:layout_below="@id/location_scroll_layout"
+            android:layout_above="@id/share_group"
+            android:textSize="14sp"
+            android:hint="Tell something about what you see..."
+            android:background="@drawable/preview_textbox_bg"
+            android:layout_marginRight="@dimen/fab_elevation"
+            android:layout_marginLeft="@dimen/fab_elevation"
+            android:inputType="textMultiLine"/>
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="42.5dp"
+        android:background="@color/preview_toolbar_bg"
+        android:contentInsetEnd="0dp"
+        android:contentInsetLeft="0dp"
+        android:contentInsetRight="0dp"
+        android:contentInsetStart="0dp"
+        android:elevation="0dp"
+        android:theme="@style/AppTheme.ActionBar"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="11dp"
+            android:layout_marginRight="11dp">
+
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:drawablePadding="7dp"
+                android:text="Save the Moment"
+                android:textColor="@color/optonautMain_2"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/exit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparentOverlay"
+                android:drawableStart="@drawable/back_arrow_icn"
+                android:textColor="@color/bright" />
+
+            <Button
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@color/transparentOverlay"
+                android:drawableRight="@drawable/earth_icn"
+                android:textColor="@color/bright" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
 </FrameLayout>

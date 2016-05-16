@@ -2,35 +2,31 @@ package co.optonaut.optonaut.views.new_design;
 
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
+import android.graphics.Bitmap;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
+
+import java.io.IOException;
+import java.util.UUID;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.record.GlobalState;
-import co.optonaut.optonaut.record.Recorder;
-import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.GeneralUtils;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
-import co.optonaut.optonaut.views.MainActivityRedesign;
-import co.optonaut.optonaut.views.VRModeActivity;
 import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
-
 
 /**
  * @author Nilan Marktanner
@@ -47,6 +43,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     private DateTime inVRPositionSince;
 
+    private int PICK_IMAGE_REQUEST = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +62,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         profileButton.setOnClickListener(this);
         cameraButton.setOnClickListener(this);
         settingsButton.setOnClickListener(this);
+        thetaButton.setOnClickListener(this);
     }
 
     @Override
@@ -142,8 +140,37 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 startActivity(intent);
                 break;
             case R.id.settings_btn:
-                ((MainActivity) getActivity()).setSettings();
+                ((MainActivity) getActivity()).startSettings();
                 break;
+            case R.id.theta_btn:
+                Intent intent1 = new Intent();
+                // Show only images, no videos or anything else
+                intent1.setType("image/*");
+                intent1.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent1, "Select Picture"), PICK_IMAGE_REQUEST);
+                break;
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+
+                MainActivity activity = (MainActivity) getActivity();
+                activity.startImagePreview(UUID.randomUUID(), new GeneralUtils().getRealPathFromURI(getActivity(), uri));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

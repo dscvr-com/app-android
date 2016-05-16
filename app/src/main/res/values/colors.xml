@@ -46,10 +46,13 @@
     <color name="debugView4">#00AA05</color>
 
     <!-- Settings -->
-    <color name="text_active">#fecf5d</color>
+    <color name="text_active">#fecf5c</color>
     <color name="text_inactive">#a5a5a5</color>
 
     <!-- Profile -->
     <color name="profile_columns_bg">#5e5e5e</color>
     <color name="profile_bg">#252525</color>
+
+    <!-- Preview -->
+    <color name="preview_toolbar_bg">#3f474c</color>
 </resources>

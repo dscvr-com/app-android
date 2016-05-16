@@ -99,19 +99,20 @@
     
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fb_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
+        android:padding="@dimen/fab_margin"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/line"/>
 
-    <ImageButton
+    <!--<ImageButton
         android:id="@+id/arrow_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/arrow_up_pulldown"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"/>-->
 
     <!--<TextView
         android:id="@+id/use_existing_btn"

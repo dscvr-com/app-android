@@ -7,9 +7,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+
+import java.util.UUID;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
@@ -19,6 +22,7 @@ import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.SettingsActivity;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
+import co.optonaut.optonaut.views.profile.SigninFBFragment;
 
 public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
@@ -44,11 +48,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setPage(int page) {
+        Log.d("myTag","setPage: "+page);
         viewPager.setCurrentItem(page, true);
     }
 
-    public void setSettings() {
+    public void startSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void startImagePreview(UUID id, String imagePath) {
+        Intent intent = new Intent(this, OptoImagePreviewActivity.class);
+        intent.putExtra("id", id.toString());
+        if(imagePath != null) intent.putExtra("path", imagePath);
         startActivity(intent);
     }
 
@@ -69,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 3;
+        private Cache cache;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+            cache = Cache.open();
         }
 
         // Returns total number of pages
@@ -89,7 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new MainFeedFragment();
                 case 2:
-                    return ProfileFragment.newInstance("c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a");
+                    Log.d("myTag","page 2 token: "+cache.getString(Cache.USER_TOKEN));
+                    if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
+                        return SigninFBFragment.newInstance("","");
+                    } else
+                    return ProfileFragment.newInstance(cache.getString(Cache.USER_ID));
 
                 default:
                     return null;
@@ -106,8 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("myTag","onBackPressed. "+viewPager.getCurrentItem()+" == "+PROFILE_MODE);
         if (viewPager.getCurrentItem()==PROFILE_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
+    }
+
+    public void onBack() {
+        // TODO: how to update the page of profile after login
+        onBackPressed();
     }
 }
