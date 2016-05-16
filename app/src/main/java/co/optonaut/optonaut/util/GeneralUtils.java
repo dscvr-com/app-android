@@ -1,15 +1,23 @@
 package co.optonaut.optonaut.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.view.WindowManager;
 
 import timber.log.Timber;
 
 public class GeneralUtils {
 
+    /**
+     * For the gallery image picker
+     * @param context
+     * @param contentUri
+     * @return
+     */
     public String getRealPathFromURI(Context context, Uri contentUri) {
 
         // ContentType1 = content://com.android.providers.media.documents/document/image:3951
@@ -64,4 +72,27 @@ public class GeneralUtils {
         }
 
     }
+
+    /**
+     * For activities with translucent layout below the status bar
+     * @param context
+     * @return
+     */
+    public int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public void setStatusBarTranslucent(Activity activity, boolean makeTranslucent) {
+        if (makeTranslucent) {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        } else {
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
+
 }

@@ -78,7 +78,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     private ProgressBar upload_progress;
     private TextView uploadButton;
     private TextView heart_label;
-    private SwipeLayout swipeLayout;
     private boolean userLikesOptograph = false;
 
     public OptographFeedAdapter(Context context) {
@@ -359,7 +358,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 }
             });
 
-            updateHeartLabel(optograph,holder);
+            updateHeartLabel(optograph, holder);
 
             // setup sharing
             TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_button);
@@ -395,6 +394,38 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //                    });
 //
 //                    popupMenu.show();
+                }
+            });
+
+            SwipeLayout swipeLayout = (SwipeLayout) holder.itemView.findViewById(R.id.swipe_layout);
+            swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
+                @Override
+                public void onStartOpen(SwipeLayout layout) {}
+
+                @Override
+                public void onOpen(SwipeLayout layout) {
+//                    swipeLayout.close();
+//                    swipeLayout.close(true);
+                }
+
+                @Override
+                public void onStartClose(SwipeLayout layout) {}
+
+                @Override
+                public void onClose(SwipeLayout layout) {}
+
+                @Override
+                public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {}
+
+                @Override
+                public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {}
+            });
+
+            LinearLayout barSwipe = (LinearLayout) holder.itemView.findViewById(R.id.bar_swipe);
+            barSwipe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    swipeLayout.open();
                 }
             });
 

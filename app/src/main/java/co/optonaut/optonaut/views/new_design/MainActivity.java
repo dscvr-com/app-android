@@ -18,6 +18,7 @@ import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.DBHelper;
+import co.optonaut.optonaut.util.GeneralUtils;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.SettingsActivity;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
@@ -43,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapterViewPager);
         viewPager.setCurrentItem(FEED_MODE, false);
 
-        setStatusBarTranslucent(true);
+//        new GeneralUtils().setStatusBarTranslucent(this, true);
+//        setStatusBarTranslucent(true);
+//        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
     }
 
     protected void setStatusBarTranslucent(boolean makeTranslucent) {
