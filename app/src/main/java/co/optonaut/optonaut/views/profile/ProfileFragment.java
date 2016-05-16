@@ -337,7 +337,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_btn:
-                ((MainActivity)getActivity()).onBackPressed();
+                if(getActivity() instanceof MainActivity)
+                    ((MainActivity)getActivity()).onBackPressed();
+                else getActivity().finish();
                 break;
             case R.id.sign_out:
                 cache.save(Cache.USER_ID, "");

@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,6 +38,8 @@ public abstract class OptographListFragment extends Fragment {
     @Bind(R.id.camera_btn) protected ImageButton cameraButton;
     @Bind(R.id.settings_btn) protected ImageButton settingsButton;
     @Bind(R.id.theta_btn) protected ImageButton thetaButton;
+    @Bind(R.id.header_logo) protected ImageButton headerLogoButton;
+    @Bind(R.id.sliding_layout) protected SlidingUpPanelLayout slidingUpPanelLayout;
 
     public OptographListFragment() {
     }
@@ -62,11 +67,6 @@ public abstract class OptographListFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        recList = (SnappyRecyclerView) view.findViewById(R.id.optographFeed);
-        // our children have fixed size
-//        recList.setHasFixedSize(true);
-//        SnappyLinearLayoutManager llm = new SnappyLinearLayoutManager(view.getContext());
-//        llm.setOrientation(SnappyLinearLayoutManager.VERTICAL);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);

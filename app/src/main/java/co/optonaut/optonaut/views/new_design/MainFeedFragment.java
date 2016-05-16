@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
@@ -63,6 +64,36 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         cameraButton.setOnClickListener(this);
         settingsButton.setOnClickListener(this);
         thetaButton.setOnClickListener(this);
+        headerLogoButton.setOnClickListener(this);
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                profileButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                switch (newState) {
+                    case EXPANDED:
+                        profileButton.setVisibility(View.GONE);
+                        break;
+                    case COLLAPSED:
+                        profileButton.setVisibility(View.VISIBLE);
+                        break;
+                    case ANCHORED:
+                        profileButton.setVisibility(View.VISIBLE);
+                        break;
+                    case HIDDEN:
+                        profileButton.setVisibility(View.VISIBLE);
+                        break;
+                    case DRAGGING:
+                        profileButton.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
+
     }
 
     @Override
@@ -141,6 +172,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 break;
             case R.id.settings_btn:
                 ((MainActivity) getActivity()).startSettings();
+                break;
+            case R.id.header_logo:
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
                 Intent intent1 = new Intent();

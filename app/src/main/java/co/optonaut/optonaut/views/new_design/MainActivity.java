@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.WindowManager;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
@@ -19,6 +21,7 @@ import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.DBHelper;
+import co.optonaut.optonaut.util.GeneralUtils;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.SettingsActivity;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
@@ -45,6 +48,17 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapterViewPager);
         viewPager.setCurrentItem(FEED_MODE, false);
 
+//        new GeneralUtils().setStatusBarTranslucent(this, true);
+//        setStatusBarTranslucent(true);
+//        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
+    }
+
+    protected void setStatusBarTranslucent(boolean makeTranslucent) {
+        if (makeTranslucent) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
     }
 
     public void setPage(int page) {

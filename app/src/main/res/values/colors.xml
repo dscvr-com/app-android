@@ -15,7 +15,7 @@
     <color name="optonautMain_bkp">#EF4836</color>
 
     <!-- Feeds -->
-    <color name="feed_bar">#77343434</color>
+    <color name="feed_bar">#DD343434</color>
     <color name="feed_text_yellow">#ffbc00</color>
     <color name="feed_text_white">#ffffff</color>
     <color name="sharing">#353535</color>
