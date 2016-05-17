@@ -3,6 +3,7 @@ package co.optonaut.optonaut.views.feed;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,8 +54,10 @@ public abstract class OptographGridFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recList = (RecyclerView) view.findViewById(R.id.optographFeed);
-        recList.setHasFixedSize(true);
-        GridLayoutManager llm = new GridLayoutManager(view.getContext(), NUM_COLUMNS);
+//        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+//        GridLayoutManager llm = new GridLayoutManager(view.getContext(), NUM_COLUMNS);
         recList.setLayoutManager(llm);
         recList.setAdapter(optographFeedAdapter);
         recList.setItemViewCacheSize(10);

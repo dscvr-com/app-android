@@ -16,10 +16,42 @@
             android:id="@+id/optograph2dview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:background="@android:color/black"
             android:scaleType="fitStart"
             android:layout_gravity="start|top"
             app:optograph_preview="@{optograph}"/>
 
+        <RelativeLayout
+            android:id="@+id/description_bar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:background="@color/feed_bar" >
+
+            <co.optonaut.optonaut.views.ExpandableTextView
+                android:id="@+id/description_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:layout_marginLeft="16dp"
+                android:maxWidth="288dp"
+                app:trimLength="32"
+                android:layout_centerVertical="true"
+                android:text="@{optograph.text}"/>
+
+            <TextView
+                android:id="@+id/heart_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/bright"
+                android:paddingBottom="3dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@+id/description_label"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"/>
+
+        </RelativeLayout>
+
     </FrameLayout>
+
 </layout>

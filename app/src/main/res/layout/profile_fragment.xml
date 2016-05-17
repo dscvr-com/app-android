@@ -46,6 +46,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/optonautMain_2"
                 android:layout_alignParentEnd="true"
+                android:visibility="gone"
                 android:layout_marginRight="@dimen/fab_margin"
                 android:paddingTop="@dimen/fab_elevation"/>
         </RelativeLayout>
@@ -103,10 +104,11 @@
         <Button
             android:id="@+id/person_is_followed"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:layout_below="@+id/person_name_edit"
             android:layout_centerHorizontal="true"
             android:textColor="@color/profile_btn_text"
+            android:textSize="12sp"
             android:background="@color/profile_btn"
             android:textStyle="bold"
             android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
@@ -156,23 +158,18 @@
         <LinearLayout
             android:id="@+id/person_following_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_below="@+id/line_2"
-            android:paddingBottom="@dimen/navigation_padding_top_default"
-            android:paddingTop="@dimen/navigation_padding_top_default"
-            android:weightSum="3"
-            android:gravity="center"
             android:orientation="horizontal"
+            android:gravity="center"
             android:background="@color/profile_columns_bg">
 
             <TextView
                 android:id="@+id/person_optographs_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
                 android:textColor="@color/profile_columns_text"
-                android:text='@{String.valueOf(person.optographs_count) + "\n Posts"}'/>
+                android:text='@{String.valueOf(person.optographs_count) + " Posts"}'/>
 
             <View
                 android:layout_width="1dp"
@@ -207,13 +204,21 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
+
         </LinearLayout>
+
+        <View
+            android:id="@+id/line_3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/optonautMain_2"
+            android:layout_below="@id/person_following_bar" />
 
         <FrameLayout
             android:id="@+id/feed_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/person_following_bar"
+            android:layout_below="@id/line_3"
             >
 
         </FrameLayout>
