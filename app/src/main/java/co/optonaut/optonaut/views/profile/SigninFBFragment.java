@@ -105,8 +105,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
             public void onSuccess(LoginResult loginResult) {
                 Timber.d("FB Result : " + loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
 
-                loginButton.setClickable(false);
-                registerButton.setClickable(false);
+                setButtonsClickable(false);
                 apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
                     @Override
                     public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
@@ -116,6 +115,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                             Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
+                            setButtonsClickable(true);
                             return;
                         }
                         LogInReturn login = response.body();
@@ -123,6 +123,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                             Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
+                            setButtonsClickable(true);
                             return;
                         }
                         Timber.d("Login : " + login.getId() + " " + login.getToken());
@@ -142,6 +143,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                     public void onFailure(Throwable t) {
                         Timber.d("Failure " + t.toString());
                         LoginManager.getInstance().logOut();
+
+                        setButtonsClickable(true);
 
                         Bundle bundle = new Bundle();
                         bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
@@ -176,15 +179,17 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
                     Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
+                    setButtonsClickable(true);
                     return;
                 }
                 LogInReturn login = response.body();
                 if (login==null) {
                     Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
+                    setButtonsClickable(true);
                     return;
                 }
 
@@ -204,8 +209,9 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onFailure(Throwable t) {
                 Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER,0,0);
+                toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
+                setButtonsClickable(true);
             }
         });
     }
@@ -235,23 +241,22 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                 startActivityForResult(intent, signInRequestCode);
                 break;*/
             case R.id.login_button:
-                Log.d("myTag","login clicked.");
-                registerButton.setClickable(false);
-                fbButton.setClickable(false);
+                Log.d("myTag", "login clicked.");
+                setButtonsClickable(false);
                 login(userNameText.getText().toString(), passwordText.getText().toString());
                 break;
             case R.id.register_button:
                 Log.d("myTag","register clicked.");
                 if (!userNameText.getText().toString().isEmpty()) {
-                    loginButton.setClickable(false);
-                    fbButton.setClickable(false);
+                    setButtonsClickable(false);
                     apiConsumer.signUp(new SignInData(userNameText.getText().toString(), passwordText.getText().toString()),new Callback<SignUpReturn>() {
                         @Override
                         public void onResponse(Response<SignUpReturn> response, Retrofit retrofit) {
                             if (!response.isSuccess()) {
                                 Toast toast = Toast.makeText(getActivity(), "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
-                                toast.setGravity(Gravity.CENTER,0,0);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
+                                setButtonsClickable(true);
                                 return;
                             }
                             SignUpReturn signUpReturn = response.body();
@@ -266,6 +271,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                             }
 
                             Timber.d(response.toString());
+                            setButtonsClickable(true);
                         }
 
                         @Override
@@ -273,6 +279,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                             Toast toast = Toast.makeText(getActivity(), "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
+                            setButtonsClickable(true);
                         }
                     });
                 }
@@ -280,5 +287,11 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
             default:
                 break;
         }
+    }
+
+    private void setButtonsClickable(boolean clickable) {
+        registerButton.setClickable(clickable);
+        loginButton.setClickable(clickable);
+        fbButton.setClickable(clickable);
     }
 }

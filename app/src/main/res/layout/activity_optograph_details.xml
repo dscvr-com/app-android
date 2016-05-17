@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data class=".OptographDetailsBinding">
+
         <import type="co.optonaut.optonaut.model.Optograph" />
+
         <import type="co.optonaut.optonaut.model.Person" />
+
         <import type="co.optonaut.optonaut.model.Location" />
+
         <variable
             name="optograph"
             type="Optograph" />
+
         <variable
             name="person"
             type="Person" />
+
         <variable
             name="location"
             type="Location" />
@@ -23,11 +30,75 @@
 
         <co.optonaut.optonaut.opengl.Optograph2DCubeView
             android:id="@+id/optograph2dview"
-            android:background="@color/transparentOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            app:optograph="@{optograph}"/>
+            android:background="@color/transparentOverlay"
+            app:optograph="@{optograph}" />
+
+
+        <RelativeLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+
+            <ImageButton
+                android:id="@+id/header_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="6dp"
+                android:background="@drawable/logo_arrow_small_dark" />
+
+
+            <ImageButton
+                android:id="@+id/profile_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/profile_icn" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/menu_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/fab_size_normal"
+            android:paddingTop="@dimen/fab_size_normal"
+            android:layout_marginRight="@dimen/fab_elevation"
+            android:layout_marginLeft="@dimen/fab_elevation">
+
+            <ImageButton
+                android:id="@+id/arrow_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/arrow_down_icn"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/arrow_menu"
+                android:layout_centerHorizontal="true">
+                <ImageButton
+                    android:id="@+id/little_planet_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/little_planet_inactive_icn"
+                    android:layout_marginTop="@dimen/fab_elevation"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/gyro_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gyro_inactive_icn"
+                    android:layout_marginTop="@dimen/fab_elevation"
+                    android:visibility="gone"/>
+            </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/profile_bar"
@@ -37,15 +108,15 @@
             android:background="@color/feed_bar">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:background="@color/transparentOverlay"
                 android:id="@+id/person_avatar_asset"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
-                android:layout_alignParentLeft="true"
-                app:person="@{person}"
-                app:civ_border_width="0dp"/>
+                android:background="@color/transparentOverlay"
+                app:civ_border_width="0dp"
+                app:person="@{person}" />
 
             <RelativeLayout
                 android:id="@+id/person_location_information"
@@ -57,15 +128,15 @@
 
                 <TextView
                     android:id="@+id/person_name_label"
-                    android:layout_above="@+id/dummy"
-                    android:layout_gravity="top"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_above="@+id/dummy"
                     android:layout_alignParentLeft="true"
-                    android:textColor="@color/feed_text_yellow"
-                    android:textSize="15dp"
+                    android:layout_gravity="top"
                     android:layout_marginBottom="0dp"
-                    android:text="@{person.display_name}" />
+                    android:text="@{person.display_name}"
+                    android:textColor="@color/feed_text_yellow"
+                    android:textSize="15dp" />
 
                 <View
                     android:id="@+id/dummy"
@@ -73,16 +144,17 @@
                     android:layout_height="1dp"
                     android:layout_centerVertical="true"
                     android:visibility="invisible" />
+
                 <TextView
                     android:id="@+id/location_label"
-                    android:layout_below="@+id/dummy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:textColor="@color/feed_text_white"
+                    android:layout_below="@+id/dummy"
                     android:layout_marginTop="0dp"
-                    android:textSize="11dp"
-                    android:text="@{location.text}"/>
+                    android:text="@{location.text}"
+                    android:textColor="@color/feed_text_white"
+                    android:textSize="11dp" />
 
             </RelativeLayout>
 
@@ -90,33 +162,33 @@
                 android:id="@+id/heart_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
-                android:paddingBottom="3dp"
-                android:layout_toLeftOf="@+id/settings_button"
                 android:layout_centerVertical="true"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp"
+                android:layout_toLeftOf="@+id/settings_button"
+                android:paddingBottom="3dp"
+                android:textColor="@color/bright" />
 
             <TextView
                 android:id="@+id/settings_button"
                 android:layout_width="wrap_content"
                 android:layout_height="21dp"
-                android:textSize="21dp"
-                android:textColor="@color/settingsFontColor"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="16dp"/>
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/settingsFontColor"
+                android:textSize="21dp" />
 
             <TextView
                 android:id="@+id/time_ago"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/timeAgoFontColor"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/settings_button"
                 android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/settings_button"
+                android:textColor="@color/timeAgoFontColor"
                 android:textSize="11dp"
                 android:visibility="gone"
-                app:createdAt="@{optograph.created_at}"/>
+                app:createdAt="@{optograph.created_at}" />
 
         </RelativeLayout>
 
@@ -132,47 +204,47 @@
                 android:id="@+id/private_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
                 android:layout_marginLeft="0dp"
-                android:visibility="gone"
-                android:layout_toLeftOf="@+id/description_label"/>
+                android:layout_toLeftOf="@+id/description_label"
+                android:textColor="@color/bright"
+                android:visibility="gone" />
 
             <co.optonaut.optonaut.views.ExpandableTextView
                 android:id="@+id/description_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
                 android:layout_marginLeft="16dp"
                 android:maxWidth="288dp"
-                app:trimLength="32"
-                android:text="@{optograph.text}"/>
+                android:text="@{optograph.text}"
+                android:textColor="@color/bright"
+                app:trimLength="32" />
 
             <TextView
                 android:id="@+id/feed_upload_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
-                android:paddingBottom="3dp"
-                android:layout_alignParentRight="true"
                 android:layout_alignBottom="@+id/description_label"
-                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
-                android:text="upload"
+                android:layout_marginRight="16dp"
                 android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
-                android:visibility="gone"/>
+                android:paddingBottom="3dp"
+                android:text="upload"
+                android:textColor="@color/bright"
+                android:visibility="gone" />
 
             <ProgressBar
                 android:id="@+id/feed_upload_progress"
+                style="@android:style/Widget.ProgressBar.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
-                android:paddingBottom="3dp"
-                android:layout_alignParentRight="true"
                 android:layout_alignBottom="@+id/description_label"
-                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
-                style="@android:style/Widget.ProgressBar.Inverse"
-                android:visibility="gone"/>
+                android:layout_marginRight="16dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/bright"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
