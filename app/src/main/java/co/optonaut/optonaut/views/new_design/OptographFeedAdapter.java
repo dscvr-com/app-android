@@ -380,7 +380,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 //                        public boolean onMenuItemClick(MenuItem item) {
 //                            if (item.getItemId() == R.id.share_item) {
-////                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
+//                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
 //                                return true;
 //                            } else if (item.getItemId() == R.id.report_item) {
 //                                Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
@@ -398,12 +398,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             });
 
             SwipeLayout swipeLayout = (SwipeLayout) holder.itemView.findViewById(R.id.swipe_layout);
+            LinearLayout barSwipe = (LinearLayout) holder.itemView.findViewById(R.id.bar_swipe);
+
             swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
                 @Override
-                public void onStartOpen(SwipeLayout layout) {}
+                public void onStartOpen(SwipeLayout layout) {
+                    barSwipe.setVisibility(View.GONE);
+                }
 
                 @Override
                 public void onOpen(SwipeLayout layout) {
+                    ((MainActivity) context).setOptograph(optograph);
 //                    swipeLayout.close();
 //                    swipeLayout.close(true);
                 }
@@ -412,7 +417,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 public void onStartClose(SwipeLayout layout) {}
 
                 @Override
-                public void onClose(SwipeLayout layout) {}
+                public void onClose(SwipeLayout layout) {
+                    barSwipe.setVisibility(View.VISIBLE);
+                }
 
                 @Override
                 public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {}
@@ -421,11 +428,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {}
             });
 
-            LinearLayout barSwipe = (LinearLayout) holder.itemView.findViewById(R.id.bar_swipe);
             barSwipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     swipeLayout.open();
+                    ((MainActivity) context).setOptograph(optograph);
+                    ((MainActivity) context).setPage(MainActivity.SHARING_MODE);
                 }
             });
 

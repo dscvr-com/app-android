@@ -33,7 +33,7 @@ import rx.schedulers.Schedulers;
  * @author Nilan Marktanner
  * @date 2015-12-15
  */
-public class MainFeedFragment extends OptographListFragment implements View.OnClickListener {
+public class MainFeedFragment extends OptographListFragment implements View.OnClickListener, Updateable {
     public static final String TAG = MainFeedFragment.class.getSimpleName();
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
 
@@ -206,6 +206,11 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 e.printStackTrace();
             }
         }
+
+    }
+
+    @Override
+    public void update() {
 
     }
 }

@@ -17,6 +17,7 @@ import com.facebook.appevents.AppEventsLogger;
 import java.util.UUID;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.sensors.CoreMotionListener;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
@@ -26,12 +27,13 @@ import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.SettingsActivity;
 import co.optonaut.optonaut.views.profile.ProfileFragment;
 import co.optonaut.optonaut.views.profile.SigninFBFragment;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
     public static final int PROFILE_MODE = 2;
-    private FragmentPagerAdapter adapterViewPager;
+    private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
     private Cache cache;
 
@@ -48,6 +50,25 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapterViewPager);
         viewPager.setCurrentItem(FEED_MODE, false);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == SHARING_MODE) {
+                    adapterViewPager.getSharingFragment().updateOptograph();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
 //        new GeneralUtils().setStatusBarTranslucent(this, true);
 //        setStatusBarTranslucent(true);
 //        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
@@ -62,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setPage(int page) {
-        Log.d("myTag","setPage: "+page);
         viewPager.setCurrentItem(page, true);
     }
 
@@ -76,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("id", id.toString());
         if(imagePath != null) intent.putExtra("path", imagePath);
         startActivity(intent);
+    }
+
+    public void setOptograph(Optograph optograph) {
+        adapterViewPager.updateShare(optograph);
+//        this.optograph = optograph;
     }
 
     private void initializeComponents() {
@@ -93,9 +118,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+    public class MyPagerAdapter extends FragmentPagerAdapter {
+        private int NUM_ITEMS = 3;
         private Cache cache;
+        private SharingFragment sharingFragment;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -113,7 +139,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return SharingFragment.newInstance();
+                    sharingFragment = new SharingFragment();
+                    return sharingFragment;
+//                    return SharingFragment.newInstance();
                 case 1:
                     return new MainFeedFragment();
                 case 2:
@@ -128,6 +156,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        @Override
+        public int getItemPosition(Object object) {
+            if(object instanceof  SharingFragment) {
+            }
+            return super.getItemPosition(object);
+        }
+
+        public void updateShare(Optograph optograph) {
+            sharingFragment.setOptograph(optograph);
+        }
+
+        public SharingFragment getSharingFragment() {
+            return sharingFragment;
+        }
+
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position) {
@@ -138,8 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("myTag","onBackPressed. "+viewPager.getCurrentItem()+" == "+PROFILE_MODE);
-        if (viewPager.getCurrentItem()==PROFILE_MODE) {
+        if (viewPager.getCurrentItem() != FEED_MODE ) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
     }
