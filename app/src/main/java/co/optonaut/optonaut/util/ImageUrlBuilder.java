@@ -65,8 +65,8 @@ public class ImageUrlBuilder {
         String id = optograph.getId();
         if (!optograph.is_local()) {
             String sideLetter = isLeftId ? "l" : "r";
-//            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
-            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/placeholder.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id);
+            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
+//            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/placeholder.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id);
             String signedUrl = getSignedUrl(urlPartToSign);
             return signedUrl;
         } else {

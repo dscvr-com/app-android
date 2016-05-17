@@ -147,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new MainFeedFragment();
                 case 2:
-                    Log.d("myTag","page 2 token: "+cache.getString(Cache.USER_TOKEN));
-                    if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
-                        return SigninFBFragment.newInstance("","");
-                    } else
-                    return ProfileFragment.newInstance(cache.getString(Cache.USER_ID));
+//                    if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
+//                        return SigninFBFragment.newInstance("","");
+//                    } else
+//                    return ProfileFragment.newInstance(cache.getString(Cache.USER_ID));
+                    return ProfileFragment.newInstance("c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a");
 
                 default:
                     return null;

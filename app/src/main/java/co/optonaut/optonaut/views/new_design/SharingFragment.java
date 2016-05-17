@@ -4,6 +4,7 @@ package co.optonaut.optonaut.views.new_design;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -104,12 +107,10 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         if (optograph.is_local()) {
             Picasso.with(previewImg.getContext())
                     .load(new File(uri))
-//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
                     .into(previewImg);
         } else {
             Picasso.with(previewImg.getContext())
                     .load(uri)
-//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
                     .into(previewImg);
         }
 
@@ -117,32 +118,43 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        String shareUrl = ImageUrlBuilder.buildWebViewerUrl(optograph.getShare_alias());
+        if(optograph != null) {
+            String shareUrl = ImageUrlBuilder.buildWebViewerUrl(optograph.getShare_alias());
 
-        switch(v.getId()) {
-            case R.id.copy_share_btn:
-                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(getResources().getString(R.string.share_body_web_viewer), shareUrl);
-                clipboard.setPrimaryClip(clip);
-                Snackbar.make(copyBtn, getResources().getString(R.string.share_copy_to_clipboard), Snackbar.LENGTH_SHORT).show();
-                break;
-            case R.id.email_share_btn:
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("message/rfc822");
-                i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_body_web_viewer));
-                i.putExtra(Intent.EXTRA_TEXT   , shareUrl);
-                try {
-                    startActivity(Intent.createChooser(i, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Snackbar.make(emailBtn, getResources().getString(R.string.share_email_error), Snackbar.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.fb_share_btn:
-                break;
-            case R.id.twitter_share_btn:
-                break;
-            case R.id.messenger_share_btn:
-                break;
+            switch (v.getId()) {
+                case R.id.copy_share_btn:
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(getResources().getString(R.string.share_body_web_viewer), shareUrl);
+                    clipboard.setPrimaryClip(clip);
+                    Snackbar.make(copyBtn, getResources().getString(R.string.share_copy_to_clipboard), Snackbar.LENGTH_SHORT).show();
+                    break;
+                case R.id.email_share_btn:
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("message/rfc822");
+                    i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
+                    i.putExtra(Intent.EXTRA_TEXT, shareUrl);
+                    try {
+                        startActivity(Intent.createChooser(i, "Send mail..."));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Snackbar.make(emailBtn, getResources().getString(R.string.share_email_error), Snackbar.LENGTH_SHORT).show();
+                    }
+                    break;
+                case R.id.fb_share_btn:
+                    ShareDialog shareDialog = new ShareDialog(this);
+                    ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                            .setContentTitle(getResources().getString(R.string.share_subject_web_viewer))
+                            .setContentDescription(
+                                    optograph.getText())
+                            .setContentUrl(Uri.parse(shareUrl))
+                            .build();
+
+                    shareDialog.show(linkContent);
+                    break;
+                case R.id.twitter_share_btn:
+                    break;
+                case R.id.messenger_share_btn:
+                    break;
+            }
         }
     }
 }

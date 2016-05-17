@@ -1,6 +1,7 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.feed.OptographGridFragment;
 import co.optonaut.optonaut.views.MainActivityRedesign;
+import co.optonaut.optonaut.views.new_design.OptographDetailsActivity;
 import timber.log.Timber;
 
 /**
@@ -82,8 +84,9 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             if (holder.getBinding().getOptograph() != null) {
                 // TODO: cancel request
             }
+
             // span complete screen
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().setVariable(BR.optograph, optograph);
@@ -93,8 +96,12 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             optographView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainActivityRedesign activity = (MainActivityRedesign) context;
-                    activity.startProfileFeed(optograph.getPerson(), position);
+                    Intent intent = new Intent(context, OptographDetailsActivity.class);
+                    intent.putExtra("opto", optograph);
+                    context.startActivity(intent);
+
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.startProfileFeed(optograph.getPerson(), position);
                 }
             });
 

@@ -30,17 +30,23 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/logo_big"
+            android:background="@drawable/logo_dark"
             android:layout_marginBottom="12dp" />
-
 
         <com.flaviofaria.kenburnsview.KenBurnsView
             android:id="@+id/preview_image"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="125dp"
-            android:scaleType="centerCrop"
             android:background="@android:color/black"
             android:layout_marginBottom="12dp" />
+
+        <!--<com.flaviofaria.kenburnsview.KenBurnsView-->
+            <!--android:id="@+id/preview_image"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="125dp"-->
+            <!--android:scaleType="centerCrop"-->
+            <!--android:background="@android:color/black"-->
+            <!--android:layout_marginBottom="12dp" />-->
 
         <TextView
             android:layout_width="wrap_content"
