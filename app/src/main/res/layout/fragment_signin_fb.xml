@@ -6,14 +6,13 @@
     android:paddingBottom="7.5dp"
     android:paddingLeft="42.5dp"
     android:paddingRight="42.5dp"
-    android:background="@color/optonautMain_3"
     tools:context=".views.profile.SigninFBFragment">
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_big"
+        android:src="@drawable/logo_dark"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="44dp"/>
 
@@ -94,7 +93,7 @@
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/white"
+        android:background="@color/optonautMain_3"
         android:layout_below="@id/reset_layout"
         android:layout_marginBottom="16.5dp"/>
     
@@ -104,7 +103,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/line"/>
+        android:layout_below="@id/line"
+        android:textSize="17sp"/>
 
     <!--<ImageButton
         android:id="@+id/arrow_up"

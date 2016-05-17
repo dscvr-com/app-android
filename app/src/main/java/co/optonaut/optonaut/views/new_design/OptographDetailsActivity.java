@@ -135,7 +135,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private void hideShowAni() {
         if(arrowClicked){
             arrowClicked = false;
-            binding.arrowMenu.setBackgroundResource(R.drawable.arrow_down_icn);
             binding.gyroButton.animate()
                     .translationYBy(0)
                     .translationY(-120)
@@ -150,21 +149,29 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 public void run() {
                     binding.littlePlanetButton.setVisibility(View.GONE);
                     binding.gyroButton.setVisibility(View.GONE);
+                    binding.arrowMenu.setBackgroundResource(R.drawable.arrow_down_icn);
                 }
             }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
         }else{
             arrowClicked = true;
-            binding.arrowMenu.setBackgroundResource(R.drawable.arrow_up_icn);
             binding.littlePlanetButton.setVisibility(View.VISIBLE);
             binding.gyroButton.setVisibility(View.VISIBLE);
-            binding.gyroButton.animate()
-                    .translationYBy(-30)
-                    .translationY(0)
-                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
             binding.littlePlanetButton.animate()
                     .translationYBy(-30)
                     .translationY(0)
                     .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            binding.gyroButton.animate()
+                    .translationYBy(-30)
+                    .translationY(0)
+                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    binding.arrowMenu.setBackgroundResource(R.drawable.arrow_up_icn);
+                }
+            }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
         }
     }
 
@@ -193,6 +200,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
             binding.profileBar.setVisibility(View.INVISIBLE);
+            binding.toolbarLayout.setVisibility(View.INVISIBLE);
+            binding.menuLayout.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
             getWindow().getDecorView().setSystemUiVisibility(
@@ -201,6 +210,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             );
             binding.profileBar.setVisibility(View.VISIBLE);
+            binding.toolbarLayout.setVisibility(View.VISIBLE);
+            binding.menuLayout.setVisibility(View.VISIBLE);
             isFullScreenMode = false;
         }
     }

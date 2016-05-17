@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.util.Log;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                Log.d("myTag"," profile? "+(position==PROFILE_MODE)+" sharing? "+(position==SHARING_MODE));
                 if(position == SHARING_MODE) {
                     adapterViewPager.getSharingFragment().updateOptograph();
                 }
@@ -159,8 +161,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemPosition(Object object) {
             if(object instanceof  SharingFragment) {
+            } else if (object instanceof SigninFBFragment) {
+                return POSITION_NONE;
             }
-            return super.getItemPosition(object);
+            return POSITION_UNCHANGED;
+//            return super.getItemPosition(object);
         }
 
         public void updateShare(Optograph optograph) {
@@ -181,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() != FEED_MODE ) {
+        if (viewPager.getCurrentItem() != FEED_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
     }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -135,7 +137,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                         cache.save(Cache.USER_FB_LOGGED_IN, true);
 
 //                        ((MainActivity) getActivity()).onBackPressed();
-                        ((MainActivity) getActivity()).onBack();
+//                        ((MainActivity) getActivity()).onBack();
+                        startProfileFragment();
 
                     }
 
@@ -174,7 +177,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
 
     private void login(String email, String password) {
 
-        apiConsumer.logIn(new SignInData(email, password),new Callback<LogInReturn>() {
+        apiConsumer.logIn(new SignInData(email, password), new Callback<LogInReturn>() {
             @Override
             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
@@ -185,7 +188,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                     return;
                 }
                 LogInReturn login = response.body();
-                if (login==null) {
+                if (login == null) {
                     Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
@@ -200,10 +203,11 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
 
 //                getActivity().setResult(2);
 //                getActivity().finish();
-                Log.d("myTag","success login. id: "+cache.getString(Cache.USER_ID)+" token: "+cache.getString(Cache.USER_TOKEN));
+                Log.d("myTag", "success login. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
 //                ((MainActivity)getActivity()).onBackPressed();
-                ((MainActivity)getActivity()).onBack();
+//                ((MainActivity) getActivity()).onBack();
 //                ((MainActivity)getActivity()).setPage(MainActivity.PROFILE_MODE);
+                startProfileFragment();
             }
 
             @Override
@@ -293,5 +297,14 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
         registerButton.setClickable(clickable);
         loginButton.setClickable(clickable);
         fbButton.setClickable(clickable);
+    }
+
+    private void startProfileFragment() {
+        FragmentManager fragmentManager2 = getFragmentManager();
+        FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+        ProfileFragment fragment2 = new ProfileFragment().newInstance(cache.getString(Cache.USER_ID));
+        fragmentTransaction2.addToBackStack(null);
+        fragmentTransaction2.replace(android.R.id.content, fragment2);
+        fragmentTransaction2.commit();
     }
 }

@@ -1,37 +1,21 @@
 package co.optonaut.optonaut.views.new_design;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.record.GlobalState;
 import co.optonaut.optonaut.util.Constants;
-import co.optonaut.optonaut.util.GeneralUtils;
-import co.optonaut.optonaut.views.MainActivityRedesign;
-import co.optonaut.optonaut.views.dialogs.CancelRecordingDialog;
-import timber.log.Timber;
 
 public class RecorderOverlayFragment extends Fragment {
     public static final int PREVIEW_RECORD = 1;
@@ -67,7 +51,6 @@ public class RecorderOverlayFragment extends Fragment {
 
         return view;
     }
-
 
     private void initializeNavigationButtons(View view) {
 
