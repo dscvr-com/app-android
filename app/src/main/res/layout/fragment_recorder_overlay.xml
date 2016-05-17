@@ -74,17 +74,18 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:background="@mipmap/arrow_img"
+            android:background="@drawable/arrow_capture"
             android:visibility="visible">
         </View>
 
+        <!--android:background="@android:color/holo_red_light"-->
         <View
             android:id="@+id/angle"
             android:layout_width="1dp"
             android:layout_height="150dp"
             android:layout_marginBottom="112dp"
-            android:background="@android:color/holo_red_light"
             android:layout_gravity="center"
+            android:background="@color/camera_circle"
             android:visibility="visible">
         </View>
 

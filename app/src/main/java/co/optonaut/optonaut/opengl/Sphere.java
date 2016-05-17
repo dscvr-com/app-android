@@ -55,7 +55,8 @@ public class Sphere {
     private final String fragmentShaderCode =
             "precision mediump float;" +
             "void main() {" +
-            "  gl_FragColor = vec4(0.9372, 0.2823, 0.2117, 1.0);" +
+//            "  gl_FragColor = vec4(0.9372, 0.2823, 0.2117, 1.0);" +
+            "  gl_FragColor = vec4(0.996, 0.812, 0.365, 1.0);" +//yellow
             "}";
     // EF4836
 

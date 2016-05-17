@@ -28,7 +28,7 @@
                 android:id="@+id/header_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="6dp"
                 android:background="@drawable/logo_arrow_small_dark"
                 android:layout_centerHorizontal="true" />
 
@@ -37,7 +37,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="126dp"
                 android:background="@drawable/black_gradient"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="@dimen/fab_margin">
 
                 <RelativeLayout
                     android:id="@+id/theta_group"
@@ -45,7 +46,6 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/record_group"
                     android:layout_alignParentLeft="true"
-                    android:paddingBottom="45dp"
                     android:paddingLeft="10dp">
                     <ImageButton
                         android:id="@+id/theta_btn"
@@ -59,16 +59,13 @@
                     android:id="@+id/record_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_centerInParent="true"
-                    android:layout_centerVertical="true">
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true">
 
                     <ImageButton
                         android:id="@+id/camera_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_margin="15dp"
                         android:background="@drawable/camera_selector"/>
 
                     <ProgressBar
@@ -88,8 +85,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:paddingBottom="45dp"
                     android:paddingRight="10dp"
                     android:gravity="end">
 
