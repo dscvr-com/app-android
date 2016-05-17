@@ -5,9 +5,7 @@
     <data class=".OptographDetailsBinding">
 
         <import type="co.optonaut.optonaut.model.Optograph" />
-
         <import type="co.optonaut.optonaut.model.Person" />
-
         <import type="co.optonaut.optonaut.model.Location" />
 
         <variable
@@ -36,40 +34,13 @@
             android:background="@color/transparentOverlay"
             app:optograph="@{optograph}" />
 
-
-        <RelativeLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true">
-
-            <ImageButton
-                android:id="@+id/header_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="6dp"
-                android:background="@drawable/logo_arrow_small_dark" />
-
-
-            <ImageButton
-                android:id="@+id/profile_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="10dp"
-                android:background="@drawable/profile_icn" />
-        </RelativeLayout>
-
         <RelativeLayout
             android:id="@+id/menu_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/fab_size_normal"
-            android:paddingTop="@dimen/fab_size_normal"
-            android:layout_marginRight="@dimen/fab_elevation"
-            android:layout_marginLeft="@dimen/fab_elevation">
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="20dp" >
 
             <ImageButton
                 android:id="@+id/arrow_menu"
@@ -165,6 +136,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
                 android:layout_toLeftOf="@+id/settings_button"
+                android:layout_alignParentRight="true"
                 android:paddingBottom="3dp"
                 android:textColor="@color/bright" />
 

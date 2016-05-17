@@ -22,13 +22,20 @@ import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.OptographDetailsBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
+import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.record.GlobalState;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.GestureDetectors;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.VRModeActivity;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import timber.log.Timber;
 
 public class OptographDetailsActivity extends AppCompatActivity implements SensorEventListener {
@@ -40,6 +47,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private Optograph optograph;
     private boolean isFullScreenMode = false;
     private OptographDetailsBinding binding;
+    private Cache cache;
+    private DBHelper mydb;
+    protected ApiConsumer apiConsumer;
 
     private boolean arrowClicked = false;
     private boolean gyroActive = false;
@@ -49,6 +59,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         optograph = getIntent().getExtras().getParcelable("opto");
+        cache = Cache.open();
+        mydb = new DBHelper(this);
+        String token = cache.getString(Cache.USER_TOKEN);
+        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_optograph_details);
         binding.setVariable(BR.optograph, optograph);
@@ -65,21 +79,21 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             public boolean onTouch(View v, MotionEvent event) {
                 if (isFullScreenMode) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP)
+                            finish();
                         toggleFullScreen();
-//                        return binding.optograph2dview.getOnTouchListener().onTouch(v, event);
                     } else {
-//                        return binding.optograph2dview.getOnTouchListener().onTouch(v, event);
                     }
                 } else {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP)
+                            finish();
                         toggleFullScreen();
-//                        return true;
                     } else {
                         // need to return true here to prevent touch-stealing of parent!
 //                        return true;
                     }
                 }
-                binding.optograph2dview.toggleRegisteredOnSensors();
                 return binding.optograph2dview.getOnTouchListener().onTouch(v, event);
             }
         });
@@ -123,6 +137,67 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 }
             }
         });
+
+        binding.heartLabel.setTypeface(Constants.getInstance().getIconTypeface());
+        binding.heartLabel.setOnClickListener(v -> {
+//                Snackbar.make(v, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
+            if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
+//                    userLikesOptograph = true;
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                optograph.setIs_starred(true);
+                optograph.setStars_count(optograph.getStars_count() + 1);
+                binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+
+                apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        if (!response.isSuccess()) {
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                            optograph.setIs_starred(response.isSuccess());
+                            optograph.setStars_count(optograph.getStars_count() - 1);
+                            binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                        optograph.setIs_starred(false);
+                        optograph.setStars_count(optograph.getStars_count() - 1);
+                    }
+                });
+            } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                optograph.setIs_starred(false);
+                optograph.setStars_count(optograph.getStars_count() - 1);
+                binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+
+                apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        if (!response.isSuccess()) {
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                            optograph.setIs_starred(response.isSuccess());
+                            optograph.setStars_count(optograph.getStars_count() + 1);
+                            binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                        optograph.setIs_starred(true);
+                        optograph.setStars_count(optograph.getStars_count() + 1);
+                    }
+                });
+            } else {
+//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.prepareProfile(false);
+            }
+        });
+
+        binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
 
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -200,7 +275,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
             binding.profileBar.setVisibility(View.INVISIBLE);
-            binding.toolbarLayout.setVisibility(View.INVISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
@@ -210,7 +284,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             );
             binding.profileBar.setVisibility(View.VISIBLE);
-            binding.toolbarLayout.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.VISIBLE);
             isFullScreenMode = false;
         }
