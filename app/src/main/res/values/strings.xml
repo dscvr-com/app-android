@@ -99,4 +99,10 @@
     <string name="preview_retry">Retry</string>
     <string name="preview_post_later">Post Later</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <!-- Sharing -->
+    <string name="share_title">Share</string>
+    <string name="share_text">Share this IAM360 photo:</string>
+    <string name="share_copy_to_clipboard">Linked copied to clipboard.</string>
+    <string name="share_email_error">There are no email clients installed.</string>
 </resources>

@@ -5,42 +5,85 @@
         android:layout_height="match_parent"
         android:background="@color/sharing">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="21sp"
+            android:text="@string/share_title"/>
+
+    </android.support.v7.widget.Toolbar>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_below="@+id/toolbar"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <Button
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/logo_big"
-            android:layout_marginBottom="50dp" />
+            android:layout_marginBottom="12dp" />
 
-        <Button
+
+        <com.flaviofaria.kenburnsview.KenBurnsView
+            android:id="@+id/preview_image"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:scaleType="centerCrop"
+            android:background="@android:color/black"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/copylink_share_btn"
-            android:layout_marginBottom="20dp"/>
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:textSize="21sp"
+            android:text="@string/share_text" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/copy_share_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/fb_share_btn"
-            android:layout_marginBottom="20dp"/>
+            android:background="@drawable/copylink_share_btn_selector"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/email_share_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/twitter_share_btn"
-            android:layout_marginBottom="20dp"/>
+            android:background="@drawable/email_share_btn_selector"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/fb_share_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/messenger_share_btn"
-            android:layout_marginBottom="20dp"/>
+            android:background="@drawable/fb_share_btn_selector"
+            android:layout_marginBottom="12dp" />
+
+        <ImageButton
+            android:id="@+id/twitter_share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/twitter_share_btn_selector"
+            android:layout_marginBottom="12dp" />
+
+        <ImageButton
+            android:id="@+id/messenger_share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/messenger_share_btn_selector"
+            android:layout_marginBottom="12dp" />
 
     </LinearLayout>
 
