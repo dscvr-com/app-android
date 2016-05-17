@@ -126,6 +126,11 @@
             android:value="@string/google_api_key" />
 
         <activity android:name=".views.new_design.ProfileActivity"></activity>
+
+        <provider android:authorities="com.facebook.app.FacebookContentProvider{221219334902804}"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
