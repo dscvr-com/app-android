@@ -7,7 +7,7 @@
     android:paddingBottom="10dp"
     android:paddingLeft="42.5dp"
     android:paddingRight="42.5dp"
-    android:background="@color/optonautMain_3"
+    android:background="@color/settings_bg"
     tools:context=".views.SettingsActivity"
     android:orientation="vertical"
     android:gravity="center_horizontal">
@@ -16,22 +16,22 @@
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_big"/>
+        android:src="@drawable/logo_dark"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Camera Settings"
         android:textStyle="bold"
-        android:textColor="@android:color/white"
+        android:textColor="@color/settings_text"
         android:textSize="18sp"
-        android:layout_marginTop="18.5dp"/>
+        android:layout_marginTop="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="23.5dp"
+        android:textColor="@color/settings_text"
+        android:layout_marginTop="20dp"
         android:textSize="18sp"
         android:text="Mode"/>
 
@@ -39,19 +39,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="28dp"
-        android:layout_marginBottom="37dp">
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="30dp">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:layout_marginEnd="52.5dp">
+
         <ImageButton
             android:id="@+id/one_ring_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/one_ring_active_icn"/>
+
         <TextView
             android:id="@+id/one_ring_text"
             android:layout_width="wrap_content"
@@ -61,17 +64,20 @@
             android:textSize="13sp"
             android:text="One Ring"/>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal">
+
         <ImageButton
             android:id="@+id/three_ring_button"
             android:layout_width="wrap_content"
             android:layout_toRightOf="@id/one_ring_button"
             android:layout_height="wrap_content"
             android:background="@drawable/three_ring_inactive_icn"/>
+
         <TextView
             android:id="@+id/three_ring_text"
             android:layout_width="wrap_content"
@@ -81,7 +87,9 @@
             android:textColor="@color/text_inactive"
             android:textSize="13sp"
             android:text="Three Ring"/>
+
         </LinearLayout>
+
     </LinearLayout>
 
     <View
@@ -92,10 +100,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="@color/settings_text"
         android:text="Capture Type"
-        android:layout_marginTop="37dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="25dp"
         android:textSize="18sp"/>
 
     <LinearLayout

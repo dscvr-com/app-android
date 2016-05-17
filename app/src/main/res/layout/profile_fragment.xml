@@ -15,7 +15,6 @@
         android:layout_height="match_parent"
         android:background="@color/profile_bg">
 
-        <!--android:layout_marginTop="25dp"-->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -107,7 +106,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/person_name_edit"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/optonautMain"
+            android:textColor="@color/profile_btn_text"
+            android:background="@color/profile_btn"
             android:textStyle="bold"
             android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
 
@@ -161,6 +161,7 @@
             android:paddingBottom="@dimen/navigation_padding_top_default"
             android:paddingTop="@dimen/navigation_padding_top_default"
             android:weightSum="3"
+            android:gravity="center"
             android:orientation="horizontal"
             android:background="@color/profile_columns_bg">
 
@@ -170,13 +171,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textColor="@color/bright"
-                android:textStyle="bold"
+                android:textColor="@color/profile_columns_text"
                 android:text='@{String.valueOf(person.optographs_count) + "\n Posts"}'/>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 android:background="@android:color/white"/>
 
             <TextView
@@ -187,11 +188,13 @@
                 android:gravity="center_horizontal"
                 android:textColor="@color/bright"
                 android:textStyle="bold"
+                android:visibility="gone"
                 android:text='@{String.valueOf(person.followers_count) + "\n Followers"}'/>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 android:background="@android:color/white"/>
 
             <TextView
@@ -202,6 +205,7 @@
                 android:gravity="center_horizontal"
                 android:textColor="@color/bright"
                 android:textStyle="bold"
+                android:visibility="gone"
                 android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
         </LinearLayout>
 

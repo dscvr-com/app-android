@@ -46,12 +46,18 @@
     <color name="debugView4">#00AA05</color>
 
     <!-- Settings -->
+    <color name="settings_bg">#ffffff</color>
+    <color name="settings_text">#818181</color>
     <color name="text_active">#fecf5c</color>
     <color name="text_inactive">#a5a5a5</color>
 
     <!-- Profile -->
-    <color name="profile_columns_bg">#5e5e5e</color>
-    <color name="profile_bg">#252525</color>
+    <color name="profile_columns_bg">#e1e1e1</color>
+    <color name="profile_columns_text">#818181</color>
+    <color name="profile_bg">#ffffff</color>
+    <color name="profile_btn">#ffbc00</color>
+    <color name="profile_btn_text">#ffffff</color>
+    <color name="profile_text">#353535</color>
 
     <!-- Preview -->
     <color name="preview_toolbar_bg">#3f474c</color>
@@ -59,4 +65,5 @@
     <!-- Camera -->
     <color name="camera_circle">#fecf5d</color>
     <color name="sample">#ffffff</color>
+
 </resources>
