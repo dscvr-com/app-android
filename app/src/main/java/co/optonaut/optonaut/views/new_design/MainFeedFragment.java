@@ -79,15 +79,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         profileButton.setVisibility(View.GONE);
                         break;
                     case COLLAPSED:
-                        profileButton.setVisibility(View.VISIBLE);
-                        break;
                     case ANCHORED:
-                        profileButton.setVisibility(View.VISIBLE);
-                        break;
                     case HIDDEN:
                         profileButton.setVisibility(View.VISIBLE);
+                        barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         break;
                     case DRAGGING:
+                        if (previousState== SlidingUpPanelLayout.PanelState.EXPANDED) {
+                            barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
+                        } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                            barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
+                        }
                         profileButton.setVisibility(View.GONE);
                         break;
                 }
@@ -171,7 +173,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 startActivity(intent);
                 break;
             case R.id.settings_btn:
-                ((MainActivity) getActivity()).startSettings();
+//                ((MainActivity) getActivity()).startSettings();
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.header_logo:
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);

@@ -106,20 +106,160 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent" >
 
-            <RelativeLayout
+            <!--android:background="@color/feed_bar"-->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/feed_bar"
-                android:layout_above="@+id/bar_transparent" >
+                android:layout_above="@+id/bar_transparent"
+                android:paddingTop="59dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="42.5dp"
+                android:paddingRight="42.5dp"
+                android:background="@color/settings_bg"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
-                <ImageButton
+                <ImageView
+                    android:id="@+id/logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="50dp"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/logo_big"/>
+                    android:src="@drawable/logo_dark"/>
 
-            </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Camera Settings"
+                    android:textStyle="bold"
+                    android:textColor="@color/settings_text"
+                    android:textSize="18sp"
+                    android:layout_marginTop="15dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/settings_text"
+                    android:layout_marginTop="20dp"
+                    android:textSize="18sp"
+                    android:text="Mode"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="30dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:layout_marginEnd="52.5dp">
+
+                        <ImageButton
+                            android:id="@+id/one_ring_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/one_ring_active_icn"/>
+
+                        <TextView
+                            android:id="@+id/one_ring_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/one_ring_button"
+                            android:textColor="@color/text_inactive"
+                            android:textSize="13sp"
+                            android:text="One Ring"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <ImageButton
+                            android:id="@+id/three_ring_button"
+                            android:layout_width="wrap_content"
+                            android:layout_toRightOf="@id/one_ring_button"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/three_ring_inactive_icn"/>
+
+                        <TextView
+                            android:id="@+id/three_ring_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/three_ring_button"
+                            android:layout_toRightOf="@id/one_ring_button"
+                            android:textColor="@color/text_inactive"
+                            android:textSize="13sp"
+                            android:text="Three Ring"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/text_inactive"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/settings_text"
+                    android:text="Capture Type"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="25dp"
+                    android:textSize="18sp"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:layout_marginEnd="52.5dp">
+                        <ImageButton
+                            android:id="@+id/manual_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/manual_inactive_icn"/>
+                        <TextView
+                            android:id="@+id/manual_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/manual_button"
+                            android:textColor="@color/text_inactive"
+                            android:textSize="13sp"
+                            android:text="Manual"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+                        <ImageButton
+                            android:id="@+id/motor_button"
+                            android:layout_width="wrap_content"
+                            android:layout_toRightOf="@id/manual_button"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/motor_inactive_icn"/>
+                        <TextView
+                            android:id="@+id/motor_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/motor_button"
+                            android:layout_toRightOf="@id/manual_button"
+                            android:textColor="@color/text_inactive"
+                            android:textSize="13sp"
+                            android:text="Motor"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
 
             <View
                 android:id="@+id/bar_transparent"
