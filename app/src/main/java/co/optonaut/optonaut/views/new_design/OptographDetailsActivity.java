@@ -38,7 +38,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import timber.log.Timber;
 
-public class OptographDetailsActivity extends AppCompatActivity implements SensorEventListener {
+public class OptographDetailsActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
     private SensorManager sensorManager;
     private boolean inVRMode;
@@ -54,6 +54,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean arrowClicked = false;
     private boolean gyroActive = false;
     private boolean littlePlanetActive = false;
+    private boolean isCurrentUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
 
+        if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
+        if(isCurrentUser) binding.follow.setVisibility(View.INVISIBLE);
+
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -79,16 +83,14 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             public boolean onTouch(View v, MotionEvent event) {
                 if (isFullScreenMode) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP)
-                            finish();
-                        toggleFullScreen();
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) finish();
+                        else toggleFullScreen();
                     } else {
                     }
                 } else {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP)
-                            finish();
-                        toggleFullScreen();
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) finish();
+                        else toggleFullScreen();
                     } else {
                         // need to return true here to prevent touch-stealing of parent!
 //                        return true;
@@ -98,106 +100,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             }
         });
 
-        binding.personAvatarAsset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startProfile();
-            }
-        });
-
-        binding.arrowMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideShowAni();
-            }
-        });
-
-        binding.littlePlanetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (littlePlanetActive) {
-                    littlePlanetActive = false;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_inactive_icn);
-                } else {
-                    littlePlanetActive = true;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_active_icn);
-                }
-            }
-        });
-
-        binding.gyroButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (gyroActive) {
-                    gyroActive = false;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_inactive_icn);
-                } else {
-                    gyroActive = true;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_active_icn);
-                }
-            }
-        });
-
-        binding.heartLabel.setTypeface(Constants.getInstance().getIconTypeface());
-        binding.heartLabel.setOnClickListener(v -> {
-//                Snackbar.make(v, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
-            if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
-//                    userLikesOptograph = true;
-                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                optograph.setIs_starred(true);
-                optograph.setStars_count(optograph.getStars_count() + 1);
-                binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-
-                apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                    @Override
-                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                        if (!response.isSuccess()) {
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                            optograph.setIs_starred(response.isSuccess());
-                            optograph.setStars_count(optograph.getStars_count() - 1);
-                            binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                        optograph.setIs_starred(false);
-                        optograph.setStars_count(optograph.getStars_count() - 1);
-                    }
-                });
-            } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
-                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                optograph.setIs_starred(false);
-                optograph.setStars_count(optograph.getStars_count() - 1);
-                binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-
-                apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                    @Override
-                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                        if (!response.isSuccess()) {
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                            optograph.setIs_starred(response.isSuccess());
-                            optograph.setStars_count(optograph.getStars_count() + 1);
-                            binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                        optograph.setIs_starred(true);
-                        optograph.setStars_count(optograph.getStars_count() + 1);
-                    }
-                });
-            } else {
-//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
-//                    MainActivityRedesign activity = (MainActivityRedesign) context;
-//                    activity.prepareProfile(false);
-            }
-        });
-
-        binding.heartLabel.setText(getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+//        binding.profileBar.getBackground().setAlpha(204); // apha to 80%
+        binding.personAvatarAsset.setOnClickListener(this);
+        binding.arrowMenu.setOnClickListener(this);
+        binding.littlePlanetButton.setOnClickListener(this);
+        binding.gyroButton.setOnClickListener(this);
+        binding.heartLabel.setOnClickListener(this);
+        binding.follow.setOnClickListener(this);
+        setHeart(optograph.is_starred(), optograph.getStars_count());
+        followPerson(optograph.getPerson().is_followed());
 
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -262,6 +173,33 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
         intent.putExtra("optograph", optograph);
         startActivity(intent);
+    }
+
+    private void setHeart(boolean liked, int count) {
+
+        binding.heartLabel.setText(String.valueOf(count));
+        if(liked) {
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+            binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
+        } else {
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+            binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.like_icn, 0);
+        }
+
+        optograph.setIs_starred(liked);
+        optograph.setStars_count(count);
+    }
+
+    private void followPerson(boolean isFollowed) {
+        if(isFollowed) {
+            optograph.getPerson().setIs_followed(true);
+            optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
+            binding.follow.setImageResource(R.drawable.followed_icn);
+        } else {
+            optograph.getPerson().setIs_followed(false);
+            optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
+            binding.follow.setImageResource(R.drawable.follow_icn);
+        }
     }
 
     private void toggleFullScreen() {
@@ -341,5 +279,119 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         super.onResume();
         registerAccelerationListener();
         inVRMode = false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.person_avatar_asset:
+                startProfile();
+                break;
+            case R.id.arrow_menu:
+                hideShowAni();
+                break;
+            case R.id.little_planet_button:
+                if (littlePlanetActive) {
+                    littlePlanetActive = false;
+                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_inactive_icn);
+                } else {
+                    littlePlanetActive = true;
+                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_active_icn);
+                }
+                break;
+            case R.id.gyro_button:
+                if (gyroActive) {
+                    gyroActive = false;
+                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_inactive_icn);
+                } else {
+                    gyroActive = true;
+                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_active_icn);
+                }
+                break;
+            case R.id.heart_label:
+                if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
+
+                    setHeart(true, optograph.getStars_count() + 1);
+                    apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert star count on failure
+                            if (!response.isSuccess()) {
+                                setHeart(false, optograph.getStars_count() - 1);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            // revert star count on failure
+                            setHeart(false, optograph.getStars_count() - 1);
+                        }
+                    });
+                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
+                    setHeart(false, optograph.getStars_count() - 1);
+
+                    apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert star count on failure
+                            if (!response.isSuccess()) {
+                                setHeart(true, optograph.getStars_count() + 1);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            // revert star count on failure
+                            setHeart(true, optograph.getStars_count() + 1);
+                        }
+                    });
+                } else {
+                    // TODO show login page
+//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.prepareProfile(false);
+                }
+                break;
+            case R.id.follow:
+                if (optograph.getPerson().is_followed()) {
+                    followPerson(false);
+                    apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert follow count on failure
+                            if (!response.isSuccess()) {
+                                followPerson(true);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            followPerson(true);
+                            Timber.e("Error on unfollowing.");
+                        }
+                    });
+                } else if (!optograph.getPerson().is_followed()) {
+                    followPerson(true);
+                    apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert follow count on failure
+                            if (!response.isSuccess()) {
+                                followPerson(false);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            followPerson(false);
+                            Timber.e("Error on following.");
+                        }
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+
     }
 }

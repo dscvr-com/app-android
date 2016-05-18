@@ -11,11 +11,10 @@
     <color name="colorPrimaryText">#000000</color>
     <color name="colorPrimaryDark">#343434</color>
     <color name="colorAccent">#343434</color>
-
     <color name="optonautMain_bkp">#EF4836</color>
 
     <!-- Feeds -->
-    <color name="feed_bar">#DD343434</color>
+    <color name="feed_bar">#CC595959</color>
     <color name="feed_text_yellow">#ffbc00</color>
     <color name="feed_text_white">#ffffff</color>
     <color name="sharing">#FFFFFF</color>
@@ -58,6 +57,7 @@
     <color name="profile_btn">#ffbc00</color>
     <color name="profile_btn_text">#ffffff</color>
     <color name="profile_text">#353535</color>
+    <color name="profile_grid_bar">#000000</color>
 
     <!-- Preview -->
     <color name="preview_toolbar_bg">#3f474c</color>

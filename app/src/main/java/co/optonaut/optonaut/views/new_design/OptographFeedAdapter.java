@@ -431,7 +431,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             barSwipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    swipeLayout.open();
+//                    swipeLayout.open();
                     ((MainActivity) context).setOptograph(optograph);
                     ((MainActivity) context).setPage(MainActivity.SHARING_MODE);
                 }
