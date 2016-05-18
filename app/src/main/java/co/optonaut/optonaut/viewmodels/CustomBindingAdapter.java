@@ -78,6 +78,7 @@ public class CustomBindingAdapter {
                         } else {
                             Picasso.with(imageView.getContext())
                                     .load(uri)
+                                    .placeholder(R.drawable.placeholder)
                                     .resize(imageView.getWidth(), 0)
                                     .into(imageView);
                         }

@@ -106,6 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{person.display_name}"
+                        app:font="@{``}"
                         android:textColor="@color/feed_text_yellow"
                         android:textSize="15dp" />
 
@@ -114,6 +115,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{location.text}"
+                        app:font="@{``}"
                         android:textColor="@color/feed_text_white"
                         android:textSize="11dp" />
 
@@ -148,6 +150,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="16dp"
+                app:font="@{``}"
                 android:textColor="@color/settingsFontColor"
                 android:textSize="21dp" />
 
@@ -160,6 +163,7 @@
                 android:layout_toLeftOf="@+id/settings_button"
                 android:textColor="@color/timeAgoFontColor"
                 android:textSize="11dp"
+                app:font="@{``}"
                 android:visibility="gone"
                 app:createdAt="@{optograph.created_at}" />
 
@@ -180,6 +184,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_toLeftOf="@+id/description_label"
                 android:textColor="@color/bright"
+                app:font="@{``}"
                 android:visibility="gone" />
 
             <co.optonaut.optonaut.views.ExpandableTextView
@@ -188,6 +193,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:maxWidth="288dp"
+                app:font="@{``}"
                 android:text="@{optograph.text}"
                 android:textColor="@color/bright"
                 app:trimLength="32" />
@@ -203,6 +209,7 @@
                 android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
                 android:paddingBottom="3dp"
                 android:text="upload"
+                app:font="@{``}"
                 android:textColor="@color/bright"
                 android:visibility="gone" />
 

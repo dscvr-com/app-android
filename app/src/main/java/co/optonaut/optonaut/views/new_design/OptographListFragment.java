@@ -49,11 +49,10 @@ public abstract class OptographListFragment extends Fragment {
     @Bind(R.id.three_ring_button) protected ImageButton threeRingButton;
     @Bind(R.id.manual_button) protected ImageButton manualButton;
     @Bind(R.id.motor_button) protected ImageButton motorButton;
-    @Bind(R.id.one_ring_text) protected TextView oneRingText;
-    @Bind(R.id.three_ring_text) protected TextView threeRingText;
-    @Bind(R.id.manual_text) protected TextView manualText;
-    @Bind(R.id.motor_text) protected TextView motorText;
-
+    @Bind(R.id.settings_one_ring) protected TextView oneRingText;
+    @Bind(R.id.settings_three_ring) protected TextView threeRingText;
+    @Bind(R.id.settings_manual) protected TextView manualText;
+    @Bind(R.id.settings_motor) protected TextView motorText;
 
     public OptographListFragment() {
     }
