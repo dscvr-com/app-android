@@ -59,11 +59,21 @@
     <color name="profile_text">#353535</color>
     <color name="profile_grid_bar">#000000</color>
 
+    <!-- Sign in -->
+    <color name="signin_bg">#f7f7f7</color>
+
     <!-- Preview -->
     <color name="preview_toolbar_bg">#3f474c</color>
 
     <!-- Camera -->
     <color name="camera_circle">#fecf5d</color>
     <color name="sample">#ffffff</color>
+
+    <!-- Text Colors -->
+    <color name="text_dark">#3E3D3D</color>
+    <color name="text_light">#A5A5A5</color>
+    <color name="text_yellow">#FECF5C</color>
+    <color name="text_bright">#f7f7f7</color>
+
 
 </resources>

@@ -2,6 +2,7 @@ package co.optonaut.optonaut.views.profile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,9 +23,10 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
 import org.w3c.dom.Text;
+
+import java.util.Arrays;
 
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.FBSignInData;
@@ -32,18 +34,19 @@ import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.SignInData;
 import co.optonaut.optonaut.model.SignUpReturn;
 import co.optonaut.optonaut.network.ApiConsumer;
+import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.views.dialogs.GenericOKDialog;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.MainActivityRedesign;
-import co.optonaut.optonaut.views.new_design.MainActivity;
+import co.optonaut.optonaut.views.dialogs.GenericOKDialog;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import timber.log.Timber;
 
-public class SigninFBFragment extends Fragment implements View.OnClickListener{
+public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
-    private LoginButton fbButton;
+    private ImageButton fbButton;
     private TextView useExistingBtn;
 
     private EditText userNameText;
@@ -95,81 +98,86 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
         registerButton = (ImageButton) view.findViewById(R.id.register_button);
         resetPasswordButton = (TextView) view.findViewById(R.id.reset_password);
 
-        fbButton = (LoginButton) view.findViewById(R.id.fb_button);
-        fbButton.setReadPermissions("email");
-        fbButton.setFragment(this);
+        fbButton = (ImageButton) view.findViewById(R.id.fb_button);
+//        fbButton.setReadPermissions("email");
+//        fbButton.setFragment(this);
 
         loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
+        fbButton.setOnClickListener(this);
 
-        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Timber.d("FB Result : " + loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
+        TextView signInText = (TextView) view.findViewById(R.id.sign_in_text);
+        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(),"fonts/Avenir_LT_45_Book_0.ttf");
+        signInText.setTypeface(custom_font);
 
-                setButtonsClickable(false);
-                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
-                    @Override
-                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
-                        Timber.d("Response : " + response.toString());
-
-                        if (!response.isSuccess()) {
-                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            setButtonsClickable(true);
-                            return;
-                        }
-                        LogInReturn login = response.body();
-                        if (login == null) {
-                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            setButtonsClickable(true);
-                            return;
-                        }
-                        Timber.d("Login : " + login.getId() + " " + login.getToken());
-
-                        cache.save(Cache.USER_ID, login.getId());
-                        cache.save(Cache.USER_TOKEN, login.getToken());
-                        cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
-                        cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
-                        cache.save(Cache.USER_FB_LOGGED_IN, true);
-
-//                        ((MainActivity) getActivity()).onBackPressed();
-//                        ((MainActivity) getActivity()).onBack();
-                        startProfileFragment();
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        Timber.d("Failure " + t.toString());
-                        LoginManager.getInstance().logOut();
-
-                        setButtonsClickable(true);
-
-                        Bundle bundle = new Bundle();
-                        bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
-
-                        GenericOKDialog genericOKDialog = new GenericOKDialog();
-                        genericOKDialog.setArguments(bundle);
-                        genericOKDialog.show(getFragmentManager(), "Error");
-                    }
-                });
-
-            }
-
-            @Override
-            public void onCancel() {
-                Timber.d("onCancel");
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Timber.d("onError");
-            }
-        });
+//        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                Timber.d("FB Result : " + loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
+//
+//                setButtonsClickable(false);
+//                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
+//                    @Override
+//                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
+//                        Timber.d("Response : " + response.toString());
+//
+//                        if (!response.isSuccess()) {
+//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER, 0, 0);
+//                            toast.show();
+//                            setButtonsClickable(true);
+//                            return;
+//                        }
+//                        LogInReturn login = response.body();
+//                        if (login == null) {
+//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+//                            toast.setGravity(Gravity.CENTER, 0, 0);
+//                            toast.show();
+//                            setButtonsClickable(true);
+//                            return;
+//                        }
+//                        Timber.d("Login : " + login.getId() + " " + login.getToken());
+//
+//                        cache.save(Cache.USER_ID, login.getId());
+//                        cache.save(Cache.USER_TOKEN, login.getToken());
+//                        cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
+//                        cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
+//                        cache.save(Cache.USER_FB_LOGGED_IN, true);
+//
+////                        ((MainActivity) getActivity()).onBackPressed();
+////                        ((MainActivity) getActivity()).onBack();
+//                        startProfileFragment();
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable t) {
+//                        Timber.d("Failure " + t.toString());
+//                        LoginManager.getInstance().logOut();
+//
+//                        setButtonsClickable(true);
+//
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
+//
+//                        GenericOKDialog genericOKDialog = new GenericOKDialog();
+//                        genericOKDialog.setArguments(bundle);
+//                        genericOKDialog.show(getFragmentManager(), "Error");
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Timber.d("onCancel");
+//            }
+//
+//            @Override
+//            public void onError(FacebookException e) {
+//                Timber.d("onError");
+//            }
+//        });
 
         return view;
     }
@@ -224,8 +232,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == signInRequestCode)
-            if(resultCode == Activity.RESULT_OK) loggedIn = true;
+        if (requestCode == signInRequestCode)
+            if (resultCode == Activity.RESULT_OK) loggedIn = true;
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
@@ -234,7 +242,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
     public void onResume() {
         super.onResume();
 
-        if(loggedIn) ((MainActivityRedesign) getActivity()).prepareProfile(true);
+        if (loggedIn) ((MainActivityRedesign) getActivity()).prepareProfile(true);
     }
 
     @Override
@@ -250,10 +258,10 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                 login(userNameText.getText().toString(), passwordText.getText().toString());
                 break;
             case R.id.register_button:
-                Log.d("myTag","register clicked.");
+                Log.d("myTag", "register clicked.");
                 if (!userNameText.getText().toString().isEmpty()) {
                     setButtonsClickable(false);
-                    apiConsumer.signUp(new SignInData(userNameText.getText().toString(), passwordText.getText().toString()),new Callback<SignUpReturn>() {
+                    apiConsumer.signUp(new SignInData(userNameText.getText().toString(), passwordText.getText().toString()), new Callback<SignUpReturn>() {
                         @Override
                         public void onResponse(Response<SignUpReturn> response, Retrofit retrofit) {
                             if (!response.isSuccess()) {
@@ -264,12 +272,12 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                                 return;
                             }
                             SignUpReturn signUpReturn = response.body();
-                            if (signUpReturn==null) {
+                            if (signUpReturn == null) {
                                 Toast toast = Toast.makeText(getActivity(), "Account successfully created.", Toast.LENGTH_SHORT);
-                                toast.setGravity(Gravity.CENTER,0,0);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
 
-                                Log.d("myTag","success sign up.");
+                                Log.d("myTag", "success sign up.");
                                 login(userNameText.getText().toString(), passwordText.getText().toString());
                                 return;
                             }
@@ -281,12 +289,79 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void onFailure(Throwable t) {
                             Toast toast = Toast.makeText(getActivity(), "This email address seems to be already taken. Please try another one or login using your existing account.", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             setButtonsClickable(true);
                         }
                     });
                 }
+                break;
+            case R.id.fb_button:
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId());
+
+                        apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
+
+                                if (!response.isSuccess()) {
+                                    Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.CENTER, 0, 0);
+                                    toast.show();
+                                    setButtonsClickable(true);
+                                    return;
+                                }
+                                LogInReturn login = response.body();
+                                if (login == null) {
+                                    Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.CENTER, 0, 0);
+                                    toast.show();
+                                    setButtonsClickable(true);
+                                    return;
+                                }
+
+                                cache.save(Cache.USER_ID, login.getId());
+                                cache.save(Cache.USER_TOKEN, login.getToken());
+                                cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
+                                cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
+                                cache.save(Cache.USER_FB_LOGGED_IN, true);
+
+//                        ((MainActivity) getActivity()).onBackPressed();
+//                        ((MainActivity) getActivity()).onBack();
+                                PersonManager.updatePerson();
+                                startProfileFragment();
+
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                LoginManager.getInstance().logOut();
+
+                                setButtonsClickable(true);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
+
+                                GenericOKDialog genericOKDialog = new GenericOKDialog();
+                                genericOKDialog.setArguments(bundle);
+                                genericOKDialog.show(getFragmentManager(), "Error");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("myTag", "oncancel login on fb.");
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.d("myTag", "onError login on fb.");
+                    }
+                });
                 break;
             default:
                 break;

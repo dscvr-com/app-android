@@ -19,15 +19,24 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/optonautMain"
-            android:layout_alignParentTop="true"
-            android:title=""
-            android:elevation="6dp"
-            android:visibility="gone"/>
+            android:background="@color/profile_bg"
+            android:layout_alignParentTop="true" >
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="16sp"
+                android:text="My Profile"
+                app:font="@{``}" />
+
+        </android.support.v7.widget.Toolbar>
 
         <RelativeLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="39dp">
 
             <ImageButton
@@ -71,7 +80,7 @@
             android:layout_height="75dp"
             android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/toolbar_layout"
+            android:layout_below="@+id/toolbar"
             android:padding="2dp"
             android:clickable="true"
             app:person="@{person}"
@@ -96,7 +105,7 @@
             android:layout_centerHorizontal="true"
             android:visibility="invisible"
             android:textStyle="bold"
-            android:textColor="@color/optonautMain"
+            android:textColor="@color/text_yellow"
             android:textSize="12sp"
             android:text="@{person.display_name}"/>
 
@@ -107,10 +116,11 @@
             android:layout_height="25dp"
             android:layout_below="@+id/person_name_edit"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/profile_btn_text"
+            android:textColor="@color/text_bright"
             android:textSize="12sp"
             android:background="@color/profile_btn"
             android:textStyle="bold"
+            app:font="@{``}"
             android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
 
         <TextView
@@ -120,8 +130,8 @@
             android:layout_below="@+id/person_is_followed"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:textColor="@color/bright"
-            android:textStyle="bold"
+            android:textColor="@color/text_light"
+            app:font="@{``}"
             android:text="@{person.text}"/>
 
         <EditText
@@ -132,7 +142,8 @@
             android:layout_centerHorizontal="true"
             android:textStyle="bold"
             android:textSize="12sp"
-            android:textColor="@color/bright"
+            android:textColor="@color/text_light"
+            app:font="@{``}"
             android:visibility="invisible"
             android:text="@{person.text}"/>
 

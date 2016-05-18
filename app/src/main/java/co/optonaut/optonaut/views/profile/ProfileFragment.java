@@ -152,7 +152,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 cache.save(Cache.USER_ID, "");
                 cache.save(Cache.USER_TOKEN, "");
 
-                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+//                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
                 LoginManager.getInstance().logOut();
 
                 return true;
@@ -196,8 +196,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
             binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
+            binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
 //            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
-        }
+        } else
+            binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
 
         getActivity().invalidateOptionsMenu();
 
