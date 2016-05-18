@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
@@ -18,13 +19,18 @@ import java.util.List;
 import co.optonaut.optonaut.BR;
 import co.optonaut.optonaut.GridItemBinding;
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
+import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.feed.OptographGridFragment;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.new_design.OptographDetailsActivity;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import timber.log.Timber;
 
 /**
@@ -37,6 +43,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
     List<Optograph> optographs;
 
     protected Cache cache;
+    private DBHelper mydb;
 //    private RecyclerView snappyRecyclerView;
 
     protected ApiConsumer apiConsumer;
@@ -48,9 +55,25 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         this.optographs = new ArrayList<>();
 
         cache = Cache.open();
+        mydb = new DBHelper(context);
 
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+    }
+
+    private void setHeart(Optograph optograph, TextView heartLabel, boolean liked, int count) {
+
+        heartLabel.setText(String.valueOf(count));
+        if(liked) {
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+            heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
+        } else {
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+            heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.like_icn, 0);
+        }
+
+        optograph.setIs_starred(liked);
+        optograph.setStars_count(count);
     }
 
     @Override
@@ -59,11 +82,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 from(parent.getContext()).
                 inflate(R.layout.grid_item, parent, false);
 
-        ImageView optograph2DCubeView = (ImageView) itemView.findViewById(R.id.optograph2dview);
-
         final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
-
-
         return viewHolder;
     }
 
@@ -92,8 +111,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().executePendingBindings();
 
-            ImageView optographView = (ImageView) holder.itemView.findViewById(R.id.optograph2dview);
-            optographView.setOnClickListener(new View.OnClickListener() {
+            holder.getBinding().optograph2dview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, OptographDetailsActivity.class);
@@ -103,6 +121,53 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
 //                    MainActivityRedesign activity = (MainActivityRedesign) context;
 //                    activity.startProfileFeed(optograph.getPerson(), position);
                 }
+            });
+
+            setHeart(optograph, holder.getBinding().heartLabel, optograph.is_starred(), optograph.getStars_count());
+            holder.getBinding().heartLabel.setOnClickListener(v -> {
+                if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
+
+                    setHeart(optograph, holder.getBinding().heartLabel, true, optograph.getStars_count() + 1);
+                    apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert star count on failure
+                            if (!response.isSuccess()) {
+                                setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            // revert star count on failure
+                            setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
+                        }
+                    });
+                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
+                    setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
+
+                    apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            // revert star count on failure
+                            if (!response.isSuccess()) {
+                                setHeart(optograph, holder.getBinding().heartLabel, true, optograph.getStars_count() + 1);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            // revert star count on failure
+                            setHeart(optograph, holder.getBinding().heartLabel, true, optograph.getStars_count() + 1);
+                        }
+                    });
+                } else {
+                    // TODO show login page
+//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
+//                    MainActivityRedesign activity = (MainActivityRedesign) context;
+//                    activity.prepareProfile(false);
+                }
+
             });
 
         } else {

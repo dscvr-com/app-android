@@ -113,20 +113,11 @@
             android:textStyle="bold"
             android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
 
-        <View
-            android:id="@+id/line_1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/optonautMain_2"
-            android:layout_below="@id/person_is_followed"
-            android:layout_marginBottom="@dimen/navigation_padding_bottom"
-            android:layout_marginTop="@dimen/navigation_padding_bottom"/>
-
         <TextView
             android:id="@+id/person_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/line_1"
+            android:layout_below="@+id/person_is_followed"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:textColor="@color/bright"
@@ -137,7 +128,7 @@
             android:id="@+id/person_desc_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/line_1"
+            android:layout_below="@+id/person_is_followed"
             android:layout_centerHorizontal="true"
             android:textStyle="bold"
             android:textSize="12sp"
@@ -149,7 +140,7 @@
             android:id="@+id/line_2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/optonautMain_2"
+            android:background="@color/profile_columns_text"
             android:layout_below="@id/person_desc_edit"
             android:layout_marginTop="@dimen/navigation_padding_bottom"/>
 
@@ -162,13 +153,22 @@
             android:layout_below="@+id/line_2"
             android:orientation="horizontal"
             android:gravity="center"
-            android:background="@color/profile_columns_bg">
+            android:background="@color/profile_bg">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/profile_columns_text"
+                android:text='IAM360 Images'
+                android:textSize="18sp"
+                app:font="@{``}" />
 
             <TextView
                 android:id="@+id/person_optographs_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/profile_columns_text"
+                android:visibility="gone"
                 android:text='@{String.valueOf(person.optographs_count) + " Posts"}'/>
 
             <View
@@ -207,19 +207,11 @@
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/line_3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/optonautMain_2"
-            android:layout_below="@id/person_following_bar" />
-
         <FrameLayout
             android:id="@+id/feed_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/line_3"
-            >
+            android:layout_below="@id/person_following_bar" >
 
         </FrameLayout>
 

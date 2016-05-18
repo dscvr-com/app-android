@@ -14,16 +14,17 @@
 
         <ImageView
             android:id="@+id/optograph2dview"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/black"
-            android:layout_gravity="start|top"
+            android:scaleType="fitStart"
+            android:adjustViewBounds="true"
             app:optograph_preview="@{optograph}"/>
 
         <RelativeLayout
             android:id="@+id/description_bar"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="67dp"
             android:layout_gravity="bottom"
             android:background="@color/feed_bar" >
 
@@ -42,12 +43,13 @@
                 android:id="@+id/heart_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bright"
-                android:paddingBottom="3dp"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignBottom="@+id/description_label"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"/>
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/like_icn"
+                android:layout_toLeftOf="@+id/settings_button"
+                android:textColor="@color/bright" />
 
         </RelativeLayout>
 

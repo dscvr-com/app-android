@@ -53,7 +53,7 @@
     <!-- Profile -->
     <color name="profile_columns_bg">#e1e1e1</color>
     <color name="profile_columns_text">#818181</color>
-    <color name="profile_bg">#ffffff</color>
+    <color name="profile_bg">#f7f7f7</color>
     <color name="profile_btn">#ffbc00</color>
     <color name="profile_btn_text">#ffffff</color>
     <color name="profile_text">#353535</color>

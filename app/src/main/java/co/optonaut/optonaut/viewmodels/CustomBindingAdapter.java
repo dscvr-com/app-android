@@ -1,6 +1,8 @@
 package co.optonaut.optonaut.viewmodels;
 
 import android.databinding.BindingAdapter;
+import android.graphics.Typeface;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -9,6 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.opengl.Cube;
@@ -57,22 +60,42 @@ public class CustomBindingAdapter {
     public static void loadOptographFace(ImageView imageView, Optograph optograph) {
 
         String uri = ImageUrlBuilder.buildCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
-        if (optograph.is_local()) {
-            Picasso.with(imageView.getContext())
-                    .load(new File(uri))
-//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
-                    .into(imageView);
-        } else {
-            Picasso.with(imageView.getContext())
-                    .load(uri)
-//                    .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store in memory
-                    .into(imageView);
-        }
+
+        imageView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    // Wait until layout to call Picasso
+                    @Override
+                    public void onGlobalLayout() {
+                        // Ensure we call this only once
+                        imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+
+                        if (optograph.is_local()) {
+                            Picasso.with(imageView.getContext())
+                                    .load(new File(uri))
+                                    .resize(imageView.getWidth(), 0)
+                                    .into(imageView);
+                        } else {
+                            Picasso.with(imageView.getContext())
+                                    .load(uri)
+                                    .resize(imageView.getWidth(), 0)
+                                    .into(imageView);
+                        }
+                    }
+                });
 
     }
 
     @BindingAdapter("app:createdAt")
     public static void setTimeAgo(TextView textViev, String created_at) {
         textViev.setText(TimeUtils.getTimeAgo(RFC3339DateFormatter.fromRFC3339String(created_at)));
+    }
+
+    @BindingAdapter("app:font")
+    public static void setFont(TextView textView, String font) {
+        if(font != null && !font.equals(""))
+            textView.setTypeface(Typeface.createFromAsset(textView.getContext().getAssets(), "fonts/" + font));
+        else
+            textView.setTypeface(Typeface.createFromAsset(textView.getContext().getAssets(), "fonts/" + "Avenir_LT_45_Book_0.ttf"));
     }
 }
