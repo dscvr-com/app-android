@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textSize="16sp"
+                android:textSize="21sp"
                 android:text="My Profile"
                 app:font="@{``}" />
 
@@ -95,6 +95,7 @@
             android:layout_centerHorizontal="true"
             android:textColor="@color/optonautMain_2"
             android:textStyle="bold"
+            app:font="@{``}"
             android:text="@{person.display_name}"/>
 
         <EditText
@@ -107,6 +108,7 @@
             android:textStyle="bold"
             android:textColor="@color/text_yellow"
             android:textSize="12sp"
+            app:font="@{``}"
             android:text="@{person.display_name}"/>
 
         <!--android:background="@{person.is_followed == true? @drawable/login_btn:@drawable/register_btn}"-->

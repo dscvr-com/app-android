@@ -1,5 +1,6 @@
 package co.optonaut.optonaut.views.new_design;
 
+import android.databinding.DataBindingUtil;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.optonaut.optonaut.NewFeedBinding;
+import co.optonaut.optonaut.OptographDetailsBinding;
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
@@ -34,25 +37,7 @@ public abstract class OptographListFragment extends Fragment {
     protected OptographFeedAdapter optographFeedAdapter;
     protected ApiConsumer apiConsumer;
     protected Cache cache;
-
-    @Bind(R.id.optographFeed) protected SnappyRecyclerView recList;
-    @Bind(R.id.profile_btn) protected ImageButton profileButton;
-    @Bind(R.id.camera_btn) protected ImageButton cameraButton;
-    @Bind(R.id.settings_btn) protected ImageButton settingsButton;
-    @Bind(R.id.theta_btn) protected ImageButton thetaButton;
-    @Bind(R.id.header_logo) protected ImageButton headerLogoButton;
-    @Bind(R.id.sliding_layout) protected SlidingUpPanelLayout slidingUpPanelLayout;
-    @Bind(R.id.bar_transparent) protected View barTransparent;
-
-    //    Settings
-    @Bind(R.id.one_ring_button) protected ImageButton oneRingButton;
-    @Bind(R.id.three_ring_button) protected ImageButton threeRingButton;
-    @Bind(R.id.manual_button) protected ImageButton manualButton;
-    @Bind(R.id.motor_button) protected ImageButton motorButton;
-    @Bind(R.id.settings_one_ring) protected TextView oneRingText;
-    @Bind(R.id.settings_three_ring) protected TextView threeRingText;
-    @Bind(R.id.settings_manual) protected TextView manualText;
-    @Bind(R.id.settings_motor) protected TextView motorText;
+    protected NewFeedBinding binding;
 
     public OptographListFragment() {
     }
@@ -81,44 +66,45 @@ public abstract class OptographListFragment extends Fragment {
     }
 
     private void activeOneRing() {
-        oneRingButton.setBackgroundResource(R.drawable.one_ring_active_icn);
-        oneRingText.setTextColor(getResources().getColor(R.color.text_active));
-        threeRingButton.setBackgroundResource(R.drawable.three_ring_inactive_icn);
-        threeRingText.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_active_icn);
+        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_active));
+        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_inactive_icn);
+        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_inactive));
     }
 
     private void activeThreeRing() {
-        threeRingButton.setBackgroundResource(R.drawable.three_ring_active_icn);
-        threeRingText.setTextColor(getResources().getColor(R.color.text_active));
-        oneRingButton.setBackgroundResource(R.drawable.one_ring_inactive_icn);
-        oneRingText.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_active_icn);
+        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_active));
+        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_inactive_icn);
+        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_inactive));
     }
 
     private void activeManualType() {
-        manualButton.setBackgroundResource(R.drawable.manual_active_icn);
-        manualText.setTextColor(getResources().getColor(R.color.text_active));
-        motorButton.setBackgroundResource(R.drawable.motor_inactive_icn);
-        motorText.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.manualButton.setBackgroundResource(R.drawable.manual_active_icn);
+        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_active));
+        binding.motorButton.setBackgroundResource(R.drawable.motor_inactive_icn);
+        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_inactive));
     }
 
     private void activeMotorType() {
-        motorButton.setBackgroundResource(R.drawable.motor_active_icn);
-        motorText.setTextColor(getResources().getColor(R.color.text_active));
-        manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
-        manualText.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.motorButton.setBackgroundResource(R.drawable.motor_active_icn);
+        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
+        binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
+        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
     }
     // Settings end
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.new_feed_fragment, container, false);
-        ButterKnife.bind(this, view);
+//        View view = inflater.inflate(R.layout.new_feed_fragment, container, false);
+//        ButterKnife.bind(this, view);
+        binding = DataBindingUtil.inflate(inflater, R.layout.new_feed_fragment, container, false);
 
 //        Settings start
         initializeButtons();
 
-        oneRingButton.setOnClickListener(new View.OnClickListener() {
+        binding.oneRingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cache.getInt(Cache.CAMERA_MODE) != Constants.ONE_RING_MODE) {
@@ -127,7 +113,7 @@ public abstract class OptographListFragment extends Fragment {
                 }
             }
         });
-        threeRingButton.setOnClickListener(new View.OnClickListener() {
+        binding.threeRingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cache.getInt(Cache.CAMERA_MODE)!=Constants.THREE_RING_MODE) {
@@ -136,7 +122,7 @@ public abstract class OptographListFragment extends Fragment {
                 }
             }
         });
-        manualButton.setOnClickListener(new View.OnClickListener() {
+        binding.manualButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!=Constants.MANUAL_MODE) {
@@ -145,7 +131,8 @@ public abstract class OptographListFragment extends Fragment {
                 }
             }
         });
-        motorButton.setOnClickListener(new View.OnClickListener() {
+
+        binding.motorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE) != Constants.MOTOR_MODE) {
@@ -156,7 +143,8 @@ public abstract class OptographListFragment extends Fragment {
         });
 //        Settings end
 
-        return view;
+        return binding.getRoot();
+
     }
 
     @Override
@@ -165,11 +153,11 @@ public abstract class OptographListFragment extends Fragment {
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
-        recList.setAdapter(optographFeedAdapter);
-        recList.setItemViewCacheSize(5);
+        binding.optographFeed.setLayoutManager(llm);
+        binding.optographFeed.setAdapter(optographFeedAdapter);
+        binding.optographFeed.setItemViewCacheSize(5);
 
-        recList.addOnScrollListener(new InfiniteScrollListener(llm) {
+        binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
             public void onLoadMore() {
                 loadMore();
@@ -188,7 +176,7 @@ public abstract class OptographListFragment extends Fragment {
         Optograph optograph = null;
 
         if (!optographFeedAdapter.isEmpty()) {
-            SnappyLinearLayoutManager lm = ((SnappyLinearLayoutManager) recList.getLayoutManager());
+            SnappyLinearLayoutManager lm = ((SnappyLinearLayoutManager) binding.optographFeed.getLayoutManager());
             optograph = optographFeedAdapter.get(lm.findFirstVisibleItemPosition());
         }
 

@@ -60,37 +60,37 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        profileButton.setOnClickListener(this);
-        cameraButton.setOnClickListener(this);
-        settingsButton.setOnClickListener(this);
-        thetaButton.setOnClickListener(this);
-        headerLogoButton.setOnClickListener(this);
+        binding.profileBtn.setOnClickListener(this);
+        binding.cameraBtn.setOnClickListener(this);
+        binding.settingsBtn.setOnClickListener(this);
+        binding.thetaBtn.setOnClickListener(this);
+        binding.headerLogo.setOnClickListener(this);
 
-        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+        binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                profileButton.setVisibility(View.GONE);
+                binding.profileBtn.setVisibility(View.GONE);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 switch (newState) {
                     case EXPANDED:
-                        profileButton.setVisibility(View.GONE);
+                        binding.profileBtn.setVisibility(View.GONE);
                         break;
                     case COLLAPSED:
                     case ANCHORED:
                     case HIDDEN:
-                        profileButton.setVisibility(View.VISIBLE);
-                        barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
+                        binding.profileBtn.setVisibility(View.VISIBLE);
+                        binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         break;
                     case DRAGGING:
                         if (previousState== SlidingUpPanelLayout.PanelState.EXPANDED) {
-                            barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
+                            binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                            barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
+                            binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
                         }
-                        profileButton.setVisibility(View.GONE);
+                        binding.profileBtn.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -165,7 +165,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 break;
             case R.id.camera_btn:
                 if (GlobalState.isAnyJobRunning) {
-                    Snackbar.make(cameraButton, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(binding.cameraBtn, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
@@ -174,10 +174,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 break;
             case R.id.settings_btn:
 //                ((MainActivity) getActivity()).startSettings();
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.header_logo:
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
                 Intent intent1 = new Intent();
