@@ -54,45 +54,6 @@ public abstract class OptographListFragment extends Fragment {
 
     }
 
-    //    Settings start
-    private void initializeButtons() {
-        if (cache.getInt(Cache.CAMERA_MODE)== Constants.ONE_RING_MODE)
-            activeOneRing();
-        else activeThreeRing();
-
-        if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)==Constants.MANUAL_MODE)
-            activeManualType();
-        else activeMotorType();
-    }
-
-    private void activeOneRing() {
-        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_active_icn);
-        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_active));
-        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_inactive_icn);
-        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_inactive));
-    }
-
-    private void activeThreeRing() {
-        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_active_icn);
-        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_active));
-        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_inactive_icn);
-        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_inactive));
-    }
-
-    private void activeManualType() {
-        binding.manualButton.setBackgroundResource(R.drawable.manual_active_icn);
-        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_active));
-        binding.motorButton.setBackgroundResource(R.drawable.motor_inactive_icn);
-        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_inactive));
-    }
-
-    private void activeMotorType() {
-        binding.motorButton.setBackgroundResource(R.drawable.motor_active_icn);
-        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
-        binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
-        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
-    }
-    // Settings end
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,48 +61,6 @@ public abstract class OptographListFragment extends Fragment {
 //        View view = inflater.inflate(R.layout.new_feed_fragment, container, false);
 //        ButterKnife.bind(this, view);
         binding = DataBindingUtil.inflate(inflater, R.layout.new_feed_fragment, container, false);
-
-//        Settings start
-        initializeButtons();
-
-        binding.oneRingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cache.getInt(Cache.CAMERA_MODE) != Constants.ONE_RING_MODE) {
-                    cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
-                    activeOneRing();
-                }
-            }
-        });
-        binding.threeRingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cache.getInt(Cache.CAMERA_MODE)!=Constants.THREE_RING_MODE) {
-                    cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
-                    activeThreeRing();
-                }
-            }
-        });
-        binding.manualButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!=Constants.MANUAL_MODE) {
-                    cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
-                    activeManualType();
-                }
-            }
-        });
-
-        binding.motorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE) != Constants.MOTOR_MODE) {
-                    cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MOTOR_MODE);
-                    activeMotorType();
-                }
-            }
-        });
-//        Settings end
 
         return binding.getRoot();
 

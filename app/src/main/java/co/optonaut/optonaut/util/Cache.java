@@ -35,6 +35,9 @@ public class Cache {
     public static final String POST_OPTO_TO_TWITTER = "POST_OPTO_TO_TWITTER";
     public static final String CAMERA_MODE = "CAMERA_MODE";
     public static final String CAMERA_CAPTURE_TYPE = "CAMERA_CAPTURE_TYPE";
+    public static final String GYRO_ENABLE = "GYRO_ENABLE";
+    public static final String LITTLE_PLANET_ENABLE = "LITTLE_PLANET_ENABLE";
+    public static final String VR_3D_ENABLE = "VR_3D_ENABLE";
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 
