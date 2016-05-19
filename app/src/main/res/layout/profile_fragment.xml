@@ -75,6 +75,17 @@
         <!--android:background="@color/transparentOverlay"-->
         <!--tools:src="@drawable/avatar_big"-->
         <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="79dp"
+            android:layout_height="79dp"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/toolbar"
+            android:padding="2dp"
+            android:clickable="true"
+            app:civ_border_width="0dp"
+            android:background="@drawable/profile_avatar_background"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/person_avatar_asset"
             android:layout_width="75dp"
             android:layout_height="75dp"
@@ -84,8 +95,7 @@
             android:padding="2dp"
             android:clickable="true"
             app:person="@{person}"
-            app:civ_border_width="0dp"
-            android:background="@drawable/profile_avatar_background"/>
+            app:civ_border_width="0dp" />
 
         <TextView
             android:id="@+id/person_name"
@@ -126,12 +136,13 @@
 
         <TextView
             android:id="@+id/person_desc"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/person_is_followed"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:textColor="@color/text_light"
+            android:gravity="center_horizontal"
+            android:textColor="@color/text_dark"
             app:font="@{``}"
             android:text="@{person.text}"/>
 
@@ -141,9 +152,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/person_is_followed"
             android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
             android:textStyle="bold"
             android:textSize="12sp"
-            android:textColor="@color/text_light"
+            android:textColor="@color/text_dark"
             app:font="@{``}"
             android:visibility="invisible"
             android:text="@{person.text}"/>
@@ -170,7 +182,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/profile_columns_text"
+                android:textColor="@color/text_dark"
                 android:text='IAM360 Images'
                 android:textSize="18sp"
                 app:font="@{``}" />

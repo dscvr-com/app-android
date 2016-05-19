@@ -11,6 +11,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
+            android:id="@+id/toolbar_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -33,7 +34,8 @@
             android:background="@drawable/logo_dark"
             android:layout_marginBottom="12dp" />
 
-        <com.flaviofaria.kenburnsview.KenBurnsView
+        <!--<com.flaviofaria.kenburnsview.KenBurnsView-->
+        <ImageView
             android:id="@+id/preview_image"
             android:layout_width="300dp"
             android:layout_height="125dp"
@@ -49,6 +51,7 @@
             <!--android:layout_marginBottom="12dp" />-->
 
         <TextView
+            android:id="@+id/share_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
