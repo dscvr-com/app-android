@@ -14,4 +14,9 @@
         app:showAsAction="always"
         android:visible="false"/>
 
+    <item android:id="@+id/cancel_edit"
+        android:orderInCategory="150"
+        android:title="Cancel"
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>

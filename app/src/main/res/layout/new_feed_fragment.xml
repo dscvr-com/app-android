@@ -503,9 +503,10 @@
             android:id="@+id/profile_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:padding="15dp"
             android:layout_alignParentRight="true"
-            android:background="@drawable/profile_icn"/>
+            android:src="@drawable/profile_icn"
+            android:background="@color/transparentOverlay"/>
 
     </RelativeLayout>
 

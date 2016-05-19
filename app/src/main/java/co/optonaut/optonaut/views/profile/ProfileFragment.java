@@ -3,7 +3,6 @@ package co.optonaut.optonaut.views.profile;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.facebook.login.LoginManager;
 import com.squareup.okhttp.MediaType;
@@ -36,12 +34,10 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.PersonReceivedEvent;
 import co.optonaut.optonaut.model.LogInReturn;
-import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.util.Cache;
-import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.new_design.MainActivity;
 import retrofit.Callback;
 import retrofit.Response;
@@ -135,13 +131,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         if (isCurrentUser && isEditMode) {
             menu.findItem(R.id.action_signout).setVisible(false);
-            menu.findItem(R.id.action_save).setVisible(true);
+//            menu.findItem(R.id.action_save).setVisible(true);
+            menu.findItem(R.id.cancel_edit).setVisible(true);
         } else if (isCurrentUser && !isEditMode) {
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
+            menu.findItem(R.id.cancel_edit).setVisible(false);
         } else {
             menu.findItem(R.id.action_signout).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(false);
+            menu.findItem(R.id.cancel_edit).setVisible(false);
         }
 
     }
@@ -171,10 +170,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
                 getActivity().invalidateOptionsMenu();
                 return true;
+            case R.id.cancel_edit:
+                binding.personDesc.setVisibility(View.VISIBLE);
+                binding.personName.setVisibility(View.VISIBLE);
+                binding.personDescEdit.setVisibility(View.INVISIBLE);
+                binding.personNameEdit.setVisibility(View.INVISIBLE);
+                isEditMode = false;
+                binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
+                getActivity().invalidateOptionsMenu();
+                return true;
             case android.R.id.home:
 //                ((MainActivityRedesign)getActivity()).removeCurrentFragment();
-                if(getActivity() instanceof MainActivity)
-                    ((MainActivity)getActivity()).onBackPressed();
+                if (getActivity() instanceof MainActivity)
+                    ((MainActivity) getActivity()).onBackPressed();
                 else getActivity().finish();
                 return true;
             default:
@@ -187,7 +195,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Log.d("Optonaut", "Registered person " + personReceivedEvent.getPerson());
         person = personReceivedEvent.getPerson();
 
-        if(person != null) {
+        if (person != null) {
             binding.setVariable(BR.person, person);
             binding.executePendingBindings();
             initializeProfileFeed();
@@ -200,9 +208,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(person.getDisplay_name());
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
 
-        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+        if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
-            binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
+//            binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
+            binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
 //            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
         } else
@@ -213,7 +222,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         binding.personAvatarAsset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isEditMode) {
+                if (isEditMode) {
                     Intent intent = new Intent();
                     // Show only images, no videos or anything else
                     intent.setType("image/*");
@@ -228,14 +237,26 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 // edit profile
-                if (isCurrentUser) {
+                if (isCurrentUser && isEditMode) {
+                    binding.personDesc.setVisibility(View.VISIBLE);
+                    binding.personName.setVisibility(View.VISIBLE);
+                    binding.personDescEdit.setVisibility(View.INVISIBLE);
+                    binding.personNameEdit.setVisibility(View.INVISIBLE);
+                    isEditMode = false;
+                    binding.personName.setText(binding.personNameEdit.getText().toString());
+                    binding.personDesc.setText(binding.personDescEdit.getText().toString());
+                    PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
+                    binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
+                    getActivity().invalidateOptionsMenu();
+                } else if (isCurrentUser) {
                     binding.personDesc.setVisibility(View.INVISIBLE);
                     binding.personName.setVisibility(View.INVISIBLE);
                     binding.personDescEdit.setVisibility(View.VISIBLE);
                     binding.personNameEdit.setVisibility(View.VISIBLE);
                     isEditMode = true;
+                    binding.personIsFollowed.setBackgroundResource(R.drawable.save_arrow_icn);//TODO: icon for save info of user
                     getActivity().invalidateOptionsMenu();
-                } else if (binding.personIsFollowed.getText().equals(following)) {
+                } else if (binding.personIsFollowed.getText().equals(following) || binding.getPerson().is_followed()) {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -250,7 +271,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                             Timber.e("Error on unfollowing.");
                         }
                     });
-                } else if (binding.personIsFollowed.getText().equals(follow)) {
+                } else if (binding.personIsFollowed.getText().equals(follow) || !binding.getPerson().is_followed()) {
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -266,7 +287,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         }
                     });
                 }
-
             }
         });
 
@@ -305,7 +325,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("avatar_asset", "avatar.jpg", fbody)
-                .addFormDataPart("avatar_asset_id",  avatar)
+                .addFormDataPart("avatar_asset_id", avatar)
                 .build();
 
         Timber.d("Avatar " + avatar);
@@ -346,8 +366,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_btn:
-                if(getActivity() instanceof MainActivity)
-                    ((MainActivity)getActivity()).onBackPressed();
+                if (getActivity() instanceof MainActivity)
+                    ((MainActivity) getActivity()).onBackPressed();
                 else getActivity().finish();
                 break;
             case R.id.sign_out:
@@ -365,11 +385,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private void backToSignInPage() {
 
-        if(getActivity() instanceof MainActivity) {
+        if (getActivity() instanceof MainActivity) {
 
             FragmentTransaction trans = getFragmentManager().beginTransaction();
-				/*
-				 * IMPORTANT: We use the "root frame" defined in
+                /*
+                 * IMPORTANT: We use the "root frame" defined in
 				 * "root_fragment.xml" as the reference to replace fragment
 				 */
             trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));

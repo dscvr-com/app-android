@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -77,8 +78,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
     private ProgressBar upload_progress;
     private TextView uploadButton;
-    private TextView heart_label;
     private boolean userLikesOptograph = false;
+    private boolean isCurrentUser = false;
 
     public OptographFeedAdapter(Context context) {
         this.context = context;
@@ -227,16 +228,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 }
             });
 
-            heart_label = (TextView) holder.itemView.findViewById(R.id.heart_label);
-            heart_label.setTypeface(Constants.getInstance().getIconTypeface());
-            heart_label.setOnClickListener(v -> {
+
+            holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
+            holder.heart_label.setOnClickListener(v -> {
 //                Snackbar.make(v, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
                 if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
 //                    userLikesOptograph = true;
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
                     optograph.setIs_starred(true);
-                    optograph.setStars_count(optograph.getStars_count()+1);
-                    updateHeartLabel(optograph,holder);
+                    optograph.setStars_count(optograph.getStars_count() + 1);
+                    updateHeartLabel(optograph, holder);
                     apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -244,8 +245,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                             if (!response.isSuccess()) {
                                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
                                 optograph.setIs_starred(response.isSuccess());
-                                optograph.setStars_count(optograph.getStars_count() -1);
-//                                updateHeartLabel(optograph,holder);
+                                optograph.setStars_count(optograph.getStars_count() - 1);
+                                updateHeartLabel(optograph, holder);
                             }
                         }
 
@@ -254,14 +255,15 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //                            userLikesOptograph = false;
                             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
                             optograph.setIs_starred(false);
-                            optograph.setStars_count(optograph.getStars_count() -1);
+                            optograph.setStars_count(optograph.getStars_count() - 1);
+                            updateHeartLabel(optograph, holder);
                         }
                     });
                 } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
                     optograph.setIs_starred(false);
-                    optograph.setStars_count(optograph.getStars_count()-1);
-                    updateHeartLabel(optograph,holder);
+                    optograph.setStars_count(optograph.getStars_count() - 1);
+                    updateHeartLabel(optograph, holder);
                     apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -270,7 +272,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
                                 optograph.setIs_starred(response.isSuccess());
                                 optograph.setStars_count(optograph.getStars_count() + 1);
-//                                updateHeartLabel(optograph, holder);
+                                updateHeartLabel(optograph, holder);
                             }
                         }
 
@@ -279,6 +281,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
                             optograph.setIs_starred(true);
                             optograph.setStars_count(optograph.getStars_count() + 1);
+                            updateHeartLabel(optograph, holder);
                         }
                     });
                 } else {
@@ -288,6 +291,49 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 }
             });
 
+
+            isCurrentUser = optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID));
+            holder.followButton.setVisibility(isCurrentUser?View.INVISIBLE:View.VISIBLE);
+            holder.followButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (optograph.getPerson().is_followed()) {
+                        followPerson(optograph,false,holder);
+                        apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert follow count on failure
+                                if (!response.isSuccess()) {
+                                    followPerson(optograph,true,holder);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                followPerson(optograph,true,holder);
+                                Timber.e("Error on unfollowing.");
+                            }
+                        });
+                    } else if (!optograph.getPerson().is_followed()) {
+                        followPerson(optograph,true,holder);
+                        apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert follow count on failure
+                                if (!response.isSuccess()) {
+                                    followPerson(optograph,false,holder);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                followPerson(optograph,false,holder);
+                                Timber.e("Error on following.");
+                            }
+                        });
+                    }
+                }
+            });
 
             ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
             profileView.setOnClickListener(new View.OnClickListener() {
@@ -309,10 +355,10 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
 //            if (optograph.is_local() && !mydb.checkIfAllImagesUploaded(optograph.getId())) {//original
             if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
-                heart_label.setVisibility(View.GONE);
+                holder.heart_label.setVisibility(View.GONE);
                 uploadButton.setVisibility(View.VISIBLE);
             } else {
-                heart_label.setVisibility(View.VISIBLE);
+                holder.heart_label.setVisibility(View.VISIBLE);
                 uploadButton.setVisibility(View.GONE);
             }
 
@@ -359,6 +405,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             });
 
             updateHeartLabel(optograph, holder);
+            followPerson(optograph,optograph.getPerson().is_followed(),holder);
 
             // setup sharing
             TextView settingsLabel = (TextView) holder.itemView.findViewById(R.id.settings_button);
@@ -479,22 +526,40 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
     private void toUploadOrToHeart(Optograph optograph) {
         if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
-            heart_label.setVisibility(View.GONE);
+//            holder.heart_label.setVisibility(View.GONE);
             uploadButton.setVisibility(View.VISIBLE);
             upload_progress.setVisibility(View.GONE);
         } else {
-            heart_label.setVisibility(View.VISIBLE);
+//            holder.heart_label.setVisibility(View.VISIBLE);
             uploadButton.setVisibility(View.GONE);
             upload_progress.setVisibility(View.GONE);
         }
     }
 
     private void updateHeartLabel(Optograph optograph,OptographViewHolder holder) {
-        if (userLikesOptograph) {
-            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+//        if (userLikesOptograph) {
+//            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+//        } else {
+//            // TODO: use empty heart
+//            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+//        }
+        holder.heart_label.setText(String.valueOf(optograph.getStars_count()));
+        if(optograph.is_starred()) {
+            holder.heart_label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
         } else {
-            // TODO: use empty heart
-            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
+            holder.heart_label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.like_icn, 0);
+        }
+    }
+
+    private void followPerson(Optograph optograph,boolean isFollowed,OptographViewHolder holder) {
+        if(isFollowed) {
+            optograph.getPerson().setIs_followed(true);
+            optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
+            holder.followButton.setImageResource(R.drawable.followed_icn);
+        } else {
+            optograph.getPerson().setIs_followed(false);
+            optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
+            holder.followButton.setImageResource(R.drawable.follow_icn);
         }
     }
 
@@ -757,7 +822,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             }*/
             if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
                 mydb.updateColumnOptograph(optoUpload.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
-                heart_label.setVisibility(View.VISIBLE);
+//                holder.heart_label.setVisibility(View.VISIBLE);
             } else {
                 uploadButton.setVisibility(View.VISIBLE);
             }
@@ -999,6 +1064,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         RelativeLayout profileBar;
         RelativeLayout descriptionBar;
         private Optograph2DCubeView optograph2DCubeView;
+        private TextView heart_label;
+        private ImageButton followButton;
         private boolean isNavigationModeCombined;
 
 
@@ -1008,6 +1075,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             profileBar = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
             descriptionBar = (RelativeLayout) itemView.findViewById(R.id.description_bar);
             optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
+            heart_label = (TextView) itemView.findViewById(R.id.heart_label);
+            followButton = (ImageButton) itemView.findViewById(R.id.follow);
 //            setInformationBarsVisible();
         }
 

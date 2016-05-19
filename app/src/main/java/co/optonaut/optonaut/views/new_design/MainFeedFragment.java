@@ -290,13 +290,15 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private void gyroValidation() {
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
         boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
-        cache.save(Cache.GYRO_ENABLE,(!gyro && !lilPlanet));
+        if (!gyro && lilPlanet) cache.save(Cache.LITTLE_PLANET_ENABLE,false);
+        cache.save(Cache.GYRO_ENABLE,!gyro);
     }
 
     private void littlePlanetValidation() {
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
         boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
-        cache.save(Cache.LITTLE_PLANET_ENABLE, (!lilPlanet && !gyro));
+        if (!lilPlanet && gyro) cache.save(Cache.GYRO_ENABLE,false);
+        cache.save(Cache.LITTLE_PLANET_ENABLE, !lilPlanet);
     }
 
     private void instatiateFeedDisplayButton() {

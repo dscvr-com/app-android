@@ -111,7 +111,8 @@
             app:font="@{``}"
             android:text="@{person.display_name}"/>
 
-        <!--android:background="@{person.is_followed == true? @drawable/login_btn:@drawable/register_btn}"-->
+        <!--android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"-->
+        <!--android:background="@color/profile_btn"-->
         <Button
             android:id="@+id/person_is_followed"
             android:layout_width="wrap_content"
@@ -120,10 +121,8 @@
             android:layout_centerHorizontal="true"
             android:textColor="@color/text_bright"
             android:textSize="12sp"
-            android:background="@color/profile_btn"
-            android:textStyle="bold"
             app:font="@{``}"
-            android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"/>
+            android:background="@{person.is_followed == true? @drawable/followed_icn:@drawable/follow_icn}"/>
 
         <TextView
             android:id="@+id/person_desc"
