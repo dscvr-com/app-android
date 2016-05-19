@@ -4,6 +4,7 @@ package co.optonaut.optonaut.views.new_design;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -47,6 +48,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     @Bind(R.id.fb_share_btn) ImageButton fbBtn;
     @Bind(R.id.twitter_share_btn) ImageButton twitterBtn;
     @Bind(R.id.messenger_share_btn) ImageButton messengerBtn;
+    @Bind(R.id.share_text) TextView shareText;
+    @Bind(R.id.toolbar_text) TextView toolbarText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,15 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         twitterBtn.setOnClickListener(this);
         messengerBtn.setOnClickListener(this);
 
+        setFont(toolbarText);
+        setFont(shareText);
+
         return view;
+    }
+
+    private void setFont(TextView textView) {
+        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(),"fonts/Avenir_LT_45_Book_0.ttf");
+        textView.setTypeface(custom_font);
     }
 
     @Override
@@ -104,18 +115,21 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     private void setOptographPreview() {
 
         String uri = ImageUrlBuilder.buildPlaceholderUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
-        if (optograph.is_local()) {
-            Picasso.with(previewImg.getContext())
-                    .load(new File(uri))
-                    .resize(previewImg.getWidth(), previewImg.getHeight())
-                    .centerCrop()
-                    .into(previewImg);
-        } else {
-            Picasso.with(previewImg.getContext())
-                    .load(uri)
-                    .resize(previewImg.getWidth(), previewImg.getHeight())
-                    .centerCrop()
-                    .into(previewImg);
+
+        if(previewImg.getWidth() > 0 && previewImg.getHeight() > 0) {
+            if (optograph.is_local()) {
+                Picasso.with(previewImg.getContext())
+                        .load(new File(uri))
+                        .resize(previewImg.getWidth(), previewImg.getHeight())
+                        .centerCrop()
+                        .into(previewImg);
+            } else {
+                Picasso.with(previewImg.getContext())
+                        .load(uri)
+                        .resize(previewImg.getWidth(), previewImg.getHeight())
+                        .centerCrop()
+                        .into(previewImg);
+            }
         }
 
     }
