@@ -130,12 +130,21 @@
                         app:font="@{`bold`}"
                         android:layout_centerHorizontal="true"/>
 
+                    <ImageView
+                        android:id="@+id/iam_logo"
+                        android:layout_width="101dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_below="@id/settings_title"
+                        android:background="@drawable/logo_dark"
+                        android:layout_centerHorizontal="true"/>
+
                     <TextView
                         android:id="@+id/settings_vr_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_dark"
-                        android:layout_below="@+id/settings_title"
+                        android:layout_below="@+id/iam_logo"
                         android:layout_marginTop="20dp"
                         app:font="@{`bold`}"
                         android:text="@string/settings_vr_image" />
@@ -158,8 +167,8 @@
                                 android:layout_width="1dp"
                                 android:layout_height="11dp"
                                 android:layout_marginLeft="50dp"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginBottom="5dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginBottom="2dp"
                                 android:background="@color/feed_bar"/>
 
                             <TextView
@@ -167,7 +176,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/text_light"
-                                android:textSize="16sp"
+                                android:textSize="12sp"
                                 app:font="@{`bold`}"
                                 android:layout_gravity="center_vertical"
                                 android:text="@string/settings_view_iam_360_in" />
@@ -177,8 +186,8 @@
                                 android:layout_width="1dp"
                                 android:layout_height="11dp"
                                 android:layout_marginLeft="50dp"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginBottom="5dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="4dp"
                                 android:background="@color/feed_bar"
                                 android:layout_below="@+id/in3d_layout" />
 
@@ -200,7 +209,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_dark"
                         android:layout_below="@+id/in3d_layout"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="4dp"
+                        android:textSize="14sp"
                         app:font="@{`bold`}"
                         android:text="@string/settings_feed_default" />
 
@@ -209,7 +219,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="4dp"
                         android:layout_below="@+id/settings_feed_default">
 
                         <LinearLayout
@@ -259,7 +269,7 @@
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="5dp">
+                                android:layout_marginTop="4dp">
 
                                 <ImageButton
                                     android:id="@+id/little_planet_button"
@@ -297,7 +307,9 @@
                         android:layout_marginTop="5dp"
                         android:layout_below="@+id/feed_default_layout"
                         android:textColor="@color/text_dark"
-                        android:text="@string/settings_capture_mode" />
+                        android:text="@string/settings_capture_mode"
+                        android:textSize="14sp"
+                        app:font="@{`bold`}" />
 
                     <LinearLayout
                         android:id="@+id/capture_mode_layout"
@@ -310,8 +322,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="5dp">
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="50dp"
@@ -328,7 +339,7 @@
 
                             <View
                                 android:layout_width="1dp"
-                                android:layout_height="50dp"
+                                android:layout_height="45dp"
                                 android:background="@color/feed_bar" />
 
                             <TextView
@@ -353,7 +364,7 @@
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="5dp">
+                                android:layout_marginTop="4dp">
 
                                 <ImageButton
                                     android:id="@+id/three_ring_button"
@@ -366,7 +377,7 @@
 
                             <View
                                 android:layout_width="1dp"
-                                android:layout_height="50dp"
+                                android:layout_height="45dp"
                                 android:background="@color/feed_bar" />
 
                             <TextView
@@ -391,7 +402,9 @@
                         android:layout_below="@+id/capture_mode_layout"
                         android:textColor="@color/text_dark"
                         android:layout_marginTop="5dp"
-                        android:text="@string/settings_capture_type" />
+                        android:text="@string/settings_capture_type"
+                        android:textSize="14sp"
+                        app:font="@{`bold`}" />
 
                     <LinearLayout
                         android:id="@+id/capture_type_layout"
@@ -404,8 +417,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="5dp">
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="50dp"
@@ -422,7 +434,7 @@
 
                             <View
                                 android:layout_width="1dp"
-                                android:layout_height="50dp"
+                                android:layout_height="45dp"
                                 android:background="@color/feed_bar" />
 
                             <TextView
@@ -447,7 +459,7 @@
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="5dp">
+                                android:layout_marginTop="4dp">
 
                                 <ImageButton
                                     android:id="@+id/motor_button"
@@ -460,7 +472,7 @@
 
                             <View
                                 android:layout_width="1dp"
-                                android:layout_height="50dp"
+                                android:layout_height="45dp"
                                 android:background="@color/feed_bar" />
 
                             <TextView
