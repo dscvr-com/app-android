@@ -151,6 +151,6 @@ public class CameraUtils {
         r = r>255? 255 : r<0 ? 0 : r;
         g = g>255? 255 : g<0 ? 0 : g;
         b = b>255? 255 : b<0 ? 0 : b;
-        return 0xff000000 | (b<<16) | (g<<8) | r;
+        return 0xff000000 | (r<<16) | (g<<8) | b;
     }
 }

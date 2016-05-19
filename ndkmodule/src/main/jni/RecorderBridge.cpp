@@ -3,7 +3,7 @@
 #include <android/bitmap.h>
 #include "online-stitcher/src/recorder/recorder.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
-#include "online-stitcher/src/recorder/storageSink.hpp"
+#include "online-stitcher/src/recorder/imageSink.hpp"
 #include "online-stitcher/src/recorder/recorderGraph.hpp"
 
 using namespace optonaut;
@@ -14,9 +14,10 @@ int counter = 0;
 
 Mat intrinsics;
 
-std::shared_ptr<CheckpointStore> leftStore;
-std::shared_ptr<CheckpointStore> rightStore;
-std::shared_ptr<StorageSink> sink;
+//std::shared_ptr<CheckpointStore> leftStore;
+//std::shared_ptr<CheckpointStore> rightStore;
+std::shared_ptr<CheckpointStore> postStore;
+std::shared_ptr<ImageSink> sink;
 
 std::shared_ptr<Recorder> recorder;
 std::string debugPath;
@@ -92,13 +93,17 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     std::string path(cString);
     __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
-    leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
-    rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+    //leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
+    //rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+    postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
 
-    leftStore->Clear();
-    rightStore->Clear();
 
-    sink =std::make_shared<StorageSink>(*leftStore, *rightStore);
+
+    //leftStore->Clear();
+    //rightStore->Clear();
+    postStore->Clear();
+
+    sink =std::make_shared<ImageSink>(*postStore);
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -118,7 +123,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode);
 }
 
 void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
