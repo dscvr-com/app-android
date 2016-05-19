@@ -32,7 +32,6 @@ public abstract class OptographGridFragment extends Fragment {
     public OptographGridFragment() {
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

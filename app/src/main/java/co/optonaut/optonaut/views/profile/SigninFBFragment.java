@@ -329,6 +329,9 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
                                 cache.save(Cache.USER_FB_LOGGED_IN, true);
 
+                                // TODO save avatar
+//                                http://stackoverflow.com/questions/32310878/how-to-get-facebook-profile-image-in-android
+
 //                        ((MainActivity) getActivity()).onBackPressed();
 //                        ((MainActivity) getActivity()).onBack();
                                 PersonManager.updatePerson();

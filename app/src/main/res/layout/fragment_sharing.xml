@@ -33,7 +33,8 @@
             android:background="@drawable/logo_dark"
             android:layout_marginBottom="12dp" />
 
-        <com.flaviofaria.kenburnsview.KenBurnsView
+        <!--<com.flaviofaria.kenburnsview.KenBurnsView-->
+        <ImageView
             android:id="@+id/preview_image"
             android:layout_width="300dp"
             android:layout_height="125dp"

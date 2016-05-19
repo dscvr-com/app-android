@@ -107,10 +107,14 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         if (optograph.is_local()) {
             Picasso.with(previewImg.getContext())
                     .load(new File(uri))
+                    .resize(previewImg.getWidth(), previewImg.getHeight())
+                    .centerCrop()
                     .into(previewImg);
         } else {
             Picasso.with(previewImg.getContext())
                     .load(uri)
+                    .resize(previewImg.getWidth(), previewImg.getHeight())
+                    .centerCrop()
                     .into(previewImg);
         }
 
