@@ -76,19 +76,15 @@ dependencies {
     // Manual entries
     // Reactive
     // mixpanel
-    
 
     // MIT licensed!
     // see: https://github.com/yigit/android-priority-jobqueue
-    
+
     // Apache 2.0 licensed libraries!
     // see https://github.com/triposo/barone
     // see https://github.com/hdodenhof/CircleImageView
     // see https://github.com/JakeWharton/timber
     // see http://jakewharton.github.io/butterknife/
-    
-    
-
 
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
@@ -98,6 +94,19 @@ dependencies {
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':ndkmodule')
+    //swipeview
+    // pull down view
+    compile('com.android.support:cardview-v7:23.2.0') {
+        force = true
+    }
+    // panning image https://github.com/flavioarfaria/KenBurnsView
+    //    compile files('libs/twitter4j-core-4.0.4.jar')
+    compile('de.psdev.licensesdialog:licensesdialog:1.4.0') {
+        exclude group: 'com.google.android', module: 'support-v4'
+    }
+    compile(group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.3') {
+        exclude group: 'com.google.android', module: 'support-v7'
+    }
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
@@ -120,22 +129,11 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.jakewharton.timber:timber:4.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile "com.daimajia.swipelayout:library:1.2.0@aar" //swipeview
-    compile 'com.sothree.slidinguppanel:library:3.3.0' // pull down view
+    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
+    compile 'com.sothree.slidinguppanel:library:3.3.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    compile('com.android.support:cardview-v7:23.2.0') {
-        force = true
-    }
     compile 'com.android.support:support-v4:22.2.1'
-    // panning image https://github.com/flavioarfaria/KenBurnsView
     compile 'com.flaviofaria:kenburnsview:1.0.7'
-//    compile files('libs/twitter4j-core-4.0.4.jar')
-    compile ('de.psdev.licensesdialog:licensesdialog:1.4.0') {
-        exclude group: 'com.google.android', module: 'support-v4'
-    }
-    compile (group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.3') {
-        exclude group: 'com.google.android', module: 'support-v7'
-    }
 }
 
 configurations {

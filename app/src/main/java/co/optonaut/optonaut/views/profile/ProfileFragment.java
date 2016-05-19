@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -153,6 +154,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 cache.save(Cache.USER_TOKEN, "");
 
 //                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+                backToSignInPage();
                 LoginManager.getInstance().logOut();
 
                 return true;
@@ -347,9 +349,34 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 cache.save(Cache.USER_ID, "");
                 cache.save(Cache.USER_TOKEN, "");
 
-                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+//                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
                 LoginManager.getInstance().logOut();
+
+                backToSignInPage();
+
                 break;
+        }
+    }
+
+    private void backToSignInPage() {
+
+        if(getActivity() instanceof MainActivity) {
+
+            FragmentTransaction trans = getFragmentManager().beginTransaction();
+				/*
+				 * IMPORTANT: We use the "root frame" defined in
+				 * "root_fragment.xml" as the reference to replace fragment
+				 */
+            trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
+
+				/*
+				 * IMPORTANT: The following lines allow us to add the fragment
+				 * to the stack and return to it later, by pressing back
+				 */
+            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            trans.addToBackStack(null);
+
+            trans.commit();
         }
     }
 }
