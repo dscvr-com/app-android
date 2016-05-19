@@ -97,7 +97,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.logo_small_dark);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (person != null) {
             binding.setVariable(BR.person, person);
@@ -171,7 +172,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 getActivity().invalidateOptionsMenu();
                 return true;
             case android.R.id.home:
-                ((MainActivityRedesign)getActivity()).removeCurrentFragment();
+//                ((MainActivityRedesign)getActivity()).removeCurrentFragment();
+                if(getActivity() instanceof MainActivity)
+                    ((MainActivity)getActivity()).onBackPressed();
+                else getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -127,8 +127,8 @@
                         android:text="@string/settings_title"
                         android:layout_marginTop="20dp"
                         android:textSize="21sp"
-                        app:font="@{``}"
-                        android:layout_centerHorizontal="true" />
+                        app:font="@{`bold`}"
+                        android:layout_centerHorizontal="true"/>
 
                     <TextView
                         android:id="@+id/settings_vr_image"
@@ -137,7 +137,7 @@
                         android:textColor="@color/text_dark"
                         android:layout_below="@+id/settings_title"
                         android:layout_marginTop="20dp"
-                        app:font="@{``}"
+                        app:font="@{`bold`}"
                         android:text="@string/settings_vr_image" />
 
                     <LinearLayout
@@ -168,7 +168,7 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/text_light"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:layout_gravity="center_vertical"
                                 android:text="@string/settings_view_iam_360_in" />
 
@@ -190,7 +190,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_toRightOf="@+id/settings_view_iam_360_in"
-                            android:background="@drawable/a3d_vr_btn_selector"/>
+                            android:background="@drawable/a3dvr_inactive_icn"/>
 
                     </LinearLayout>
 
@@ -201,7 +201,7 @@
                         android:textColor="@color/text_dark"
                         android:layout_below="@+id/in3d_layout"
                         android:layout_marginTop="5dp"
-                        app:font="@{``}"
+                        app:font="@{`bold`}"
                         android:text="@string/settings_feed_default" />
 
                     <LinearLayout
@@ -220,7 +220,8 @@
                             <LinearLayout
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:layout_marginTop="5dp">
 
                                 <ImageButton
                                     android:id="@+id/gyro_button"
@@ -244,7 +245,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_gyro" />
 
                         </LinearLayout>
@@ -257,7 +258,8 @@
                             <LinearLayout
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:layout_marginTop="5dp">
 
                                 <ImageButton
                                     android:id="@+id/little_planet_button"
@@ -280,7 +282,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_little_planet" />
 
 
@@ -308,7 +310,8 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp">
 
                             <LinearLayout
                                 android:layout_width="50dp"
@@ -336,7 +339,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_one_ring" />
 
                         </LinearLayout>
@@ -349,7 +352,8 @@
                             <LinearLayout
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:layout_marginTop="5dp">
 
                                 <ImageButton
                                     android:id="@+id/three_ring_button"
@@ -373,7 +377,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_three_ring" />
 
                         </LinearLayout>
@@ -400,7 +404,8 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp">
 
                             <LinearLayout
                                 android:layout_width="50dp"
@@ -428,7 +433,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_manual" />
 
                         </LinearLayout>
@@ -441,7 +446,8 @@
                             <LinearLayout
                                 android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:layout_marginTop="5dp">
 
                                 <ImageButton
                                     android:id="@+id/motor_button"
@@ -465,7 +471,7 @@
                                 android:textColor="@color/text_light"
                                 android:layout_gravity="center_vertical"
                                 android:textSize="16sp"
-                                app:font="@{``}"
+                                app:font="@{`bold`}"
                                 android:text="@string/settings_motor" />
 
                         </LinearLayout>
@@ -479,6 +485,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_alignParentBottom="true"/>
+                <ImageButton
+                    android:id="@+id/pull_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/pull_up_arrow_icon"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="5dp"
+                    android:visibility="gone"/>
 
             </RelativeLayout>
 

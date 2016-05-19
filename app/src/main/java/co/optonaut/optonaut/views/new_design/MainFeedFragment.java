@@ -22,6 +22,8 @@ import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.bus.BusProvider;
 import co.optonaut.optonaut.bus.RecordFinishedEvent;
 import co.optonaut.optonaut.record.GlobalState;
+import co.optonaut.optonaut.util.Cache;
+import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.GeneralUtils;
 import co.optonaut.optonaut.util.MixpanelHelper;
 import co.optonaut.optonaut.viewmodels.LocalOptographManager;
@@ -66,6 +68,18 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.thetaBtn.setOnClickListener(this);
         binding.headerLogo.setOnClickListener(this);
 
+//        Settings start
+        initializeButtons();
+
+        binding.a3dButton.setOnClickListener(this);
+        binding.gyroButton.setOnClickListener(this);
+        binding.littlePlanetButton.setOnClickListener(this);
+        binding.oneRingButton.setOnClickListener(this);
+        binding.threeRingButton.setOnClickListener(this);
+        binding.manualButton.setOnClickListener(this);
+        binding.motorButton.setOnClickListener(this);
+//        Settings end
+
         binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -76,19 +90,24 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 switch (newState) {
                     case EXPANDED:
+                        binding.pullUpButton.setVisibility(View.VISIBLE);
+                        if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
                         binding.profileBtn.setVisibility(View.GONE);
                         break;
                     case COLLAPSED:
                     case ANCHORED:
                     case HIDDEN:
+                        binding.pullUpButton.setVisibility(View.GONE);
                         binding.profileBtn.setVisibility(View.VISIBLE);
                         binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         break;
                     case DRAGGING:
                         if (previousState== SlidingUpPanelLayout.PanelState.EXPANDED) {
                             binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
+                            binding.pullUpButton.setVisibility(View.GONE);
                         } else if (previousState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                             binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
+                            binding.pullUpButton.setVisibility(View.VISIBLE);
                         }
                         binding.profileBtn.setVisibility(View.GONE);
                         break;
@@ -187,6 +206,42 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 // Always show the chooser (if there are multiple options available)
                 startActivityForResult(Intent.createChooser(intent1, "Select Picture"), PICK_IMAGE_REQUEST);
                 break;
+            case R.id.a3d_button:
+                cache.save(Cache.VR_3D_ENABLE,!cache.getBoolean(Cache.VR_3D_ENABLE,false));
+                binding.a3dButton.setBackgroundResource(cache.getBoolean(Cache.VR_3D_ENABLE, false) ? R.drawable.a3dvr_active_icn : R.drawable.a3dvr_inactive_icn);
+                break;
+            case R.id.gyro_button:
+                gyroValidation();
+                instatiateFeedDisplayButton();
+                break;
+            case R.id.little_planet_button:
+                littlePlanetValidation();
+                instatiateFeedDisplayButton();
+                break;
+            case R.id.one_ring_button:
+                if (cache.getInt(Cache.CAMERA_MODE) != Constants.ONE_RING_MODE) {
+                    cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+                    activeOneRing();
+                }
+                break;
+            case R.id.three_ring_button:
+                if (cache.getInt(Cache.CAMERA_MODE) != Constants.THREE_RING_MODE) {
+                    cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
+                    activeThreeRing();
+                }
+                break;
+            case R.id.manual_button:
+                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!=Constants.MANUAL_MODE) {
+                    cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
+                    activeManualType();
+                }
+                break;
+            case R.id.motor_button:
+                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE) != Constants.MOTOR_MODE) {
+                    cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MOTOR_MODE);
+                    activeMotorType();
+                }
+                break;
         }
 
     }
@@ -216,4 +271,70 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void update() {
 
     }
+
+    //    Settings start
+    private void initializeButtons() {
+        binding.a3dButton.setBackgroundResource(cache.getBoolean(Cache.VR_3D_ENABLE, false) ? R.drawable.a3dvr_active_icn : R.drawable.a3dvr_inactive_icn);
+
+        instatiateFeedDisplayButton();
+
+        if (cache.getInt(Cache.CAMERA_MODE)== Constants.ONE_RING_MODE)
+            activeOneRing();
+        else activeThreeRing();
+
+        if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)==Constants.MANUAL_MODE)
+            activeManualType();
+        else activeMotorType();
+    }
+
+    private void gyroValidation() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+        cache.save(Cache.GYRO_ENABLE,(!gyro && !lilPlanet));
+    }
+
+    private void littlePlanetValidation() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+        cache.save(Cache.LITTLE_PLANET_ENABLE, (!lilPlanet && !gyro));
+    }
+
+    private void instatiateFeedDisplayButton() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+
+        binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_big_active_icn:R.drawable.gyro_big_inactive_icn);
+        binding.settingsGyro.setTextColor(gyro?getResources().getColor(R.color.text_active):getResources().getColor(R.color.text_inactive));
+        binding.littlePlanetButton.setBackgroundResource(lilPlanet?R.drawable.little_planet_big_active_icn:R.drawable.little_planet_big_inactive_icn);
+        binding.settingsLittlePlanet.setTextColor(lilPlanet?getResources().getColor(R.color.text_active):getResources().getColor(R.color.text_inactive));
+    }
+
+    private void activeOneRing() {
+        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_active_icn);
+        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_active));
+        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_inactive_icn);
+        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_inactive));
+    }
+
+    private void activeThreeRing() {
+        binding.threeRingButton.setBackgroundResource(R.drawable.three_ring_active_icn);
+        binding.settingsThreeRing.setTextColor(getResources().getColor(R.color.text_active));
+        binding.oneRingButton.setBackgroundResource(R.drawable.one_ring_inactive_icn);
+        binding.settingsOneRing.setTextColor(getResources().getColor(R.color.text_inactive));
+    }
+
+    private void activeManualType() {
+        binding.manualButton.setBackgroundResource(R.drawable.manual_active_icn);
+        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_active));
+        binding.motorButton.setBackgroundResource(R.drawable.motor_inactive_icn);
+        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_inactive));
+    }
+
+    private void activeMotorType() {
+        binding.motorButton.setBackgroundResource(R.drawable.motor_active_icn);
+        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
+        binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
+        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
+    }
+    // Settings end
 }

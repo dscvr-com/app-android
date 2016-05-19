@@ -187,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("myTag","MainActivity onBackPressed. Profile?"+(viewPager.getCurrentItem()==PROFILE_MODE));
         if (viewPager.getCurrentItem() != FEED_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
