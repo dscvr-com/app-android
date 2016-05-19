@@ -105,7 +105,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             }
 
             // span complete screen
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ITEM_WIDTH); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().setVariable(BR.optograph, optograph);
