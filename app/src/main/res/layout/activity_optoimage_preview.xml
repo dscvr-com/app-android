@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:text="Add Location"
                     android:textStyle="bold"
-                    android:gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"/>
 
                 <LinearLayout
                     android:id="@+id/location_layout"
@@ -141,16 +141,29 @@
                 android:background="@drawable/save_arrow_icn"
                 android:textColor="@color/bright"/>
 
-            <ProgressBar
-                android:id="@+id/upload_progress"
-                style="@android:style/Widget.ProgressBar.Small.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <Button
+                android:id="@+id/black_circle"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/black_circle_button"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
-
+                android:layout_centerVertical="true"/>
         </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/upload_progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true">
+
+                <ProgressBar
+                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
         <RelativeLayout
             android:id="@+id/post_later_group"
             android:layout_width="wrap_content"
@@ -245,7 +258,8 @@
             android:background="@drawable/preview_textbox_bg"
             android:layout_marginRight="@dimen/fab_elevation"
             android:layout_marginLeft="@dimen/fab_elevation"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine"
+            android:gravity="top"/>
 
     </RelativeLayout>
 
