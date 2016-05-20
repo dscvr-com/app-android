@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader;
 import com.facebook.login.LoginManager;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -38,10 +41,15 @@ import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.util.Cache;
+import co.optonaut.optonaut.viewmodels.InfiniteScrollListener;
+import co.optonaut.optonaut.viewmodels.OptographGridAdapter;
+import co.optonaut.optonaut.views.dialogs.NetworkProblemDialog;
 import co.optonaut.optonaut.views.new_design.MainActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -62,6 +70,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private String follow, following;
     private int PICK_IMAGE_REQUEST = 1;
 
+    private OptographGridAdapter optographFeedAdapter;
+    private NetworkProblemDialog networkProblemDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -73,6 +84,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         follow = getActivity().getResources().getString(R.string.profile_follow);
         following = getActivity().getResources().getString(R.string.profile_following);
+
+        optographFeedAdapter = new OptographGridAdapter(getActivity());
+        networkProblemDialog = new NetworkProblemDialog();
 
         Bundle args = getArguments();
         if (args.containsKey("person")) {
@@ -104,6 +118,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         binding.homeBtn.setOnClickListener(this);
         binding.signOut.setOnClickListener(this);
+
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.optographFeed.setLayoutManager(llm);
+        binding.optographFeed.setAdapter(optographFeedAdapter);
+        binding.optographFeed.setItemViewCacheSize(10);
+
+        binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
+            @Override
+            public void onLoadMore() {
+                loadMore();
+            }
+        });
+
+        binding.header.attachTo(binding.optographFeed);
 
         return binding.getRoot();
     }
@@ -292,10 +321,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        ProfileGridFragment profileFeedFragment = ProfileGridFragment.newInstance(person);
-
-        getChildFragmentManager().beginTransaction().
-                replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
+        initializeFeed();
+//        ProfileGridFragment profileFeedFragment = ProfileGridFragment.newInstance(person);
+//
+//        getChildFragmentManager().beginTransaction().
+//                replace(R.id.feed_placeholder, profileFeedFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -405,5 +435,33 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
             trans.commit();
         }
+    }
+
+    protected void initializeFeed() {
+        apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
+                .subscribe(optographFeedAdapter::addItem);
+
+    }
+
+    protected void loadMore() {
+        apiConsumer.getOptographsFromPerson(person.getId(), optographFeedAdapter.getOldest().getCreated_at())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
+                .subscribe(optographFeedAdapter::addItem);
+    }
+
+    protected void refresh() {
+        // TODO!
+        // swipeContainer.setRefreshing(false);
     }
 }
