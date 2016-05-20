@@ -107,9 +107,9 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
         registerButton.setOnClickListener(this);
         fbButton.setOnClickListener(this);
 
-        TextView signInText = (TextView) view.findViewById(R.id.sign_in_text);
-        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(),"fonts/Avenir_LT_45_Book_0.ttf");
-        signInText.setTypeface(custom_font);
+//        TextView signInText = (TextView) view.findViewById(R.id.sign_in_text);
+//        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(),"fonts/Avenir_LT_45_Book_0.ttf");
+//        signInText.setTypeface(custom_font);
 
 //        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 //            @Override

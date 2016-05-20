@@ -5,8 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/signin_bg"
     android:gravity="center"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
     tools:context=".views.profile.SigninFBFragment">
 
     <LinearLayout
@@ -21,31 +19,13 @@
             android:layout_height="wrap_content"
             android:background="@drawable/logo_dark" />
 
-        <TextView
-            android:id="@+id/sign_in_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="23.5dp"
-            android:layout_marginTop="29.5dp"
-            android:text="Sign In"
-            android:textColor="@color/text_dark"
-            android:textSize="18sp" />
-
-        <View
-            android:id="@+id/line"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/optonautMain_3"
-            android:layout_marginBottom="13.5dp"/>
-
         <ImageButton
             android:id="@+id/fb_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/fab_size_mini"
-            android:layout_marginLeft="27.5dp"
-            android:layout_marginRight="27.5dp"
+            android:layout_marginTop="40dp"
             android:background="@drawable/facebook_connect_button" />
+
     </LinearLayout>
 
     <EditText
