@@ -49,12 +49,29 @@
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_centerHorizontal="true"
                     android:padding="2dp"
                     android:clickable="true"
                     app:person="@{person}"
                     app:civ_border_width="0dp" />
 
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_marginEnd="125dp"-->
+                <LinearLayout
+                    android:layout_width="115dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/person_avatar_asset"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="end">
+                <ImageButton
+                    android:id="@+id/edit_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/edit_icn_button"
+                    android:background="@color/transparentOverlay"/>
+                </LinearLayout>
                 <TextView
                     android:id="@+id/person_name"
                     android:layout_width="wrap_content"
@@ -77,7 +94,7 @@
                     android:layout_marginTop="10dp"
                     android:textStyle="bold"
                     android:textColor="@color/text_yellow"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:font="@{``}"
                     android:text="@{person.display_name}"/>
 
@@ -92,7 +109,7 @@
                     android:textColor="@color/text_bright"
                     android:textSize="12sp"
                     app:font="@{``}"
-                    android:background="@{person.is_followed == true? @drawable/followed_icn:@drawable/follow_icn}"/>
+                    android:background="@{person.is_followed == true? @drawable/following_btn:@drawable/follow_btn}"/>
 
                 <TextView
                     android:id="@+id/person_desc"
@@ -114,7 +131,7 @@
                     android:layout_centerHorizontal="true"
                     android:gravity="center_horizontal"
                     android:textStyle="bold"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textColor="@color/text_dark"
                     app:font="@{``}"
                     android:visibility="invisible"

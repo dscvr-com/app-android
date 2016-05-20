@@ -225,6 +225,7 @@ public class SwipeLayout extends FrameLayout {
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
             if (child == getSurfaceView()) {
+                Log.v("mcandres", "child is surface left : " + left + " dx :" + dx);
                 switch (mCurrentDragEdge) {
                     case Top:
                     case Bottom:
@@ -828,6 +829,7 @@ public class SwipeLayout extends FrameLayout {
     private boolean mIsBeingDragged;
 
     private void checkCanDrag(MotionEvent ev) {
+        Log.v("mcandres", "Check can drag");
         if (mIsBeingDragged) return;
         if (getOpenStatus() == Status.Middle) {
             mIsBeingDragged = true;
@@ -1367,8 +1369,8 @@ public class SwipeLayout extends FrameLayout {
      */
 
 
-    public void bounce(final int rectsizeleft, View bottom) {
-        final View surface = getSurfaceView();
+    public void bounce(final int rectsizeleft, View bottom2) {
+        final View surface = getSurfaceView(),  bottom = getCurrentBottomView();
         if (surface == null) {
             Log.v("mcandres", "surface is null");
             return;
@@ -1380,7 +1382,10 @@ public class SwipeLayout extends FrameLayout {
 
 
         Log.v("mcandres", "surface is not null");
+        setCurrentDragEdge(DragEdge.Left);
+
         mDragHelper.smoothSlideViewTo(surface, rectsizeleft, 0);
+
         invalidate();
 
         final Handler handler = new Handler();
@@ -1388,6 +1393,7 @@ public class SwipeLayout extends FrameLayout {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
+
                 mDragHelper.smoothSlideViewTo(getSurfaceView(), getPaddingLeft(), getPaddingTop());
                 invalidate();
             }
