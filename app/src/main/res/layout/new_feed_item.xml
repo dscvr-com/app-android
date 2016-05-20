@@ -17,11 +17,14 @@
             type="Location" />
     </data>
 
+
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:drag_edge="left" >
+
+
 
         <LinearLayout
             android:background="@color/feed_text_yellow"

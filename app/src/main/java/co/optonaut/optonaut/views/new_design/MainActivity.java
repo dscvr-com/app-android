@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapterViewPager);
         viewPager.setCurrentItem(FEED_MODE, false);
 
+
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -87,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
     public void setPage(int page) {
         viewPager.setCurrentItem(page, true);
     }
+
+
+    public void dragSharePage () {
+        viewPager.setCurrentItem(SHARING_MODE,true);
+
+    }
+
+
 
     public void startSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
