@@ -35,8 +35,8 @@ public class Constants {
     public static int MODE_TINYDEBUG = 1337; // Three ring slices. Good for debugging state transistions during recording.
 
     // Camera Settings
-    public static int ONE_RING_MODE = 0;
-    public static int THREE_RING_MODE = 1;
+    public static int ONE_RING_MODE = MODE_CENTER;
+    public static int THREE_RING_MODE = MODE_TRUNCATED;
     public static int MANUAL_MODE = 0;
     public static int MOTOR_MODE = 1;
 

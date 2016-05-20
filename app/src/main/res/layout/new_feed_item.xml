@@ -24,8 +24,6 @@
         android:layout_height="wrap_content"
         app:drag_edge="left" >
 
-
-
         <LinearLayout
             android:background="@color/feed_text_yellow"
             android:id="@+id/bottom_wrapper"
@@ -38,7 +36,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/share_icn"/>
+                android:background="@drawable/share_w_circle"/>
 
         </LinearLayout>
 
@@ -71,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
-                        android:background="@drawable/share_no_circle_icn"/>
+                        android:background="@drawable/share"/>
 
                 </LinearLayout>
 

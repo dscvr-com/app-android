@@ -9,6 +9,7 @@ import android.os.Bundle;
 import java.util.UUID;
 
 import co.optonaut.optonaut.R;
+import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.views.new_design.RecordFragment;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.views.OverlayNavigationFragment;
@@ -20,14 +21,16 @@ public class RecorderActivity extends AppCompatActivity {
 
     private  RecordFragment recordFragment;
     private RecorderOverlayFragment recorderOverlayFragment;
+    private Cache cache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorder);
 
+        cache = Cache.open();
         Bundle bundle = new Bundle();
-        bundle.putInt("mode", Constants.MODE_CENTER);
+        bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
         recordFragment = new RecordFragment();
         recordFragment.setArguments(bundle);
 

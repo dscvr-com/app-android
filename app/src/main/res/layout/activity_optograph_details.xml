@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="40dp"
             android:layout_marginRight="18dp" >
 
             <ImageButton
@@ -59,7 +59,7 @@
                     android:id="@+id/little_planet_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/little_planet_inactive_icn"
+                    android:background="@drawable/little_planet_inactive_icn_copy"
                     android:layout_marginTop="12dp"
                     android:visibility="gone"/>
 
@@ -67,7 +67,7 @@
                     android:id="@+id/gyro_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/gyro_inactive_icn"
+                    android:background="@drawable/gyro_inactive_icn_copy"
                     android:layout_marginTop="12dp"
                     android:visibility="gone"/>
             </LinearLayout>
