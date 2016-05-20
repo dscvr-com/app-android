@@ -12,7 +12,8 @@
         android:orderInCategory="200"
         android:title="Save"
         app:showAsAction="always"
-        android:visible="false"/>
+        android:visible="false"
+        android:icon="@drawable/save"/>
 
     <item android:id="@+id/cancel_edit"
         android:orderInCategory="150"

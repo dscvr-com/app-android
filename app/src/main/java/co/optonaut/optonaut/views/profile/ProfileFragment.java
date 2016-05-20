@@ -155,13 +155,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 //        super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private void updateHomeButton() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode?R.drawable.cancel:R.drawable.logo_small_dark);// back_arrow_icn must change by cancel_button
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
         if (isCurrentUser && isEditMode) {
             menu.findItem(R.id.action_signout).setVisible(false);
-//            menu.findItem(R.id.action_save).setVisible(true);
-            menu.findItem(R.id.cancel_edit).setVisible(true);
+            menu.findItem(R.id.action_save).setVisible(true);
+//            menu.findItem(R.id.cancel_edit).setVisible(true);
         } else if (isCurrentUser && !isEditMode) {
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
@@ -199,7 +203,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 binding.personName.setText(binding.personNameEdit.getText().toString());
                 binding.personDesc.setText(binding.personDescEdit.getText().toString());
                 PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
+                binding.editBtn.setVisibility(View.VISIBLE);
                 getActivity().invalidateOptionsMenu();
+                updateHomeButton();
                 return true;
             case R.id.cancel_edit:
                 binding.personDesc.setVisibility(View.VISIBLE);
@@ -207,12 +213,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 binding.personDescEdit.setVisibility(View.INVISIBLE);
                 binding.personNameEdit.setVisibility(View.INVISIBLE);
                 isEditMode = false;
-                binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
+                binding.editBtn.setVisibility(View.VISIBLE);
                 getActivity().invalidateOptionsMenu();
+                updateHomeButton();
                 return true;
             case android.R.id.home:
 //                ((MainActivityRedesign)getActivity()).removeCurrentFragment();
-                if (getActivity() instanceof MainActivity)
+                if (isEditMode && isCurrentUser) {
+                    binding.personDesc.setVisibility(View.VISIBLE);
+                    binding.personName.setVisibility(View.VISIBLE);
+                    binding.personDescEdit.setVisibility(View.INVISIBLE);
+                    binding.personNameEdit.setVisibility(View.INVISIBLE);
+                    isEditMode = false;
+                    binding.editBtn.setVisibility(View.VISIBLE);
+                    getActivity().invalidateOptionsMenu();
+                    updateHomeButton();
+                } else if (getActivity() instanceof MainActivity)
                     ((MainActivity) getActivity()).onBackPressed();
                 else getActivity().finish();
                 return true;
@@ -242,12 +258,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
 //            binding.personIsFollowed.setText(getActivity().getResources().getString(R.string.profile_edit));
-            binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
+            binding.personIsFollowed.setVisibility(View.GONE);
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
 //            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
             cache.save(Cache.USER_NAME,person.getDisplay_name());
-        } else
+        } else {
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
+            binding.editBtn.setVisibility(View.GONE);
+        }
 
         getActivity().invalidateOptionsMenu();
 
@@ -265,6 +283,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        binding.editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isCurrentUser) {
+                    binding.personDesc.setVisibility(View.INVISIBLE);
+                    binding.personName.setVisibility(View.INVISIBLE);
+                    binding.personDescEdit.setVisibility(View.VISIBLE);
+                    binding.personNameEdit.setVisibility(View.VISIBLE);
+                    isEditMode = true;
+                    getActivity().invalidateOptionsMenu();
+                    updateHomeButton();
+                    binding.editBtn.setVisibility(View.GONE);
+                }
+            }
+        });
+
         binding.personIsFollowed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -278,7 +312,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     binding.personName.setText(binding.personNameEdit.getText().toString());
                     binding.personDesc.setText(binding.personDescEdit.getText().toString());
                     PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
-                    binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
                     getActivity().invalidateOptionsMenu();
                 } else if (isCurrentUser) {
                     binding.personDesc.setVisibility(View.INVISIBLE);
@@ -286,7 +319,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     binding.personDescEdit.setVisibility(View.VISIBLE);
                     binding.personNameEdit.setVisibility(View.VISIBLE);
                     isEditMode = true;
-                    binding.personIsFollowed.setBackgroundResource(R.drawable.save_arrow_icn);//TODO: icon for save info of user
                     getActivity().invalidateOptionsMenu();
                 } else if (binding.personIsFollowed.getText().equals(following) || binding.getPerson().is_followed()) {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
