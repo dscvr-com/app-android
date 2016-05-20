@@ -231,63 +231,59 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
             holder.heart_label.setOnClickListener(v -> {
-//                Snackbar.make(v, holder.itemView.getResources().getString(R.string.feature_favorites_soon), Snackbar.LENGTH_SHORT).show();
-                if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
-//                    userLikesOptograph = true;
-                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                    optograph.setIs_starred(true);
-                    optograph.setStars_count(optograph.getStars_count() + 1);
-                    updateHeartLabel(optograph, holder);
-                    apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-//                            userLikesOptograph = response.isSuccess();
-                            if (!response.isSuccess()) {
+                if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+                    if (!optograph.is_starred()) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                        optograph.setIs_starred(true);
+                        optograph.setStars_count(optograph.getStars_count() + 1);
+                        updateHeartLabel(optograph, holder);
+                        apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                if (!response.isSuccess()) {
+                                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                                    optograph.setIs_starred(response.isSuccess());
+                                    optograph.setStars_count(optograph.getStars_count() - 1);
+                                    updateHeartLabel(optograph, holder);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
                                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                                optograph.setIs_starred(response.isSuccess());
+                                optograph.setIs_starred(false);
                                 optograph.setStars_count(optograph.getStars_count() - 1);
                                 updateHeartLabel(optograph, holder);
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-//                            userLikesOptograph = false;
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                            optograph.setIs_starred(false);
-                            optograph.setStars_count(optograph.getStars_count() - 1);
-                            updateHeartLabel(optograph, holder);
-                        }
-                    });
-                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
-                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                    optograph.setIs_starred(false);
-                    optograph.setStars_count(optograph.getStars_count() - 1);
-                    updateHeartLabel(optograph, holder);
-                    apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        });
+                    } else if (optograph.is_starred()) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                        optograph.setIs_starred(false);
+                        optograph.setStars_count(optograph.getStars_count() - 1);
+                        updateHeartLabel(optograph, holder);
+                        apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
 //                            userLikesOptograph = !response.isSuccess();
-                            if (!response.isSuccess()) {
+                                if (!response.isSuccess()) {
+                                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                                    optograph.setIs_starred(response.isSuccess());
+                                    optograph.setStars_count(optograph.getStars_count() + 1);
+                                    updateHeartLabel(optograph, holder);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
                                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                                optograph.setIs_starred(response.isSuccess());
+                                optograph.setIs_starred(true);
                                 optograph.setStars_count(optograph.getStars_count() + 1);
                                 updateHeartLabel(optograph, holder);
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                            optograph.setIs_starred(true);
-                            optograph.setStars_count(optograph.getStars_count() + 1);
-                            updateHeartLabel(optograph, holder);
-                        }
-                    });
+                        });
+                    }
                 } else {
-//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
-//                    MainActivityRedesign activity = (MainActivityRedesign) context;
-//                    activity.prepareProfile(false);
+                    Snackbar.make(v, context.getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                 }
             });
 
@@ -297,40 +293,44 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.followButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (optograph.getPerson().is_followed()) {
-                        followPerson(optograph,false,holder);
-                        apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                            @Override
-                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                // revert follow count on failure
-                                if (!response.isSuccess()) {
-                                    followPerson(optograph,true,holder);
+                    if (!cache.getString(Cache.USER_TOKEN).equals("")) {
+                        if (optograph.getPerson().is_followed()) {
+                            followPerson(optograph, false, holder);
+                            apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                                @Override
+                                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                    // revert follow count on failure
+                                    if (!response.isSuccess()) {
+                                        followPerson(optograph, true, holder);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Throwable t) {
-                                followPerson(optograph,true,holder);
-                                Timber.e("Error on unfollowing.");
-                            }
-                        });
-                    } else if (!optograph.getPerson().is_followed()) {
-                        followPerson(optograph,true,holder);
-                        apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                            @Override
-                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                // revert follow count on failure
-                                if (!response.isSuccess()) {
-                                    followPerson(optograph,false,holder);
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    followPerson(optograph, true, holder);
+                                    Timber.e("Error on unfollowing.");
                                 }
-                            }
+                            });
+                        } else if (!optograph.getPerson().is_followed()) {
+                            followPerson(optograph, true, holder);
+                            apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                                @Override
+                                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                    // revert follow count on failure
+                                    if (!response.isSuccess()) {
+                                        followPerson(optograph, false, holder);
+                                    }
+                                }
 
-                            @Override
-                            public void onFailure(Throwable t) {
-                                followPerson(optograph,false,holder);
-                                Timber.e("Error on following.");
-                            }
-                        });
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    followPerson(optograph, false, holder);
+                                    Timber.e("Error on following.");
+                                }
+                            });
+                        }
+                    } else {
+                        Snackbar.make(v,context.getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
                     }
                 }
             });
