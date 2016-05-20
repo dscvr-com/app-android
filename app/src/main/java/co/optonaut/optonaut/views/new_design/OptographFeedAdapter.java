@@ -45,6 +45,7 @@ import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.util.Cache;
@@ -936,6 +937,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
+        Log.d("myTag","opto null? "+(optograph==null)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) optograph = checkToDB(optograph);
         if (optograph==null) {
             return;
@@ -1013,7 +1015,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
         optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);
         optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
-        Timber.d("checkToDB isFBShare? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0)+" Twit? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0)+" optoId: "+optograph.getId());
+        Timber.d("checkToDB isFBShare? " + (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0) + " Twit? " + (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0) + " optoId: " + optograph.getId());
         optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
         optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
         optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
@@ -1032,6 +1034,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         optograph.getRightFace().setStatusByIndex(3,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_THREE))!=0);
         optograph.getRightFace().setStatusByIndex(4,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))!=0);
         optograph.getRightFace().setStatusByIndex(5,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FIVE))!=0);
+
+        Person person = new Person();
+        person.setFacebook_token(cache.getString(Cache.USER_FB_TOKEN));
+        person.setDisplay_name(cache.getString(Cache.USER_NAME));
+        person.setFacebook_user_id(cache.getString(Cache.USER_FB_ID));
+        person.setUser_name(cache.getString(Cache.USER_NAME));
+
+        optograph.setPerson(person);
         return optograph;
     }
 

@@ -214,6 +214,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.personIsFollowed.setBackgroundResource(R.drawable.edit_btn);
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
 //            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
+            cache.save(Cache.USER_NAME,person.getDisplay_name());
         } else
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
 

@@ -58,6 +58,7 @@ import co.optonaut.optonaut.model.LogInReturn;
 import co.optonaut.optonaut.model.OptoData;
 import co.optonaut.optonaut.model.OptoDataUpdate;
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.record.GlobalState;
@@ -91,7 +92,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.description_box) EditText descBox;
     @Bind(R.id.post_later_group) RelativeLayout postLaterButton;
     @Bind(R.id.post_later_progress) ProgressBar postLaterProgress;
-    @Bind(R.id.upload_progress) ProgressBar uploadProgress;
+    @Bind(R.id.upload_progress) RelativeLayout uploadProgress;
+    @Bind(R.id.black_circle) Button blackCircle;
     @Bind(R.id.upload_button) Button uploadButton;
     @Bind(R.id.preview_image) KenBurnsView previewImage;
     @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
@@ -228,12 +230,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     return;
                 }
                 if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
-                else finish(); //no need to upload cube faces for theta upload
+                else {
+//                    finish(); //no need to upload cube faces for theta upload
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                uploadProgress.setVisibility(View.INVISIBLE);
+                blackCircle.setVisibility(View.GONE);
+                uploadProgress.setVisibility(View.GONE);
                 Log.d("myTag", t.getMessage());
                 Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
@@ -448,6 +455,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
             @Override
             public void onFailure(Throwable t) {
+                blackCircle.setVisibility(View.GONE);
                 uploadProgress.setVisibility(View.INVISIBLE);
                 uploadButton.setVisibility(View.VISIBLE);
 //                Toast.makeText(getActivity(), "No Internet Connection.", Toast.LENGTH_SHORT).show();
@@ -518,6 +526,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
                 } else if (doneUpload) {
                     apiConsumer = new ApiConsumer(userToken);
+                    blackCircle.setVisibility(View.VISIBLE);
                     uploadProgress.setVisibility(View.VISIBLE);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
@@ -628,6 +637,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             super.onPostExecute(aVoid);
             postLaterProgress.setVisibility(View.GONE);
             uploadProgress.setVisibility(View.GONE);
+            blackCircle.setVisibility(View.GONE);
             doneUpload = true;
         }
     }
@@ -852,6 +862,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     // try using AbstractQueuedSynchronizer
     class UploadCubeImages extends AsyncTask<List<String>, Void, Void> {
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -896,12 +907,14 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(optographId)) {
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
+                finish();
             } else {
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
                 Log.d("myTag", "Not uploaded");
-//                Snackbar.make(uploadButton,"Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(uploadButton,"Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
+                blackCircle.setVisibility(View.GONE);
+                uploadProgress.setVisibility(View.GONE);
             }
-            finish();
         }
     }
 
@@ -966,6 +979,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                blackCircle.setVisibility(View.GONE);
+                uploadProgress.setVisibility(View.GONE);
                 if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side, false);
                 else opto.getRightFace().setStatusByIndex(side, false);
                 flag = 0;
@@ -1002,6 +1017,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         if (!GlobalState.isAnyJobRunning) {
             postLaterProgress.setVisibility(View.GONE);
             uploadProgress.setVisibility(View.GONE);
+            blackCircle.setVisibility(View.GONE);
             doneUpload = true;
         }
 
@@ -1036,6 +1052,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Timber.d("receiveFinishedImage");
         postLaterProgress.setVisibility(View.GONE);
         uploadProgress.setVisibility(View.GONE);
+        blackCircle.setVisibility(View.GONE);
         doneUpload = true;
     }
 
