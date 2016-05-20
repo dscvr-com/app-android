@@ -94,6 +94,7 @@ dependencies {
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':ndkmodule')
+    compile project(':library')
     //swipeview
     // pull down view
     compile('com.android.support:cardview-v7:23.2.0') {
@@ -129,10 +130,10 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.jakewharton.timber:timber:4.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.sothree.slidinguppanel:library:3.3.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.android.support:support-v4:22.2.1'
+    //compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
 }

@@ -126,9 +126,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         binding.optographFeed.setItemViewCacheSize(10);
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
+            int yPos = 0;
             @Override
             public void onLoadMore() {
                 loadMore();
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                yPos += dy;
+
+                if(yPos > binding.coordLayout.getHeight()) {
+                    binding.toolbar.setVisibility(View.GONE);
+                    binding.toolbarReplace.setVisibility(View.VISIBLE);
+                } else {
+                    binding.toolbar.setVisibility(View.VISIBLE);
+                    binding.toolbarReplace.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -152,7 +167,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.profile_menu, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void updateHomeButton() {
@@ -448,26 +462,31 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Restart activity to refresh user values
+     */
     private void backToSignInPage() {
+        getActivity().finish();
+        startActivity(getActivity().getIntent());
 
-        if (getActivity() instanceof MainActivity) {
-
-            FragmentTransaction trans = getFragmentManager().beginTransaction();
-                /*
-                 * IMPORTANT: We use the "root frame" defined in
-				 * "root_fragment.xml" as the reference to replace fragment
-				 */
-            trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
-
-				/*
-				 * IMPORTANT: The following lines allow us to add the fragment
-				 * to the stack and return to it later, by pressing back
-				 */
-            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            trans.addToBackStack(null);
-
-            trans.commit();
-        }
+//        if (getActivity() instanceof MainActivity) {
+//
+//            FragmentTransaction trans = getFragmentManager().beginTransaction();
+//                /*
+//                 * IMPORTANT: We use the "root frame" defined in
+//				 * "root_fragment.xml" as the reference to replace fragment
+//				 */
+//            trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
+//
+//				/*
+//				 * IMPORTANT: The following lines allow us to add the fragment
+//				 * to the stack and return to it later, by pressing back
+//				 */
+//            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//            trans.addToBackStack(null);
+//
+//            trans.commit();
+//        }
     }
 
     protected void initializeFeed() {
