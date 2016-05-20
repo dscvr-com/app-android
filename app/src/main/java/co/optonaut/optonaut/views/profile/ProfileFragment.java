@@ -126,9 +126,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         binding.optographFeed.setItemViewCacheSize(10);
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
+            int yPos = 0;
             @Override
             public void onLoadMore() {
                 loadMore();
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                yPos += dy;
+
+                if(yPos > binding.coordLayout.getHeight()) {
+                    binding.toolbar.setVisibility(View.GONE);
+                    binding.toolbarReplace.setVisibility(View.VISIBLE);
+                } else {
+                    binding.toolbar.setVisibility(View.VISIBLE);
+                    binding.toolbarReplace.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -152,7 +167,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.profile_menu, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -416,6 +430,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Restart activity to refresh user values
+     */
     private void backToSignInPage() {
         getActivity().finish();
         startActivity(getActivity().getIntent());
