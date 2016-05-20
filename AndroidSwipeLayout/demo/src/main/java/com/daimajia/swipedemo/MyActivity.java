@@ -47,7 +47,7 @@ public class MyActivity extends Activity {
             public void onClick(View v) {
                 Toast.makeText(MyActivity.this, "Click on surface", Toast.LENGTH_SHORT).show();
                 Log.d(MyActivity.class.getName(), "click on surface");
-                sample1.bounce(true);
+                sample1.bounce(300, sample1.findViewById(R.id.bottom_wrapper));
             }
         });
         sample1.getSurfaceView().setOnLongClickListener(new View.OnLongClickListener() {
