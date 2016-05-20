@@ -9,23 +9,43 @@
             type="Person" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/profile_bg">
+
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@color/text_dark">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/profile_bg"
+                android:text='IAM360 Images'
+                android:textSize="18sp"
+                app:font="@{``}" />
+
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/optographFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal|top"
+            android:layout_below="@+id/top_bar"
             android:clipToPadding="false"/>
 
         <com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top">
+            android:layout_gravity="center_horizontal|top"
+            android:background="@color/profile_bg">
 
             <RelativeLayout
                 android:id="@+id/coordLayout"
@@ -77,20 +97,6 @@
                         android:paddingTop="@dimen/fab_elevation"/>
                 </RelativeLayout>
 
-                <!--tools:src="@android:drawable/sym_def_app_icon"-->
-                <!--<com.triposo.barone.ScalingImageView
-                    android:id="@+id/person_avatar_asset"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/toolbar"
-                    android:clickable="true"
-                    tools:src="@drawable/avatar_big"
-                    app:person="@{person}" />-->
-
-                <!--android:background="@color/transparentOverlay"-->
-                <!--tools:src="@drawable/avatar_big"-->
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="79dp"
                     android:layout_height="79dp"
@@ -264,6 +270,6 @@
 
         </com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader>
 
-    </FrameLayout>
+    </RelativeLayout>
 
 </layout>

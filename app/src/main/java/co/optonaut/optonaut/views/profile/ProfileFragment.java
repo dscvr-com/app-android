@@ -417,25 +417,27 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void backToSignInPage() {
+        getActivity().finish();
+        startActivity(getActivity().getIntent());
 
-        if (getActivity() instanceof MainActivity) {
-
-            FragmentTransaction trans = getFragmentManager().beginTransaction();
-                /*
-                 * IMPORTANT: We use the "root frame" defined in
-				 * "root_fragment.xml" as the reference to replace fragment
-				 */
-            trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
-
-				/*
-				 * IMPORTANT: The following lines allow us to add the fragment
-				 * to the stack and return to it later, by pressing back
-				 */
-            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            trans.addToBackStack(null);
-
-            trans.commit();
-        }
+//        if (getActivity() instanceof MainActivity) {
+//
+//            FragmentTransaction trans = getFragmentManager().beginTransaction();
+//                /*
+//                 * IMPORTANT: We use the "root frame" defined in
+//				 * "root_fragment.xml" as the reference to replace fragment
+//				 */
+//            trans.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
+//
+//				/*
+//				 * IMPORTANT: The following lines allow us to add the fragment
+//				 * to the stack and return to it later, by pressing back
+//				 */
+//            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//            trans.addToBackStack(null);
+//
+//            trans.commit();
+//        }
     }
 
     protected void initializeFeed() {
