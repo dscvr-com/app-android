@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data class=".ProfileBinding">
         <import type="co.optonaut.optonaut.model.Person" />
         <variable
@@ -10,237 +10,266 @@
     </data>
 
     <RelativeLayout
-        android:id="@+id/coordLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/profile_bg">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/profile_bg"
-            android:layout_alignParentTop="true" >
-
-            <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="21sp"
-                android:text="My Profile"
-                app:font="@{``}" />
-
-        </android.support.v7.widget.Toolbar>
-
-        <RelativeLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="39dp">
-
-            <ImageButton
-                android:id="@+id/home_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/logo_arrow_small_light"
-                android:background="@color/transparentOverlay"
-                android:layout_marginLeft="@dimen/fab_margin"/>
-
-            <TextView
-                android:id="@+id/sign_out"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sign out"
-                android:textStyle="bold"
-                android:textColor="@color/optonautMain_2"
-                android:layout_alignParentEnd="true"
-                android:visibility="gone"
-                android:layout_marginRight="@dimen/fab_margin"
-                android:paddingTop="@dimen/fab_elevation"/>
-        </RelativeLayout>
-
-        <!--tools:src="@android:drawable/sym_def_app_icon"-->
-        <!--<com.triposo.barone.ScalingImageView
-            android:id="@+id/person_avatar_asset"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/toolbar"
-            android:clickable="true"
-            tools:src="@drawable/avatar_big"
-            app:person="@{person}" />-->
-
-        <!--android:background="@color/transparentOverlay"-->
-        <!--tools:src="@drawable/avatar_big"-->
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="79dp"
-            android:layout_height="79dp"
-            android:layout_marginTop="8dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/toolbar"
-            android:padding="2dp"
-            android:clickable="true"
-            app:civ_border_width="0dp"
-            android:background="@drawable/profile_avatar_background"/>
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/person_avatar_asset"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/toolbar"
-            android:padding="2dp"
-            android:clickable="true"
-            app:person="@{person}"
-            app:civ_border_width="0dp" />
-
-        <TextView
-            android:id="@+id/person_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/person_avatar_asset"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/optonautMain_2"
-            android:textStyle="bold"
-            app:font="@{``}"
-            android:text="@{person.display_name}"/>
-
-        <EditText
-            android:id="@+id/person_name_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/person_avatar_asset"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible"
-            android:textStyle="bold"
-            android:textColor="@color/text_yellow"
-            android:textSize="12sp"
-            app:font="@{``}"
-            android:text="@{person.display_name}"/>
-
-        <!--android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"-->
-        <!--android:background="@color/profile_btn"-->
-        <Button
-            android:id="@+id/person_is_followed"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
-            android:layout_below="@+id/person_name_edit"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/text_bright"
-            android:textSize="12sp"
-            app:font="@{``}"
-            android:background="@{person.is_followed == true? @drawable/followed_icn:@drawable/follow_icn}"/>
-
-        <TextView
-            android:id="@+id/person_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/person_is_followed"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:gravity="center_horizontal"
-            android:textColor="@color/text_dark"
-            app:font="@{``}"
-            android:text="@{person.text}"/>
-
-        <EditText
-            android:id="@+id/person_desc_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/person_is_followed"
-            android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/text_dark"
-            app:font="@{``}"
-            android:visibility="invisible"
-            android:text="@{person.text}"/>
-
-        <View
-            android:id="@+id/line_2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/profile_columns_text"
-            android:layout_below="@id/person_desc_edit"
-            android:layout_marginTop="@dimen/navigation_padding_bottom"/>
-
-        <!--android:layout_marginLeft="50dp"-->
-        <!--android:layout_marginRight="50dp"-->
         <LinearLayout
-            android:id="@+id/person_following_bar"
+            android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/line_2"
+            android:layout_height="40dp"
             android:orientation="horizontal"
             android:gravity="center"
-            android:background="@color/profile_bg">
+            android:background="@color/text_dark">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_dark"
+                android:textColor="@color/profile_bg"
                 android:text='IAM360 Images'
                 android:textSize="18sp"
                 app:font="@{``}" />
 
-            <TextView
-                android:id="@+id/person_optographs_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/profile_columns_text"
-                android:visibility="gone"
-                android:text='@{String.valueOf(person.optographs_count) + " Posts"}'/>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                android:background="@android:color/white"/>
-
-            <TextView
-                android:id="@+id/person_followers_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:textColor="@color/bright"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:text='@{String.valueOf(person.followers_count) + "\n Followers"}'/>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                android:background="@android:color/white"/>
-
-            <TextView
-                android:id="@+id/person_followed_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:textColor="@color/bright"
-                android:textStyle="bold"
-                android:visibility="gone"
-                android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
-
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/feed_placeholder"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/optographFeed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_below="@+id/top_bar"
+            android:clipToPadding="false"/>
+
+        <com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader
+            android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/person_following_bar" >
+            android:layout_gravity="center_horizontal|top"
+            android:background="@color/profile_bg">
 
-        </FrameLayout>
+            <RelativeLayout
+                android:id="@+id/coordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/profile_bg"
+                    android:layout_alignParentTop="true" >
+
+                    <TextView
+                        android:id="@+id/toolbar_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="21sp"
+                        android:text="My Profile"
+                        app:font="@{``}" />
+
+                </android.support.v7.widget.Toolbar>
+
+                <RelativeLayout
+                    android:id="@+id/toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="39dp">
+
+                    <ImageButton
+                        android:id="@+id/home_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/logo_arrow_small_light"
+                        android:background="@color/transparentOverlay"
+                        android:layout_marginLeft="@dimen/fab_margin"/>
+
+                    <TextView
+                        android:id="@+id/sign_out"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign out"
+                        android:textStyle="bold"
+                        android:textColor="@color/optonautMain_2"
+                        android:layout_alignParentEnd="true"
+                        android:visibility="gone"
+                        android:layout_marginRight="@dimen/fab_margin"
+                        android:paddingTop="@dimen/fab_elevation"/>
+                </RelativeLayout>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="79dp"
+                    android:layout_height="79dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/toolbar"
+                    android:padding="2dp"
+                    android:clickable="true"
+                    app:civ_border_width="0dp"
+                    android:background="@drawable/profile_avatar_background"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/person_avatar_asset"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/toolbar"
+                    android:padding="2dp"
+                    android:clickable="true"
+                    app:person="@{person}"
+                    app:civ_border_width="0dp" />
+
+                <TextView
+                    android:id="@+id/person_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/person_avatar_asset"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/optonautMain_2"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    app:font="@{``}"
+                    android:text="@{person.display_name}"/>
+
+                <EditText
+                    android:id="@+id/person_name_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/person_avatar_asset"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="invisible"
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_yellow"
+                    android:textSize="12sp"
+                    app:font="@{``}"
+                    android:text="@{person.display_name}"/>
+
+                <!--android:text="@{person.is_followed == true ? @string/profile_following : @string/profile_follow}"-->
+                <!--android:background="@color/profile_btn"-->
+                <Button
+                    android:id="@+id/person_is_followed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_below="@+id/person_name_edit"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/text_bright"
+                    android:textSize="12sp"
+                    app:font="@{``}"
+                    android:background="@{person.is_followed == true? @drawable/followed_icn:@drawable/follow_icn}"/>
+
+                <TextView
+                    android:id="@+id/person_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/person_is_followed"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/text_dark"
+                    app:font="@{``}"
+                    android:text="@{person.text}"/>
+
+                <EditText
+                    android:id="@+id/person_desc_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/person_is_followed"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_dark"
+                    app:font="@{``}"
+                    android:visibility="invisible"
+                    android:text="@{person.text}"/>
+
+                <View
+                    android:id="@+id/line_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/profile_columns_text"
+                    android:layout_below="@id/person_desc_edit"
+                    android:layout_marginTop="@dimen/navigation_padding_bottom"/>
+
+                <!--android:layout_marginLeft="50dp"-->
+                <!--android:layout_marginRight="50dp"-->
+                <LinearLayout
+                    android:id="@+id/person_following_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_below="@+id/line_2"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:background="@color/text_dark">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/profile_bg"
+                        android:text='IAM360 Images'
+                        android:textSize="18sp"
+                        app:font="@{``}" />
+
+                    <TextView
+                        android:id="@+id/person_optographs_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/profile_columns_text"
+                        android:visibility="gone"
+                        android:text='@{String.valueOf(person.optographs_count) + " Posts"}'/>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        android:background="@android:color/white"/>
+
+                    <TextView
+                        android:id="@+id/person_followers_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/bright"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        android:text='@{String.valueOf(person.followers_count) + "\n Followers"}'/>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        android:background="@android:color/white"/>
+
+                    <TextView
+                        android:id="@+id/person_followed_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/bright"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        android:text='@{String.valueOf(person.followed_count) + "\n Following"}'/>
+
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/feed_placeholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/person_following_bar" >
+
+                </FrameLayout>
+
+
+            </RelativeLayout>
+
+
+        </com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader>
 
     </RelativeLayout>
-
 
 </layout>

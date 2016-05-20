@@ -327,6 +327,10 @@ public class Optograph implements Parcelable {
         return person;
     }
 
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     public int getStars_count() {
         return stars_count;
     }

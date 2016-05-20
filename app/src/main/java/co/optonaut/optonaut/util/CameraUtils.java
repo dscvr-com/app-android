@@ -55,6 +55,10 @@ public class CameraUtils {
 
         Camera.Parameters params = camera.getParameters();
         params.setPreviewSize(size.width, size.height);
+        params.setVideoStabilization(true); //improves during capture
+        params.setAutoWhiteBalanceLock(true); //improves quality of capture
+
+
         camera.setParameters(params);
 
         // returns null if camera is unavailable
@@ -84,8 +88,14 @@ public class CameraUtils {
 
     public static float[] getCameraResolution(Context context, int camNum) {
         // those are sizes obtained with the OnePlus One phone...
-        float[] size = {4.6541333f, 3.4623966f};
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        //float[] size = {4.6541333f, 3.4623966f};
+
+        //Hard-code fix for Image size and FOV
+        float[] size = {4f, 3f};
+
+
+        //uncomment if gba is applied
+        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             try {
@@ -100,7 +110,7 @@ public class CameraUtils {
                 Timber.e("YourLogString", e.getMessage(), e);
             }
             Timber.v("size: [%s, %s]", size[0], size[1]);
-        }
+        }*/
         return size;
     }
 

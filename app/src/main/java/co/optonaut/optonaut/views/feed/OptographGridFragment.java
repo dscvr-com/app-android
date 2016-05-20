@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader;
+
 import co.optonaut.optonaut.R;
 import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
@@ -24,6 +26,7 @@ public abstract class OptographGridFragment extends Fragment {
     protected OptographGridAdapter optographFeedAdapter;
     protected ApiConsumer apiConsumer;
     protected RecyclerView recList;
+    protected RecyclerViewHeader header;
     public static final int NUM_COLUMNS = 3;
 
     protected Cache cache;
@@ -53,6 +56,7 @@ public abstract class OptographGridFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recList = (RecyclerView) view.findViewById(R.id.optographFeed);
+
 //        recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -67,6 +71,9 @@ public abstract class OptographGridFragment extends Fragment {
                 loadMore();
             }
         });
+
+        header = (RecyclerViewHeader) view.findViewById(R.id.header);
+        header.attachTo(recList);
     }
 
     @Override

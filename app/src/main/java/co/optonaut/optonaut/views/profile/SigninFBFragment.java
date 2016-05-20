@@ -39,6 +39,7 @@ import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.DBHelper;
 import co.optonaut.optonaut.views.MainActivityRedesign;
 import co.optonaut.optonaut.views.dialogs.GenericOKDialog;
+import co.optonaut.optonaut.views.new_design.MainActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -378,22 +379,26 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     }
 
     private void startProfileFragment() {
-        FragmentTransaction trans = getFragmentManager()
-                .beginTransaction();
-				/*
-				 * IMPORTANT: We use the "root frame" defined in
-				 * "root_fragment.xml" as the reference to replace fragment
-				 */
-        trans.replace(R.id.root_frame, new ProfileFragment().newInstance(cache.getString(Cache.USER_ID)));
+//        getActivity().recreate();
+        getActivity().finish();
+        startActivity(getActivity().getIntent());
 
-				/*
-				 * IMPORTANT: The following lines allow us to add the fragment
-				 * to the stack and return to it later, by pressing back
-				 */
-        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        trans.addToBackStack(null);
-
-        trans.commit();
+//        FragmentTransaction trans = getFragmentManager()
+//                .beginTransaction();
+//				/*
+//				 * IMPORTANT: We use the "root frame" defined in
+//				 * "root_fragment.xml" as the reference to replace fragment
+//				 */
+//        trans.replace(R.id.root_frame, new ProfileFragment().newInstance(cache.getString(Cache.USER_ID)));
+//
+//				/*
+//				 * IMPORTANT: The following lines allow us to add the fragment
+//				 * to the stack and return to it later, by pressing back
+//				 */
+//        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//        trans.addToBackStack(null);
+//
+//        trans.commit();
 
 //        FragmentManager fragmentManager2 = getFragmentManager();
 //        FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
