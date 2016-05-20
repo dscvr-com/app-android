@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -309,84 +310,87 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 }
                 break;
             case R.id.heart_label:
-                if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
+                if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+                    if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
 
-                    setHeart(true, optograph.getStars_count() + 1);
-                    apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            // revert star count on failure
-                            if (!response.isSuccess()) {
+                        setHeart(true, optograph.getStars_count() + 1);
+                        apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert star count on failure
+                                if (!response.isSuccess()) {
+                                    setHeart(false, optograph.getStars_count() - 1);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                // revert star count on failure
                                 setHeart(false, optograph.getStars_count() - 1);
                             }
-                        }
+                        });
+                    } else if (optograph.is_starred()) {
+                        setHeart(false, optograph.getStars_count() - 1);
 
-                        @Override
-                        public void onFailure(Throwable t) {
-                            // revert star count on failure
-                            setHeart(false, optograph.getStars_count() - 1);
-                        }
-                    });
-                } else if (!cache.getString(Cache.USER_TOKEN).equals("") && optograph.is_starred()) {
-                    setHeart(false, optograph.getStars_count() - 1);
+                        apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert star count on failure
+                                if (!response.isSuccess()) {
+                                    setHeart(true, optograph.getStars_count() + 1);
+                                }
+                            }
 
-                    apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            // revert star count on failure
-                            if (!response.isSuccess()) {
+                            @Override
+                            public void onFailure(Throwable t) {
+                                // revert star count on failure
                                 setHeart(true, optograph.getStars_count() + 1);
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            // revert star count on failure
-                            setHeart(true, optograph.getStars_count() + 1);
-                        }
-                    });
+                        });
+                    }
                 } else {
-                    // TODO show login page
-//                    Snackbar.make(v,"Login first.",Snackbar.LENGTH_SHORT).show();
-//                    MainActivityRedesign activity = (MainActivityRedesign) context;
-//                    activity.prepareProfile(false);
+                    Snackbar.make(v, getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.follow:
-                if (optograph.getPerson().is_followed()) {
-                    followPerson(false);
-                    apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            // revert follow count on failure
-                            if (!response.isSuccess()) {
+                if (!cache.getString(Cache.USER_TOKEN).equals("")) {
+                    if (optograph.getPerson().is_followed()) {
+                        followPerson(false);
+                        apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert follow count on failure
+                                if (!response.isSuccess()) {
+                                    followPerson(true);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
                                 followPerson(true);
+                                Timber.e("Error on unfollowing.");
                             }
-                        }
+                        });
+                    } else if (!optograph.getPerson().is_followed()) {
+                        followPerson(true);
+                        apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                            @Override
+                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                // revert follow count on failure
+                                if (!response.isSuccess()) {
+                                    followPerson(false);
+                                }
+                            }
 
-                        @Override
-                        public void onFailure(Throwable t) {
-                            followPerson(true);
-                            Timber.e("Error on unfollowing.");
-                        }
-                    });
-                } else if (!optograph.getPerson().is_followed()) {
-                    followPerson(true);
-                    apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                        @Override
-                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            // revert follow count on failure
-                            if (!response.isSuccess()) {
+                            @Override
+                            public void onFailure(Throwable t) {
                                 followPerson(false);
+                                Timber.e("Error on following.");
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            followPerson(false);
-                            Timber.e("Error on following.");
-                        }
-                    });
+                        });
+                    }
+                } else {
+                    Snackbar.make(v, getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             default:

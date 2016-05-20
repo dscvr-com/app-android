@@ -105,6 +105,7 @@
             android:layout_centerHorizontal="true"
             android:textColor="@color/optonautMain_2"
             android:textStyle="bold"
+            android:layout_marginTop="10dp"
             app:font="@{``}"
             android:text="@{person.display_name}"/>
 
@@ -115,6 +116,7 @@
             android:layout_below="@+id/person_avatar_asset"
             android:layout_centerHorizontal="true"
             android:visibility="invisible"
+            android:layout_marginTop="10dp"
             android:textStyle="bold"
             android:textColor="@color/text_yellow"
             android:textSize="12sp"

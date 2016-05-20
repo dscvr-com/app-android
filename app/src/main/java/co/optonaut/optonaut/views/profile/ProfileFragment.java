@@ -165,6 +165,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 binding.personDescEdit.setVisibility(View.INVISIBLE);
                 binding.personNameEdit.setVisibility(View.INVISIBLE);
                 isEditMode = false;
+                binding.getPerson().setText(binding.personDescEdit.getText().toString());
+                binding.getPerson().setDisplay_name(binding.personNameEdit.getText().toString());
                 binding.personName.setText(binding.personNameEdit.getText().toString());
                 binding.personDesc.setText(binding.personDescEdit.getText().toString());
                 PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
