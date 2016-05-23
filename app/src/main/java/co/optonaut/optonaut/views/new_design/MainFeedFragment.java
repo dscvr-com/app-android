@@ -281,9 +281,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
         instatiateFeedDisplayButton();
 
-        if (cache.getInt(Cache.CAMERA_MODE)== Constants.ONE_RING_MODE)
-            activeOneRing();
-        else activeThreeRing();
+        if (cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE)
+            activeThreeRing();
+        else activeOneRing();
 
         if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)==Constants.MANUAL_MODE)
             activeManualType();

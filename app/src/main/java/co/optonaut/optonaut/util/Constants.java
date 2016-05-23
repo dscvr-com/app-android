@@ -75,6 +75,8 @@ public class Constants {
         initializeToolbarHeight(activity);
 
         initializeCachePath(activity);
+
+
     }
 
     private void initializeFieldOfView() {
@@ -163,6 +165,14 @@ public class Constants {
         }
 
         cachePath = activity.getExternalCacheDir().getPath();
+
+        // initialize cache values for settings
+        Cache cache = Cache.open();
+        if(cache.getInt(Cache.CAMERA_MODE) == 0) cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+        if(cache.getInt(Cache.CAMERA_CAPTURE_TYPE) == 0) cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
+        if(!cache.getBoolean(Cache.GYRO_ENABLE)) cache.save(Cache.GYRO_ENABLE, true);
+        if(!cache.getBoolean(Cache.LITTLE_PLANET_ENABLE)) cache.save(Cache.LITTLE_PLANET_ENABLE, false);
+        if(!cache.getBoolean(Cache.VR_3D_ENABLE)) cache.save(Cache.VR_3D_ENABLE, true);
     }
 
     public static void initializeConstants(Activity activity) {
