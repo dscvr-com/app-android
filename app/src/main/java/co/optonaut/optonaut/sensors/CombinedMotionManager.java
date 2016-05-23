@@ -16,6 +16,7 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     private float[] lastCoreMotionMatrix = null;
     private boolean registeredOnCoreMotionListener;
+    public boolean isRotate = false;
 
     public CombinedMotionManager(float dampFactor, int sceneWidth, int sceneHeight, float vfov) {
         touchEventListener = new TouchEventListener(dampFactor, sceneWidth, sceneHeight, vfov);
@@ -44,10 +45,10 @@ public class CombinedMotionManager extends RotationMatrixProvider {
     @Override
     public float[] getRotationMatrix() {
         float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
-
+/*
         if (!touchEventListener.isTouching()) {
             // Update from motion and damping
-            if (lastCoreMotionMatrix != null) {
+            if (lastCoreMotionMatrix != null && isRotate) {
                 float[] inverse = Maths.buildInverse(lastCoreMotionMatrix);
                 float[] diffRotationMatrix = new float[16];
                 Matrix.multiplyMM(diffRotationMatrix, 0, inverse, 0, coreMotionMatrix, 0);
@@ -62,9 +63,12 @@ public class CombinedMotionManager extends RotationMatrixProvider {
                 touchEventListener.setTheta(touchEventListener.getTheta() - diffRotationTheta);
             }
         }
+*/
+        if (coreMotionMatrix != null && isRotate) {
 
-        if (coreMotionMatrix != null) {
-            lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
+
+            touchEventListener.setPhi(touchEventListener.getPhi() + 0.01f);
+           // lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
         }
 
         return touchEventListener.getRotationMatrix();

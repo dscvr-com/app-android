@@ -82,6 +82,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     private TextView uploadButton;
     private boolean userLikesOptograph = false;
     private boolean isCurrentUser = false;
+    private int currentFullVisibilty = 0;
+
 
     public OptographFeedAdapter(Context context) {
         this.context = context;
@@ -205,10 +207,56 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
 
+    public void RotateCubeMap (int pos) {
+        Log.v("mcandres", "test : " + pos);
+        currentFullVisibilty = pos;
+
+        if (pos > 0) {
+            //notifyItemChanged(pos - 1 ,"test" );
+            notifyItemRangeChanged(pos - 1, 3, "test");
+        } else {
+            notifyItemRangeChanged(pos , 2, "test");
+        }
+
+       // notifyItemChanged(pos , "test");
+
+      // notifyItemChanged(pos + 1, "test" );
+        //notifyDataSetChanged();
+
+
+
+
+    }
+
+    @Override
+    public void onBindViewHolder(OptographViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            Log.v("mcandres", "payload empty");
+            // Perform a full update
+            onBindViewHolder(holder, position);
+        } else {
+            Log.v("mcandres", "payload not empty");
+            if (currentFullVisibilty ==  position) {
+                holder.optograph2DCubeView.isSensorBased(true);
+            } else {
+                holder.optograph2DCubeView.isSensorBased(false);
+            }
+
+        }
+    }
+
 
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
+
+        Log.v("mcandres", "onBindViewHolder " + position + "current full visibility" + currentFullVisibilty  );
+
+        if (currentFullVisibilty ==  position) {
+            holder.optograph2DCubeView.isSensorBased(true);
+        } else {
+            holder.optograph2DCubeView.isSensorBased(false);
+        }
 
 //        userLikesOptograph = optograph.is_starred();
         // reset view holder if we got new optograh

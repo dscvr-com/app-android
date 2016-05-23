@@ -829,7 +829,7 @@ public class SwipeLayout extends FrameLayout {
     private boolean mIsBeingDragged;
 
     private void checkCanDrag(MotionEvent ev) {
-        Log.v("mcandres", "Check can drag");
+
         if (mIsBeingDragged) return;
         if (getOpenStatus() == Status.Middle) {
             mIsBeingDragged = true;

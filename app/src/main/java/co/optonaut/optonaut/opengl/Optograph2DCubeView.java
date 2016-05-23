@@ -42,6 +42,13 @@ public class Optograph2DCubeView extends GLSurfaceView {
         registerRendererOnSensors();
     }
 
+    public void isSensorBased (boolean isRotating) {
+        Log.v("mcandres", "cube renderer");
+        this.optograph2DCubeRenderer.isRotating(isRotating);
+
+
+    }
+
     public void toggleRegisteredOnSensors() {
         if (optograph2DCubeRenderer.isRegisteredOnSensors()) {
             unregisterRendererOnSensors();
