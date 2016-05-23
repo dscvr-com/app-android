@@ -4,12 +4,20 @@ package co.optonaut.optonaut.views.new_design;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -20,8 +28,17 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,7 +51,22 @@ import co.optonaut.optonaut.network.PersonManager;
 import co.optonaut.optonaut.opengl.Cube;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
+import co.optonaut.optonaut.views.WebViewActivity;
 import timber.log.Timber;
+import twitter4j.IDs;
+import twitter4j.OEmbed;
+import twitter4j.OEmbedRequest;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.UploadedMedia;
+import twitter4j.api.TweetsResources;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class SharingFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = SharingFragment.class.getSimpleName();
@@ -50,13 +82,26 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     @Bind(R.id.messenger_share_btn) ImageButton messengerBtn;
     @Bind(R.id.share_text) TextView shareText;
     @Bind(R.id.toolbar_text) TextView toolbarText;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+
+    /**
+     * Register your here app https://dev.twitter.com/apps/new and get your
+     * consumer key and secret
+     */
+    static String TWITTER_CONSUMER_KEY; // place your cosumer key here
+    static String TWITTER_CONSUMER_SECRET; // place your consumer secret here
+
+    private static Twitter mTwitter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         cache = Cache.open();
+
+        TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
+        TWITTER_CONSUMER_SECRET = getString(R.string.twitter_consumer_secret);
 
     }
 
@@ -65,6 +110,9 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
         View view = inflater.inflate(R.layout.fragment_sharing, container, false);
         ButterKnife.bind(this, view);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
 
         copyBtn.setOnClickListener(this);
         emailBtn.setOnClickListener(this);
@@ -147,7 +195,34 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                     Snackbar.make(copyBtn, getResources().getString(R.string.share_copy_to_clipboard), Snackbar.LENGTH_SHORT).show();
                     break;
                 case R.id.email_share_btn:
-                    Intent i = new Intent(Intent.ACTION_SEND);
+                    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                    intent.setType("message/rfc822");
+                    final PackageManager pm = getActivity().getPackageManager();
+                    final List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+                    ResolveInfo best = null;
+                    for (final ResolveInfo info : matches) {
+                        if (info.activityInfo.packageName.endsWith(".gm") || info.activityInfo.name.toLowerCase().contains("gmail")) {
+                            best = info;
+                            break;
+                        }
+                    }
+                    if (best != null) {
+                        intent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+                    }
+                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
+                    intent.putExtra(android.content.Intent.EXTRA_TEXT, shareUrl);
+
+                    startActivity(intent);
+                    /*Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                    sendIntent.setType("message/rfc822");
+//                    sendIntent.setType("plain/text");
+//                    sendIntent.setData(Uri.parse("test@gmail.com"));
+//                    sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+//                    sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "test@gmail.com" });
+                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+                    getActivity().startActivity(sendIntent);*/
+                    /*Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("message/rfc822");
                     i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share_subject_web_viewer));
                     i.putExtra(Intent.EXTRA_TEXT, shareUrl);
@@ -155,7 +230,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                         startActivity(Intent.createChooser(i, "Send mail..."));
                     } catch (android.content.ActivityNotFoundException ex) {
                         Snackbar.make(emailBtn, getResources().getString(R.string.share_email_error), Snackbar.LENGTH_SHORT).show();
-                    }
+                    }*/
                     break;
                 case R.id.fb_share_btn:
                     ShareDialog shareDialog = new ShareDialog(this);
@@ -169,10 +244,46 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                     shareDialog.show(linkContent);
                     break;
                 case R.id.twitter_share_btn:
+                    TwitterAuthConfig authConfig =  new TwitterAuthConfig(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+                    try {
+                        TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
+                                .text("\n"+getResources().getString(R.string.share_subject_web_viewer))
+                                .url(new URL(shareUrl));
+                        builder.show();
+                    } catch (MalformedURLException e) {
+                        Log.d("myTag","ERROR twitter share: "+e.getMessage());
+                    }
+                    /*final TwitterSession session = TwitterCore.getInstance().getSessionManager()
+                            .getActiveSession();
+                    final Intent intent = new ComposerActivity.Builder(getActivity())
+                            .session(session)
+                            .createIntent();
+                    startActivity(intent);*/
                     break;
                 case R.id.messenger_share_btn:
                     break;
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_back:
+                ((MainActivity)getActivity()).setPage(MainActivity.FEED_MODE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_back).setVisible(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.sharing_menu, menu);
     }
 }

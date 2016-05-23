@@ -294,19 +294,19 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             case R.id.little_planet_button:
                 if (littlePlanetActive) {
                     littlePlanetActive = false;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_inactive_icn);
+                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_inactive_icn_copy);
                 } else {
                     littlePlanetActive = true;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_active_icn);
+                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_active_icn_copy);
                 }
                 break;
             case R.id.gyro_button:
                 if (gyroActive) {
                     gyroActive = false;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_inactive_icn);
+                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_inactive_icn_copy);
                 } else {
                     gyroActive = true;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_active_icn);
+                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_active_icn_copy);
                 }
                 break;
             case R.id.heart_label:
