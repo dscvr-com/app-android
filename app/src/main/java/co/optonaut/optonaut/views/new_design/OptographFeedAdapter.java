@@ -221,14 +221,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
             holder.itemView.setLayoutParams(params);
 
-            holder.optograph2DCubeView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, OptographDetailsActivity.class);
-                    intent.putExtra("opto", optograph);
-                    context.startActivity(intent);
-                }
-            });
+            holder.getBinding().personLocationInformation.setOnClickListener(v -> callDetailsPage(optograph));
+            holder.optograph2DCubeView.setOnClickListener(v -> callDetailsPage(optograph));
 
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
@@ -419,6 +413,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
         }
+    }
+
+    private void callDetailsPage(Optograph optograph) {
+        Intent intent = new Intent(context, OptographDetailsActivity.class);
+        intent.putExtra("opto", optograph);
+        context.startActivity(intent);
     }
 
     private void followOrUnfollow(Optograph optograph, OptographViewHolder holder, View v) {
