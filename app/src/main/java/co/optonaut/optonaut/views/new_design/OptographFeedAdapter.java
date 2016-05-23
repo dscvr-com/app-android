@@ -501,7 +501,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                 public void onClick(View v) {
 
 
-                    swipeLayout.bounce(400, shareButton);
+                    swipeLayout.bounce(300, shareButton);
 
 //                    swipeLayout.open();
               //      ((MainActivity) context).setOptograph(optograph);
