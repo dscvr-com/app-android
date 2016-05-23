@@ -108,6 +108,9 @@ dependencies {
     compile(group: 'org.twitter4j', name: 'twitter4j-core', version: '4.0.3') {
         exclude group: 'com.google.android', module: 'support-v7'
     }
+    compile('com.twitter.sdk.android:tweet-composer:1.0.3@aar') {
+        transitive = true;
+    }
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'

@@ -8,7 +8,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/toolbar_text"
@@ -85,7 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/twitter_share_btn_selector"
-            android:visibility="invisible"
             android:layout_marginBottom="12dp" />
 
         <ImageButton
