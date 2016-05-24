@@ -25,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.MessageDialog;
+import com.facebook.share.widget.SendButton;
 import com.facebook.share.widget.ShareDialog;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -261,6 +263,13 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                     startActivity(intent);*/
                     break;
                 case R.id.messenger_share_btn:
+                    MessageDialog messageDialog = new MessageDialog(this);
+                    ShareLinkContent linkCont = new ShareLinkContent.Builder()
+                            .setContentTitle(getResources().getString(R.string.share_subject_web_viewer))
+                            .setContentDescription(optograph.getText())
+                            .setContentUrl(Uri.parse(shareUrl))
+                            .build();
+                    messageDialog.show(linkCont);
                     break;
             }
         }

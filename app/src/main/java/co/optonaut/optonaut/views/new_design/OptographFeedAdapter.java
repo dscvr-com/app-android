@@ -269,121 +269,18 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
             holder.itemView.setLayoutParams(params);
 
-            holder.optograph2DCubeView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, OptographDetailsActivity.class);
-                    intent.putExtra("opto", optograph);
-                    context.startActivity(intent);
-                }
-            });
+            holder.getBinding().personLocationInformation.setOnClickListener(v -> callDetailsPage(optograph));
+            holder.optograph2DCubeView.setOnClickListener(v -> callDetailsPage(optograph));
 
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
-            holder.heart_label.setOnClickListener(v -> {
-                if(!cache.getString(Cache.USER_TOKEN).equals("")) {
-                    if (!optograph.is_starred()) {
-                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                        optograph.setIs_starred(true);
-                        optograph.setStars_count(optograph.getStars_count() + 1);
-                        updateHeartLabel(optograph, holder);
-                        apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                            @Override
-                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                if (!response.isSuccess()) {
-                                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                                    optograph.setIs_starred(response.isSuccess());
-                                    optograph.setStars_count(optograph.getStars_count() - 1);
-                                    updateHeartLabel(optograph, holder);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Throwable t) {
-                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                                optograph.setIs_starred(false);
-                                optograph.setStars_count(optograph.getStars_count() - 1);
-                                updateHeartLabel(optograph, holder);
-                            }
-                        });
-                    } else if (optograph.is_starred()) {
-                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
-                        optograph.setIs_starred(false);
-                        optograph.setStars_count(optograph.getStars_count() - 1);
-                        updateHeartLabel(optograph, holder);
-                        apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
-                            @Override
-                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-//                            userLikesOptograph = !response.isSuccess();
-                                if (!response.isSuccess()) {
-                                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                                    optograph.setIs_starred(response.isSuccess());
-                                    optograph.setStars_count(optograph.getStars_count() + 1);
-                                    updateHeartLabel(optograph, holder);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Throwable t) {
-                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
-                                optograph.setIs_starred(true);
-                                optograph.setStars_count(optograph.getStars_count() + 1);
-                                updateHeartLabel(optograph, holder);
-                            }
-                        });
-                    }
-                } else {
-                    Snackbar.make(v, context.getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
-                }
-            });
-
+            holder.heart_label.setOnClickListener(v -> { setHeart(optograph, holder, v); });
+            holder.getBinding().heartContainer.setOnClickListener(v -> { setHeart(optograph, holder, v); });
 
             isCurrentUser = optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID));
-            holder.followButton.setVisibility(isCurrentUser?View.INVISIBLE:View.VISIBLE);
-            holder.followButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!cache.getString(Cache.USER_TOKEN).equals("")) {
-                        if (optograph.getPerson().is_followed()) {
-                            followPerson(optograph, false, holder);
-                            apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                                @Override
-                                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                    // revert follow count on failure
-                                    if (!response.isSuccess()) {
-                                        followPerson(optograph, true, holder);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Throwable t) {
-                                    followPerson(optograph, true, holder);
-                                    Timber.e("Error on unfollowing.");
-                                }
-                            });
-                        } else if (!optograph.getPerson().is_followed()) {
-                            followPerson(optograph, true, holder);
-                            apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
-                                @Override
-                                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                    // revert follow count on failure
-                                    if (!response.isSuccess()) {
-                                        followPerson(optograph, false, holder);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Throwable t) {
-                                    followPerson(optograph, false, holder);
-                                    Timber.e("Error on following.");
-                                }
-                            });
-                        }
-                    } else {
-                        Snackbar.make(v,context.getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            holder.followButton.setVisibility(isCurrentUser ? View.INVISIBLE : View.VISIBLE);
+            holder.followButton.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
+            holder.getBinding().followContainer.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
 
             ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
             profileView.setOnClickListener(new View.OnClickListener() {
@@ -567,6 +464,113 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
     }
 
+    private void callDetailsPage(Optograph optograph) {
+        Intent intent = new Intent(context, OptographDetailsActivity.class);
+        intent.putExtra("opto", optograph);
+        context.startActivity(intent);
+    }
+
+    private void followOrUnfollow(Optograph optograph, OptographViewHolder holder, View v) {
+
+        if (!cache.getString(Cache.USER_TOKEN).equals("")) {
+            if (optograph.getPerson().is_followed()) {
+                followPerson(optograph, false, holder);
+                apiConsumer.unfollow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        // revert follow count on failure
+                        if (!response.isSuccess()) {
+                            followPerson(optograph, true, holder);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        followPerson(optograph, true, holder);
+                        Timber.e("Error on unfollowing.");
+                    }
+                });
+            } else if (!optograph.getPerson().is_followed()) {
+                followPerson(optograph, true, holder);
+                apiConsumer.follow(optograph.getPerson().getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        // revert follow count on failure
+                        if (!response.isSuccess()) {
+                            followPerson(optograph, false, holder);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        followPerson(optograph, false, holder);
+                        Timber.e("Error on following.");
+                    }
+                });
+            }
+        } else {
+            Snackbar.make(v,context.getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setHeart(Optograph optograph, OptographViewHolder holder, View v) {
+
+        if(!cache.getString(Cache.USER_TOKEN).equals("")) {
+            if (!optograph.is_starred()) {
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                optograph.setIs_starred(true);
+                optograph.setStars_count(optograph.getStars_count() + 1);
+                updateHeartLabel(optograph, holder);
+                apiConsumer.postStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                        if (!response.isSuccess()) {
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                            optograph.setIs_starred(response.isSuccess());
+                            optograph.setStars_count(optograph.getStars_count() - 1);
+                            updateHeartLabel(optograph, holder);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                        optograph.setIs_starred(false);
+                        optograph.setStars_count(optograph.getStars_count() - 1);
+                        updateHeartLabel(optograph, holder);
+                    }
+                });
+            } else if (optograph.is_starred()) {
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+                optograph.setIs_starred(false);
+                optograph.setStars_count(optograph.getStars_count() - 1);
+                updateHeartLabel(optograph, holder);
+                apiConsumer.deleteStar(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                    @Override
+                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+//                            userLikesOptograph = !response.isSuccess();
+                        if (!response.isSuccess()) {
+                            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                            optograph.setIs_starred(response.isSuccess());
+                            optograph.setStars_count(optograph.getStars_count() + 1);
+                            updateHeartLabel(optograph, holder);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+                        optograph.setIs_starred(true);
+                        optograph.setStars_count(optograph.getStars_count() + 1);
+                        updateHeartLabel(optograph, holder);
+                    }
+                });
+            }
+        } else {
+            Snackbar.make(v, context.getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
     private void updateOptograph(Optograph opto) {
         Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
@@ -628,11 +632,11 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         if(isFollowed) {
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
-            holder.followButton.setImageResource(R.drawable.followed_icn);
+            holder.followButton.setImageResource(R.drawable.feed_following_icn);
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
-            holder.followButton.setImageResource(R.drawable.follow_icn);
+            holder.followButton.setImageResource(R.drawable.feed_follow_icn);
         }
     }
 

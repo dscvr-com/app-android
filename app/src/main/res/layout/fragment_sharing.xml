@@ -93,7 +93,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/messenger_share_btn_selector"
-            android:visibility="invisible"
             android:layout_marginBottom="12dp" />
 
     </LinearLayout>
