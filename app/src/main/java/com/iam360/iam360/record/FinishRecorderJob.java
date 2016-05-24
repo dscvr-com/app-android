@@ -56,6 +56,8 @@ public class FinishRecorderJob extends Job {
         Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
 
+        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
+
         Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
 //        UUID id = UUID.randomUUID();
         for (int i = 0; i < bitmaps.length; ++i) {
