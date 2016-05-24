@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -49,8 +50,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     protected ApiConsumer apiConsumer;
 
     private boolean arrowClicked = false;
-    private boolean gyroActive = false;
-    private boolean littlePlanetActive = false;
     private boolean isCurrentUser = false;
 
     @Override
@@ -73,12 +72,23 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.follow.setVisibility(View.GONE);
         }
 
+        binding.littlePlanetButton.animate()
+                .translationYBy(0)
+                .translationY(-90)
+                .setDuration(300);
+        binding.gyroButton.animate()
+                .translationYBy(0)
+                .translationY(-180)
+                .setDuration(300);
+
+        instatiateFeedDisplayButton();
+
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
 
-        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
+//        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         binding.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -127,12 +137,12 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             arrowClicked = false;
             binding.gyroButton.animate()
                     .translationYBy(0)
-                    .translationY(-120)
-                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+                    .translationY(-180)
+                    .setDuration(300);
             binding.littlePlanetButton.animate()
                     .translationYBy(0)
-                    .translationY(-60)
-                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+                    .translationY(-90)
+                    .setDuration(300);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -141,19 +151,20 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     binding.gyroButton.setVisibility(View.GONE);
                     binding.arrowMenu.setBackgroundResource(R.drawable.arrow_down_icn);
                 }
-            }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            }, 280);
+//            getResources().getInteger(android.R.integer.config_mediumAnimTime)
         }else{
             arrowClicked = true;
             binding.littlePlanetButton.setVisibility(View.VISIBLE);
             binding.gyroButton.setVisibility(View.VISIBLE);
             binding.littlePlanetButton.animate()
-                    .translationYBy(-30)
+                    .translationYBy(-60)
                     .translationY(0)
-                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+                    .setDuration(300);
             binding.gyroButton.animate()
-                    .translationYBy(-30)
+                    .translationYBy(-60)
                     .translationY(0)
-                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+                    .setDuration(300);
 
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -161,7 +172,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 public void run() {
                     binding.arrowMenu.setBackgroundResource(R.drawable.arrow_up_icn);
                 }
-            }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            }, 280);
         }
     }
 
@@ -285,6 +296,36 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         inVRMode = false;
     }
 
+
+    private void gyroValidation() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+        if (!gyro && lilPlanet) cache.save(Cache.LITTLE_PLANET_ENABLE,false);
+        cache.save(Cache.GYRO_ENABLE, !gyro);
+    }
+
+    private void littlePlanetValidation() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+        if (!lilPlanet && gyro) cache.save(Cache.GYRO_ENABLE,false);
+        cache.save(Cache.LITTLE_PLANET_ENABLE, !lilPlanet);
+    }
+
+    private void instatiateFeedDisplayButton() {
+        boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
+        boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
+
+        if(gyro)
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
+        else if(!gyro && !lilPlanet)
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.PANNING_MODE);
+        else
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.STILL_MODE);
+
+        binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_active_icn_copy:R.drawable.gyro_inactive_icn_copy);
+        binding.littlePlanetButton.setBackgroundResource(lilPlanet ? R.drawable.little_planet_active_icn_copy : R.drawable.little_planet_inactive_icn_copy);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -296,22 +337,12 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 hideShowAni();
                 break;
             case R.id.little_planet_button:
-                if (littlePlanetActive) {
-                    littlePlanetActive = false;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_inactive_icn_copy);
-                } else {
-                    littlePlanetActive = true;
-                    binding.littlePlanetButton.setBackgroundResource(R.drawable.little_planet_active_icn_copy);
-                }
+                littlePlanetValidation();
+                instatiateFeedDisplayButton();
                 break;
             case R.id.gyro_button:
-                if (gyroActive) {
-                    gyroActive = false;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_inactive_icn_copy);
-                } else {
-                    gyroActive = true;
-                    binding.gyroButton.setBackgroundResource(R.drawable.gyro_active_icn_copy);
-                }
+                gyroValidation();
+                instatiateFeedDisplayButton();
                 break;
             case R.id.heart_container:
             case R.id.heart_label:
