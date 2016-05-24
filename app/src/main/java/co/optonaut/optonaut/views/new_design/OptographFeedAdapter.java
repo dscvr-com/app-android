@@ -219,14 +219,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             notifyItemRangeChanged(pos , 2, "test");
         }
 
-       // notifyItemChanged(pos , "test");
-
-      // notifyItemChanged(pos + 1, "test" );
-        //notifyDataSetChanged();
-
-
-
-
     }
 
     @Override
@@ -256,8 +248,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
 
-        Log.v("mcandres", "onBindViewHolder " + position + "current full visibility" + currentFullVisibilty  );
-
         if (currentFullVisibilty ==  position) {
             if(cache.getBoolean(Cache.GYRO_ENABLE))
                 holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
@@ -285,13 +275,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
-            holder.heart_label.setOnClickListener(v -> { setHeart(optograph, holder, v); });
+            holder.heart_label.setOnClickListener(v -> {
+                setHeart(optograph, holder, v);
+            });
             holder.getBinding().heartContainer.setOnClickListener(v -> { setHeart(optograph, holder, v); });
 
             isCurrentUser = optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID));
-            holder.followButton.setVisibility(isCurrentUser ? View.INVISIBLE : View.VISIBLE);
-            holder.followButton.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
-            holder.getBinding().followContainer.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
+            holder.followButton.setVisibility(isCurrentUser ? View.GONE : View.VISIBLE);
+            holder.followButton.setOnClickListener(v -> followOrUnfollow(optograph, holder, v));
+            holder.getBinding().followContainer.setVisibility(isCurrentUser ? View.GONE : View.VISIBLE);
+            holder.getBinding().followContainer.setOnClickListener(v -> followOrUnfollow(optograph, holder, v));
 
             ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
             profileView.setOnClickListener(new View.OnClickListener() {
