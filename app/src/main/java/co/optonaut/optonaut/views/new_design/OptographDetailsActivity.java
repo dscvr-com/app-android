@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -92,7 +93,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
 
-        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
+//        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         binding.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -319,10 +320,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
         boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
 
+        if(gyro)
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
+        else if(!gyro && !lilPlanet)
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.PANNING_MODE);
+        else
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.STILL_MODE);
+
         binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_active_icn_copy:R.drawable.gyro_inactive_icn_copy);
-//        binding.settingsGyro.setTextColor(gyro ? getResources().getColor(R.color.text_active) : getResources().getColor(R.color.text_inactive));
         binding.littlePlanetButton.setBackgroundResource(lilPlanet ? R.drawable.little_planet_active_icn_copy : R.drawable.little_planet_inactive_icn_copy);
-//        binding.settingsLittlePlanet.setTextColor(lilPlanet?getResources().getColor(R.color.text_active):getResources().getColor(R.color.text_inactive));
     }
 
     @Override

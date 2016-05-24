@@ -97,10 +97,12 @@
             android:label="@string/app_name" />
         <activity
             android:name=".views.new_design.OptographDetailsActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.new_design.RecorderActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.new_design.OptoImagePreviewActivity"
             android:label="@string/app_name" />
