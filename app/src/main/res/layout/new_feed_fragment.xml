@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <co.optonaut.optonaut.views.SnappyRecyclerView
+                <com.iam360.iam360.views.SnappyRecyclerView
                     android:id="@+id/optographFeed"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

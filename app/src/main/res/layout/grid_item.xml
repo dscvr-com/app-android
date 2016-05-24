@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data class=".GridItemBinding">
-        <import type="co.optonaut.optonaut.model.Optograph" />
+        <import type="com.iam360.iam360.model.Optograph" />
         <variable
             name="optograph"
             type="Optograph" />
@@ -29,7 +29,7 @@
             android:layout_gravity="bottom"
             android:background="@color/feed_bar" >
 
-            <co.optonaut.optonaut.views.ExpandableTextView
+            <com.iam360.iam360.views.ExpandableTextView
                 android:id="@+id/description_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
