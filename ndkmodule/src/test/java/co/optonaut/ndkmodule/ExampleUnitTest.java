@@ -1,4 +1,4 @@
-package co.optonaut.ndkmodule;
+package com.iam360.ndkmodule;
 
 import org.junit.Test;
 

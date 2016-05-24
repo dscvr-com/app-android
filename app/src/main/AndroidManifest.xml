@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.optonaut.optonaut">
+    package="com.iam360.iam360">
 
     <supports-screens
         android:largeScreens="true"
@@ -41,7 +41,7 @@
         android:required="true" />
 
     <application
-        android:name=".OptonautApp"
+        android:name="com.iam360.iam360.OptonautApp"
         android:allowBackup="true"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
@@ -49,7 +49,7 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".views.new_design.SplashActivity"
+        <activity android:name="com.iam360.iam360.views.new_design.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme" >
             <intent-filter>
@@ -59,7 +59,7 @@
         </activity>
 
         <activity
-            android:name=".views.new_design.MainActivity"
+            android:name="com.iam360.iam360.views.new_design.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -74,7 +74,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.VRModeActivity"
+            android:name="com.iam360.iam360.views.VRModeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="landscape">
@@ -85,7 +85,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.profile.SignInActivity"
+            android:name="com.iam360.iam360.views.profile.SignInActivity"
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -93,19 +93,19 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".views.record.OptoImagePreviewActivity"
+            android:name="com.iam360.iam360.views.record.OptoImagePreviewActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".views.new_design.OptographDetailsActivity"
+            android:name="com.iam360.iam360.views.new_design.OptographDetailsActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".views.new_design.RecorderActivity"
+            android:name="com.iam360.iam360.views.new_design.RecorderActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".views.new_design.OptoImagePreviewActivity"
+            android:name="com.iam360.iam360.views.new_design.OptoImagePreviewActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".views.SettingsActivity"
+            android:name="com.iam360.iam360.views.SettingsActivity"
             android:label="@string/app_name" />
 
         <!-- change to true to debug mixpanel -->
@@ -122,14 +122,14 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".views.WebViewActivity"
+            android:name="com.iam360.iam360.views.WebViewActivity"
             android:label="Twitter Login" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <activity android:name=".views.new_design.ProfileActivity" />
+        <activity android:name="com.iam360.iam360.views.new_design.ProfileActivity" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"

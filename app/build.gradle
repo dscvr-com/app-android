@@ -35,8 +35,8 @@ android {
         applicationId "co.optonaut.optonaut"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.1"
+        versionCode 20160524
+        versionName "0.5"
 //        multiDexEnabled true
     }
 //    dexOptions { javaMaxHeapSize "4g" }
@@ -53,11 +53,11 @@ android {
     }
     productFlavors {
         vanilla {
-            applicationId "co.optonaut.optonaut"
+            applicationId "com.iam360.iam360"
         }
 
         vrmode {
-            applicationId "co.optonaut.optonaut.vrmode"
+            applicationId "com.iam360.iam360.vrmode"
         }
     }
     compileOptions {

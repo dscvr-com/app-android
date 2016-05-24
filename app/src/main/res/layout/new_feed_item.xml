@@ -3,9 +3,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".NewFeedItemBinding">
-        <import type="co.optonaut.optonaut.model.Optograph" />
-        <import type="co.optonaut.optonaut.model.Person" />
-        <import type="co.optonaut.optonaut.model.Location" />
+        <import type="com.iam360.iam360.model.Optograph" />
+        <import type="com.iam360.iam360.model.Person" />
+        <import type="com.iam360.iam360.model.Location" />
         <variable
             name="optograph"
             type="Optograph" />
@@ -50,7 +50,7 @@
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bar">
 
-                <co.optonaut.optonaut.opengl.Optograph2DCubeView
+                <com.iam360.iam360.opengl.Optograph2DCubeView
                     android:id="@+id/optograph2dview"
                     android:background="@color/transparentOverlay"
                     android:layout_width="match_parent"
@@ -240,7 +240,7 @@
                         android:visibility="gone"
                         android:layout_toLeftOf="@+id/description_label"/>
 
-                    <co.optonaut.optonaut.views.ExpandableTextView
+                    <com.iam360.iam360.views.ExpandableTextView
                         android:id="@+id/description_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

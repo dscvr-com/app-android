@@ -1,4 +1,4 @@
-package co.optonaut.optonaut;
+package com.iam360.iam360;
 
 import org.junit.Test;
 

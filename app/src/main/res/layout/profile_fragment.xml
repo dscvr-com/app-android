@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data class=".ProfileBinding">
-        <import type="co.optonaut.optonaut.model.Person" />
+        <import type="com.iam360.iam360.model.Person" />
         <variable
             name="person"
             type="Person" />
