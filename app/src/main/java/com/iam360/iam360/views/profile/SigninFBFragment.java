@@ -3,6 +3,7 @@ package com.iam360.iam360.views.profile;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,7 +15,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
@@ -356,7 +359,13 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onError(FacebookException error) {
-                        Log.d("myTag", "onError login on fb.");
+                        Log.d("myTag", "onError login on fb. " + error.getMessage());
+                        Snackbar.make(v, getActivity().getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
+                        if (error instanceof FacebookAuthorizationException) {
+                            if (AccessToken.getCurrentAccessToken() != null) {
+                                LoginManager.getInstance().logOut();
+                            }
+                        }
                     }
                 });
                 break;

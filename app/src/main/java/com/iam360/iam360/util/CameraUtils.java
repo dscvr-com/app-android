@@ -3,8 +3,12 @@ package com.iam360.iam360.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.os.Environment;
 import android.util.Log;
+import android.util.SizeF;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -91,7 +95,7 @@ public class CameraUtils {
 
 
         //uncomment if gba is applied
-        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             try {
@@ -99,14 +103,14 @@ public class CameraUtils {
                 if (cameraIds.length > camNum) {
                     CameraCharacteristics character = manager.getCameraCharacteristics(cameraIds[camNum]);
                     SizeF sizeF = character.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                    size[0] = sizeF.getWidth();
-                    size[1] = sizeF.getHeight();
+                    size[0] = sizeF.getWidth()*1.75f;
+                    size[1] = sizeF.getHeight()*1.75f;
                 }
             } catch (CameraAccessException e) {
                 Timber.e("YourLogString", e.getMessage(), e);
             }
             Timber.v("size: [%s, %s]", size[0], size[1]);
-        }*/
+        }
         return size;
     }
 

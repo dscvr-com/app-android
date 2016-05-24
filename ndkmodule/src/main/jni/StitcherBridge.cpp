@@ -10,8 +10,8 @@ using namespace optonaut;
 #define DEBUG_TAG "Stitcher.cpp"
 
 extern "C" {
-    jobjectArray Java_co_optonaut_optonaut_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
-    void Java_co_optonaut_optonaut_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
 
 
@@ -74,7 +74,7 @@ jobject matToBitmap(JNIEnv *env, const Mat& mat)
 }
 
 
-jobjectArray Java_co_optonaut_optonaut_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -94,7 +94,7 @@ jobjectArray Java_co_optonaut_optonaut_record_Stitcher_getResult(JNIEnv *env, jo
     return bitmaps;
 }
 
-void Java_co_optonaut_optonaut_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);

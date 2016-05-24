@@ -23,47 +23,47 @@ std::string debugPath;
 
 extern "C" {
     // storagePath should end on "/"!
-    void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
+    void Java_com_iam360_iam360_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
 
-    void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
+    void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
-    void Java_co_optonaut_optonaut_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle);
+    void Java_com_iam360_iam360_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle);
 
-    jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
+    jobjectArray Java_com_iam360_iam360_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz);
 
-    jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz);
+    jobject Java_com_iam360_iam360_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz);
 
-    void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz);
+    void Java_com_iam360_iam360_record_Recorder_finish(JNIEnv *env, jobject thiz);
 
-    void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz);
+    void Java_com_iam360_iam360_record_Recorder_dispose(JNIEnv *env, jobject thiz);
 
-    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz);
+    jfloatArray Java_com_iam360_iam360_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz);
 
-    jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
+    jboolean Java_com_iam360_iam360_record_Recorder_isFinished(JNIEnv *env, jobject thiz);
 
-    jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
+    jdouble Java_com_iam360_iam360_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz);
 
-    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
+    jfloatArray Java_com_iam360_iam360_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz);
 
-    jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
+    jboolean Java_com_iam360_iam360_record_Recorder_hasStarted(JNIEnv *env, jobject thiz);
 
-    jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz);
+    jboolean Java_com_iam360_iam360_record_Recorder_isIdle(JNIEnv *env, jobject thiz);
 
-    void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
+    void Java_com_iam360_iam360_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath);
 
-    void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
+    void Java_com_iam360_iam360_record_Recorder_disableDebug(JNIEnv *env, jobject thiz);
 
     jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height);
 
-    jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz);
+    jint Java_com_iam360_iam360_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz);
 
-    jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz);
+    jint Java_com_iam360_iam360_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz);
 
-    jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz);
+    jfloatArray Java_com_iam360_iam360_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz);
 
-    jobject Java_co_optonaut_optonaut_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz);
+    jobject Java_com_iam360_iam360_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz);
 
-    jboolean Java_co_optonaut_optonaut_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz);
+    jboolean Java_com_iam360_iam360_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz);
 
 }
 
@@ -86,7 +86,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     return javaFloats;
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
+void Java_com_iam360_iam360_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
@@ -121,7 +121,7 @@ void Java_co_optonaut_optonaut_record_Recorder_initRecorder(JNIEnv *env, jobject
     recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode, true);
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
+void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
     AndroidBitmapInfo  info;
     uint32_t          *pixels;
     int                ret;
@@ -156,15 +156,15 @@ void Java_co_optonaut_optonaut_record_Recorder_push(JNIEnv *env, jobject thiz, j
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle)
+void Java_com_iam360_iam360_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle)
 {
     recorder->SetIdle(idle);
 }
 
-jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz) {
+jobjectArray Java_com_iam360_iam360_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz) {
     std::vector<SelectionPoint> selectionPoints = recorder->GetSelectionPoints();
 
-    jclass java_selection_point_class = env->FindClass("co/optonaut/optonaut/record/SelectionPoint");
+    jclass java_selection_point_class = env->FindClass("com/iam360/iam360/record/SelectionPoint");
     jobjectArray javaSelectionPoints = (jobjectArray) env->NewObjectArray(selectionPoints.size(),
                                                                           java_selection_point_class, 0);
 
@@ -186,13 +186,13 @@ jobjectArray Java_co_optonaut_optonaut_record_Recorder_getSelectionPoints(JNIEnv
     return javaSelectionPoints;
 }
 
-jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz) {
+jobject Java_com_iam360_iam360_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz) {
 
 //    assert(recorder != NULL);
 //    SelectionPoint* selectionPoint = ConvertSelectionPoint(env, recorder->GetCurrentKeyframe().closestPoint);
     SelectionPoint selectionPoint = recorder->GetCurrentKeyframe().closestPoint;
 
-    jclass java_selection_point_class = env->FindClass("co/optonaut/optonaut/record/SelectionPoint");
+    jclass java_selection_point_class = env->FindClass("com/iam360/iam360/record/SelectionPoint");
     jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
     jobject javaSelectionPoint = env->NewObject(java_selection_point_class, java_selection_point_init,
                                                  matToJFloatArray(env, selectionPoint.extrinsics, 4, 4),
@@ -204,68 +204,68 @@ jobject Java_co_optonaut_optonaut_record_Recorder_lastKeyframe(JNIEnv *env, jobj
 
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_finish(JNIEnv *env, jobject thiz)
+void Java_com_iam360_iam360_record_Recorder_finish(JNIEnv *env, jobject thiz)
 {
     recorder->Finish();
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_dispose(JNIEnv *env, jobject thiz)
+void Java_com_iam360_iam360_record_Recorder_dispose(JNIEnv *env, jobject thiz)
 {
     recorder->Dispose();
     recorder = NULL;
 }
 
-jfloatArray Java_co_optonaut_optonaut_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_iam360_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz)
 {
     return matToJFloatArray(env ,recorder->GetBallPosition(), 4, 4);
 }
 
-jboolean Java_co_optonaut_optonaut_record_Recorder_isFinished(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_iam360_record_Recorder_isFinished(JNIEnv *env, jobject thiz)
 {
     return recorder->IsFinished();
 }
 
-jdouble Java_co_optonaut_optonaut_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz)
+jdouble Java_com_iam360_iam360_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz)
 {
     return recorder->GetDistanceToBall();
 }
 
-jfloatArray Java_co_optonaut_optonaut_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_iam360_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz)
 {
     matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
 }
 
-jboolean Java_co_optonaut_optonaut_record_Recorder_hasStarted(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_iam360_record_Recorder_hasStarted(JNIEnv *env, jobject thiz)
 {
     return recorder->HasStarted();
 }
 
-jboolean Java_co_optonaut_optonaut_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_iam360_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
 {
     return recorder->IsIdle();
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)
+void Java_com_iam360_iam360_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
     debugPath = path + "debug/";
 }
 
-void Java_co_optonaut_optonaut_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
+void Java_com_iam360_iam360_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
 {
     debugPath = "";
 }
 
-jint Java_co_optonaut_optonaut_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz) {
+jint Java_com_iam360_iam360_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz) {
     return recorder->GetRecordedImagesCount();
 }
 
-jint Java_co_optonaut_optonaut_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
+jint Java_com_iam360_iam360_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
     return recorder->GetImagesToRecordCount();
 }
 
-jfloatArray Java_co_optonaut_optonaut_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_iam360_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
 {
     return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
 }
@@ -297,14 +297,14 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
     return bitmapObj;
 }
 
-jobject Java_co_optonaut_optonaut_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz)
+jobject Java_com_iam360_iam360_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz)
 {
 
     Mat result = recorder->FinishPreview()->image.data;
     return matrixToBitmap(env, result);
 }
 
-jboolean Java_co_optonaut_optonaut_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_iam360_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
 {
     return recorder->PreviewAvailable();
 }
