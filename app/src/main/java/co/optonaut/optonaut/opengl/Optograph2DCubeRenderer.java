@@ -94,6 +94,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         return this.cube.getCubeTextureSet().getTextureTarget(face);
     }
 
+    public void setMode(int mode) { Log.v("mcandres", "cube renderer"); combinedMotionManager.setMode(mode);}
+
     public void reset() {
         this.cube.resetTextures();
     }

@@ -14,8 +14,13 @@ import co.optonaut.optonaut.util.Maths;
 public class CombinedMotionManager extends RotationMatrixProvider {
     private TouchEventListener touchEventListener;
 
+    public static final int STILL_MODE = 0;
+    public static final int PANNING_MODE = 1;
+    public static final int GYRO_MODE = 2;
+
     private float[] lastCoreMotionMatrix = null;
     private boolean registeredOnCoreMotionListener;
+    private int MODE = STILL_MODE;
 
     public CombinedMotionManager(float dampFactor, int sceneWidth, int sceneHeight, float vfov) {
         touchEventListener = new TouchEventListener(dampFactor, sceneWidth, sceneHeight, vfov);
@@ -45,7 +50,7 @@ public class CombinedMotionManager extends RotationMatrixProvider {
     public float[] getRotationMatrix() {
         float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
 
-        if (!touchEventListener.isTouching()) {
+        if (!touchEventListener.isTouching() && MODE == GYRO_MODE) {
             // Update from motion and damping
             if (lastCoreMotionMatrix != null) {
                 float[] inverse = Maths.buildInverse(lastCoreMotionMatrix);
@@ -63,8 +68,11 @@ public class CombinedMotionManager extends RotationMatrixProvider {
             }
         }
 
-        if (coreMotionMatrix != null) {
-            lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
+        if (coreMotionMatrix != null && MODE == PANNING_MODE) {
+            touchEventListener.setPhi(touchEventListener.getPhi() + 0.005f);
+           // lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
+        } else if (coreMotionMatrix != null && MODE == GYRO_MODE) {
+             lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
         }
 
         return touchEventListener.getRotationMatrix();
@@ -86,5 +94,9 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     public boolean isTouching() {
         return touchEventListener.isTouching();
+    }
+
+    public void setMode(int mode) {
+        this.MODE = mode;
     }
 }

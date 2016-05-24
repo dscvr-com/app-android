@@ -81,17 +81,17 @@
             android:layout_marginBottom="12dp" />
 
         <ImageButton
-            android:id="@+id/twitter_share_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/twitter_share_btn_selector"
-            android:layout_marginBottom="12dp" />
-
-        <ImageButton
             android:id="@+id/messenger_share_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/messenger_share_btn_selector"
+            android:layout_marginBottom="12dp" />
+
+        <ImageButton
+            android:id="@+id/twitter_share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/twitter_share_btn_selector"
             android:layout_marginBottom="12dp" />
 
     </LinearLayout>

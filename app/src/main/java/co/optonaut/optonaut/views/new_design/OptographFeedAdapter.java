@@ -49,6 +49,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
@@ -82,6 +83,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     private TextView uploadButton;
     private boolean userLikesOptograph = false;
     private boolean isCurrentUser = false;
+    private int currentFullVisibilty = 0;
+
 
     public OptographFeedAdapter(Context context) {
         this.context = context;
@@ -205,10 +208,56 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
 
+    public void RotateCubeMap (int pos) {
+        Log.v("mcandres", "test : " + pos);
+        currentFullVisibilty = pos;
+
+        if (pos > 0) {
+            //notifyItemChanged(pos - 1 ,"test" );
+            notifyItemRangeChanged(pos - 1, 3, "test");
+        } else {
+            notifyItemRangeChanged(pos , 2, "test");
+        }
+
+    }
+
+    @Override
+    public void onBindViewHolder(OptographViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            Log.v("mcandres", "payload empty");
+            // Perform a full update
+            onBindViewHolder(holder, position);
+        } else {
+            Log.v("mcandres", "payload not empty");
+            if (currentFullVisibilty ==  position) {
+                if(cache.getBoolean(Cache.GYRO_ENABLE))
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
+                else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE))
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+                else
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
+            } else {
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
+            }
+
+        }
+    }
+
 
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
+
+        if (currentFullVisibilty ==  position) {
+            if(cache.getBoolean(Cache.GYRO_ENABLE))
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
+            else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE))
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+            else
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
+        } else {
+            holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
+        }
 
 //        userLikesOptograph = optograph.is_starred();
         // reset view holder if we got new optograh
@@ -226,13 +275,16 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
-            holder.heart_label.setOnClickListener(v -> { setHeart(optograph, holder, v); });
+            holder.heart_label.setOnClickListener(v -> {
+                setHeart(optograph, holder, v);
+            });
             holder.getBinding().heartContainer.setOnClickListener(v -> { setHeart(optograph, holder, v); });
 
             isCurrentUser = optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID));
-            holder.followButton.setVisibility(isCurrentUser ? View.INVISIBLE : View.VISIBLE);
-            holder.followButton.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
-            holder.getBinding().followContainer.setOnClickListener(v -> { followOrUnfollow(optograph, holder, v); });
+            holder.followButton.setVisibility(isCurrentUser ? View.GONE : View.VISIBLE);
+            holder.followButton.setOnClickListener(v -> followOrUnfollow(optograph, holder, v));
+            holder.getBinding().followContainer.setVisibility(isCurrentUser ? View.GONE : View.VISIBLE);
+            holder.getBinding().followContainer.setOnClickListener(v -> followOrUnfollow(optograph, holder, v));
 
             ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
             profileView.setOnClickListener(new View.OnClickListener() {
@@ -396,6 +448,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             barSwipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
 
                     swipeLayout.bounce(300, shareButton);
 

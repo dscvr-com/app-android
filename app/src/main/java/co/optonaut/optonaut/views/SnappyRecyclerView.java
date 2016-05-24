@@ -77,6 +77,7 @@ public final class SnappyRecyclerView extends RecyclerView {
                 // velocity after the user's gesture was below the threshold, and
                 // no fling was performed, so the view may be in an unaligned state
                 // and will not be flung to a proper state.
+
                 smoothScrollToPosition(((ISnappyLayoutManager) lm).getFixScrollPos());
             }
 

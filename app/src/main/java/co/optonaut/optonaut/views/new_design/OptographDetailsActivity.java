@@ -28,6 +28,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.record.GlobalState;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.DBHelper;
@@ -70,7 +71,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.location, optograph.getLocation());
 
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
-        if(isCurrentUser) binding.follow.setVisibility(View.INVISIBLE);
+        if(isCurrentUser) {
+            binding.followContainer.setVisibility(View.GONE);
+            binding.follow.setVisibility(View.GONE);
+        }
 
         binding.littlePlanetButton.animate()
                 .translationYBy(0)
@@ -88,6 +92,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
 
+        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         binding.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -112,10 +117,13 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
 //        binding.profileBar.getBackground().setAlpha(204); // apha to 80%
         binding.personAvatarAsset.setOnClickListener(this);
+        binding.personLocationInformation.setOnClickListener(this);
         binding.arrowMenu.setOnClickListener(this);
         binding.littlePlanetButton.setOnClickListener(this);
         binding.gyroButton.setOnClickListener(this);
+        binding.heartContainer.setOnClickListener(this);
         binding.heartLabel.setOnClickListener(this);
+        binding.followContainer.setOnClickListener(this);
         binding.follow.setOnClickListener(this);
         setHeart(optograph.is_starred(), optograph.getStars_count());
         followPerson(optograph.getPerson().is_followed());
@@ -205,11 +213,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(isFollowed) {
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
-            binding.follow.setImageResource(R.drawable.followed_icn);
+            binding.follow.setImageResource(R.drawable.feed_following_icn);
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
-            binding.follow.setImageResource(R.drawable.follow_icn);
+            binding.follow.setImageResource(R.drawable.feed_follow_icn);
         }
     }
 
@@ -320,6 +328,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.person_location_information:
             case R.id.person_avatar_asset:
                 startProfile();
                 break;
@@ -334,6 +343,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 gyroValidation();
                 instatiateFeedDisplayButton();
                 break;
+            case R.id.heart_container:
             case R.id.heart_label:
                 if(!cache.getString(Cache.USER_TOKEN).equals("")) {
                     if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
@@ -377,6 +387,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     Snackbar.make(v, getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.follow_container:
             case R.id.follow:
                 if (!cache.getString(Cache.USER_TOKEN).equals("")) {
                     if (optograph.getPerson().is_followed()) {

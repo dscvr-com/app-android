@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 
 import co.optonaut.optonaut.model.Optograph;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.util.ImageUrlBuilder;
 import co.optonaut.optonaut.util.Constants;
 import timber.log.Timber;
@@ -40,6 +41,11 @@ public class Optograph2DCubeView extends GLSurfaceView {
         setRenderer(optograph2DCubeRenderer);
 
         registerRendererOnSensors();
+    }
+
+    public void setSensorMode(int mode) {
+        Log.v("mcandres", "cube renderer");
+        this.optograph2DCubeRenderer.setMode(mode);
     }
 
     public void toggleRegisteredOnSensors() {

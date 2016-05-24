@@ -4,8 +4,11 @@ import android.databinding.DataBindingUtil;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +41,7 @@ public abstract class OptographListFragment extends Fragment {
     protected ApiConsumer apiConsumer;
     protected Cache cache;
     protected NewFeedBinding binding;
+    private int lastVisible = 0;
 
     public OptographListFragment() {
     }
@@ -76,10 +80,38 @@ public abstract class OptographListFragment extends Fragment {
         binding.optographFeed.setAdapter(optographFeedAdapter);
         binding.optographFeed.setItemViewCacheSize(5);
 
+        DefaultItemAnimator animator = new DefaultItemAnimator() {
+            @Override
+            public boolean canReuseUpdatedViewHolder(RecyclerView.ViewHolder viewHolder) {
+                return true;
+            }
+        };
+        binding.optographFeed.setItemAnimator(animator);
+
+
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
             @Override
             public void onLoadMore() {
                 loadMore();
+            }
+
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int firstVisiblePosition = llm.findFirstCompletelyVisibleItemPosition();
+
+                if (firstVisiblePosition > -1 ) {
+                    // mca: got completely visible cubemap
+                    if (lastVisible != firstVisiblePosition) {
+                        optographFeedAdapter.RotateCubeMap(firstVisiblePosition);
+                        lastVisible = firstVisiblePosition;
+                    }
+
+
+                }
+
+
             }
         });
     }
