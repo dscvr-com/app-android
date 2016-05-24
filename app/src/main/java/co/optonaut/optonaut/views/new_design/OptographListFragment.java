@@ -99,14 +99,12 @@ public abstract class OptographListFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.v("mcandres", " onscrolled dx:" + dx + " dy: " + dy);
                 int firstVisiblePosition = llm.findFirstCompletelyVisibleItemPosition();
 
                 if (firstVisiblePosition > -1 ) {
                     // mca: got completely visible cubemap
                     if (lastVisible != firstVisiblePosition) {
                         optographFeedAdapter.RotateCubeMap(firstVisiblePosition);
-                        Log.v("mcandres", "findFirstCompletelyVisibleItemPosition :" + firstVisiblePosition);
                         lastVisible = firstVisiblePosition;
                     }
 

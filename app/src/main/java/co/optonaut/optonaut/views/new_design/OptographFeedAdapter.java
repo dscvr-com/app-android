@@ -238,7 +238,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         } else {
             Log.v("mcandres", "payload not empty");
             if (currentFullVisibilty ==  position) {
-                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+                if(cache.getBoolean(Cache.GYRO_ENABLE))
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
+                else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE))
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+                else
+                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
             } else {
                 holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
             }
@@ -254,7 +259,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         Log.v("mcandres", "onBindViewHolder " + position + "current full visibility" + currentFullVisibilty  );
 
         if (currentFullVisibilty ==  position) {
-            holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+            if(cache.getBoolean(Cache.GYRO_ENABLE))
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
+            else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE))
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
+            else
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
         } else {
             holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
         }
