@@ -520,7 +520,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         switch (v.getId()) {
             case R.id.upload_button:
                 userToken = cache.getString(Cache.USER_TOKEN);
-                if ((userToken == null || userToken.equals("")) && doneUpload) {
+                if ((userToken == null || userToken.equals(""))) {
+                    Snackbar.make(v,context.getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
                     //TODO login page
 //                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
                 } else if (doneUpload) {

@@ -184,7 +184,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 break;
             case R.id.camera_btn:
                 if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
-                    Snackbar.make(binding.cameraBtn,"Need to login first.",Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(v,getActivity().getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
                     return;
                 } else if (GlobalState.isAnyJobRunning) {
                     Snackbar.make(binding.cameraBtn, R.string.dialog_wait_on_record_finish, Snackbar.LENGTH_LONG).show();
