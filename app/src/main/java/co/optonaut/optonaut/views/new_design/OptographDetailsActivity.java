@@ -28,6 +28,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
 import co.optonaut.optonaut.record.GlobalState;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.Constants;
 import co.optonaut.optonaut.util.DBHelper;
@@ -79,6 +80,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         registerAccelerationListener();
 
+        binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         binding.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

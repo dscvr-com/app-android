@@ -49,6 +49,7 @@ import co.optonaut.optonaut.model.Optograph;
 import co.optonaut.optonaut.model.Person;
 import co.optonaut.optonaut.network.ApiConsumer;
 import co.optonaut.optonaut.opengl.Optograph2DCubeView;
+import co.optonaut.optonaut.sensors.CombinedMotionManager;
 import co.optonaut.optonaut.util.Cache;
 import co.optonaut.optonaut.util.CameraUtils;
 import co.optonaut.optonaut.util.Constants;
@@ -237,9 +238,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         } else {
             Log.v("mcandres", "payload not empty");
             if (currentFullVisibilty ==  position) {
-                holder.optograph2DCubeView.isSensorBased(true);
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
             } else {
-                holder.optograph2DCubeView.isSensorBased(false);
+                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
             }
 
         }
@@ -253,9 +254,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         Log.v("mcandres", "onBindViewHolder " + position + "current full visibility" + currentFullVisibilty  );
 
         if (currentFullVisibilty ==  position) {
-            holder.optograph2DCubeView.isSensorBased(true);
+            holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
         } else {
-            holder.optograph2DCubeView.isSensorBased(false);
+            holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
         }
 
 //        userLikesOptograph = optograph.is_starred();
