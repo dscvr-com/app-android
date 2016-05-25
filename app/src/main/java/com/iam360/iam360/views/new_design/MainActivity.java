@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void startSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -126,9 +124,14 @@ public class MainActivity extends AppCompatActivity {
         private int NUM_ITEMS = 3;
         private Cache cache;
         private SharingFragment sharingFragment;
+        private MainFeedFragment mainFeedFragment;
+        private ProfileRootFragment profileRootFragment;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+            profileRootFragment = new ProfileRootFragment();
+            mainFeedFragment = new MainFeedFragment();
+            sharingFragment = new SharingFragment();
             cache = Cache.open();
         }
 
@@ -143,19 +146,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    sharingFragment = new SharingFragment();
                     return sharingFragment;
-//                    return SharingFragment.newInstance();
                 case 1:
-                    return new MainFeedFragment();
+                    return mainFeedFragment;
                 case 2:
-                    return new ProfileRootFragment();
-//                    if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
-//                        return SigninFBFragment.newInstance("","");
-//                    } else
-//                        return ProfileFragment.newInstance(cache.getString(Cache.USER_ID));
-//                    return ProfileFragment.newInstance("c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a");
-
+                    return profileRootFragment;
                 default:
                     return null;
             }

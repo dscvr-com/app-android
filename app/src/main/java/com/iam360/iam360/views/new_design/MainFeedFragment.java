@@ -30,6 +30,7 @@ import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -131,6 +132,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if (GlobalState.shouldHardRefreshFeed) {
             initializeFeed();
         }
+
     }
 
     @Override

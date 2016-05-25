@@ -15,4 +15,9 @@ public class OptoData {
         this.created_at = created_at;
         this.optograph_type = optograph_type;
     }
+
+    @Override
+    public String toString() {
+        return "OptoData : id=" + id + " stitcher_version=" + stitcher_version + " created_at=" + created_at + " " + optograph_type;
+    }
 }
