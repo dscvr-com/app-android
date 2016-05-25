@@ -201,7 +201,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
 
     public void RotateCubeMap (int pos) {
-        Log.v("mcandres", "test : " + pos);
         currentFullVisibilty = pos;
 
         if (pos > 0) {

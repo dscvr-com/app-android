@@ -53,9 +53,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("myTag"," profile? "+(position==PROFILE_MODE)+" sharing? "+(position==SHARING_MODE));
-                if(position == SHARING_MODE) {
-                    adapterViewPager.getSharingFragment().updateOptograph();
+
+                switch (position) {
+                    case FEED_MODE:
+                        adapterViewPager.mainFeedFragment.refresh();
+                        break;
+                    case PROFILE_MODE:
+                        break;
+                    case SHARING_MODE:
+                        adapterViewPager.sharingFragment.updateOptograph();
+                        break;
                 }
             }
 
@@ -101,8 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setOptograph(Optograph optograph) {
-        adapterViewPager.updateShare(optograph);
-//        this.optograph = optograph;
+        adapterViewPager.sharingFragment.setOptograph(optograph);
     }
 
     private void initializeComponents() {
@@ -166,14 +172,6 @@ public class MainActivity extends AppCompatActivity {
 //            return super.getItemPosition(object);
         }
 
-        public void updateShare(Optograph optograph) {
-            sharingFragment.setOptograph(optograph);
-        }
-
-        public SharingFragment getSharingFragment() {
-            return sharingFragment;
-        }
-
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position) {
@@ -194,4 +192,5 @@ public class MainActivity extends AppCompatActivity {
         // TODO: how to update the page of profile after login
         onBackPressed();
     }
+
 }

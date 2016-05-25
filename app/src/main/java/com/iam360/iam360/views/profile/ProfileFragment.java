@@ -86,14 +86,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         optographFeedAdapter = new OptographGridAdapter(getActivity());
         networkProblemDialog = new NetworkProblemDialog();
 
-        Bundle args = getArguments();
-        if (args.containsKey("person")) {
-            person = args.getParcelable("person");
-        } else if (args.containsKey("id")) {
-            PersonManager.loadPerson(args.getString("id"));
-        } else {
-            throw new RuntimeException();
-        }
+        setPerson();
 
     }
 
@@ -154,6 +147,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         BusProvider.getInstance().register(this);
+
+        if(person == null) setPerson();
     }
 
     @Override
@@ -168,7 +163,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateHomeButton() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode?R.drawable.cancel:R.drawable.logo_small_dark);// back_arrow_icn must change by cancel_button
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode ? R.drawable.cancel : R.drawable.logo_small_dark);// back_arrow_icn must change by cancel_button
     }
 
     @Override
@@ -258,6 +253,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.setVariable(BR.person, person);
             binding.executePendingBindings();
             initializeProfileFeed();
+        }
+    }
+
+    private void setPerson() {
+        Bundle args = getArguments();
+        if (args.containsKey("person")) {
+            person = args.getParcelable("person");
+        } else if (args.containsKey("id")) {
+            PersonManager.loadPerson(args.getString("id"));
+        } else {
+            throw new RuntimeException();
         }
     }
 

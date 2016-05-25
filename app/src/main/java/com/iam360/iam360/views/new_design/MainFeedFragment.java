@@ -170,7 +170,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void refresh() {
-        // TODO: actually refresh data
+
+        Timber.d("REFRESH");
+        apiConsumer.getOptographs(5)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
+                .subscribe(optographFeedAdapter::addItem);
     }
 
     @Subscribe

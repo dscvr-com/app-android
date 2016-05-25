@@ -360,7 +360,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onError(FacebookException error) {
                         Log.d("myTag", "onError login on fb. " + error.getMessage());
-                        Snackbar.make(v, getActivity().getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(v, getActivity().getString(R.string.profile_login_again), Snackbar.LENGTH_SHORT).show();
                         if (error instanceof FacebookAuthorizationException) {
                             if (AccessToken.getCurrentAccessToken() != null) {
                                 LoginManager.getInstance().logOut();

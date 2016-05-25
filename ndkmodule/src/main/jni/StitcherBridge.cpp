@@ -22,9 +22,9 @@ std::vector<Mat> getCubeFaces(const Mat& sphere)
 
     // TODO: use sphere.cols / 4 later
 
-    //hardcode-fix for hi-res images
-    int width = 1792;
-    //int width = 1024;
+
+    //int width = 1792; //hardcode-fix for hi-res images
+    int width = 1024;
     for (int i = 0; i < 6; ++i)
     {
         CreateCubeMapFace(sphere, cubeFaces[i], i, width, width);
