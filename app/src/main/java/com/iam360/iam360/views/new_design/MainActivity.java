@@ -53,9 +53,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("myTag"," profile? "+(position==PROFILE_MODE)+" sharing? "+(position==SHARING_MODE));
-                if(position == SHARING_MODE) {
-                    adapterViewPager.getSharingFragment().updateOptograph();
+
+                switch (position) {
+                    case FEED_MODE:
+                        adapterViewPager.mainFeedFragment.refresh();
+                        break;
+                    case PROFILE_MODE:
+                        break;
+                    case SHARING_MODE:
+                        adapterViewPager.sharingFragment.updateOptograph();
+                        break;
                 }
             }
 
@@ -88,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void startSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -103,8 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setOptograph(Optograph optograph) {
-        adapterViewPager.updateShare(optograph);
-//        this.optograph = optograph;
+        adapterViewPager.sharingFragment.setOptograph(optograph);
     }
 
     private void initializeComponents() {
@@ -126,9 +130,14 @@ public class MainActivity extends AppCompatActivity {
         private int NUM_ITEMS = 3;
         private Cache cache;
         private SharingFragment sharingFragment;
+        private MainFeedFragment mainFeedFragment;
+        private ProfileRootFragment profileRootFragment;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+            profileRootFragment = new ProfileRootFragment();
+            mainFeedFragment = new MainFeedFragment();
+            sharingFragment = new SharingFragment();
             cache = Cache.open();
         }
 
@@ -143,19 +152,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    sharingFragment = new SharingFragment();
                     return sharingFragment;
-//                    return SharingFragment.newInstance();
                 case 1:
-                    return new MainFeedFragment();
+                    return mainFeedFragment;
                 case 2:
-                    return new ProfileRootFragment();
-//                    if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
-//                        return SigninFBFragment.newInstance("","");
-//                    } else
-//                        return ProfileFragment.newInstance(cache.getString(Cache.USER_ID));
-//                    return ProfileFragment.newInstance("c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a");
-
+                    return profileRootFragment;
                 default:
                     return null;
             }
@@ -169,14 +170,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return POSITION_UNCHANGED;
 //            return super.getItemPosition(object);
-        }
-
-        public void updateShare(Optograph optograph) {
-            sharingFragment.setOptograph(optograph);
-        }
-
-        public SharingFragment getSharingFragment() {
-            return sharingFragment;
         }
 
         // Returns the page title for the top indicator
@@ -199,4 +192,5 @@ public class MainActivity extends AppCompatActivity {
         // TODO: how to update the page of profile after login
         onBackPressed();
     }
+
 }

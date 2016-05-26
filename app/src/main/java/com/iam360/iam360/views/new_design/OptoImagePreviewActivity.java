@@ -128,6 +128,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     public static final int WEBVIEW_REQUEST_CODE = 100;
     public final static String optoType360 = "optograph";
+    public final static String optoType360_1 = "optograph_1";
+    public final static String optoType360_3 = "optograph_3";
     public final static String optoTypeTheta = "theta";
 
     /**
@@ -431,7 +433,13 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         Log.d("mytag", "TIME : " + optograph.getCreated_atRFC3339());
 
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+        OptoData data = null;
+        if(optographType.equals(optoType360) && cache.getString(Cache.CAMERA_MODE).equals(Constants.ONE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_1);
+        else if(optographType.equals(optoType360) && cache.getString(Cache.CAMERA_MODE).equals(Constants.THREE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_3);
+        else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+
+        Timber.d("OPTOGRAPHTYPE " + data.toString());
+
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {

@@ -30,6 +30,7 @@ import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -131,6 +132,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if (GlobalState.shouldHardRefreshFeed) {
             initializeFeed();
         }
+
     }
 
     @Override
@@ -168,7 +170,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void refresh() {
-        // TODO: actually refresh data
+
+        Timber.d("REFRESH");
+        apiConsumer.getOptographs(5)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
+                .subscribe(optographFeedAdapter::addItem);
     }
 
     @Subscribe

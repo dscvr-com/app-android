@@ -115,7 +115,7 @@
         <!-- keep this secret safe -->
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="53fc9712e5de047419972713413240dd2b622b06" />
+            android:value="11b87c97c005ce8c5b5369b6eac7d4d41960bdff" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
