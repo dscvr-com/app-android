@@ -171,8 +171,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@+id/upload_group"
-            android:visibility="gone">
+            android:layout_toRightOf="@+id/upload_group">
 
             <Button
                 android:id="@+id/post_later_button"

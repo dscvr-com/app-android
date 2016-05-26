@@ -168,7 +168,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateHomeButton() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode?R.drawable.cancel:R.drawable.logo_small_dark);// back_arrow_icn must change by cancel_button
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode?R.drawable.cancel:R.drawable.logo_small_dark);
     }
 
     @Override
