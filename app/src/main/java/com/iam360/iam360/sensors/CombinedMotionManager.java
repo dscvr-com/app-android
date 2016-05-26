@@ -69,7 +69,7 @@ public class CombinedMotionManager extends RotationMatrixProvider {
         }
 
         if (coreMotionMatrix != null && MODE == PANNING_MODE) {
-            touchEventListener.setPhi(touchEventListener.getPhi() + 0.005f);
+            touchEventListener.setPhi(touchEventListener.getPhi() + 0.003f);
            // lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
         } else if (coreMotionMatrix != null && MODE == GYRO_MODE) {
              lastCoreMotionMatrix = Arrays.copyOf(coreMotionMatrix, 16);
