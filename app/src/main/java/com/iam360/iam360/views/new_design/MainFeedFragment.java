@@ -137,9 +137,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void initializeFeed() {
-        LocalOptographManager.getOptographs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
 
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
