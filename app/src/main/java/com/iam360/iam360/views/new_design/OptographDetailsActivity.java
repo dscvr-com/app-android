@@ -72,15 +72,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.follow.setVisibility(View.GONE);
         }
 
-        binding.littlePlanetButton.animate()
-                .translationYBy(0)
-                .translationY(-90)
-                .setDuration(300);
-        binding.gyroButton.animate()
-                .translationYBy(0)
-                .translationY(-180)
-                .setDuration(300);
-
         instatiateFeedDisplayButton();
 
         inVRMode = false;
@@ -318,7 +309,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(gyro)
             binding.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         else if(!gyro && !lilPlanet)
-            binding.optograph2dview.setSensorMode(CombinedMotionManager.PANNING_MODE);
+            binding.optograph2dview.setSensorMode(CombinedMotionManager.STILL_MODE); //PANNING MODE
         else
             binding.optograph2dview.setSensorMode(CombinedMotionManager.STILL_MODE);
 

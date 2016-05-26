@@ -434,8 +434,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Log.d("mytag", "TIME : " + optograph.getCreated_atRFC3339());
 
         OptoData data = null;
-        if(optographType.equals(optoType360) && cache.getString(Cache.CAMERA_MODE).equals(Constants.ONE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_1);
-        else if(optographType.equals(optoType360) && cache.getString(Cache.CAMERA_MODE).equals(Constants.THREE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_3);
+        if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_1);
+        else if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) == (Constants.THREE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_3);
         else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
 
         Timber.d("OPTOGRAPHTYPE " + data.toString());
