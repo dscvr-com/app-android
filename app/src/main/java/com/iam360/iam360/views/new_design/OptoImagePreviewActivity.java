@@ -195,14 +195,22 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         twitterShareButton.setOnClickListener(this);
         instaShareButton.setOnClickListener(this);
 
+        postLaterButton.setVisibility(View.VISIBLE);
         if(imagePath != null) {
             UPLOAD_IMAGE_MODE = true;
             // force this true
             doneUpload = true;
             Uri imageUri = Uri.parse(imagePath);
             previewImage.setImageURI(imageUri);
+            postLaterButton.setVisibility(View.GONE);
 
             createDefaultOptograph(optographGlobal);
+        }
+
+        if (!UPLOAD_IMAGE_MODE) {
+            optograph.setOptograph_type(cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)?optoType360_1:optoType360_3);
+        } else {
+            optograph.setOptograph_type(optoTypeTheta);
         }
 
         // get current location
@@ -241,7 +249,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     blackCircle.setVisibility(View.GONE);
                     uploadProgress.setVisibility(View.GONE);
                 }
-
             }
 
             @Override
@@ -445,6 +452,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
 
         Timber.d("OPTOGRAPHTYPE " + data.toString());
+        Log.d("myTag"," id: "+optograph.getId()+" optoType: "+optographType);
 
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override

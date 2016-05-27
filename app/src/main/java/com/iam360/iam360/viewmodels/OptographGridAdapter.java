@@ -8,15 +8,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +38,7 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
@@ -152,6 +152,13 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
             }
 
+            holder.getBinding().deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteImageItemDialog(position);
+                }
+            });
+
             holder.getBinding().gridUploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -229,16 +236,39 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         }
     }
 
-    private void toUploadOrToHeart(Optograph optograph,OptographViewHolder holder) {
-        if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
-            holder.getBinding().heartLabel.setVisibility(View.GONE);
-            holder.getBinding().gridUploadButton.setVisibility(View.VISIBLE);
-            holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
-        } else {
-            holder.getBinding().heartLabel.setVisibility(View.VISIBLE);
-            holder.getBinding().gridUploadButton.setVisibility(View.GONE);
-            holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
-        }
+    private void deleteOptograph(int position) {
+        Optograph optograph = optographs.get(position);
+        apiConsumer.deleteOptonaut(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    Optograph optograph = optographs.get(position);
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+                    Log.d("myTag", " time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
+                    optographs.remove(position);
+                    notifyDataSetChanged();
+                    Toast.makeText(context,"Delete successful.",Toast.LENGTH_SHORT).show();
+                } else Toast.makeText(context,"Delete failed.",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag","ERROR: delete optograph: "+t.getMessage());
+                Toast.makeText(context,"Delete failed.",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void deleteImageItemDialog(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(R.string.profile_delete_message)
+                .setPositiveButton(context.getResources().getString(R.string.dialog_fire), (dialog, which) -> {
+                    deleteOptograph(position);
+                }).setNegativeButton(context.getResources().getString(R.string.cancel_label), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.create().show();
     }
 
     private void updateOptograph(int position) {
@@ -273,7 +303,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
 
     private void uploadOptonautData(int position) {
         Optograph optograph = optographs.get(position);
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(),"optograph");
+        OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type());
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
@@ -440,7 +470,9 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
-        if (optograph.is_local()) optograph = checkToDB(optograph);
+        Log.d("myTag","id: "+optograph.getId()+" isLocal? "+optograph.is_local()+" optouserId equal to user?: "+(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))));
+        optograph = checkToDB(optograph);
+        Log.d("myTag"," opto null? "+(optograph==null));
         if (optograph==null) {
             return;
         }
@@ -503,10 +535,12 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
     public Optograph checkToDB(Optograph optograph) {
         Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
+        Log.d("myTag","checkToDB getcount: "+res.getCount());
         if (res.getCount()==0) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
+        Log.d("myTag","checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
         if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
@@ -518,7 +552,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
         optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);
         optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
-        Timber.d("checkToDB isFBShare? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0)+" Twit? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0)+" optoId: "+optograph.getId());
         optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
         optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
         optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
