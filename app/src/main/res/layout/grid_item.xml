@@ -64,7 +64,7 @@
                 android:drawablePadding="5dp"
                 android:drawableRight="@drawable/like_icn"
                 android:layout_toLeftOf="@id/delete_button"
-                android:textColor="@color/bright" />
+                android:textColor="@color/bright"/>
 
             <ImageButton
                 android:id="@+id/grid_upload_button"
@@ -78,11 +78,9 @@
                 android:id="@+id/grid_upload_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="12dp"
                 android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                style="@android:style/Widget.ProgressBar.Small.Inverse"
-                android:visibility="gone"/>
+                android:layout_toLeftOf="@id/delete_button"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"/>
         </RelativeLayout>
 
         <View

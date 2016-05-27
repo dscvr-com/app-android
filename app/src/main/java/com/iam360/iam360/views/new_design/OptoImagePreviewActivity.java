@@ -89,6 +89,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.exit_button) Button exitButton;
     @Bind(R.id.retry_button) Button retryButton;
     @Bind(R.id.description_box) EditText descBox;
+    @Bind(R.id.post_later_button) Button postLaterIcon;
     @Bind(R.id.post_later_group) RelativeLayout postLaterButton;
     @Bind(R.id.post_later_progress) ProgressBar postLaterProgress;
     @Bind(R.id.upload_progress) RelativeLayout uploadProgress;
@@ -1045,6 +1046,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     public void onResume() {
         super.onResume();
         if (!GlobalState.isAnyJobRunning) {
+            postLaterIcon.setVisibility(View.VISIBLE);
             postLaterProgress.setVisibility(View.GONE);
             uploadProgress.setVisibility(View.GONE);
             blackCircle.setVisibility(View.GONE);
@@ -1080,6 +1082,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Subscribe
     public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("receiveFinishedImage");
+        postLaterIcon.setVisibility(View.VISIBLE);
         postLaterProgress.setVisibility(View.GONE);
         uploadProgress.setVisibility(View.GONE);
         blackCircle.setVisibility(View.GONE);

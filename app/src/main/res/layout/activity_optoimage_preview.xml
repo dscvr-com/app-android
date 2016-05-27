@@ -161,26 +161,26 @@
                         android:id="@+id/black_circle"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/black_circle_button"
-                        android:visibility="gone" />
+                        android:background="@drawable/black_circle_button" />
 
                 </RelativeLayout>
 
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/upload_progress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:visibility="gone">
-
-                <ProgressBar
-                    style="@android:style/Widget.ProgressBar.Small.Inverse"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <RelativeLayout
+                    android:id="@+id/upload_progress"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_above="@id/upload_label"
                     android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true" />
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <ProgressBar
+                        style="@android:style/Widget.ProgressBar.Small.Inverse"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerHorizontal="true"/>
+
+                </RelativeLayout>
 
             </RelativeLayout>
 
@@ -212,7 +212,8 @@
                     android:layout_above="@id/post_later_label"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/upload_later_icn_gray"
-                    android:clickable="false" />
+                    android:clickable="false"
+                    android:visibility="invisible"/>
 
                 <ProgressBar
                     android:id="@+id/post_later_progress"
