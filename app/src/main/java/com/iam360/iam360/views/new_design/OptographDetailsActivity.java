@@ -103,6 +103,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         });
 
 //        binding.profileBar.getBackground().setAlpha(204); // apha to 80%
+        binding.closeBtn.setOnClickListener(this);
+        binding.closeContainer.setOnClickListener(this);
         binding.profileBar.setOnClickListener(this);
         binding.personAvatarAsset.setOnClickListener(this);
         binding.personLocationInformation.setOnClickListener(this);
@@ -219,6 +221,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
+            binding.closeContainer.setVisibility(View.INVISIBLE);
             binding.profileBar.setVisibility(View.INVISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
@@ -228,6 +231,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                             | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             );
+            binding.closeContainer.setVisibility(View.VISIBLE);
             binding.profileBar.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.VISIBLE);
             isFullScreenMode = false;
@@ -321,6 +325,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.close_btn:
+            case R.id.close_container:
+                finish();
+                break;
             case R.id.profile_bar:
                 break;
             case R.id.person_location_information:

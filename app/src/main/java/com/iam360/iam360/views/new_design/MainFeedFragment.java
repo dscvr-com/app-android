@@ -169,6 +169,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     protected void refresh() {
 
         Timber.d("REFRESH");
+        if(apiConsumer == null) return;
+
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

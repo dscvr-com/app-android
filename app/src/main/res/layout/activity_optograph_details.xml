@@ -35,6 +35,23 @@
             app:optograph="@{optograph}" />
 
         <RelativeLayout
+            android:id="@+id/close_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="25dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="15dp">
+
+            <ImageButton
+                android:id="@+id/close_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/close_x_icn"
+                android:layout_margin="10dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/menu_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
