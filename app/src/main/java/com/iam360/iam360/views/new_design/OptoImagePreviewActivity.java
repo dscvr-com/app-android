@@ -643,10 +643,10 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            postLaterProgress.setVisibility(View.GONE);
-            uploadProgress.setVisibility(View.GONE);
-            blackCircle.setVisibility(View.GONE);
-            doneUpload = true;
+//            postLaterProgress.setVisibility(View.GONE);
+//            uploadProgress.setVisibility(View.GONE);
+//            blackCircle.setVisibility(View.GONE);
+//            doneUpload = true;
         }
     }
 

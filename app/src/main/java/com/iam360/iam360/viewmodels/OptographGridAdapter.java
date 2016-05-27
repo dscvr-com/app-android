@@ -4,16 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +31,20 @@ import com.iam360.iam360.BR;
 import com.iam360.iam360.GridItemBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.OptoData;
+import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
+import com.iam360.iam360.views.record.OptoImagePreviewFragment;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -122,6 +140,43 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 }
             });
 
+            Log.d("myTag","onBindViewHolder position: "+position+" isLocal? "+optograph.is_local()+" onServer? "+optograph.is_on_server()+" shouldPub? "+optograph.isShould_be_published());
+
+            if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
+                holder.getBinding().heartLabel.setVisibility(View.GONE);
+                holder.getBinding().gridUploadButton.setVisibility(View.VISIBLE);
+                holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
+            } else {
+                holder.getBinding().heartLabel.setVisibility(View.VISIBLE);
+                holder.getBinding().gridUploadButton.setVisibility(View.GONE);
+                holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
+            }
+
+            holder.getBinding().gridUploadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (cache.getString(Cache.USER_TOKEN).equals("")) {
+                        Snackbar.make(v, "Must login to upload.", Snackbar.LENGTH_SHORT);
+                    } else {
+                        apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
+                        holder.getBinding().gridUploadProgress.setVisibility(View.VISIBLE);
+                        holder.getBinding().gridUploadButton.setVisibility(View.GONE);
+                        if (!optograph.is_data_uploaded()) {
+                            Log.d("myTag", "upload the data first. position: "+position);
+                            uploadOptonautData(position);
+                        } else if (!optograph.is_place_holder_uploaded()) {
+                            Log.d("myTag", "upload the placeholder first. position: "+position);
+                            uploadPlaceHolder(position);
+                        } else {
+                            Log.d("myTag","upload the 12 images position: "+position);
+                            updateOptograph(position);
+//                            getLocalImage(optograph);
+                        }
+                    }
+                }
+            });
+
             setHeart(optograph, holder.getBinding().heartLabel, optograph.is_starred(), optograph.getStars_count());
             holder.getBinding().heartLabel.setOnClickListener(v -> {
                 if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
@@ -172,6 +227,197 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
         }
+    }
+
+    private void toUploadOrToHeart(Optograph optograph,OptographViewHolder holder) {
+        if (optograph.is_local() && !optograph.is_on_server() && !optograph.isShould_be_published()) {
+            holder.getBinding().heartLabel.setVisibility(View.GONE);
+            holder.getBinding().gridUploadButton.setVisibility(View.VISIBLE);
+            holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
+        } else {
+            holder.getBinding().heartLabel.setVisibility(View.VISIBLE);
+            holder.getBinding().gridUploadButton.setVisibility(View.GONE);
+            holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateOptograph(int position) {
+        Optograph opto = optographs.get(position);
+        Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
+        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+        apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
+                Log.d("myTag"," onResponse body: "+response.body());
+                Log.d("myTag", " onResponse message: " + response.message());
+                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                if (!response.isSuccess()) {
+                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                    cache.save(Cache.UPLOAD_ON_GOING, false);
+                    notifyItemChanged(position);
+                    return;
+                }
+                getLocalImage(position);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(context,"No Internet Connection.",Toast.LENGTH_SHORT).show();
+                cache.save(Cache.UPLOAD_ON_GOING, false);
+                notifyItemChanged(position);
+            }
+        });
+    }
+
+    private void uploadOptonautData(int position) {
+        Optograph optograph = optographs.get(position);
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(),"optograph");
+        apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
+            @Override
+            public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                if (!response.isSuccess()) {
+                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Toast.makeText(context,"Failed to upload.",Toast.LENGTH_SHORT).show();
+                    notifyItemChanged(position);
+                    return;
+                }
+                Optograph opto = response.body();
+                if (opto == null) {
+                    Log.d("myTag", "parsing the JSON body failed.");
+                    Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                    notifyItemChanged(position);
+                    return;
+                }
+                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
+                // do things for success
+                uploadPlaceHolder(position);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", " onFailure: " + t.getMessage());
+                notifyItemChanged(position);
+            }
+        });
+
+        Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        if (res==null || res.getCount()==0) return;
+        res.moveToFirst();
+        String stringRes = ""+DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
+                "\n"+DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
+                "\n"+DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
+                "\n"+DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
+                "\n"+DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
+                "\n"+DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
+        Log.d("myTag", "" + stringRes);
+    }
+
+    private void uploadPlaceHolder(int position) {
+        Optograph opto = optographs.get(position);
+        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
+        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
+
+        String holder = "";
+
+        if (dir.exists()) {// remove the not notation here
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory() && file.getName().equals("preview")) {
+                    for (String s : file.list()) {
+                        Log.d("myTag"," placeholder path to upload.");
+                        holder = file.getPath()+"/"+s+"^"+position;
+                        break;
+                    }
+                } else {
+                    // ignore
+                }
+            }
+        }
+
+        new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+    }
+
+    class UploadPlaceHolder extends AsyncTask<String,Void,Void> {
+        int mPosition = 0;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String s : params) {
+                String[] s1 = s.split("^");
+                mPosition = Integer.valueOf(s1[1]);
+                String[] s3 = s1[0].split("/");
+                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
+                String face = s3[s3.length - 1];
+                Log.d("myTag", " face: " + face);
+
+                uploadPlaceHolderImage(mPosition, s1[0], face);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            updateOptograph(mPosition);
+        }
+    }
+
+    private int flag=2;
+    private boolean uploadPlaceHolderImage(int position, String filePath,String fileName) {
+        flag = 2;
+        Optograph opto = optographs.get(position);
+//        String[] s2 = filePath.split("/");
+//        String fileName = s2[s2.length-1];
+
+        Bitmap bm = null;
+
+        try {
+            bm = BitmapFactory.decodeFile(filePath);
+        } catch (Exception e) {
+            Log.e(e.getClass().getName(), e.getMessage());
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+        byte[] data = bos.toByteArray();
+
+        RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
+        RequestBody fbodyMain = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("asset", fileName, fbody)
+                .addFormDataPart("key", fileName.replace(".jpg",""))
+                .build();
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, OptoImagePreviewFragment.optoType360, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                flag = response.isSuccess() ? 1 : 0;
+                opto.setIs_place_holder_uploaded(response.isSuccess());
+                mydb.updateColumnOptograph(opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, flag);
+                opto.setIs_place_holder_uploaded(response.isSuccess());
+                notifyItemChanged(position);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                flag = 0;
+                notifyItemChanged(position);
+            }
+        });
+        while (flag==2) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
+        return (flag == 1);
     }
 
     @Override
@@ -294,17 +540,219 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         return optograph;
     }
 
+    private void getLocalImage(int position) {
+        Optograph opto = optographs.get(position);
+        cache.save(Cache.UPLOAD_ON_GOING, true);
+        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
+        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
+
+        List<String> filePathList = new ArrayList<>();
+        filePathList.add(String.valueOf(position));
+
+        if (dir.exists()) {// remove the not notation here
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory() && !file.getName().contains("preview")) {
+                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
+
+                    for (String s : file.list()) {
+                        filePathList.add(file.getPath()+"/"+s);
+                    }
+                } else {
+                    // ignore
+                }
+            }
+        }
+        Log.d("myTag","before: ");
+        int ctr = 0;
+        for (boolean i : opto.getLeftFace().getStatus()) {
+            Log.d("myTag","left "+ctr+": "+i);
+            ctr+=1;
+        }
+        int ctr2 = 0;
+        for (boolean i : opto.getRightFace().getStatus()) {
+            Log.d("myTag","right "+ctr2+": "+i);
+            ctr2+=1;
+        }
+
+        new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
+    }
+
+    // try using AbstractQueuedSynchronizer
+    class UploadCubeImages extends AsyncTask<List<String>,Void,Void> {
+        int mPosition = 0;
+        Optograph optograph;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(List<String>... params) {
+            for (List<String> sL : params) {
+                int ctr = 0;
+                for (String s:sL) {
+                    if (ctr==0) {
+                        mPosition = Integer.valueOf(s);
+                        optograph = optographs.get(mPosition);
+                        ctr++;
+                        continue;
+                    }
+                    String[] s3 = s.split("/");
+                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
+                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
+                    int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
+                    String face = s.contains("right") ? "r" : "l";
+                    Log.d("myTag", " face: " + face);
+
+                    if (face.equals("l") && optograph.getLeftFace().getStatus()[side]) {
+                        //pass
+                    } else if (optograph.getRightFace().getStatus()[side]) {
+                        //pass
+                    } else if (!cache.getString(Cache.USER_TOKEN).equals("")) {
+                        if (apiConsumer==null) apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
+                        uploadImage(mPosition, s, face, side);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Cursor res = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
+            if (res==null || res.getCount()==0) return;
+            res.moveToFirst();
+            String stringRes = ""+DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
+                    "\n"+DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
+                    "\n"+DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
+                    "\n"+DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
+                    "\n"+DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
+                    "\n"+DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
+                    "\n"+DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
+                    "\n"+DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
+                    "\n"+DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
+                    "\n"+DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
+                    "\n"+DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
+                    "\n"+DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
+            Log.d("myTag", "" + stringRes);
+            /*if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
+                mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
+                mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
+            }*/
+            if (mydb.checkIfAllImagesUploaded(optograph.getId())) {
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
+                optograph.setIs_on_server(true);
+            }
+            cache.save(Cache.UPLOAD_ON_GOING, false);
+            notifyItemChanged(mPosition);
+        }
+    }
+
+    private boolean uploadImage(int position, String filePath,String face,int side) {
+        Optograph opto = optographs.get(position);
+        flag = 2;
+        String[] s2 = filePath.split("/");
+        String fileName = s2[s2.length-1];
+
+        if (face.equals("l") && opto.getLeftFace().getStatus()[side]) return true;
+        else if (opto.getRightFace().getStatus()[side]) return true;
+
+        Bitmap bm = null;
+
+        try {
+            bm = BitmapFactory.decodeFile(filePath);
+        } catch (Exception e) {
+            Log.e(e.getClass().getName(), e.getMessage());
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+        byte[] data = bos.toByteArray();
+
+        RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
+        RequestBody fbodyMain = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("asset", face + fileName, fbody)
+                .addFormDataPart("key", face + side)
+                .build();
+        Log.d("myTag","asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
+        apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, OptoImagePreviewFragment.optoType360, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
+                Log.d("myTag", "onResponse message: " + response.message());
+                Log.d("myTag", "onResponse body: " + response.body());
+                Log.d("myTag", "onResponse raw: " + response.raw());
+                if (face.equals("l"))
+                    opto.getLeftFace().setStatusByIndex(side, response.isSuccess());
+                else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
+                updateFace(opto, face, side, response.isSuccess() ? 1 : 0);
+
+                Log.d("myTag", "after: ");
+                int ctr = 0;
+                for (boolean i : opto.getLeftFace().getStatus()) {
+                    Log.d("myTag", "left " + ctr + ": " + i);
+                    ctr += 1;
+                }
+                int ctr2 = 0;
+                for (boolean i : opto.getRightFace().getStatus()) {
+                    Log.d("myTag", "right " + ctr2 + ": " + i);
+                    ctr2 += 1;
+                }
+                flag = response.isSuccess() ? 1 : 0;
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side, false);
+                else opto.getRightFace().setStatusByIndex(side, false);
+//                notifyItemRangeChanged(position,1);
+                notifyItemChanged(position);
+                flag = 0;
+            }
+        });
+        while (flag==2) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
+        return (flag == 1);
+    }
+
+    private void updateFace(Optograph opto, String face,int side,int value) {
+        String column = "faces_";
+        if (face.equals("l")) column +="left_";
+        else column += "right_";
+
+        if (side == 0) column += "zero";
+        else if (side == 1) column += "one";
+        else if (side == 2) column += "two";
+        else if (side == 3) column += "three";
+        else if (side == 4) column += "four";
+        else if (side == 5) column += "five";
+
+        mydb.updateFace(opto.getId(),column,value);
+    }
 
     public static class OptographViewHolder extends RecyclerView.ViewHolder {
         private GridItemBinding binding;
         private ImageView optograph2DCubeView;
         private boolean isNavigationModeCombined;
+//        private ImageButton uploadButton;
+//        private ProgressBar uploadProgress;
 
 
         public OptographViewHolder(View rowView) {
             super(rowView);
             this.binding = DataBindingUtil.bind(rowView);
             optograph2DCubeView = (ImageView) itemView.findViewById(R.id.optograph2dview);
+//            uploadButton = (ImageButton) itemView.findViewById(R.id.grid_upload_button);
+//            uploadProgress = (ProgressBar) itemView.findViewById(R.id.grid_upload_progress);
         }
 
         public GridItemBinding getBinding() {

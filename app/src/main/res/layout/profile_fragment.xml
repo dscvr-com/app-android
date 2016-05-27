@@ -109,7 +109,8 @@
                     android:textColor="@color/text_bright"
                     android:textSize="12sp"
                     app:font="@{``}"
-                    android:background="@{person.is_followed == true? @drawable/following_btn:@drawable/follow_btn}"/>
+                    android:background="@{person.is_followed == true? @drawable/following_btn:@drawable/follow_btn}"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/person_desc"

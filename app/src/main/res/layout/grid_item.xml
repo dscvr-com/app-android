@@ -53,6 +53,26 @@
                 android:layout_toLeftOf="@+id/settings_button"
                 android:textColor="@color/bright" />
 
+            <ImageButton
+                android:id="@+id/grid_upload_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/arrow_up_icn"
+                android:layout_toLeftOf="@+id/settings_button"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/grid_upload_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <View
