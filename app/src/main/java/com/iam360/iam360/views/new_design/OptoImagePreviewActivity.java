@@ -203,6 +203,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             Uri imageUri = Uri.parse(imagePath);
             previewImage.setImageURI(imageUri);
             postLaterButton.setVisibility(View.GONE);
+
+            createDefaultOptograph(optographGlobal);
         }
 
         if (!UPLOAD_IMAGE_MODE) {
@@ -220,7 +222,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //        getNearbyLocations(location.getLatitude(), location.getLongitude());
     }
 
-    private void  updateOptograph(Optograph opto) {
+    private void updateOptograph(Optograph opto) {
         Log.d("myTag", "update optograph");
         Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
@@ -235,12 +237,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
                 else {
-//                    finish(); //no need to upload cube faces for theta upload
+                    Snackbar.make(uploadButton, getString(R.string.image_uploaded),Snackbar.LENGTH_SHORT).show();
+                    finish(); //no need to upload cube faces for theta upload
                     blackCircle.setVisibility(View.GONE);
                     uploadProgress.setVisibility(View.GONE);
                 }
@@ -452,17 +457,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-                Log.d("myTag", " onResponse body: " + response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     return;
                 }
                 optographGlobal.setIs_data_uploaded(true);
@@ -556,10 +561,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                    getLocalImage(optograph);
 
                     if(UPLOAD_IMAGE_MODE) {
-                        createDefaultOptograph(optographGlobal);
                         if (userToken != null && !userToken.isEmpty()) {
-                            uploadOptonautData(optographGlobal);
-                            updateOptograph(optographGlobal);
+                            if(!optographGlobal.is_data_uploaded()) uploadOptonautData(optographGlobal);
+                            else uploadPlaceHolder(optographGlobal);
                         }
                     } else
                         updateOptograph(optographGlobal);
@@ -704,12 +708,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 doneUpload = true;
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, 1);
 
+                // update texts of theta
+                if(UPLOAD_IMAGE_MODE) updateOptograph(optographGlobal);
+
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Snackbar.make(uploadButton, "Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage() + " ");
+                blackCircle.setVisibility(View.GONE);
+                uploadProgress.setVisibility(View.GONE);
                 t.printStackTrace();
                 flag = 0;
             }

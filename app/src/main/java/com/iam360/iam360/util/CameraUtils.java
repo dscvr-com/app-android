@@ -103,8 +103,8 @@ public class CameraUtils {
                 if (cameraIds.length > camNum) {
                     CameraCharacteristics character = manager.getCameraCharacteristics(cameraIds[camNum]);
                     SizeF sizeF = character.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                    size[0] = sizeF.getWidth()*1.75f;
-                    size[1] = sizeF.getHeight()*1.75f;
+                    size[0] = sizeF.getWidth()*1.25f;
+                    size[1] = sizeF.getHeight()*1.25f;
                 }
             } catch (CameraAccessException e) {
                 Timber.e("YourLogString", e.getMessage(), e);

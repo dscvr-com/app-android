@@ -24,6 +24,8 @@ import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.SettingsActivity;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setOptograph(Optograph optograph) {
+        Timber.d("PREVIEW SETOPTOGRAPH1");
         adapterViewPager.sharingFragment.setOptograph(optograph);
     }
 

@@ -151,6 +151,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         BusProvider.getInstance().register(this);
 
         if(person == null) setPerson();
+        else refresh();
     }
 
     @Override
@@ -529,7 +530,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     protected void refresh() {
-        // TODO!
-        // swipeContainer.setRefreshing(false);
+
+        apiConsumer.getOptographsFromPerson(person.getId(), 10)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(throwable -> {
+                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    return null;
+                })
+                .subscribe(optographFeedAdapter::addItem);
     }
 }
