@@ -90,7 +90,7 @@ public abstract class OptographListFragment extends Fragment {
                 if (firstVisiblePosition > -1 ) {
                     // mca: got completely visible cubemap
                     if (lastVisible != firstVisiblePosition) {
-                        optographFeedAdapter.RotateCubeMap(firstVisiblePosition);
+                        optographFeedAdapter.rotateCubeMap(firstVisiblePosition);
                         lastVisible = firstVisiblePosition;
                     }
 

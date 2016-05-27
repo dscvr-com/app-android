@@ -200,7 +200,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
     }
 
 
-    public void RotateCubeMap (int pos) {
+    public void rotateCubeMap (int pos) {
         currentFullVisibilty = pos;
 
         if (pos > 0) {
@@ -396,7 +396,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
                 @Override
                 public void onOpen(SwipeLayout layout) {
-                    Timber.d("PREVIEW SETOPTOGRAPH1 OPEN" + optograph.getId());
+                    Timber.d("PREVIEW SETOPTOGRAPH1 OPEN " + optograph.getId());
 
                     ((MainActivity) context).setOptograph(optograph);
                     ((MainActivity) context).dragSharePage();
@@ -432,7 +432,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
                     swipeLayout.bounce(300, shareButton);
 
-                    Timber.d("PREVIEW SETOPTOGRAPH1 CLICK");
+                    Timber.d("PREVIEW SETOPTOGRAPH1 CLICK " + optograph.getId());
 
 //                    swipeLayout.open();
                     ((MainActivity) context).setOptograph(optograph);
