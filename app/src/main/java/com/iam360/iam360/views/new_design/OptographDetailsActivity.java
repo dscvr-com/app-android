@@ -103,6 +103,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         });
 
 //        binding.profileBar.getBackground().setAlpha(204); // apha to 80%
+        binding.profileBar.setOnClickListener(this);
         binding.personAvatarAsset.setOnClickListener(this);
         binding.personLocationInformation.setOnClickListener(this);
         binding.arrowMenu.setOnClickListener(this);
@@ -320,6 +321,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.profile_bar:
+                break;
             case R.id.person_location_information:
             case R.id.person_avatar_asset:
                 startProfile();

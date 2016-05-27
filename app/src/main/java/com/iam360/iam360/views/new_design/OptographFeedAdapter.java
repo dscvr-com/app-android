@@ -277,20 +277,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.getBinding().followContainer.setVisibility(isCurrentUser ? View.GONE : View.VISIBLE);
             holder.getBinding().followContainer.setOnClickListener(v -> followOrUnfollow(optograph, holder, v));
 
-            ImageView profileView = (ImageView) holder.itemView.findViewById(R.id.person_avatar_asset);
-            profileView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(cache.getString(Cache.USER_ID).equals(optograph.getPerson())) {
-                        if(context instanceof MainActivity)
-                            ((MainActivity) context).setPage(MainActivity.PROFILE_MODE);
-                    } else {
-                        Intent intent = new Intent(context, ProfileActivity.class);
-                        intent.putExtra("person", optograph.getPerson());
-                        context.startActivity(intent);
-                    }
-                }
-            });
+            holder.getBinding().personLocationInformation.setOnClickListener(v -> startProfile(optograph.getPerson()));
+            holder.getBinding().personAvatarAsset.setOnClickListener(v -> startProfile(optograph.getPerson()));
 
             upload_progress = (ProgressBar) holder.itemView.findViewById(R.id.feed_upload_progress);
             uploadButton = (TextView) holder.itemView.findViewById(R.id.feed_upload_label);
@@ -444,7 +432,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                     swipeLayout.bounce(300, shareButton);
 
 //                    swipeLayout.open();
-              //      ((MainActivity) context).setOptograph(optograph);
+                    ((MainActivity) context).setOptograph(optograph);
               //      ((MainActivity) context).setPage(MainActivity.SHARING_MODE);
                 }
             });
@@ -456,6 +444,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
             holder.getBinding().executePendingBindings();
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
+        }
+    }
+
+    private void startProfile(Person person) {
+        if(cache.getString(Cache.USER_ID).equals(person)) {
+            if(context instanceof MainActivity)
+                ((MainActivity) context).setPage(MainActivity.PROFILE_MODE);
+        } else {
+            Intent intent = new Intent(context, ProfileActivity.class);
+            intent.putExtra("person", person);
+            context.startActivity(intent);
         }
     }
 
