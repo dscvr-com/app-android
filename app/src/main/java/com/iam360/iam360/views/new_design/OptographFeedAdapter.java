@@ -396,6 +396,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
                 @Override
                 public void onOpen(SwipeLayout layout) {
+                    Timber.d("PREVIEW SETOPTOGRAPH1 OPEN" + optograph.getId());
 
                     ((MainActivity) context).setOptograph(optograph);
                     ((MainActivity) context).dragSharePage();
@@ -430,6 +431,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 
 
                     swipeLayout.bounce(300, shareButton);
+
+                    Timber.d("PREVIEW SETOPTOGRAPH1 CLICK");
 
 //                    swipeLayout.open();
                     ((MainActivity) context).setOptograph(optograph);

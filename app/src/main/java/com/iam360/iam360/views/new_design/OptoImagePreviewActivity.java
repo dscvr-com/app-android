@@ -201,6 +201,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             doneUpload = true;
             Uri imageUri = Uri.parse(imagePath);
             previewImage.setImageURI(imageUri);
+
+            createDefaultOptograph(optographGlobal);
         }
 
         // get current location
@@ -227,6 +229,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -447,11 +451,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
+                    blackCircle.setVisibility(View.GONE);
+                    uploadProgress.setVisibility(View.GONE);
                     return;
                 }
                 optographGlobal.setIs_data_uploaded(true);
@@ -545,9 +553,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                    getLocalImage(optograph);
 
                     if(UPLOAD_IMAGE_MODE) {
-                        createDefaultOptograph(optographGlobal);
                         if (userToken != null && !userToken.isEmpty()) {
-                            uploadOptonautData(optographGlobal);
+                            if(!optographGlobal.is_data_uploaded()) uploadOptonautData(optographGlobal);
+                            else uploadPlaceHolder(optographGlobal);
                         }
                     } else
                         updateOptograph(optographGlobal);
@@ -701,6 +709,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             public void onFailure(Throwable t) {
                 Snackbar.make(uploadButton, "Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage() + " ");
+                blackCircle.setVisibility(View.GONE);
+                uploadProgress.setVisibility(View.GONE);
                 t.printStackTrace();
                 flag = 0;
             }

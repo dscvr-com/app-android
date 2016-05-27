@@ -44,6 +44,8 @@ import com.iam360.iam360.model.Person;
 import com.iam360.iam360.opengl.Cube;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.ImageUrlBuilder;
+
+import timber.log.Timber;
 import twitter4j.Twitter;
 
 public class SharingFragment extends Fragment implements View.OnClickListener {
@@ -125,6 +127,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateOptograph() {
+        Timber.d("PREVIEW UPDATE");
 
         if(optograph != null) {
             setOptographPreview();
@@ -140,9 +143,11 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
     private void setOptographPreview() {
 
+        Timber.d("PREVIEW SETOPTO");
         String uri = ImageUrlBuilder.buildPlaceholderUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
 
         if(previewImg.getWidth() > 0 && previewImg.getHeight() > 0) {
+            Timber.d("PREVIEW SETOPTO if");
             if (optograph.is_local()) {
                 Picasso.with(previewImg.getContext())
                         .load(new File(uri))
