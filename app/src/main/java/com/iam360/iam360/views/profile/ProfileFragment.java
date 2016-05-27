@@ -502,10 +502,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     protected void initializeFeed() {
-        LocalOptographManager.getOptographs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
-
         //try to add filter for deleted optographs
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
@@ -515,6 +511,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
+
+        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+            LocalOptographManager.getOptographs()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(optographFeedAdapter::addItem);
+        }
 
     }
 
