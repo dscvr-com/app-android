@@ -64,6 +64,7 @@
 
     <!-- Preview -->
     <color name="preview_toolbar_bg">#3f474c</color>
+    <color name="preview_save_bg">#FFFECF5D</color>
 
     <!-- Camera -->
     <color name="camera_circle">#fecf5d</color>
@@ -74,6 +75,5 @@
     <color name="text_light">#A5A5A5</color>
     <color name="text_yellow">#FECF5C</color>
     <color name="text_bright">#f7f7f7</color>
-
 
 </resources>

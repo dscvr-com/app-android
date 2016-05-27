@@ -282,4 +282,8 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void deleteOptonaut(String id,Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.deleteOptonaut(id);
+        call.enqueue(callback);
+    }
 }

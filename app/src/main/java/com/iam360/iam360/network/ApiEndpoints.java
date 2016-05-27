@@ -70,6 +70,9 @@ public interface ApiEndpoints {
 //    Call<Optograph> uploadOptoData(@Header("Authorization") String authorization,@Body OptographFeedAdapter.OptoData data);
     Call<Optograph> uploadOptoData(@Body OptoData data);
 
+    @DELETE("optographs/{id}")
+    Call<LogInReturn.EmptyResponse> deleteOptonaut(@Path("id") String id);
+
     @POST("optographs/{id}/upload-asset")
     Call<LogInReturn.EmptyResponse> uploadOptoImage(@Path("id") String id,@Body RequestBody asset);
 

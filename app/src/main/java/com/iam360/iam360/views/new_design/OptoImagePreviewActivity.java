@@ -195,12 +195,20 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         twitterShareButton.setOnClickListener(this);
         instaShareButton.setOnClickListener(this);
 
+        postLaterButton.setVisibility(View.VISIBLE);
         if(imagePath != null) {
             UPLOAD_IMAGE_MODE = true;
             // force this true
             doneUpload = true;
             Uri imageUri = Uri.parse(imagePath);
             previewImage.setImageURI(imageUri);
+            postLaterButton.setVisibility(View.GONE);
+        }
+
+        if (!UPLOAD_IMAGE_MODE) {
+            optograph.setOptograph_type(cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)?optoType360_1:optoType360_3);
+        } else {
+            optograph.setOptograph_type(optoTypeTheta);
         }
 
         // get current location
@@ -212,7 +220,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //        getNearbyLocations(location.getLatitude(), location.getLongitude());
     }
 
-    private void updateOptograph(Optograph opto) {
+    private void  updateOptograph(Optograph opto) {
         Log.d("myTag", "update optograph");
         Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
@@ -439,10 +447,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
 
         Timber.d("OPTOGRAPHTYPE " + data.toString());
+        Log.d("myTag"," id: "+optograph.getId()+" optoType: "+optographType);
 
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
+                Log.d("myTag", " onResponse body: " + response.body());
+                Log.d("myTag", " onResponse message: " + response.message());
+                Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;

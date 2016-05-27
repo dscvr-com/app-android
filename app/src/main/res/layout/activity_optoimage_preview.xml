@@ -21,28 +21,29 @@
             android:layout_width="match_parent"
             android:layout_height="253dp"
             android:scaleType="centerCrop" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:drawableStart="@drawable/location_hand_icn"
-            android:drawablePadding="@dimen/fab_elevation"
-            android:text="Move the Image to select your favorite spot."
-            android:textColor="@android:color/white"
             android:layout_alignBottom="@id/preview_image"
             android:layout_marginBottom="15dp"
+            android:layout_marginStart="48dp"
+            android:drawablePadding="@dimen/fab_elevation"
+            android:drawableStart="@drawable/location_hand_icn"
+            android:text="Move the Image to select your favorite spot."
+            android:textColor="@android:color/white"
             android:textSize="12sp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <!--android:padding="@dimen/snackbar_padding_vertical"-->
         <LinearLayout
             android:id="@+id/location_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_below="@id/preview_image"
-            android:paddingLeft="9.5dp"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:paddingLeft="9.5dp">
 
         </LinearLayout>
 
@@ -50,8 +51,8 @@
             android:id="@+id/location_scroll_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="9.5dp"
-            android:layout_below="@+id/preview_image" >
+            android:layout_below="@+id/preview_image"
+            android:layout_margin="9.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,20 +62,21 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/place_icn"
-                    android:layout_marginRight="@dimen/fab_elevation"/>
+                    android:layout_marginRight="@dimen/fab_elevation"
+                    android:background="@drawable/place_icn" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:text="Add Location"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/location_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                 </LinearLayout>
 
@@ -83,78 +85,95 @@
         </HorizontalScrollView>
 
         <RelativeLayout
-        android:id="@+id/navigation_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/black_gradient">
+            android:id="@+id/navigation_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/black_gradient">
 
-        <RelativeLayout
-            android:id="@+id/retry_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="40dp"
-            android:layout_toLeftOf="@+id/upload_group"
-            android:visibility="invisible">
-
-            <Button
-                android:id="@+id/retry_button"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@color/transparentOverlay"
-                android:clickable="false"
-                android:textColor="@color/bright"
-                android:textSize="28dp" />
-
-            <TextView
-                android:id="@+id/home_label"
+            <RelativeLayout
+                android:id="@+id/retry_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="30dp"
-                android:text="@string/preview_retry"
-                android:textAllCaps="true"
-                android:textColor="@color/bright"
-                android:textSize="9dp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/upload_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:layout_gravity="center"
-            android:layout_marginTop="28dp">
-
-            <Button
-                android:id="@+id/upload_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/save_arrow_icn"
-                android:textColor="@color/bright"/>
+                android:layout_marginRight="40dp"
+                android:layout_toLeftOf="@+id/upload_layout"
+                android:visibility="invisible">
 
-            <Button
-                android:id="@+id/black_circle"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@drawable/black_circle_button"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"/>
-        </RelativeLayout>
+                <Button
+                    android:id="@+id/retry_button"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/transparentOverlay"
+                    android:clickable="false"
+                    android:textColor="@color/bright"
+                    android:textSize="28dp" />
+
+                <TextView
+                    android:id="@+id/home_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="30dp"
+                    android:text="@string/preview_retry"
+                    android:textAllCaps="true"
+                    android:textColor="@color/bright"
+                    android:textSize="9dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/upload_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/upload_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/fab_elevation"
+                    android:paddingBottom="@dimen/fab_elevation"
+                    android:text="UPLOAD NOW"
+                    android:textSize="12sp" />
+
+                <RelativeLayout
+                    android:id="@+id/upload_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/upload_label"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="true"
+                    android:gravity="center_horizontal">
+
+                    <Button
+                        android:id="@+id/upload_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/save_arrow_icn" />
+
+                    <Button
+                        android:id="@+id/black_circle"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/black_circle_button"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/upload_progress"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerVertical="true">
+                android:layout_centerVertical="true"
+                android:visibility="gone">
 
                 <ProgressBar
                     style="@android:style/Widget.ProgressBar.Small.Inverse"
@@ -164,84 +183,88 @@
                     android:layout_centerVertical="true" />
 
             </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/post_later_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@+id/upload_group">
 
-            <Button
-                android:id="@+id/post_later_button"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_centerHorizontal="true"
+            <RelativeLayout
+                android:id="@+id/post_later_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@color/transparentOverlay"
-                android:clickable="false"
-                android:textColor="@color/bright"
-                android:textSize="28dp" />
+                android:layout_marginLeft="40dp"
+                android:layout_toRightOf="@+id/upload_layout">
 
-            <TextView
-                android:id="@+id/post_later_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="30dp"
-                android:text="@string/preview_post_later"
-                android:textAllCaps="true"
-                android:textColor="@color/bright"
-                android:textSize="9dp" />
+                <TextView
+                    android:id="@+id/post_later_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/fab_elevation"
+                    android:paddingBottom="@dimen/fab_elevation"
+                    android:text="@string/preview_post_later"
+                    android:textAllCaps="true"
+                    android:textSize="12sp" />
 
-            <ProgressBar
-                android:id="@+id/post_later_progress"
-                style="@android:style/Widget.ProgressBar.Small.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
+                <Button
+                    android:id="@+id/post_later_button"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_above="@id/post_later_label"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/upload_later_icn_gray"
+                    android:clickable="false" />
 
+                <ProgressBar
+                    android:id="@+id/post_later_progress"
+                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/post_later_label"
+                    android:layout_centerHorizontal="true" />
+
+            </RelativeLayout>
         </RelativeLayout>
-    </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/share_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="24dp"
-            android:paddingTop="@dimen/fab_margin"
+            android:layout_above="@id/navigation_buttons"
             android:paddingBottom="@dimen/fab_margin"
-            android:layout_above="@id/navigation_buttons">
+            android:paddingLeft="24dp"
+            android:paddingTop="@dimen/fab_margin">
+
             <ImageButton
                 android:id="@+id/fb_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/facebook_share_inactive"/>
+                android:background="@drawable/facebook_share_inactive" />
+
             <ImageButton
                 android:id="@+id/twitter_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/twitter_share_inactive"/>
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/twitter_share_inactive" />
+
             <ImageButton
                 android:id="@+id/insta_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:layout_below="@id/fb_share"
-                android:background="@drawable/instagram_share_inactive"/>
+                android:layout_margin="5dp"
+                android:background="@drawable/instagram_share_inactive" />
+
             <ImageButton
                 android:id="@+id/more_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/twitter_share"
-                android:background="@drawable/more_share_inactive"/>
+                android:layout_margin="5dp"
+                android:background="@drawable/more_share_inactive" />
 
         </RelativeLayout>
 
@@ -249,16 +272,16 @@
             android:id="@+id/description_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/fab_elevation"
-            android:layout_below="@id/location_scroll_layout"
             android:layout_above="@id/share_group"
-            android:textSize="14sp"
-            android:hint="Tell something about what you see..."
-            android:background="@drawable/preview_textbox_bg"
-            android:layout_marginRight="@dimen/fab_elevation"
+            android:layout_below="@id/location_scroll_layout"
             android:layout_marginLeft="@dimen/fab_elevation"
+            android:layout_marginRight="@dimen/fab_elevation"
+            android:background="@drawable/preview_textbox_bg"
+            android:gravity="top"
+            android:hint="Tell something about what you see..."
             android:inputType="textMultiLine"
-            android:gravity="top"/>
+            android:padding="@dimen/fab_elevation"
+            android:textSize="14sp" />
 
     </RelativeLayout>
 

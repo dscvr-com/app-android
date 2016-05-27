@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.facebook.login.LoginManager;
+import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -495,11 +496,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 //        }
     }
 
+    private boolean isDeleted(Optograph optograph) {
+        return optograph.getDeleted_at().isEmpty();
+    }
+
     protected void initializeFeed() {
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(optographFeedAdapter::addItem);
 
+        //try to add filter for deleted optographs
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
