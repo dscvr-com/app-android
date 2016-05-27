@@ -232,10 +232,12 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
                 if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
                 else {
-//                    finish(); //no need to upload cube faces for theta upload
+                    Snackbar.make(uploadButton, getString(R.string.image_uploaded),Snackbar.LENGTH_SHORT).show();
+                    finish(); //no need to upload cube faces for theta upload
                     blackCircle.setVisibility(View.GONE);
                     uploadProgress.setVisibility(View.GONE);
                 }
+
             }
 
             @Override
@@ -546,7 +548,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                         createDefaultOptograph(optographGlobal);
                         if (userToken != null && !userToken.isEmpty()) {
                             uploadOptonautData(optographGlobal);
-                            updateOptograph(optographGlobal);
                         }
                     } else
                         updateOptograph(optographGlobal);
@@ -690,6 +691,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 optographGlobal.setIs_place_holder_uploaded(true);
                 doneUpload = true;
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, 1);
+
+                // update texts of theta
+                if(UPLOAD_IMAGE_MODE) updateOptograph(optographGlobal);
 
             }
 

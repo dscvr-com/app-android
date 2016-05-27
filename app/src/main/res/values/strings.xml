@@ -103,6 +103,7 @@
     <string name="preview_retry">Retry</string>
     <string name="preview_post_later">Post Later</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="image_uploaded">Image uploaded successfully.</string>
 
     <!-- Sharing -->
     <string name="share_title">Share</string>
