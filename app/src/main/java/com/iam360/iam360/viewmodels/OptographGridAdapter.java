@@ -471,7 +471,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             saveToSQLite(optograph);
         }
         Log.d("myTag","id: "+optograph.getId()+" isLocal? "+optograph.is_local()+" optouserId equal to user?: "+(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))));
-        optograph = checkToDB(optograph);
+        if(optograph.is_local()) optograph = checkToDB(optograph);
         Log.d("myTag"," opto null? "+(optograph==null));
         if (optograph==null) {
             return;

@@ -35,8 +35,8 @@ android {
         applicationId "co.optonaut.optonaut"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 20160524
-        versionName "0.5"
+        versionCode 20160528
+        versionName "0.6"
 //        multiDexEnabled true
     }
 //    dexOptions { javaMaxHeapSize "4g" }

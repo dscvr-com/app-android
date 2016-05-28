@@ -70,7 +70,7 @@
 
 # Classes that will be serialized/deserialized over Gson
 # http://stackoverflow.com/a/7112371/56285
--keep class co.optonaut.optonaut.model.** { *; }
+-keep class com.iam360.iam360.model.** { *; }
 
 ##---------------End: proguard configuration for Gson  ----------
 
@@ -121,3 +121,9 @@
     @butterknife.* <methods>;
 }
 ##---------------------End: Butterknife -------------
+
+
+##------
+-dontwarn twitter4j.**
+-dontwarn org.slf4j.**
+-dontwarn android.os.PowerManager
