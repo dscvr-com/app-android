@@ -140,7 +140,6 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         return sharingFragment;
     }
 
-
     private void setOptographPreview() {
 
         Timber.d("PREVIEW SETOPTO");

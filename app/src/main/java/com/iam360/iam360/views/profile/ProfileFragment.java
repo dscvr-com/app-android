@@ -21,6 +21,7 @@ import android.widget.Button;
 
 import com.facebook.login.LoginManager;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -66,6 +67,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private boolean isCurrentUser = false;
     private boolean isEditMode = false;
     private ApiConsumer apiConsumer;
+    private DBHelper mydb;
 
     private String follow, following;
     private int PICK_IMAGE_REQUEST = 1;
@@ -81,6 +83,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        mydb = new DBHelper(getContext());
 
         follow = getActivity().getResources().getString(R.string.profile_follow);
         following = getActivity().getResources().getString(R.string.profile_following);

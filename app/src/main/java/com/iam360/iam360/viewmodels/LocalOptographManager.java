@@ -26,8 +26,10 @@ public class LocalOptographManager {
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {
-                    // create new optograph
-                    optographs.add(new Optograph(file.getName()));
+                    if (file.listFiles().length==3) {
+                        // create new optograph
+                        optographs.add(new Optograph(file.getName()));
+                    }
                 } else {
                     // ignore
                 }
