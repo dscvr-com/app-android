@@ -179,7 +179,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             menu.findItem(R.id.action_signout).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(true);
 //            menu.findItem(R.id.cancel_edit).setVisible(true);
-        } else if (isCurrentUser && !isEditMode) {
+        } else if (isCurrentUser && !isEditMode && ((MainActivity)getActivity()).getCurrentPage()==MainActivity.PROFILE_MODE) {
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
