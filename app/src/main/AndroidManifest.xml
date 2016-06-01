@@ -41,23 +41,23 @@
         android:required="true" />
 
     <application
-        android:name="OptonautApp"
+        android:name=".OptonautApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".views.new_design.SplashActivity"
+        <activity
+            android:name=".views.new_design.SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme" >
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".views.new_design.MainActivity"
             android:label="@string/app_name"
@@ -65,6 +65,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -96,15 +97,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".views.new_design.OptographDetailsActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".views.new_design.RecorderActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".views.new_design.OptoImagePreviewActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".views.SettingsActivity" />
+        <activity android:name=".views.SettingsActivity" />
+        <activity android:name=".views.new_design.ImagePicker" />
 
         <!-- change to true to debug mixpanel -->
         <meta-data

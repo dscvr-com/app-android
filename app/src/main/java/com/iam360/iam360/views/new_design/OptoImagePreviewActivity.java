@@ -66,6 +66,8 @@ import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.views.WebViewActivity;
+import com.squareup.picasso.Picasso;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -83,6 +85,8 @@ import twitter4j.conf.ConfigurationBuilder;
  * Created by Mariel on 4/13/2016.
  */
 public class OptoImagePreviewActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final int ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
 
     @Bind(R.id.statusbar) RelativeLayout statusbar;
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -201,9 +205,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             UPLOAD_IMAGE_MODE = true;
             // force this true
             doneUpload = true;
-            Uri imageUri = Uri.parse(imagePath);
-            previewImage.setImageURI(imageUri);
+//            Uri imageUri = Uri.parse(imagePath);
+//            previewImage.setImageURI(imageUri);
             postLaterButton.setVisibility(View.GONE);
+
+            Picasso.with(previewImage.getContext())
+                    .load(new File(imagePath))
+                    .placeholder(R.drawable.placeholder)
+                    .resize(ITEM_WIDTH, 400)
+                    .centerInside()
+//                    .centerCrop()
+                    .into(previewImage);
 
             createDefaultOptograph(optographGlobal);
         }

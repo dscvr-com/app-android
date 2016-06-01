@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,21 +23,27 @@ import timber.log.Timber;
 public class Optograph2DCubeView extends GLSurfaceView {
     private Optograph2DCubeRenderer optograph2DCubeRenderer;
     private Optograph optograph;
+    private ScaleGestureDetector mScaleDetector;
+
+    private final float MIN_ZOOM = 1.0f;
+    private final float MAX_ZOOM = 5.0f;
+    private float mScaleFactor = MIN_ZOOM;
 
     public Optograph2DCubeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(context);
     }
 
     public Optograph2DCubeView(Context context) {
         super(context);
-        initialize();
+        initialize(context);
     }
 
-    private void initialize() {
+    private void initialize(Context context) {
         setEGLContextClientVersion(2);
         optograph2DCubeRenderer = new Optograph2DCubeRenderer();
         setRenderer(optograph2DCubeRenderer);
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
         registerRendererOnSensors();
     }
@@ -133,19 +140,25 @@ public class Optograph2DCubeView extends GLSurfaceView {
         return (v, event) -> {
             Point point = new Point((int) event.getX(), (int) event.getY());
 
+            mScaleDetector.onTouchEvent(event);
+
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    optograph2DCubeRenderer.touchStart(point);
+                    if (!mScaleDetector.isInProgress())
+                        optograph2DCubeRenderer.touchStart(point);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    optograph2DCubeRenderer.touchMove(point);
+                    if (!mScaleDetector.isInProgress())
+                        optograph2DCubeRenderer.touchMove(point);
                     break;
                 case MotionEvent.ACTION_UP:
-                    optograph2DCubeRenderer.touchEnd(point);
+                    if (!mScaleDetector.isInProgress())
+                        optograph2DCubeRenderer.touchEnd(point);
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     // release touching state also for cancel action
-                    optograph2DCubeRenderer.touchEnd(point);
+                    if (!mScaleDetector.isInProgress())
+                        optograph2DCubeRenderer.touchEnd(point);
                     break;
                 default:
                     // ignore eventt
@@ -155,6 +168,27 @@ public class Optograph2DCubeView extends GLSurfaceView {
             // we dealt with the event
             return true;
         };
+    }
+
+    public void toggleZoom() {
+        if(mScaleFactor == MIN_ZOOM) {
+            mScaleFactor = MAX_ZOOM;
+        } else {
+            mScaleFactor = MIN_ZOOM;
+        }
+
+        optograph2DCubeRenderer.setScaleFactor(mScaleFactor);
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScaleFactor *= detector.getScaleFactor();
+            mScaleFactor = Math.max(MIN_ZOOM, Math.min(mScaleFactor, MAX_ZOOM));
+            optograph2DCubeRenderer.setScaleFactor(mScaleFactor);
+            invalidate();
+            return true;
+        }
     }
 
 }
