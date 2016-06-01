@@ -23,6 +23,7 @@ import com.facebook.login.LoginManager;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
+import com.iam360.iam360.views.new_design.ProfileActivity;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -188,7 +189,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
         }
-
     }
 
     @Override
@@ -241,6 +241,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     binding.editBtn.setVisibility(View.VISIBLE);
                     getActivity().invalidateOptionsMenu();
                     updateHomeButton();
+                } else if (getActivity() instanceof ProfileActivity) {
+                    Log.d("myTag","ProfileActivity? "+(getActivity() instanceof ProfileActivity));
+                    ((ProfileActivity)getActivity()).onBackPressed();
                 } else if (getActivity() instanceof MainActivity)
                     ((MainActivity) getActivity()).onBackPressed();
                 else getActivity().finish();
