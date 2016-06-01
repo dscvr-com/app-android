@@ -545,6 +545,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
+        if (mydb.checkIfAllImagesUploaded(optograph.getId())) return null;
         optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
         optograph.setText(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
 //        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));

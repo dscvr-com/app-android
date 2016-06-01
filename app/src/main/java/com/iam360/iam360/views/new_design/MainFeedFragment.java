@@ -8,14 +8,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.util.DBHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.iam360.iam360.R;
@@ -47,6 +52,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     private DateTime inVRPositionSince;
 
+    private List<Optograph> optographs = new ArrayList<>();
+    private DBHelper mydb;
+
     private int PICK_IMAGE_REQUEST = 1;
 
     @Override
@@ -57,6 +65,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        mydb = new DBHelper(getContext());
     }
 
     @Override
@@ -68,6 +77,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.settingsBtn.setOnClickListener(this);
         binding.thetaBtn.setOnClickListener(this);
         binding.headerLogo.setOnClickListener(this);
+        binding.numberLocalImage.setOnClickListener(this);
 
 //        Settings start
         initializeButtons();
@@ -128,6 +138,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void onResume() {
         super.onResume();
         inVRMode = false;
+//        optographs = new ArrayList<>();
+//        localImagesUIUpdate();
         BusProvider.getInstance().register(this);
         if (GlobalState.shouldHardRefreshFeed) {
             initializeFeed();
@@ -148,7 +160,51 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 })
                 .subscribe(optographFeedAdapter::addItem);
 
+        LocalOptographManager.getOptographs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
+                .subscribe(this::countLocal);
         GlobalState.shouldHardRefreshFeed = false;
+    }
+
+    private void countLocal(Optograph optograph) {
+        if (optograph == null) {
+            return;
+        }
+
+        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+            optographFeedAdapter.saveToSQLite(optograph);
+        }
+        if (optograph.is_local() && mydb.checkIfAllImagesUploaded(optograph.getId())) {
+            return;
+        }
+
+        // skip if optograph is already in list
+        if (optographs.contains(optograph)) {
+            return;
+        }
+
+        // if list is empty, simply add new optograph
+        if (optographs.isEmpty()) {
+            optographs.add(optograph);
+            localImagesUIUpdate();
+            return;
+        }
+
+        optographs.add(optograph);
+
+        localImagesUIUpdate();
+    }
+
+    private void localImagesUIUpdate() {
+        if (optographs.size()==0) {
+            binding.numberLocalImage.setVisibility(View.GONE);
+            binding.numberImage.setVisibility(View.GONE);
+        } else {
+            binding.numberLocalImage.setText(String.valueOf(optographs.size()));
+            binding.numberLocalImage.setVisibility(View.VISIBLE);
+            binding.numberImage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -162,6 +218,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 })
                 .subscribe(optographFeedAdapter::addItem);
 
+        LocalOptographManager.getOptographs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
+                .subscribe(this::countLocal);
         // TODO: prefetch textures
     }
 
@@ -180,6 +240,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
+
+
+        LocalOptographManager.getOptographs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
+                .subscribe(this::countLocal);
     }
 
     @Subscribe
@@ -190,6 +256,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.number_local_image:
             case R.id.profile_btn:
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
                 break;

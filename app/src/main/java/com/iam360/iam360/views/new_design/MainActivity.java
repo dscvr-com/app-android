@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
     private Cache cache;
+    private int currentMode=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                currentMode = position;
             }
 
             @Override
@@ -91,9 +92,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setPage(int page) {
+        currentMode = page;
         viewPager.setCurrentItem(page, true);
     }
 
+    public int getCurrentPage() {
+        return currentMode;
+    }
 
     public void dragSharePage () {
         viewPager.setCurrentItem(SHARING_MODE,true);

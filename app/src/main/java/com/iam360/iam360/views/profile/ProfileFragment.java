@@ -21,7 +21,9 @@ import android.widget.Button;
 
 import com.facebook.login.LoginManager;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
+import com.iam360.iam360.views.new_design.ProfileActivity;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -66,6 +68,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private boolean isCurrentUser = false;
     private boolean isEditMode = false;
     private ApiConsumer apiConsumer;
+    private DBHelper mydb;
 
     private String follow, following;
     private int PICK_IMAGE_REQUEST = 1;
@@ -81,6 +84,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        mydb = new DBHelper(getContext());
 
         follow = getActivity().getResources().getString(R.string.profile_follow);
         following = getActivity().getResources().getString(R.string.profile_following);
@@ -176,7 +180,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             menu.findItem(R.id.action_signout).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(true);
 //            menu.findItem(R.id.cancel_edit).setVisible(true);
-        } else if (isCurrentUser && !isEditMode) {
+        } else if (isCurrentUser && !isEditMode && ((MainActivity)getActivity()).getCurrentPage()==MainActivity.PROFILE_MODE) {
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
@@ -185,7 +189,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
         }
-
     }
 
     @Override
@@ -238,6 +241,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     binding.editBtn.setVisibility(View.VISIBLE);
                     getActivity().invalidateOptionsMenu();
                     updateHomeButton();
+                } else if (getActivity() instanceof ProfileActivity) {
+                    Log.d("myTag","ProfileActivity? "+(getActivity() instanceof ProfileActivity));
+                    ((ProfileActivity)getActivity()).onBackPressed();
                 } else if (getActivity() instanceof MainActivity)
                     ((MainActivity) getActivity()).onBackPressed();
                 else getActivity().finish();
