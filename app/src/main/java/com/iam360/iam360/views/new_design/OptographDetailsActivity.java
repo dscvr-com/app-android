@@ -85,13 +85,19 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             public boolean onTouch(View v, MotionEvent event) {
                 if (isFullScreenMode) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) finish();
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) {
+                            binding.optograph2dview.toggleZoom();
+                        }
+                        //finish();
                         else toggleFullScreen();
                     } else {
                     }
                 } else {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) finish();
+                        if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) {
+                            binding.optograph2dview.toggleZoom();
+                        }
+                            //finish();
                         else toggleFullScreen();
                     } else {
                         // need to return true here to prevent touch-stealing of parent!

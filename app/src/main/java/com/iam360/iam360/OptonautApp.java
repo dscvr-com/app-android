@@ -25,11 +25,11 @@ public class OptonautApp extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         } else {
+            Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashReportingTree());
         }
 

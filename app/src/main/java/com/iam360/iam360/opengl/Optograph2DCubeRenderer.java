@@ -21,6 +21,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float FIELD_OF_VIEW_Y = 95.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
+    private float scaleFactor = 1.f;
+    private float ratio = 1.f;
 
     private static final float DAMPING_FACTOR = 0.9f;
 
@@ -60,7 +62,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         Timber.v("onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
+        ratio = (float) width / height;
 
         Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
     }
@@ -72,6 +74,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         //Log.v(Constants.DEBUG_TAG, Arrays.toString(rotationMatrix));
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+
+        Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
@@ -113,6 +117,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     public boolean isRegisteredOnSensors() {
         return combinedMotionManager.isRegisteredOnCoreMotionListener();
+    }
+
+    public void setScaleFactor(float scaleFactor) {
+        this.scaleFactor = scaleFactor;
     }
 
     public CombinedMotionManager getCombinedMotionManager() {
