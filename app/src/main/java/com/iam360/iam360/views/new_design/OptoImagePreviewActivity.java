@@ -2,14 +2,13 @@ package com.iam360.iam360.views.new_design;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -102,6 +102,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.preview_image) KenBurnsView previewImage;
     @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
     @Bind(R.id.location_layout) LinearLayout locationLayout;
+    @Bind(R.id.add_location_text) TextView addLocText;
+    @Bind(R.id.location_progress) ProgressBar locationProgress;
 
     @Bind(R.id.fb_share) ImageButton fbShareButton;
     @Bind(R.id.twitter_share) ImageButton twitterShareButton;
@@ -129,6 +131,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     private static RequestToken requestToken;
 
     private GeocodeReverse chosenLoc;
+    private List<GeocodeReverse> listOfLoc;
     private Context context;
 
     public static final int WEBVIEW_REQUEST_CODE = 100;
@@ -199,6 +202,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         fbShareButton.setOnClickListener(this);
         twitterShareButton.setOnClickListener(this);
         instaShareButton.setOnClickListener(this);
+        addLocText.setOnClickListener(this);
 
         postLaterButton.setVisibility(View.VISIBLE);
         if(imagePath != null) {
@@ -226,18 +230,48 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             optograph.setOptograph_type(optoTypeTheta);
         }
 
-        // get current location
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, false);
-        Location location = locationManager.getLastKnownLocation(provider);
+    }
 
-//        getNearbyLocations(location.getLatitude(), location.getLongitude());
+    private void instatiateLocation() {
+        locationProgress.setVisibility(View.VISIBLE);
+        addLocText.setVisibility(View.GONE);
+//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        Criteria criteria = new Criteria();
+//        String provider = locationManager.getBestProvider(criteria, false);
+//        Location location = locationManager.getLastKnownLocation(provider);
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location==null) location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if (location!=null) {
+            getNearbyLocations(location.getLatitude(), location.getLongitude());
+        } else {
+            addLocText.setVisibility(View.VISIBLE);
+            locationProgress.setVisibility(View.GONE);
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog,  final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void updateOptograph(Optograph opto) {
         Log.d("myTag", "update optograph");
-        Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
+        Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
 
         Log.d("myTag", opto.getId() + " " + data.toString());
@@ -255,9 +289,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                if(!UPLOAD_IMAGE_MODE) getLocalImage(opto);
+                if (!UPLOAD_IMAGE_MODE) getLocalImage(opto);
                 else {
-                    Snackbar.make(uploadButton, getString(R.string.image_uploaded),Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, getString(R.string.image_uploaded), Snackbar.LENGTH_SHORT).show();
                     finish(); //no need to upload cube faces for theta upload
                     blackCircle.setVisibility(View.GONE);
                     uploadProgress.setVisibility(View.GONE);
@@ -274,6 +308,13 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         });
     }
 
+    private void locationListView() {
+        locationLayout.removeAllViews();
+        for(GeocodeReverse loc : listOfLoc) {
+            addView(locationLayout, loc);
+        }
+    }
+
     /**
      *  Api call for nearby places. Will add the locations to the view.
      * @param latitude
@@ -285,18 +326,33 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             @Override
             public void onResponse(Response<List<GeocodeReverse>> response, Retrofit retrofit) {
 
-                List<GeocodeReverse> locations = response.body();
-                for(GeocodeReverse loc : locations) {
+                listOfLoc = response.body();
+                for (GeocodeReverse loc : listOfLoc) {
                     addView(locationLayout, loc);
                 }
-
+                locationProgress.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Timber.d(t.getMessage());
+                addLocText.setVisibility(View.VISIBLE);
+                locationProgress.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void locationButtonState(Button view,GeocodeReverse loc) {
+        Log.d("myTag", "chosenLoc null? " + (chosenLoc == null) + " chosen==loc? " + (loc.equals(chosenLoc)));
+        if (chosenLoc!=null && loc.equals(chosenLoc)) {
+            view.setBackgroundResource(R.drawable.location_button_unselected);
+            chosenLoc = null;
+        } else {
+            view.setBackgroundResource(R.drawable.location_button_selected);
+            chosenLoc = loc;
+        }
+        Log.d("myTag","chosenLoc: "+chosenLoc.getName());
+        locationListView();
     }
 
     /**
@@ -311,13 +367,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Button mLoc = (Button) itemView.findViewById(R.id.contact);
         ImageView mDelete = (ImageView) itemView.findViewById(R.id.contact_del);
 
+//        if (chosenLoc!=null && chosenLoc.equals(loc)) mLoc.setBackgroundResource(R.drawable.location_button_selected);
+
         mLoc.setText(loc.getName());
         view.addView(itemView);
+
+        Log.d("myTag","location name: "+loc.getName());
 
         mLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chosenLoc = loc;
+                locationButtonState(mLoc,loc);
                 mLoc.setPressed(true);
 //                mLoc.isPressed() ? mLoc.
 //                view.removeView(itemView);
@@ -644,6 +704,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
                 Snackbar.make(instaShareButton, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
                 break;
+            /*case R.id.add_location_text:
+                buildAlertMessageNoGps();
+                break;//uncomment when location is active*/
             default:
                 break;
 
@@ -1067,6 +1130,10 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         // Register for preview image generation event
         BusProvider.getInstance().register(this);
+
+        // get current location
+//        instatiateLocation();//uncomment for location
+        locationProgress.setVisibility(View.GONE);//remove when location is active
     }
 
     @Override

@@ -7,11 +7,14 @@
         android:id="@+id/contact"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
+        android:paddingStart="1dp"
+        android:paddingEnd="1dp"
         android:singleLine="true"
-        android:ellipsize="end"
-        android:ems="10"
         android:text="kjfklsdfdfsdf"
-        android:textSize="10dp" />
+        android:textSize="10dp"
+        android:background="@drawable/location_button_unselected"
+        android:layout_marginEnd="1dp"
+        android:layout_marginStart="1dp"/>
 
     <ImageView
         android:id="@+id/contact_del"

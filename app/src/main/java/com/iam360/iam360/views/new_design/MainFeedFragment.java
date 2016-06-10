@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.views.SearchActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
@@ -78,6 +79,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.thetaBtn.setOnClickListener(this);
         binding.headerLogo.setOnClickListener(this);
         binding.numberLocalImage.setOnClickListener(this);
+        binding.searchButton.setOnClickListener(this);
 
 //        Settings start
         initializeButtons();
@@ -95,6 +97,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 binding.profileBtn.setVisibility(View.GONE);
+                binding.searchButton.setVisibility(View.GONE);
             }
 
             @Override
@@ -104,12 +107,14 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         binding.pullUpButton.setVisibility(View.VISIBLE);
                         if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
                         binding.profileBtn.setVisibility(View.GONE);
+                        binding.searchButton.setVisibility(View.GONE);
                         break;
                     case COLLAPSED:
                     case ANCHORED:
                     case HIDDEN:
                         binding.pullUpButton.setVisibility(View.GONE);
                         binding.profileBtn.setVisibility(View.VISIBLE);
+                        binding.searchButton.setVisibility(View.VISIBLE);
                         binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         break;
                     case DRAGGING:
@@ -121,6 +126,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                             binding.pullUpButton.setVisibility(View.VISIBLE);
                         }
                         binding.profileBtn.setVisibility(View.GONE);
+                        binding.searchButton.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -260,6 +266,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             case R.id.profile_btn:
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
                 break;
+            case R.id.search_button:
+                Intent intent2 = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent2);
+                break;
             case R.id.camera_btn:
                 if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
                     Snackbar.make(v,getActivity().getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
@@ -280,13 +290,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
-                Intent intent1 = new Intent(getActivity(), ImagePicker.class);
-                startActivity(intent1);
+//                Intent intent1 = new Intent(getActivity(), ImagePicker.class);
+//                startActivity(intent1);
 
-//                Intent intent1 = new Intent();
-//                intent1.setType("image/*");
-//                intent1.setAction(Intent.ACTION_GET_CONTENT);
-//                startActivityForResult(Intent.createChooser(intent1, "Select Image"), PICK_IMAGE_REQUEST);
+                Intent intent1 = new Intent();
+                intent1.setType("image/*");
+                intent1.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent1, "Select Image"), PICK_IMAGE_REQUEST);
                 break;
             case R.id.a3d_button:
                 cache.save(Cache.VR_3D_ENABLE,!cache.getBoolean(Cache.VR_3D_ENABLE,false));

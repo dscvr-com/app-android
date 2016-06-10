@@ -2,6 +2,7 @@ package com.iam360.iam360.network;
 
 import android.util.Log;
 
+import com.iam360.iam360.model.SearchPersonResult;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -284,6 +285,15 @@ public class ApiConsumer {
 
     public void deleteOptonaut(String id,Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.deleteOptonaut(id);
+        call.enqueue(callback);
+    }
+
+    public Observable<Person> getSearchResult(String key) {
+        return service.getSearchResult(key).flatMap(Observable::from);
+    }
+
+    public void getSearchResultCall(String key, Callback<List<Person>> callback) {
+        Call<List<Person>> call = service.getSearchResultCall(key);
         call.enqueue(callback);
     }
 }

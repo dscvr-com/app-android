@@ -234,10 +234,9 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         }
     }
 
-
     @Override
     public void onBindViewHolder(OptographViewHolder holder, int position) {
-        Optograph optograph = optographs.get(position);//original
+        Optograph optograph = optographs.get(position);
 
         if (currentFullVisibilty ==  position) {
             if(cache.getBoolean(Cache.GYRO_ENABLE))
@@ -1184,7 +1183,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
         public NewFeedItemBinding getBinding() {
             return binding;
         }
-
 
         public void toggleNavigationMode() {
             if (isNavigationModeCombined) {
