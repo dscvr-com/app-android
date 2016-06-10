@@ -75,5 +75,6 @@
     <color name="text_light">#A5A5A5</color>
     <color name="text_yellow">#FECF5C</color>
     <color name="text_bright">#f7f7f7</color>
+    <color name="text_search">#FF585858</color>
 
 </resources>

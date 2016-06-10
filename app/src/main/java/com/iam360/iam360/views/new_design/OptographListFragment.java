@@ -129,13 +129,14 @@ public abstract class OptographListFragment extends Fragment {
                 Timber.d("mVideoVisibilityCalculator " + mVideoVisibilityCalculator + " " + mItemsPositionGetter + " " + mLayoutManager + " " + mLayoutManager.findFirstVisibleItemPosition() + " " + mLayoutManager.findLastVisibleItemPosition());
 
                 // TODO Hi Mariel, dito ko may issue. Nag nanull pointer sya pag scroll.
-                if(!optographFeedAdapter.getVideoItems().isEmpty()) {
+                /*if(!optographFeedAdapter.getVideoItems().isEmpty()) {
                     mVideoVisibilityCalculator.onScroll(
                             mItemsPositionGetter,
                             mLayoutManager.findFirstVisibleItemPosition(),
                             mLayoutManager.findLastVisibleItemPosition() - mLayoutManager.findFirstVisibleItemPosition() + 1,
                             mScrollState);
-                }
+                }*/
+                if (optographFeedAdapter.getVideoItems().size()!=0 && optographFeedAdapter.getVideoItems().size()==mLayoutManager.findLastVisibleItemPosition()+1) loadMore();
 
             }
 

@@ -1070,10 +1070,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             return;
         }
 
+        String urlItem = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/"+optograph.getId()+"/pan.mp4";
+
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
             optographs.add(optograph);
-            videoItems.add(new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0));
+            videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
             notifyItemInserted(getItemCount());
             return;
         }
@@ -1081,7 +1083,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         // if optograph is oldest, simply append to list
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
-            videoItems.add(new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0));
+            videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
             notifyItemInserted(getItemCount());
             return;
         }
@@ -1092,7 +1094,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             Optograph current = optographs.get(i);
             if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
-                videoItems.add(new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0));
+                videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
                 notifyItemInserted(i);
                 return;
             }
