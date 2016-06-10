@@ -50,13 +50,27 @@
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bar">
 
-                <com.iam360.iam360.opengl.Optograph2DCubeView
-                    android:id="@+id/optograph2dview"
-                    android:background="@color/transparentOverlay"
+                <!--<com.iam360.iam360.opengl.Optograph2DCubeView-->
+                    <!--android:id="@+id/optograph2dview"-->
+                    <!--android:background="@color/transparentOverlay"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--app:optograph="@{optograph}"/>-->
+
+                <com.volokh.danylo.video_player_manager.ui.VideoPlayerView
+                    android:id="@+id/video_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/preview_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    app:optograph="@{optograph}"/>
+                    android:background="@android:color/black"
+                    android:scaleType="fitStart"
+                    android:adjustViewBounds="true"
+                    app:optograph_preview="@{optograph}"/>
 
                 <LinearLayout
                     android:id="@+id/bar_swipe"
