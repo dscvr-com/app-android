@@ -103,4 +103,9 @@ public interface ApiEndpoints {
     @GET("locations/geocode-reverse/{placeid}")
     Call<GeocodeDetails> getLocationDetails(@Path("placeid") String placeid);
 
+    @GET("persons/search")
+    Observable<List<Person>> getSearchResult(@Query("keyword") String key);
+
+    @GET("persons/search")
+    Call<List<Person>> getSearchResultCall(@Query("keyword") String key);
 }

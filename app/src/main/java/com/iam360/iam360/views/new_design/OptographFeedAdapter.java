@@ -260,7 +260,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
     @Override
     public void onBindViewHolder(OptographVideoViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);//original
-
+        
         String url = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/6e40d95d-c79e-4ba9-a2d0-789d6b08611f/pan.mp4";
         DirectLinkVideoItem videoItem = new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0);
 //        BaseVideoItem videoItem = optographs.get(position);
@@ -1249,7 +1249,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         public NewFeedItemBinding getBinding() {
             return binding;
         }
-
 
         public void toggleNavigationMode() {
             if (isNavigationModeCombined) {

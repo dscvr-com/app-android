@@ -543,6 +543,14 @@
             android:src="@drawable/profile_icn"
             android:background="@color/transparentOverlay"/>
 
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:padding="15dp"
+            android:src="@drawable/search_home"
+            android:background="@color/transparentOverlay"/>
     </RelativeLayout>
 
 </layout>
