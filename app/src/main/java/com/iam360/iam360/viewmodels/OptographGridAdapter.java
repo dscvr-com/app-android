@@ -152,12 +152,12 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 holder.getBinding().gridUploadProgress.setVisibility(View.GONE);
             }
 
-            holder.getBinding().deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteImageItemDialog(position);
-                }
-            });
+//            holder.getBinding().deleteButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    deleteImageItemDialog(position);
+//                }
+//            });
 
             holder.getBinding().gridUploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override

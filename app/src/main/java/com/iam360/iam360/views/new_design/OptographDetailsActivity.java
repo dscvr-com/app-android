@@ -9,11 +9,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -29,6 +31,7 @@ import com.iam360.iam360.sensors.CombinedMotionManager;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.VRModeActivity;
 import retrofit.Callback;
@@ -70,7 +73,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(isCurrentUser) {
             binding.followContainer.setVisibility(View.GONE);
             binding.follow.setVisibility(View.GONE);
-        }
+            binding.deleteButton.setVisibility(View.VISIBLE);
+        } else binding.deleteButton.setVisibility(View.GONE);
 
         instatiateFeedDisplayButton();
 
@@ -121,6 +125,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.heartLabel.setOnClickListener(this);
         binding.followContainer.setOnClickListener(this);
         binding.follow.setOnClickListener(this);
+        binding.deleteButton.setOnClickListener(this);
+
         setHeart(optograph.is_starred(), optograph.getStars_count());
         followPerson(optograph.getPerson().is_followed());
 
@@ -438,9 +444,44 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     Snackbar.make(v, getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.delete_button:
+                deleteImageItemDialog(optograph);
+                break;
             default:
                 break;
         }
 
+    }
+
+    private void deleteImageItemDialog(Optograph optograph) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.profile_delete_message)
+                .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
+                    deleteOptograph(optograph);
+                }).setNegativeButton(getResources().getString(R.string.cancel_label), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.create().show();
+    }
+
+    private void deleteOptograph(Optograph optograph) {
+        apiConsumer.deleteOptonaut(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+                    mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+                    Log.d("myTag", " time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
+                    Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag", "ERROR: delete optograph: " + t.getMessage());
+                Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

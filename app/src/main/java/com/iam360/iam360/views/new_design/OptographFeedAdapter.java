@@ -317,6 +317,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().personLocationInformation.setOnClickListener(v -> callDetailsPage(optograph));
+            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph));
 //            holder.optograph2DCubeView.setOnClickListener(v -> callDetailsPage(optograph));
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());

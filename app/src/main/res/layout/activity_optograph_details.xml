@@ -192,11 +192,23 @@
                     android:visibility="gone"
                     android:textColor="@color/bright" />
 
+                <ImageButton
+                    android:id="@+id/delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/delete_icn_white"
+                    android:background="@color/transparentOverlay"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:padding="@dimen/fab_elevation"/>
+
+                <!--android:layout_alignParentRight="true"-->
                 <RelativeLayout
                     android:id="@+id/heart_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true" >
+                    android:layout_toLeftOf="@id/delete_button"
+                    android:layout_alignWithParentIfMissing="true">
 
                     <TextView
                         android:id="@+id/heart_label"
