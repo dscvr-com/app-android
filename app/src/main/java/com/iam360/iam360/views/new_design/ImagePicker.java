@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 
 import com.iam360.iam360.R;
 
@@ -16,18 +19,23 @@ import java.util.ArrayList;
 public class ImagePicker extends AppCompatActivity {
 
     private final int MIN_WIDTH = 5000;
-    private final int NUM_COLUMNS = 2;
+    private final int NUM_COLUMNS = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_picker);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("360 Images");
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS);
         recyclerView.setLayoutManager(layoutManager);
 
 
@@ -61,12 +69,29 @@ public class ImagePicker extends AppCompatActivity {
 //                final String size = cursor.getString(cursor.getColumnIndex(columns[6]));
 //                Timber.d("PATH : " + title + ":" + data + ":" + mimeType + ":" + width + ":" + height + ":" + size);
 
-                if(Integer.parseInt(width) > MIN_WIDTH) imagePathList.add(data);
+                if(width != null && Integer.parseInt(width) > MIN_WIDTH) imagePathList.add(data);
+
             } while (cursor.moveToNext());
         }
         cursor.close();
 
         return imagePathList;
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

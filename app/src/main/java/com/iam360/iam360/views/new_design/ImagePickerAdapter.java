@@ -72,6 +72,9 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
 //        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, 400); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
 //        holder.itemView.setLayoutParams(params);
 
+        holder.image.getLayoutParams().height = ITEM_WIDTH/3;
+        holder.image.requestLayout();
+
         Picasso.with(holder.image.getContext())
                 .load(new File(path))
 //                .placeholder(R.drawable.placeholder)
