@@ -41,6 +41,16 @@
                 app:font="@{``}"
                 android:text="@{optograph.text}"/>
 
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/delete_icn_white"
+                android:background="@color/transparentOverlay"
+                android:padding="@dimen/navigation_elevation"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+
             <TextView
                 android:id="@+id/heart_label"
                 android:layout_width="wrap_content"
@@ -53,26 +63,22 @@
                 android:paddingLeft="@dimen/fab_elevation"
                 android:paddingTop="@dimen/appbar_elevation"
                 android:paddingBottom="@dimen/appbar_elevation"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="12dp"
-                android:layout_marginLeft="12dp"/>
+                android:layout_toLeftOf="@id/delete_button"/>
 
             <ImageButton
                 android:id="@+id/grid_upload_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="12dp"
-                android:background="@drawable/upload_profile"/>
+                android:background="@drawable/upload_profile"
+                android:layout_toLeftOf="@id/delete_button"/>
 
             <ProgressBar
                 android:id="@+id/grid_upload_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="12dp"
+                android:layout_toLeftOf="@id/delete_button"
                 style="@android:style/Widget.ProgressBar.Small.Inverse"/>
         </RelativeLayout>
 

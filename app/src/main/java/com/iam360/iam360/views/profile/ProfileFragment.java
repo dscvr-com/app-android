@@ -3,11 +3,13 @@ package com.iam360.iam360.views.profile;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -74,6 +76,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private int PICK_IMAGE_REQUEST = 1;
 
     private OptographGridAdapter optographFeedAdapter;
+    private OptographLocalGridAdapter optographLocalGridAdapter;
     private NetworkProblemDialog networkProblemDialog;
 
     @Override
@@ -90,6 +93,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         following = getActivity().getResources().getString(R.string.profile_following);
 
         optographFeedAdapter = new OptographGridAdapter(getActivity());
+        optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity());
         networkProblemDialog = new NetworkProblemDialog();
 
         setPerson();
@@ -124,6 +128,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
             int yPos = 0;
+
             @Override
             public void onLoadMore() {
                 loadMore();
@@ -134,7 +139,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 super.onScrolled(recyclerView, dx, dy);
                 yPos += dy;
 
-                if(yPos > binding.coordLayout.getHeight()) {
+                if (yPos > binding.coordLayout.getHeight()) {
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
                 } else {
@@ -144,7 +149,37 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+//        GridLayoutManager glm = new GridLayoutManager(getContext(),4);
+//        glm.setOrientation(GridLayoutManager.VERTICAL);
+//        binding.optographFeed.setLayoutManager(glm);
+//        binding.optographLocal.setLayoutManager(llm);
+//        binding.optographLocal.setAdapter(optographLocalGridAdapter);
+//        binding.optographFeed.setItemViewCacheSize(10);
+//
+//        binding.optographLocal.addOnScrollListener(new InfiniteScrollListener(llm) {
+//            int yPos = 0;
+//
+//            @Override
+//            public void onLoadMore() {
+//            }
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                yPos += dy;
+//
+//                if (yPos > binding.coordLayout.getHeight()) {
+//                    binding.toolbar.setVisibility(View.GONE);
+//                    binding.toolbarReplace.setVisibility(View.VISIBLE);
+//                } else {
+//                    binding.toolbar.setVisibility(View.VISIBLE);
+//                    binding.toolbarReplace.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+
         binding.header.attachTo(binding.optographFeed);
+//        binding.header.attachTo(binding.optographLocal);
 
         return binding.getRoot();
     }

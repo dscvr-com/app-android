@@ -298,7 +298,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId());
+                        Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId()+" token: "+loginResult.getAccessToken().getToken());
 
                         apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
                             @Override

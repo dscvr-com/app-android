@@ -2,6 +2,7 @@ package com.iam360.iam360.viewmodels;
 
 import android.databinding.BindingAdapter;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,7 +69,6 @@ public class CustomBindingAdapter {
                     public void onGlobalLayout() {
                         // Ensure we call this only once
                         imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
 
                         if (optograph.is_local()) {
                             Picasso.with(imageView.getContext())

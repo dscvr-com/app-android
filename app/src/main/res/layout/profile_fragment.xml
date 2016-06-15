@@ -15,6 +15,13 @@
         android:background="@color/profile_bg">
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/optograph_local"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:visibility="gone"/>
+
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/optographFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -222,6 +229,19 @@
             </RelativeLayout>
 
         </com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader>
+
+        <RelativeLayout
+            android:id="@+id/local_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/navigation_elevation"
+            android:paddingRight="@dimen/navigation_elevation"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UPLOAD" />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/top_bar"
