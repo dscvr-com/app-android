@@ -136,7 +136,8 @@ public abstract class OptographListFragment extends Fragment {
                             mLayoutManager.findLastVisibleItemPosition() - mLayoutManager.findFirstVisibleItemPosition() + 1,
                             mScrollState);
                 }*/
-                if (optographFeedAdapter.getVideoItems().size()!=0 && optographFeedAdapter.getVideoItems().size()==mLayoutManager.findLastVisibleItemPosition()+1) loadMore();
+                if (optographFeedAdapter.getVideoItems().size()!=0 &&
+                        optographFeedAdapter.getVideoItems().size()==mLayoutManager.findLastVisibleItemPosition()+1) loadMore();
 
             }
 
