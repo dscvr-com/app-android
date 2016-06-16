@@ -29,6 +29,7 @@ import com.iam360.iam360.util.Vector3;
 import com.iam360.iam360.views.dialogs.CancelRecordingDialog;
 import com.iam360.iam360.views.MainActivityRedesign;
 import timber.log.Timber;
+// EJ 16.6.16 - This is an old implementation, don't work here.
 
 /**
  * @author Nilan Marktanner
@@ -82,7 +83,7 @@ public class RecordFragment extends Fragment {
 
                 captureWidth = parameters.getPictureSize().width;
 
-                Recorder.push(bitmap, extrinsicsData);
+                //Recorder.push(bitmap, extrinsicsData);
 
                 // progress bar
                 ((MainActivityRedesign) getActivity()).setProgressLocation((float) (Recorder.getRecordedImagesCount()) / (float) (Recorder.getImagesToRecordCount()));

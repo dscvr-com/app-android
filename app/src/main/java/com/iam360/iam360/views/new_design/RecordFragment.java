@@ -114,9 +114,13 @@ public class RecordFragment extends Fragment {
             angularDiff[0] = angularBallHeading[0] - angularCurrentHeading[0];
             angularDiff[1] = angularBallHeading[1] - angularCurrentHeading[1];
 
-            ((RecorderActivity) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
-            ((RecorderActivity) getActivity()).setArrowVisible(distXY > 0.15 ? true : false);
-            ((RecorderActivity) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15)? true : false);
+            new Handler(getActivity().getMainLooper()).post(new Runnable() {
+                public void run() {
+                    ((RecorderActivity) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
+                    ((RecorderActivity) getActivity()).setArrowVisible(distXY > 0.15 ? true : false);
+                    ((RecorderActivity) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15) ? true : false);
+                }
+            });
 
             updateBallPosition();
 

@@ -101,7 +101,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
         };
 
-        decoderHandler.obtainMessage(START_DECODER).sendToTarget();
+        //decoderHandler.obtainMessage(START_DECODER).sendToTarget();
     }
 
     public interface RecorderPreviewListener {
@@ -250,9 +250,9 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
             Surface previewSurface = new Surface(texture);
             previewBuilder.addTarget(previewSurface);
-            previewBuilder.addTarget(surface.getSurface());
+           // previewBuilder.addTarget(surface.getSurface());
 
-            cameraDevice.createCaptureSession(Arrays.asList(previewSurface, surface.getSurface()), new CameraCaptureSession.StateCallback() {
+            cameraDevice.createCaptureSession(Arrays.asList(previewSurface/*, surface.getSurface()*/), new CameraCaptureSession.StateCallback() {
 
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
