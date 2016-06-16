@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
 import com.squareup.picasso.Picasso;
@@ -33,6 +37,7 @@ import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -216,6 +221,16 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                     break;
                 case R.id.fb_share_btn:
                     ShareDialog shareDialog = new ShareDialog(this);
+                    /*String placeHolderUrl = "http://resources.staging-iam360.io.s3.amazonaws.com/textures/"+optograph.getId()+"/placeholder.jpg";
+                    Log.d("myTag", "placeHolderUrl: " + placeHolderUrl+" uri: "+Uri.parse(placeHolderUrl)+" canShow? "+(ShareDialog.canShow(SharePhotoContent.class)));
+                    Bitmap image = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_logo_head );
+                    SharePhoto photo = new SharePhoto.Builder()
+                            .setImageUrl(Uri.parse("https://images.iam360.io/C501kCsTsnd-WoV_nqT_zApYiYM=/100x100/resources.staging-iam360.io.s3.amazonaws.com/textures/93ab6abc-2e6b-4abb-838e-5efb707699bb/l0.jpg"))
+                            .build();
+                    SharePhotoContent content = new SharePhotoContent.Builder()
+                            .addPhoto(photo)
+                            .build();
+                    shareDialog.show(content);*/
                     ShareLinkContent linkContent = new ShareLinkContent.Builder()
                             .setContentTitle(getResources().getString(R.string.share_subject_web_viewer))
                             .setContentDescription(

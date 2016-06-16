@@ -162,11 +162,12 @@
                     android:clickable="true"
                     android:gravity="center_horizontal">
 
+                    <!--android:background="@drawable/save_arrow_icn"-->
                     <Button
                         android:id="@+id/upload_button"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/save_arrow_icn" />
+                        android:background="@drawable/upload_next"/>
 
                     <Button
                         android:id="@+id/black_circle"
@@ -269,7 +270,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/fb_share"
                 android:layout_margin="5dp"
-                android:background="@drawable/instagram_share_inactive" />
+                android:background="@drawable/instagram_share_inactive"
+                android:visibility="gone"/>
 
             <ImageButton
                 android:id="@+id/more_share"
@@ -278,7 +280,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/twitter_share"
                 android:layout_margin="5dp"
-                android:background="@drawable/more_share_inactive" />
+                android:background="@drawable/more_share_inactive"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 
@@ -329,7 +332,7 @@
                 android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
                 android:drawablePadding="7dp"
-                android:text="Save the Moment"
+                android:text="Upload to IAM360"
                 android:textColor="@color/optonautMain_2"
                 android:textSize="16sp" />
 
@@ -348,7 +351,8 @@
                 android:layout_alignParentEnd="true"
                 android:background="@color/transparentOverlay"
                 android:drawableRight="@drawable/earth_icn"
-                android:textColor="@color/bright" />
+                android:textColor="@color/bright"
+                android:visibility="invisible"/>
 
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
