@@ -2,6 +2,9 @@ package com.iam360.iam360.views.record;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 
 
@@ -9,10 +12,12 @@ import android.view.TextureView;
  * Created by emi on 16/06/16.
  * Taken from google's samples.
  */
-public class AutoFitTextureView extends TextureView {
+public class AutoFitTextureView extends SurfaceView implements SurfaceHolder.Callback {
 
+    private static final String TAG = "AutoFitTextureView";
     private int mRatioWidth = 0;
     private int mRatioHeight = 0;
+    private boolean isAvailable;
 
     public AutoFitTextureView(Context context) {
         this(context, null);
@@ -24,6 +29,7 @@ public class AutoFitTextureView extends TextureView {
 
     public AutoFitTextureView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        getHolder().addCallback(this);
     }
 
     /**
@@ -48,15 +54,36 @@ public class AutoFitTextureView extends TextureView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+        Log.w(TAG, "Re-layouting with aspect: " + mRatioWidth + "x" + mRatioHeight + ", Size: " + width + "x" + height);
         if (0 == mRatioWidth || 0 == mRatioHeight) {
             setMeasuredDimension(width, height);
         } else {
-            if (width < height * mRatioWidth / mRatioHeight) {
-                setMeasuredDimension(width, width * mRatioHeight / mRatioWidth);
+            if (width < (height * mRatioWidth) / mRatioHeight) {
+                Log.w(TAG, "Re-layouting result: " + width + "x" + (width * mRatioHeight) / mRatioWidth);
+                setMeasuredDimension(width, (width * mRatioHeight) / mRatioWidth);
             } else {
-                setMeasuredDimension(height * mRatioWidth / mRatioHeight, height);
+                Log.w(TAG, "Re-layouting result: " + (height * mRatioWidth) / mRatioHeight + "x" + height);
+                setMeasuredDimension((height * mRatioWidth) / mRatioHeight, height);
             }
         }
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        isAvailable = true;
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        isAvailable = false;
+    }
+
+    public boolean isAvailable() {
+        return this.isAvailable;
+    }
 }

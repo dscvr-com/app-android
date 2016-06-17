@@ -140,7 +140,7 @@ void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jbyt
     inputImageRef.data = pixels;
     inputImageRef.width = width;
     inputImageRef.height = height;
-    inputImageRef.colorSpace = colorspace::RGBA;
+    inputImageRef.colorSpace = colorspace::BGRA;
     image->dataRef = inputImageRef;
     image->id = counter++;
     image->originalExtrinsics = extrinsics.clone();

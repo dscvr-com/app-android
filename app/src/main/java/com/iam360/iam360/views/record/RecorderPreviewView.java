@@ -17,6 +17,7 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.TextureView;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         if (textureView.isAvailable()) {
             openCamera(textureView.getWidth(), textureView.getHeight());
         } else {
-            textureView.setSurfaceTextureListener(surfaceTextureListener);
+            textureView.getHolder().addCallback(surfaceTextureListener);
         }
     }
 
@@ -101,7 +102,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
         };
 
-        //decoderHandler.obtainMessage(START_DECODER).sendToTarget();
+        decoderHandler.obtainMessage(START_DECODER).sendToTarget();
     }
 
     public interface RecorderPreviewListener {
@@ -128,9 +129,9 @@ public class RecorderPreviewView extends AutoFitTextureView {
             if(dataListener != null) {
                 surface.awaitNewImage();
                 surface.drawImage(false);
-                dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mWidth, surface.colorFormat);
+                dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mHeight, surface.colorFormat);
             } else {
-                Thread.sleep(1000, 0);
+                Thread.sleep(100, 0);
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -197,7 +198,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             StreamConfigurationMap map = characteristics
                     .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             //sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)
-            previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
+            previewSize = videoSize; //chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
 
 
             textureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
@@ -243,16 +244,13 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
         try {
             closePreviewSession();
-            SurfaceTexture texture = textureView.getSurfaceTexture();
-            assert texture != null;
-            texture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
             previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
 
-            Surface previewSurface = new Surface(texture);
+            Surface previewSurface = textureView.getHolder().getSurface();
             previewBuilder.addTarget(previewSurface);
-           // previewBuilder.addTarget(surface.getSurface());
+            previewBuilder.addTarget(surface.getSurface());
 
-            cameraDevice.createCaptureSession(Arrays.asList(previewSurface/*, surface.getSurface()*/), new CameraCaptureSession.StateCallback() {
+            cameraDevice.createCaptureSession(Arrays.asList(previewSurface, surface.getSurface()), new CameraCaptureSession.StateCallback() {
 
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
@@ -291,28 +289,22 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     // Callbacks for surface texture loading - open camera as soon as texture exists
-    private TextureView.SurfaceTextureListener surfaceTextureListener
-            = new TextureView.SurfaceTextureListener() {
+    private SurfaceHolder.Callback surfaceTextureListener
+            = new SurfaceHolder.Callback() {
 
         @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
-                                              int width, int height) {
-            openCamera(width, height);
+        public void surfaceCreated(SurfaceHolder holder) {
+            openCamera(videoSize.getWidth(), videoSize.getWidth());
         }
 
         @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture,
-                                                int width, int height) {
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             configureTransform(width, height);
         }
 
         @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-            return true;
-        }
+        public void surfaceDestroyed(SurfaceHolder holder) {
 
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
         }
 
     };

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SizeF;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,6 +85,9 @@ public class RecordFragment extends Fragment {
             // build extrinsics
             float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
+
+            Log.w(TAG, "Pushing data: " + width + "x" + height);
+            assert width * height * 4 == data.length;
 
             Recorder.push(data, width, height, extrinsicsData);
 
