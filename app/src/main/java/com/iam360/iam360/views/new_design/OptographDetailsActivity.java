@@ -90,7 +90,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 if (isFullScreenMode) {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
                         if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) {
-                            binding.optograph2dview.toggleZoom();
+                            //TODO uncomment for zooming
+//                            binding.optograph2dview.toggleZoom();
                         }
                         //finish();
                         else toggleFullScreen();
@@ -99,7 +100,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 } else {
                     if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
                         if (GestureDetectors.TAP_TYPE == GestureDetectors.DOUBLE_TAP) {
-                            binding.optograph2dview.toggleZoom();
+                            //TODO uncomment for zooming
+//                            binding.optograph2dview.toggleZoom();
                         }
                             //finish();
                         else toggleFullScreen();

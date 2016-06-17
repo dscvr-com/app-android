@@ -128,7 +128,6 @@ public abstract class OptographListFragment extends Fragment {
 
                 Timber.d("mVideoVisibilityCalculator " + mVideoVisibilityCalculator + " " + mItemsPositionGetter + " " + mLayoutManager + " " + mLayoutManager.findFirstVisibleItemPosition() + " " + mLayoutManager.findLastVisibleItemPosition());
 
-                // TODO Hi Mariel, dito ko may issue. Nag nanull pointer sya pag scroll.
                 /*if(!optographFeedAdapter.getVideoItems().isEmpty()) {
                     mVideoVisibilityCalculator.onScroll(
                             mItemsPositionGetter,
@@ -145,7 +144,6 @@ public abstract class OptographListFragment extends Fragment {
             public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
                 mScrollState = scrollState;
 
-                // TODO ito okay to. pag nagstop ka magscroll, after ilang seconds magpeplay yung video na tinigilan. pwede mo icheck yung ibang states SCROLL_STATE_DRAGGING SCROLL_STATE_SETTLING baka pwede natin magamit.
                 if (scrollState == RecyclerView.SCROLL_STATE_IDLE) {
 
                     mVideoVisibilityCalculator.onScrollStateIdle(
