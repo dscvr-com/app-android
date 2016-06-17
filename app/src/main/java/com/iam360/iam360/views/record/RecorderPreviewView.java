@@ -255,7 +255,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
                     previewSession = cameraCaptureSession;
-                    updatePreview();
+                    beginPreview();
                 }
 
                 @Override
@@ -268,13 +268,29 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
     }
 
-    private void updatePreview() {
+    private void beginPreview() {
         if (null == cameraDevice) {
             return;
         }
         try {
             previewBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+            previewSession.stopRepeating();
+            previewSession.setRepeatingRequest(previewBuilder.build(), null, backgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void lockExposure() {
+        if (null == cameraDevice) {
+            return;
+        }
+        try {
+            Log.w(TAG, "Locking Exposure.");
+            previewBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
+            previewBuilder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
+            previewBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
+            previewSession.stopRepeating();
             previewSession.setRepeatingRequest(previewBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();

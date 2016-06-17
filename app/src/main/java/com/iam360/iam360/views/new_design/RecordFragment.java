@@ -227,6 +227,7 @@ public class RecordFragment extends Fragment {
         Timber.v("Starting recording...");
 
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
+        recordPreview.lockExposure();
 
         // Todo: lock exposure
         /*
