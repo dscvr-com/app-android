@@ -67,7 +67,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
 
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
+    public synchronized void onSensorChanged(SensorEvent event) {
         // It is good practice to check that we received the proper sensor event
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             /*
@@ -101,7 +101,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     }
 
     @Override
-    public float[] getRotationMatrix() {
+    public synchronized float[] getRotationMatrix() {
         return rotationMatrix;
     }
 }

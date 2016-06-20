@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.iam360.iam360.opengl.Sphere;
 import com.iam360.iam360.sensors.CoreMotionListener;
+import com.iam360.iam360.util.GeneralUtils;
+
 import timber.log.Timber;
 
 /**
@@ -62,8 +65,8 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
 
         // Set the camera position
         Matrix.setLookAtM(camera, 0,
-                0.0f, 0.0f, 0.0f, // eye
-                0.0f, 0.0f, 0.01f, // center
+                0.0f, 0.0f, -0.01f, // eye
+                0.0f, 0.0f, 0.0f, // center
                 0.0f, 1.0f, 0.0f); // up
 
     }
@@ -103,7 +106,6 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         }
 
         float[] view = new float[16];
-        rotationMatrix = CoreMotionListener.getInstance().getRotationMatrixInverse();
 
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
@@ -145,6 +147,12 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
             int index = lineNodes.indexOf(lineNode);
             if (index >= 0) lineNodes.get(index).isRecordedEdge(true);
         }
+    }
+
+    public void setRotationMatrix(float[] rotationMatrix) {
+        //System.arraycopy(rotationMatrix, 0, this.rotationMatrix, 0, 16);
+        Matrix.transposeM(this.rotationMatrix, 0, rotationMatrix, 0);
+        Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
     }
 
     public void startRendering() {

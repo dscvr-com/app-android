@@ -102,8 +102,12 @@ public class RecordFragment extends Fragment {
             Vector3 ballHeading = new Vector3(ballPosition);
             ballHeading.normalize();
 
+            float[] currentRotation = Recorder.getCurrentRotation();
+            recorderOverlayView.getRecorderOverlayRenderer().setRotationMatrix(currentRotation);
+
+
             float[] currentHeading = new float[4];
-            Matrix.multiplyMV(currentHeading, 0, Recorder.getCurrentRotation(), 0, unit, 0);
+            Matrix.multiplyMV(currentHeading, 0, currentRotation, 0, unit, 0);
             Vector3 currentHeadingVec = new Vector3(currentHeading[0], currentHeading[1], currentHeading[2]);
 
             // Use 3D diff as dist
@@ -291,8 +295,7 @@ public class RecordFragment extends Fragment {
     }
 
     private void updateBallPosition() {
-        // TODO: use -0.9f - error must be somewhere else
-        float[] vector = {0, 0, 1, 0};
+        float[] vector = {0, 0, 0.9f, 0};
         float[] newPosition = new float[4];
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
 

@@ -201,7 +201,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             previewSize = videoSize; //chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
 
 
-            textureView.setAspectRatio(previewSize.getHeight(), previewSize.getWidth());
+            textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
             configureTransform(width, height);
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
@@ -310,7 +310,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            openCamera(videoSize.getWidth(), videoSize.getWidth());
+            openCamera(videoSize.getWidth(), videoSize.getHeight());
         }
 
         @Override
