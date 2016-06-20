@@ -58,12 +58,12 @@ public class AutoFitTextureView extends SurfaceView implements SurfaceHolder.Cal
         if (0 == mRatioWidth || 0 == mRatioHeight) {
             setMeasuredDimension(width, height);
         } else {
-            if (width < (height * mRatioWidth) / mRatioHeight) {
+            if (width > (height * mRatioWidth) / mRatioHeight) {
                 Log.w(TAG, "Re-layouting result: " + width + "x" + (width * mRatioHeight) / mRatioWidth);
                 setMeasuredDimension(width, (width * mRatioHeight) / mRatioWidth);
             } else {
-                Log.w(TAG, "Re-layouting result: " + (height * mRatioWidth) / mRatioHeight + "x" + height);
-                setMeasuredDimension((height * mRatioWidth) / mRatioHeight, height);
+                Log.w(TAG, "Re-layouting result: " + (height * mRatioHeight) / mRatioWidth + "x" + height);
+                setMeasuredDimension((height * mRatioHeight) / mRatioWidth, height);
             }
         }
     }

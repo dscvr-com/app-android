@@ -198,8 +198,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             StreamConfigurationMap map = characteristics
                     .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             //sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)
-            previewSize = videoSize; //chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
-
+            previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
 
             textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
             configureTransform(width, height);
