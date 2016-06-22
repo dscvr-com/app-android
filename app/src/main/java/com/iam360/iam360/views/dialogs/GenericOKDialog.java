@@ -23,7 +23,7 @@ public class GenericOKDialog extends DialogFragment {
 
         Bundle args = getArguments();
         if (args.containsKey(MESSAGE_KEY)) {
-            message = args.getParcelable(MESSAGE_KEY);
+            message = args.getString(MESSAGE_KEY);
         }
 
         // Use the Builder class for convenient dialog construction

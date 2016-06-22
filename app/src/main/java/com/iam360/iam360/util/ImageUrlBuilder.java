@@ -28,6 +28,7 @@ public class ImageUrlBuilder {
 //    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
     private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
+    private static final String IMAGE_BUCKET_URL = "https://bucket.iam360.io/textures/";
 
     // TODO: use special formula, use different HFOV for VRmode and normal feed
     private static final int CUBE_TEXTURE_SIZE = Math.min(1024, GLES20.GL_MAX_TEXTURE_SIZE);
@@ -79,6 +80,10 @@ public class ImageUrlBuilder {
 
     public static String buildWebViewerUrl(String share_alias) {
         return OPTO_SPACE + share_alias;
+    }
+
+    public static String buildImagePreviewUrl(String optoId) {
+        return IMAGE_BUCKET_URL + optoId + "placeholder.jpg";
     }
 
     private static String getSignedUrl(String urlPartToSign) {
