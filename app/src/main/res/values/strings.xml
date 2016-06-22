@@ -54,6 +54,9 @@
     <string name="dialog_login_needed">Login Needed</string>
     <string name="dialog_share_not_login">In order to share your comment you need to create an account. Your image won\'t be lost and can be shared afterwards.</string>
     <string name="dialog_continue">Continue</string>
+    <string name="dialog_fb_title">Facebook</string>
+    <string name="dialog_fb_text">Say something about this IAM360 photo</string>
+    <string name="dialog_fb_success">IAM360 photo posted successfully.</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

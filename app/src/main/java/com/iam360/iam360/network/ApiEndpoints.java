@@ -1,5 +1,6 @@
 package com.iam360.iam360.network;
 
+import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
@@ -108,4 +109,8 @@ public interface ApiEndpoints {
 
     @GET("persons/search")
     Call<List<Person>> getSearchResultCall(@Query("keyword") String key);
+
+    @POST("optographs/share_facebook")
+    Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
+
 }
