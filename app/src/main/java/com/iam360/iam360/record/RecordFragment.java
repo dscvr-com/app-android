@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,6 +169,8 @@ public class RecordFragment extends Fragment {
         // initialize recorder
         float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
         Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size[0], size[1], camera.getParameters().getFocalLength(), mode);
+        Log.v("marky", "focallength " + camera.getParameters().getFocalLength());
+
 
         // Create our Preview view and set it as the content of our activity.
         recordPreview = new RecordPreview(getActivity(), camera);

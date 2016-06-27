@@ -191,18 +191,19 @@ public class RecorderPreviewView extends AutoFitTextureView {
             if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
-            String cameraId = manager.getCameraIdList()[0];
 
-            // Choose the sizes for camera preview and video recording
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-            StreamConfigurationMap map = characteristics
-                    .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            //sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)
-            previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
+            for (String cameraId : manager.getCameraIdList()){
+                CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+                if(characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK){
+                    continue;
+                }
+                StreamConfigurationMap map = characteristics  .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
+                textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
+                configureTransform(width, height);
+                manager.openCamera(cameraId, stateCallback, null);
+            }
 
-            textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
-            configureTransform(width, height);
-            manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
