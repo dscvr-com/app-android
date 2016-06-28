@@ -1,13 +1,16 @@
 package com.iam360.iam360;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
 
+import im.ene.lab.toro.Toro;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
@@ -25,6 +28,7 @@ public class OptonautApp extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        Toro.init(this);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -76,6 +80,17 @@ public class OptonautApp extends Application {
                 .consumerKeepAlive(120)//wait 2 minute
                 .build();
         jobManager = new JobManager(this, configuration);
+    }
+
+    private HttpProxyCacheServer proxy;
+
+    public static HttpProxyCacheServer getProxy(Context context) {
+        OptonautApp app = (OptonautApp) context.getApplicationContext();
+        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
+    }
+
+    private HttpProxyCacheServer newProxy() {
+        return new HttpProxyCacheServer(this);
     }
 
     /** A tree which logs important information for crash reporting. */

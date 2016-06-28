@@ -27,6 +27,7 @@ import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.SettingsActivity;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
+import im.ene.lab.toro.Toro;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         // FB Track App Installs and App Opens
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+//        Toro.attach(this);
 
     }
 
@@ -204,4 +206,9 @@ public class MainActivity extends AppCompatActivity {
         onBackPressed();
     }
 
+    @Override
+    protected void onDestroy() {
+//        Toro.detach(this);
+        super.onDestroy();
+    }
 }

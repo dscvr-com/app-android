@@ -57,11 +57,12 @@
                     <!--android:layout_height="match_parent"-->
                     <!--android:layout_gravity="center"-->
                     <!--app:optograph="@{optograph}"/>-->
-
-                <com.volokh.danylo.video_player_manager.ui.VideoPlayerView
+                <!--im.ene.lab.toro.widget-->
+                <im.ene.lab.toro.widget.ToroVideoView
                     android:id="@+id/video_view"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:clickable="true" />
 
                 <ImageView
                     android:id="@+id/preview_image"
@@ -71,6 +72,12 @@
                     android:scaleType="fitStart"
                     android:adjustViewBounds="true"
                     app:optograph_preview="@{optograph}"/>
+
+                <ImageView
+                    android:id="@+id/frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
 
                 <LinearLayout
                     android:id="@+id/bar_swipe"
@@ -221,17 +228,17 @@
                             android:visibility="gone"/>
 
 
-                        <TextView
-                            android:id="@+id/time_ago"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/timeAgoFontColor"
-                            android:layout_centerVertical="true"
-                            android:layout_toLeftOf="@+id/settings_button"
-                            android:layout_marginRight="5dp"
-                            android:textSize="11dp"
-                            android:visibility="gone"
-                            app:createdAt="@{optograph.created_at}"/>
+                        <!--<TextView-->
+                            <!--android:id="@+id/time_ago"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:textColor="@color/timeAgoFontColor"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_toLeftOf="@+id/settings_button"-->
+                            <!--android:layout_marginRight="5dp"-->
+                            <!--android:textSize="11dp"-->
+                            <!--android:visibility="gone"-->
+                            <!--app:createdAt="@{optograph.created_at}"/>-->
 
                     </RelativeLayout>
 

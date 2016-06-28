@@ -21,6 +21,8 @@ import com.iam360.iam360.util.ImageUrlBuilder;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.util.TimeUtils;
 
+import timber.log.Timber;
+
 /**
  * @author Nilan Marktanner
  * @date 2015-11-28
@@ -60,7 +62,9 @@ public class CustomBindingAdapter {
     @BindingAdapter("app:optograph_preview")
     public static void loadOptographFace(ImageView imageView, Optograph optograph) {
 
-        String uri = ImageUrlBuilder.buildCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
+//        String uri = ImageUrlBuilder.buildCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
+        String uri = ImageUrlBuilder.buildImagePreviewUrl(optograph.getId());
+        Timber.d("Toro URI:" + uri);
 
         imageView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

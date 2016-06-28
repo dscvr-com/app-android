@@ -215,7 +215,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void loadMore() {
-        apiConsumer.getOptographs(50, optographFeedAdapter.getOldest().getCreated_at())
+        apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {

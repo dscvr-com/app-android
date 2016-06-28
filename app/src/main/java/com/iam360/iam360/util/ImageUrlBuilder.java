@@ -29,6 +29,7 @@ public class ImageUrlBuilder {
     private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
     private static final String IMAGE_BUCKET_URL = "https://bucket.iam360.io/textures/";
+    private static final String S3_FULL_URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/";
 
     // TODO: use special formula, use different HFOV for VRmode and normal feed
     private static final int CUBE_TEXTURE_SIZE = Math.min(1024, GLES20.GL_MAX_TEXTURE_SIZE);
@@ -83,7 +84,11 @@ public class ImageUrlBuilder {
     }
 
     public static String buildImagePreviewUrl(String optoId) {
-        return IMAGE_BUCKET_URL + optoId + "placeholder.jpg";
+        return S3_FULL_URL + optoId + "/frame1.jpg";
+    }
+
+    public static String buildVideoUrl(String optoId) {
+        return S3_FULL_URL + optoId + "/pan.mp4";
     }
 
     private static String getSignedUrl(String urlPartToSign) {

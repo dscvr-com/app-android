@@ -18,16 +18,17 @@ import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.views.SnappyLinearLayoutManager;
-import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
-import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.meta.MetaData;
-import com.volokh.danylo.visibility_utils.calculator.DefaultSingleItemCalculatorCallback;
-import com.volokh.danylo.visibility_utils.calculator.ListItemsVisibilityCalculator;
-import com.volokh.danylo.visibility_utils.calculator.SingleListViewItemActiveCalculator;
-import com.volokh.danylo.visibility_utils.scroll_utils.ItemsPositionGetter;
-import com.volokh.danylo.visibility_utils.scroll_utils.RecyclerViewItemPositionGetter;
+//import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
+//import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
+//import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
+//import com.volokh.danylo.video_player_manager.meta.MetaData;
+//import com.volokh.danylo.visibility_utils.calculator.DefaultSingleItemCalculatorCallback;
+//import com.volokh.danylo.visibility_utils.calculator.ListItemsVisibilityCalculator;
+//import com.volokh.danylo.visibility_utils.calculator.SingleListViewItemActiveCalculator;
+//import com.volokh.danylo.visibility_utils.scroll_utils.ItemsPositionGetter;
+//import com.volokh.danylo.visibility_utils.scroll_utils.RecyclerViewItemPositionGetter;
 
+import im.ene.lab.toro.Toro;
 import timber.log.Timber;
 
 /**
@@ -35,27 +36,13 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public abstract class OptographListFragment extends Fragment {
-    protected OptographFeedAdapter optographFeedAdapter;
+    protected OptographVideoFeedAdapter optographFeedAdapter;
     protected ApiConsumer apiConsumer;
     protected Cache cache;
     protected NewFeedBinding binding;
     private int lastVisible = 0;
 
-    private int mScrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-    private ItemsPositionGetter mItemsPositionGetter;
     LinearLayoutManager mLayoutManager;
-
-    /**
-     * Here we use {@link SingleVideoPlayerManager}, which means that only one video playback is possible.
-     */
-    private final VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
-        @Override
-        public void onPlayerItemChanged(MetaData metaData) {
-
-        }
-    });
-
-    private ListItemsVisibilityCalculator mVideoVisibilityCalculator;
 
 
     public OptographListFragment() {
@@ -69,8 +56,7 @@ public abstract class OptographListFragment extends Fragment {
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
-        optographFeedAdapter = new OptographFeedAdapter(getActivity(), mVideoPlayerManager);
-        mVideoVisibilityCalculator = new SingleListViewItemActiveCalculator(new DefaultSingleItemCalculatorCallback(), optographFeedAdapter.getVideoItems());
+        optographFeedAdapter = new OptographVideoFeedAdapter(getActivity());
 
     }
 
@@ -114,47 +100,10 @@ public abstract class OptographListFragment extends Fragment {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                int firstVisiblePosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-//
-//                if (firstVisiblePosition > -1) {
-//                    // mca: got completely visible cubemap
-//                    if (lastVisible != firstVisiblePosition) {
-//                        optographFeedAdapter.rotateCubeMap(firstVisiblePosition);
-//                        lastVisible = firstVisiblePosition;
-//                    }
-//
-//                }
-
-                Timber.d("mVideoVisibilityCalculator " + mVideoVisibilityCalculator + " " + mItemsPositionGetter + " " + mLayoutManager + " " + mLayoutManager.findFirstVisibleItemPosition() + " " + mLayoutManager.findLastVisibleItemPosition());
-
-                /*if(!optographFeedAdapter.getVideoItems().isEmpty()) {
-                    mVideoVisibilityCalculator.onScroll(
-                            mItemsPositionGetter,
-                            mLayoutManager.findFirstVisibleItemPosition(),
-                            mLayoutManager.findLastVisibleItemPosition() - mLayoutManager.findFirstVisibleItemPosition() + 1,
-                            mScrollState);
-                }*/
-                if (optographFeedAdapter.getVideoItems().size()!=0 &&
-                        optographFeedAdapter.getVideoItems().size()==mLayoutManager.findLastVisibleItemPosition()+1) loadMore();
-
+                super.onScrolled(recyclerView, dx, dy);
             }
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
-                mScrollState = scrollState;
-
-                if (scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-
-                    mVideoVisibilityCalculator.onScrollStateIdle(
-                            mItemsPositionGetter,
-                            mLayoutManager.findFirstVisibleItemPosition(),
-                            mLayoutManager.findLastVisibleItemPosition());
-                }
-            }
         });
-
-        mItemsPositionGetter = new RecyclerViewItemPositionGetter(mLayoutManager, binding.optographFeed);
 
     }
 
@@ -183,22 +132,12 @@ public abstract class OptographListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Timber.d("mVideoVisibilityCalculator onresume");
-        if(!optographFeedAdapter.getVideoItems().isEmpty()){
-            // need to call this method from list view handler in order to have filled list
+        Toro.register(binding.optographFeed);
+    }
 
-            binding.optographFeed.post(new Runnable() {
-                @Override
-                public void run() {
-
-                    mVideoVisibilityCalculator.onScrollStateIdle(
-                            mItemsPositionGetter,
-                            mLayoutManager.findFirstVisibleItemPosition(),
-                            mLayoutManager.findLastVisibleItemPosition());
-
-                }
-            });
-        }
-
+    @Override
+    public void onPause() {
+        Toro.unregister(binding.optographFeed);
+        super.onPause();
     }
 }

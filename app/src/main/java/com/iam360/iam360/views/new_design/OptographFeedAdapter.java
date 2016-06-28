@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,9 +29,8 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.daimajia.swipe.SwipeLayout;
-import com.iam360.iam360.viewmodels.BaseVideoItem;
-import com.iam360.iam360.viewmodels.DirectLinkVideoItem;
-import com.iam360.iam360.viewmodels.OptographVideoViewHolder;
+import com.danikula.videocache.HttpProxyCacheServer;
+import com.iam360.iam360.OptonautApp;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -59,9 +60,10 @@ import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.views.SnappyRecyclerView;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.picasso.Picasso;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.ui.VideoPlayerView;
+//import com.volokh.danylo.video_player_manager.ui.VideoPlayerView;
 
+import im.ene.lab.toro.ToroAdapter;
+import im.ene.lab.toro.ToroViewHolder;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -71,20 +73,16 @@ import timber.log.Timber;
  * @author Nilan Marktanner
  * @date 2015-11-28
  */
-public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoViewHolder> {
+public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.OptographViewHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     private List<Optograph> optographs;
-
-    // TODO temporary list to add video links
-    private List<DirectLinkVideoItem> videoItems;
-    private SnappyRecyclerView snappyRecyclerView;
-    private final VideoPlayerManager mVideoPlayerManager;
 
     protected ApiConsumer apiConsumer;
     private Cache cache;
     private Optograph optoUpload;
     private Context context;
     private DBHelper mydb;
+    private HttpProxyCacheServer proxy;
 
     private ProgressBar upload_progress;
     private TextView uploadButton;
@@ -92,15 +90,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
     private boolean isCurrentUser = false;
     private int currentFullVisibilty = 0;
 
-    private String url = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/6e40d95d-c79e-4ba9-a2d0-789d6b08611f/pan.mp4";
-
-    public OptographFeedAdapter(Context context, VideoPlayerManager videoPlayerManager) {
+    public OptographFeedAdapter(Context context) {
         this.context = context;
         this.optographs = new ArrayList<>();
-        this.videoItems = new ArrayList<>();
-        this.mVideoPlayerManager = videoPlayerManager;
 
         cache = Cache.open();
+        proxy = OptonautApp.getProxy(context);
 
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
@@ -108,53 +103,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
     }
 
     @Override
-    public OptographVideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        final View itemView = LayoutInflater.
-//                from(parent.getContext()).
-//                inflate(R.layout.new_feed_item, parent, false);
+    public OptographViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View itemView = LayoutInflater.
+                from(parent.getContext()).
+                inflate(R.layout.new_feed_item, parent, false);
 
-//        Optograph2DCubeView optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
+        final OptographViewHolder viewHolder = new OptographViewHolder(itemView);
 
-//        final OptographVideoViewHolder viewHolder = new OptographVideoViewHolder(itemView);
-
-        DirectLinkVideoItem videoItem = new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0);
-        View resultView = videoItem.createView(parent, context.getResources().getDisplayMetrics().widthPixels);
-
-        // TODO: add touch navigation and don't allow scrolling
-//        optograph2DCubeView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (viewHolder.isNavigationModeCombined) {
-//                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-//                        Timber.v("detected single click in combined navigation");
-//                        viewHolder.toggleNavigationMode();
-//                        snappyRecyclerView.enableScrolling();
-//                        // still return optograph2DCubeView for registering end of touching
-//                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
-//                    } else {
-//                        Timber.v("pipe touch in combined navigation to optograph view");
-//                        return optograph2DCubeView.getOnTouchListener().onTouch(v, event);
-//                    }
-//                } else {
-//                    if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-//                        Timber.v("detected single click in simple navigation");
-//                        viewHolder.toggleNavigationMode();
-//                        snappyRecyclerView.disableScrolling();
-//                        return true;
-//                    } else {
-//                        // need to return true here to prevent touch-stealing of parent!
-//                        return true;
-//                    }
-//                }
-//            }
-//        });
-
-//        initializeProfileBar(itemView);
-//        initializeDescriptionBar(itemView);
-
-        return new OptographVideoViewHolder(resultView);
-
-//        return viewHolder;
+        return viewHolder;
     }
 
     private void initializeDescriptionBar(View itemView) {
@@ -175,140 +131,22 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         });
     }
 
-    private void initializeProfileBar(final View itemView) {
-        RelativeLayout rl = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rl.getLayoutParams();
-
-        // set margin and height
-//        int newMarginTop = ((MainActivityRedesign) itemView.getContext()).getUpperBoundary();
-//        lp.setMargins(0, newMarginTop, 0, 0);
-        rl.setLayoutParams(lp);
-
-        rl.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // don't pipe click events to views below profile bar
-                Timber.v("profilebar touched");
-                return true;
-            }
-        });
-
-//        ImageView profileView = (ImageView) itemView.findViewById(R.id.person_avatar_asset);
-//        profileView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Snackbar.make(v, v.getResources().getString(R.string.feature_profiles_soon), Snackbar.LENGTH_SHORT).show();
-//            }
-//        });
-
-        TextView profileLabel = (TextView) itemView.findViewById(R.id.person_name_label);
-        profileLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
-
-        TextView locationLabel = (TextView) itemView.findViewById(R.id.location_label);
-        locationLabel.setTypeface(Constants.getInstance().getDefaultLightTypeFace());
-
-        TextView timeAgoLabel = (TextView) itemView.findViewById(R.id.time_ago);
-        timeAgoLabel.setTypeface(Constants.getInstance().getDefaultRegularTypeFace());
-
-        TextView settingsLabel = (TextView) itemView.findViewById(R.id.settings_button);
-        settingsLabel.setTypeface(Constants.getInstance().getIconTypeface());
-        settingsLabel.setText(String.valueOf((char) 0xe904));
-    }
-
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-
-        snappyRecyclerView = (SnappyRecyclerView) recyclerView;
     }
 
-
-    public void rotateCubeMap (int pos) {
-        currentFullVisibilty = pos;
-
-        if (pos > 0) {
-            //notifyItemChanged(pos - 1 ,"test" );
-            notifyItemRangeChanged(pos - 1, 3, "test");
-        } else {
-            notifyItemRangeChanged(pos , 2, "test");
-        }
+    @Override
+    public void onBindViewHolder(OptographViewHolder holder, int position, List<Object> payloads) {
 
     }
 
     @Override
-    public void onBindViewHolder(OptographVideoViewHolder holder, int position, List<Object> payloads) {
-        if (payloads.isEmpty()) {
-            Log.v("mcandres", "payload empty");
-            // Perform a full update
-            onBindViewHolder(holder, position);
-        } else {
-            Log.v("mcandres", "payload not empty");
-            if (currentFullVisibilty ==  position) {
-                if(cache.getBoolean(Cache.GYRO_ENABLE));
-//                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
-                else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE));
-//                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
-                else;
-//                    holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
-            } else {
-//                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
-            }
-
-        }
-    }
-
-    @Override
-    public void onBindViewHolder(OptographVideoViewHolder holder, int position) {
+    public void onBindViewHolder(OptographViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         Optograph optograph = optographs.get(position);//original
-        
-        String url = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/6e40d95d-c79e-4ba9-a2d0-789d6b08611f/pan.mp4";
-        DirectLinkVideoItem videoItem = new DirectLinkVideoItem("test", url, mVideoPlayerManager, null, 0);
-//        BaseVideoItem videoItem = optographs.get(position);
-        videoItem.update(position, holder, mVideoPlayerManager);
 
-        if (currentFullVisibilty ==  position) {
-            if(cache.getBoolean(Cache.GYRO_ENABLE));
-//                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.GYRO_MODE);
-            else if(!cache.getBoolean(Cache.GYRO_ENABLE) && !cache.getBoolean(Cache.LITTLE_PLANET_ENABLE));
-//                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.PANNING_MODE);
-            else;
-//                holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
-        } else {
-//            holder.optograph2DCubeView.setSensorMode(CombinedMotionManager.STILL_MODE);
-        }
-
-//        String url = "http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test7_voiceclip_mp4_480x360.mp4";
-//        String url = "http://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/b146850f-6105-408e-90b4-2ff76dbe88b1/pan.mp4";
-//        String url = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/6e40d95d-c79e-4ba9-a2d0-789d6b08611f/pan.mp4";
-
-//        Uri video = Uri.parse("http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test7_voiceclip_mp4_480x360.mp4");
-//        holder.videoView.setVideoURI(video);
-//        holder.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(MediaPlayer mp) {
-//                mp.setLooping(true);
-//                holder.videoView.start();
-//            }
-//        });
-
-//        MediaController mc;
-//        try {
-//            mc = new MediaController(context);
-//            mc.setAnchorView(holder.videoView);
-//            mc.setMediaPlayer(holder.videoView);
-////            holder.videoView.setMediaController(mc);
-//            Uri link = Uri.parse(url.replace(" ","%20"));
-//            holder.videoView.setVideoURI(link);
-//            holder.videoView.requestFocus();
-//            holder.videoView.start();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-//        userLikesOptograph = optograph.is_starred();
-        // reset view holder if we got new optograh
         if (!optograph.equals(holder.getBinding().getOptograph())) {
-            // cancel the request for the old texture
             if (holder.getBinding().getOptograph() != null) {
                 // TODO: cancel request
             }
@@ -317,7 +155,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().personLocationInformation.setOnClickListener(v -> callDetailsPage(optograph));
-            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph));
+//            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph));
 //            holder.optograph2DCubeView.setOnClickListener(v -> callDetailsPage(optograph));
 
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
@@ -399,33 +237,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
                 public void onClick(View v) {
 
                     Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
-//                    PopupMenu popupMenu = new PopupMenu(holder.itemView.getContext(), v);
-//                    popupMenu.inflate(R.menu.feed_item_menu);
-//                    Menu menu = popupMenu.getMenu();
-//                    MenuItem deleteItem = menu.findItem(R.id.delete_item);
-//
-//                    if (optograph.is_local() || optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
-//                        deleteItem.setVisible(true);
-//                    }
-//
-//                    //registering popup with OnMenuItemClickListener
-//                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                        public boolean onMenuItemClick(MenuItem item) {
-//                            if (item.getItemId() == R.id.share_item) {
-//                                ((MainActivityRedesign) v.getContext()).shareOptograph(optograph);
-//                                return true;
-//                            } else if (item.getItemId() == R.id.report_item) {
-//                                Snackbar.make(v, v.getResources().getString(R.string.feature_soon), Snackbar.LENGTH_SHORT).show();
-//                                return true;
-//                            } else if (item.getItemId() == R.id.delete_item) {
-//                                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
-//                                return true;
-//                            }
-//                            return false;
-//                        }
-//                    });
-//
-//                    popupMenu.show();
                 }
             });
 
@@ -456,7 +267,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
                     ((MainActivity) context).setOptograph(optograph);
                     ((MainActivity) context).dragSharePage();
                     swipeLayout.close();
-//                    swipeLayout.close(true);
                 }
 
                 @Override
@@ -469,29 +279,17 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
 
                 @Override
                 public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
-
-                   // Log.v("mcandres", "leftoffset : " + leftOffset + " topoffset :" + topOffset);
-
                 }
 
                 @Override
                 public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {}
             });
 
-
-
             barSwipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-
                     swipeLayout.bounce(300, shareButton);
-
-                    Timber.d("PREVIEW SETOPTOGRAPH1 CLICK " + optograph.getId());
-
-//                    swipeLayout.open();
                     ((MainActivity) context).setOptograph(optograph);
-              //      ((MainActivity) context).setPage(MainActivity.SHARING_MODE);
                 }
             });
 
@@ -503,6 +301,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         } else {
             Timber.d("rebinding of OptographViewHolder at position %s", position);
         }
+    }
+
+    @Nullable
+    @Override
+    protected Object getItem(int position) {
+        return null;
     }
 
     private void startProfile(Person person) {
@@ -522,7 +326,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         context.startActivity(intent);
     }
 
-    private void followOrUnfollow(Optograph optograph, OptographVideoViewHolder holder, View v) {
+    private void followOrUnfollow(Optograph optograph, OptographViewHolder holder, View v) {
 
         if (!cache.getString(Cache.USER_TOKEN).equals("")) {
             if (optograph.getPerson().is_followed()) {
@@ -565,7 +369,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         }
     }
 
-    private void setHeart(Optograph optograph, OptographVideoViewHolder holder, View v) {
+    private void setHeart(Optograph optograph, OptographViewHolder holder, View v) {
 
         if(!cache.getString(Cache.USER_TOKEN).equals("")) {
             if (!optograph.is_starred()) {
@@ -665,13 +469,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         }
     }
 
-    private void updateHeartLabel(Optograph optograph, OptographVideoViewHolder holder) {
-//        if (userLikesOptograph) {
-//            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-//        } else {
-//            // TODO: use empty heart
-//            heart_label.setText(holder.itemView.getResources().getString(R.string.heart_count, optograph.getStars_count(), String.valueOf((char) 0xe90d)));
-//        }
+    private void updateHeartLabel(Optograph optograph, OptographViewHolder holder) {
         holder.heart_label.setText(String.valueOf(optograph.getStars_count()));
         if(optograph.is_starred()) {
             holder.heart_label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
@@ -680,7 +478,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         }
     }
 
-    private void followPerson(Optograph optograph,boolean isFollowed, OptographVideoViewHolder holder) {
+    private void followPerson(Optograph optograph,boolean isFollowed, OptographViewHolder holder) {
         if(isFollowed) {
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
@@ -704,14 +502,14 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
-                    Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     toUploadOrToHeart(optograph);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
                     Log.d("myTag", "parsing the JSON body failed.");
-                    Snackbar.make(uploadButton,"Failed to upload.",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     toUploadOrToHeart(optograph);
                     return;
                 }
@@ -1076,7 +874,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
             optographs.add(optograph);
-            videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
             notifyItemInserted(getItemCount());
             return;
         }
@@ -1084,7 +881,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         // if optograph is oldest, simply append to list
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
-            videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
             notifyItemInserted(getItemCount());
             return;
         }
@@ -1095,7 +891,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             Optograph current = optographs.get(i);
             if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
-                videoItems.add(new DirectLinkVideoItem("test", urlItem, mVideoPlayerManager, null, 0));
                 notifyItemInserted(i);
                 return;
             }
@@ -1116,10 +911,6 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
 
     public List<Optograph> getOptographs() {
         return this.optographs;
-    }
-
-    public List<DirectLinkVideoItem> getVideoItems() {
-        return this.videoItems;
     }
 
     public void saveToSQLite(Optograph opto) {
@@ -1206,7 +997,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         }
     }
 
-    public static class OptographViewHolder extends RecyclerView.ViewHolder {
+    public static class OptographViewHolder extends ToroViewHolder {
         private NewFeedItemBinding binding;
         RelativeLayout profileBar;
         RelativeLayout descriptionBar;
@@ -1214,7 +1005,7 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
         private TextView heart_label;
         private ImageButton followButton;
         private boolean isNavigationModeCombined;
-        private VideoPlayerView videoView;
+//        private VideoPlayerView videoView;
 
 
         public OptographViewHolder(View rowView) {
@@ -1223,10 +1014,15 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
             profileBar = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
             descriptionBar = (RelativeLayout) itemView.findViewById(R.id.description_bar);
 //            optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
-            videoView = (VideoPlayerView) itemView.findViewById(R.id.video_view);
+//            videoView = (VideoPlayerView) itemView.findViewById(R.id.video_view);
             heart_label = (TextView) itemView.findViewById(R.id.heart_label);
             followButton = (ImageButton) itemView.findViewById(R.id.follow);
 //            setInformationBarsVisible();
+        }
+
+        @Override
+        public void bind(@Nullable Object object) {
+
         }
 
         private void setInformationBarsVisible() {
@@ -1261,6 +1057,58 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographVideoVie
 
         public boolean isNavigationModeCombined() {
             return isNavigationModeCombined;
+        }
+
+        @Override
+        public boolean wantsToPlay() {
+            return false;
+        }
+
+        @Override
+        public boolean isAbleToPlay() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public String getVideoId() {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public View getVideoView() {
+            return null;
+        }
+
+        @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void pause() {
+
+        }
+
+        @Override
+        public int getDuration() {
+            return 0;
+        }
+
+        @Override
+        public int getCurrentPosition() {
+            return 0;
+        }
+
+        @Override
+        public void seekTo(int pos) {
+
+        }
+
+        @Override
+        public boolean isPlaying() {
+            return false;
         }
     }
 }
