@@ -19,8 +19,8 @@
     <string name="delete">Delete</string>
     <string name="share">Share link</string>
     <!-- Share Intent -->
-    <string name="share_subject_web_viewer">Check out this awesome IAM360 moment!</string>
-    <string name="share_body_web_viewer">Check out this awesome IAM360 moment: %1$s</string>
+    <string name="share_subject_web_viewer">Check out this awesome 360 moment!</string>
+    <string name="share_body_web_viewer">Check out this awesome 360 moment: %1$s</string>
     <string name="share_via">Share via</string>
 
     <!-- Record -->
@@ -55,8 +55,8 @@
     <string name="dialog_share_not_login">In order to share your comment you need to create an account. Your image won\'t be lost and can be shared afterwards.</string>
     <string name="dialog_continue">Continue</string>
     <string name="dialog_fb_title">Facebook</string>
-    <string name="dialog_fb_text">Say something about this IAM360 photo</string>
-    <string name="dialog_fb_success">IAM360 photo posted successfully.</string>
+    <string name="dialog_fb_text">Say something about this 360 image</string>
+    <string name="dialog_fb_success">360 photo posted successfully.</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
@@ -118,7 +118,7 @@
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_vr_image">VR IMAGE VIEW STYLE</string>
-    <string name="settings_view_iam_360_in">VIEW IAM360 IN</string>
+    <string name="settings_view_iam_360_in">VIEW 360 IN</string>
     <string name="settings_feed_default">FEED DEFAULT DISPLAY</string>
     <string name="settings_gyro">GYRO</string>
     <string name="settings_little_planet">LITTLE PLANET</string>

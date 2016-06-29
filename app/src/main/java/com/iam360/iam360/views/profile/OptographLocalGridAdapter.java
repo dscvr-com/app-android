@@ -291,11 +291,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         setTab(mHolder);
 
         Log.d("myTag","person initializeHeaderSecond isCurrentuser? "+isCurrentUser);
-        if (!isCurrentUser) {
+        if (!isCurrentUser && onTab == ON_IMAGE) {
             mHolder.getBinding().followerTab.setVisibility(View.GONE);
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
-        } else {
+        } else if (onTab == ON_IMAGE){
             mHolder.getBinding().followerTab.setVisibility(View.VISIBLE);
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
             mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
