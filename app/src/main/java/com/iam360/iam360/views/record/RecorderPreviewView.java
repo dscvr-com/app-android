@@ -58,7 +58,8 @@ public class RecorderPreviewView extends AutoFitTextureView {
     public RecorderPreviewView(Context ctx) {
         super(ctx);
         this.textureView = this;
-        this.videoSize = new Size(720, 1280); //Size we want for stitcher input
+        //this.videoSize = new Size(720, 1280); //Size we want for stitcher input
+        this.videoSize = new Size(1280, 720); //Size we want for stitcher input
     }
 
     // To be called from parent activity
@@ -194,14 +195,15 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
             for (String cameraId : manager.getCameraIdList()){
                 CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-                if(characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK){
+                if(characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT){
                     continue;
                 }
-                StreamConfigurationMap map = characteristics  .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
                 textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 configureTransform(width, height);
                 manager.openCamera(cameraId, stateCallback, null);
+                break;
             }
 
         } catch (CameraAccessException e) {
@@ -244,7 +246,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
         try {
             closePreviewSession();
-            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 
             Surface previewSurface = textureView.getHolder().getSurface();
             previewBuilder.addTarget(previewSurface);
