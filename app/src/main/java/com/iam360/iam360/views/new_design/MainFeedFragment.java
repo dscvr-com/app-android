@@ -79,6 +79,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.thetaBtn.setOnClickListener(this);
         binding.headerLogo.setOnClickListener(this);
         binding.numberLocalImage.setOnClickListener(this);
+        binding.numberImage.setOnClickListener(this);
         binding.searchButton.setOnClickListener(this);
 
 //        Settings start
@@ -178,10 +179,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             return;
         }
 
+        Log.d("myTag","countLocal user equal? "+(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))));
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             optographFeedAdapter.saveToSQLite(optograph);
         }
-        if (optograph.is_local() && mydb.checkIfAllImagesUploaded(optograph.getId())) {
+        Log.d("myTag","countLocal isLocal? "+optograph.is_local()+" isAllUploaded? "+mydb.checkIfAllImagesUploaded(optograph.getId())+" " +
+                "isShouldbepublished? "+mydb.checkIfShouldBePublished(optograph.getId()));
+        if (optograph.is_local() && (mydb.checkIfAllImagesUploaded(optograph.getId()) || mydb.checkIfShouldBePublished(optograph.getId()))) {
             return;
         }
 
@@ -262,6 +266,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.number_image:
             case R.id.number_local_image:
             case R.id.profile_btn:
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);

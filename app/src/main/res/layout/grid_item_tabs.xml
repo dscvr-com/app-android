@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class=".ProfileTabBinding">
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/text_dark"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/image_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/image_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/optonautMain_2"
+                android:text="Images" />
+
+            <View
+                android:id="@+id/image_selector"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/optonautMain_2" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/follower_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/follower_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/bright"
+                android:text="Followers" />
+
+            <View
+                android:id="@+id/follower_selector"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/optonautMain_2"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</layout>

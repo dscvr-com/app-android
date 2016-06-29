@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -26,11 +27,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -77,6 +83,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     static String TWITTER_CONSUMER_SECRET; // place your consumer secret here
 
     private static Twitter mTwitter;
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +96,24 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
         TWITTER_CONSUMER_SECRET = getString(R.string.twitter_consumer_secret);
 
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Log.d("myTag","ShareFB onSuccess: "+result.toString());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("myTag","ShareFB onCancel.");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("myTag","ShareFB onError: "+error.getMessage());
+            }
+        });
     }
 
     @Override
@@ -220,17 +246,28 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                     }*/
                     break;
                 case R.id.fb_share_btn:
-                    ShareDialog shareDialog = new ShareDialog(this);
                     /*String placeHolderUrl = "http://resources.staging-iam360.io.s3.amazonaws.com/textures/"+optograph.getId()+"/placeholder.jpg";
-                    Log.d("myTag", "placeHolderUrl: " + placeHolderUrl+" uri: "+Uri.parse(placeHolderUrl)+" canShow? "+(ShareDialog.canShow(SharePhotoContent.class)));
-                    Bitmap image = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_logo_head );
-                    SharePhoto photo = new SharePhoto.Builder()
-                            .setImageUrl(Uri.parse("https://images.iam360.io/C501kCsTsnd-WoV_nqT_zApYiYM=/100x100/resources.staging-iam360.io.s3.amazonaws.com/textures/93ab6abc-2e6b-4abb-838e-5efb707699bb/l0.jpg"))
-                            .build();
-                    SharePhotoContent content = new SharePhotoContent.Builder()
-                            .addPhoto(photo)
-                            .build();
-                    shareDialog.show(content);*/
+                    Picasso.with(getContext()).load(placeHolderUrl).into(previewImg, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("myTag", "placeHolderUrl: " + placeHolderUrl + " uri: " + Uri.parse(placeHolderUrl) +
+                                    " canShow? " + (ShareDialog.canShow(SharePhotoContent.class)) + " bitmap: " +
+                                    previewImg.getDrawingCache()+" BitmapDrawable: "+((BitmapDrawable)previewImg.getDrawable()).getBitmap());
+                            Bitmap image = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_logo_head);
+                            SharePhoto photo = new SharePhoto.Builder()
+                                    .setBitmap(((BitmapDrawable)previewImg.getDrawable()).getBitmap())
+                                    .build();
+                            SharePhotoContent content = new SharePhotoContent.Builder()
+                                    .addPhoto(photo)
+                                    .build();
+                            shareDialog.show(content);
+                        }
+
+                        @Override
+                        public void onError() {
+                            Log.d("myTag"," placeHolder Picasso onError");
+                        }
+                    });*/
                     ShareLinkContent linkContent = new ShareLinkContent.Builder()
                             .setContentTitle(getResources().getString(R.string.share_subject_web_viewer))
                             .setContentDescription(
@@ -289,5 +326,11 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.sharing_menu, menu);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

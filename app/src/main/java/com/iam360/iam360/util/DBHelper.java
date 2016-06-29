@@ -213,4 +213,11 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return true;
     }
+
+    public boolean checkIfShouldBePublished(String id) {
+        Cursor res = getData(id, DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        return (res.getCount()==0 || (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1
+                || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")));
+    }
 }

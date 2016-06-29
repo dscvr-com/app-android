@@ -9,25 +9,35 @@
     </data>
 
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/optograph2dview_local"
-            android:layout_width="200dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/navigation_elevation"
+            android:layout_marginLeft="@dimen/appbar_elevation"
+            android:layout_marginRight="@dimen/appbar_elevation"
+            android:layout_marginBottom="@dimen/snackbar_elevation"
+            android:layout_marginTop="@dimen/snackbar_elevation"
             android:background="@android:color/black"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             android:adjustViewBounds="true"
-            app:optograph_preview="@{optograph}"/>
+            app:optograph_profile="@{optograph}"/>
+
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <ImageButton
             android:id="@+id/upload_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/navigation_elevation"
-            android:background="@drawable/upload_profile"
+            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:background="@drawable/upload_yellow_btn"
             android:layout_gravity="right|center_vertical"/>
 
         <ProgressBar

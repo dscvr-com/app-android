@@ -1,5 +1,6 @@
 package com.iam360.iam360.network;
 
+import com.iam360.iam360.model.Follower;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
@@ -108,4 +109,10 @@ public interface ApiEndpoints {
 
     @GET("persons/search")
     Call<List<Person>> getSearchResultCall(@Query("keyword") String key);
+
+    @GET("persons/followers")
+    Observable<List<Follower>> getFollowers();
+
+    @GET("persons/followers")
+    Call<List<Follower>> getFollowersCall();
 }
