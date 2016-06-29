@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.SearchPersonResult;
+import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -306,4 +307,11 @@ public class ApiConsumer {
         Call<List<Follower>> call = service.getFollowersCall();
         call.enqueue(callback);
     }
+
+    public void shareFB(SharingFragment.ShareFBData data, Callback<LogInReturn.EmptyResponse> callback) {
+        Timber.d("APICONSUMER shareFB");
+        Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
+        call.enqueue(callback);
+    }
+
 }

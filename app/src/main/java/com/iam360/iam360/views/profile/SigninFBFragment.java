@@ -320,6 +320,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                     return;
                                 }
 
+                                Timber.d("FB Token : " + loginResult.getAccessToken().getToken());
+
                                 cache.save(Cache.USER_ID, login.getId());
                                 cache.save(Cache.USER_TOKEN, login.getToken());
                                 cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());

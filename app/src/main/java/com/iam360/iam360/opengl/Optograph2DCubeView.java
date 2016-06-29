@@ -140,7 +140,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
         return (v, event) -> {
             Point point = new Point((int) event.getX(), (int) event.getY());
 
-            mScaleDetector.onTouchEvent(event);
+            //TODO uncomment for zooming
+//            mScaleDetector.onTouchEvent(event);
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
