@@ -153,8 +153,8 @@
 
                     <ImageView
                         android:id="@+id/iam_logo"
-                        android:layout_width="101dp"
-                        android:layout_height="50dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_below="@id/settings_title"
                         android:background="@drawable/logo_dark"
