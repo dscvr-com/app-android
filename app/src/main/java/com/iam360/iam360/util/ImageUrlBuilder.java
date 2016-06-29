@@ -26,7 +26,10 @@ public class ImageUrlBuilder {
 //    private static final String THUMBOR_URL = "http://192.168.1.69:11000";
     //private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
 //    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
-    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
+//    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
+    private static final String S3_URL = "bucket.iam360.io";
+
+    private static final String URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
     private static final String IMAGE_BUCKET_URL = "https://bucket.iam360.io/textures/";
     private static final String S3_FULL_URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/";
@@ -46,11 +49,14 @@ public class ImageUrlBuilder {
         return getSignedUrl(urlPartToSign);
     }
 
-    public static String buildCubeUrl(Optograph optograph, boolean isLeftId, int face) {
+
+    public static String buildSmallCubeUrl(Optograph optograph, boolean isLeftId, int face) {
         String id = optograph.getId();
         if (!optograph.is_local()) {
+//            http://images.iam360.io/E89S0VsHDDD5cVmeEtLrawAyhfM=/0x0/filters:subface(0,0,1,1024)/resources.staging-iam360.io.s3.amazonaws.com/textures/05353858-493d-46b4-be79-ed759f427e82/l0.jpg
+//            https://images.iam360.io/C501kCsTsnd-WoV_nqT_zApYiYM=/100x100/resources.staging-iam360.io.s3.amazonaws.com/textures/93ab6abc-2e6b-4abb-838e-5efb707699bb/l0.jpg
             String sideLetter = isLeftId ? "l" : "r";
-            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
+            String urlPartToSign = String.format(("100x100/%s/textures/%s/%s%s.jpg"), S3_URL, id, sideLetter, face);
             String signedUrl = getSignedUrl(urlPartToSign);
             return signedUrl;
         } else {
@@ -59,7 +65,24 @@ public class ImageUrlBuilder {
             Timber.v("local optograph path: %s", path);
             return path;
         }
+    }
 
+    public static String buildCubeUrl(Optograph optograph, boolean isLeftId, int face) {
+        String id = optograph.getId();
+        if (!optograph.is_local()) {
+            String sideLetter = isLeftId ? "l" : "r";
+//            String urlPartToSign = String.format(("0x0/filters:subface(%s,%s,%s,%s)/%s/textures/%s/%s%s.jpg"), SUB_X, SUB_Y, SUB_D, PX_D, S3_URL, id, sideLetter, face);
+//            String signedUrl = getSignedUrl(urlPartToSign);
+//             return signedUrl;
+            // this two line for direct call
+            String urlPartToSign = String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
+            return urlPartToSign;
+        } else {
+            String side = isLeftId ? "left/" : "right/";
+            String path = CameraUtils.PERSISTENT_STORAGE_PATH + id + "/" + side + face + ".jpg";
+            Timber.v("local optograph path: %s", path);
+            return path;
+        }
     }
 
     public static String buildPlaceholderUrl(Optograph optograph, boolean isLeftId, int face) {

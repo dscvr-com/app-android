@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class=".GridItemServerBinding">
+        <import type="com.iam360.iam360.model.Optograph"/>
+        <variable
+            name="optograph"
+            type="Optograph"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/optograph2dview_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/appbar_elevation"
+            android:layout_marginRight="@dimen/appbar_elevation"
+            android:layout_marginBottom="@dimen/appbar_elevation"
+            android:layout_marginTop="@dimen/snackbar_elevation"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            app:optograph_profile="@{optograph}"/>
+
+    </FrameLayout>
+
+</layout>

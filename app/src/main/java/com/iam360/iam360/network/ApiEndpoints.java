@@ -1,5 +1,6 @@
 package com.iam360.iam360.network;
 
+import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.RequestBody;
 
@@ -109,6 +110,12 @@ public interface ApiEndpoints {
 
     @GET("persons/search")
     Call<List<Person>> getSearchResultCall(@Query("keyword") String key);
+
+    @GET("persons/followers")
+    Observable<List<Follower>> getFollowers();
+
+    @GET("persons/followers")
+    Call<List<Follower>> getFollowersCall();
 
     @POST("optographs/share_facebook")
     Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);

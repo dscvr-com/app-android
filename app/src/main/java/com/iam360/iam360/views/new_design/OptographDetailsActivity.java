@@ -73,7 +73,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(isCurrentUser) {
             binding.followContainer.setVisibility(View.GONE);
             binding.follow.setVisibility(View.GONE);
-            binding.deleteButton.setVisibility(View.GONE);//change to VISIBLE if delete is needed here.
+            binding.deleteButton.setVisibility(View.VISIBLE);//change to VISIBLE if delete is needed here.
         } else binding.deleteButton.setVisibility(View.GONE);
 
         instatiateFeedDisplayButton();

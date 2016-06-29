@@ -2,6 +2,7 @@ package com.iam360.iam360.network;
 
 import android.util.Log;
 
+import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.SearchPersonResult;
 import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.Interceptor;
@@ -45,7 +46,7 @@ public class ApiConsumer {
 //    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
-    public static final int PROFILE_GRID_LIMIT = 5;
+    public static final int PROFILE_GRID_LIMIT = 12;
 
     OkHttpClient client;
 
@@ -295,6 +296,15 @@ public class ApiConsumer {
 
     public void getSearchResultCall(String key, Callback<List<Person>> callback) {
         Call<List<Person>> call = service.getSearchResultCall(key);
+        call.enqueue(callback);
+    }
+
+    public Observable<Follower> getFollowers() {
+        return service.getFollowers().flatMap(Observable::from);
+    }
+
+    public void  getFollowersCall(Callback<List<Follower>> callback) {
+        Call<List<Follower>> call = service.getFollowersCall();
         call.enqueue(callback);
     }
 

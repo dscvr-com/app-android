@@ -114,16 +114,21 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
     public void onBindViewHolder(OptographViewHolder holder, int position) {
         Optograph optograph = optographs.get(position);
 
+        Log.d("myTag","position: "+position);
         // reset view holder if we got new optograh
         if (!optograph.equals(holder.getBinding().getOptograph())) {
             // cancel the request for the old texture
             if (holder.getBinding().getOptograph() != null) {
                 // TODO: cancel request
             }
-
-            // span complete screen
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ITEM_WIDTH); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
-            holder.itemView.setLayoutParams(params);
+//
+//            holder.getBinding().optograph2dview.getLayoutParams().height = ITEM_WIDTH/4;
+//            holder.getBinding().optograph2dview.requestLayout();
+//
+//            Log.d("myTag","optograph position: "+position+" local? "+optograph.is_local());
+//            // span complete screen
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ITEM_WIDTH); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
+//            holder.itemView.setLayoutParams(params);
 
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().executePendingBindings();
@@ -460,9 +465,9 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             return;
         }
 
-        if (optograph.is_local()) {
-            return;
-        }
+//        if (optograph.is_local()) {
+//            return;
+//        }
 
         DateTime created_at = optograph.getCreated_atDateTime();
 

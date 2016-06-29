@@ -294,7 +294,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.fb_button:
-                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile","user_friends"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.views.profile.ProfileFragment;
+import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -18,7 +19,7 @@ public class ProfileActivity extends AppCompatActivity {
         Person person = getIntent().getExtras().getParcelable("person");
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, ProfileFragment.newInstance(person)).commit();
+                .add(R.id.container, ProfileFragmentExercise.newInstance(person)).commit();
 
     }
 

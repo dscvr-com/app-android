@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.iam360.iam360.R;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.views.profile.ProfileFragment;
+import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
 public class ProfileRootFragment extends Fragment {
@@ -28,7 +29,7 @@ public class ProfileRootFragment extends Fragment {
         if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
             transaction.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
         } else
-            transaction.replace(R.id.root_frame, ProfileFragment.newInstance(cache.getString(Cache.USER_ID)));
+            transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
 
         transaction.commit();
 

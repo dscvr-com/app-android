@@ -7,6 +7,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iam360.iam360.model.Follower;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -54,9 +55,51 @@ public class CustomBindingAdapter {
         }
     }
 
+    @BindingAdapter("app:follower")
+    public static void loadSmallImage(ImageView imageView, Follower follower) {
+        if (follower != null) {
+            String followerId = follower.getId();
+            String assetId = follower.getAvatar_asset_id();
+            Picasso.with(imageView.getContext())
+                    .load(ImageUrlBuilder.buildImageUrl(followerId, assetId, 150, 150))
+                            //                .memoryPolicy(MemoryPolicy.NO_STORE, MemoryPolicy.NO_CACHE) // don't store avatars in memory
+                    .into(imageView);
+        }
+    }
+
     @BindingAdapter("app:optograph")
     public static void loadOptograph(Optograph2DCubeView optograph2DCubeView, Optograph optograph) {
         optograph2DCubeView.setOptograph(optograph);
+    }
+
+    @BindingAdapter("app:optograph_profile")
+    public static void loadOptographFaceSmall(ImageView imageView, Optograph optograph) {
+
+        String uri = ImageUrlBuilder.buildSmallCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
+        Log.d("myTag","URL: "+uri);
+
+        imageView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    // Wait until layout to call Picasso
+                    @Override
+                    public void onGlobalLayout() {
+                        // Ensure we call this only once
+                        imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        if (optograph.is_local()) {
+                            Picasso.with(imageView.getContext())
+                                    .load(new File(uri))
+                                    .resize(200, 0)
+                                    .into(imageView);
+                        } else {
+                            Picasso.with(imageView.getContext())
+                                    .load(uri)
+                                    .placeholder(R.drawable.placeholder)
+                                    .resize(imageView.getWidth(), 0)
+                                    .into(imageView);
+                        }
+                    }
+                });
     }
 
     @BindingAdapter("app:optograph_preview")

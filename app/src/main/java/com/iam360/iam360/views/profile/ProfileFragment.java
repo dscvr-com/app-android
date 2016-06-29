@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -93,7 +94,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         following = getActivity().getResources().getString(R.string.profile_following);
 
         optographFeedAdapter = new OptographGridAdapter(getActivity());
-        optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity());
+        optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(),OptographLocalGridAdapter.ON_IMAGE);
         networkProblemDialog = new NetworkProblemDialog();
 
         setPerson();
@@ -120,13 +121,33 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         binding.homeBtn.setOnClickListener(this);
         binding.signOut.setOnClickListener(this);
 
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.optographFeed.setLayoutManager(llm);
-        binding.optographFeed.setAdapter(optographFeedAdapter);
-        binding.optographFeed.setItemViewCacheSize(10);
+//        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+//        llm.setOrientation(LinearLayoutManager.VERTICAL);
+//        binding.optographFeed.setLayoutManager(llm);
+//        binding.optographLocal.setLayoutManager(llm);
+//        binding.optographLocal.setAdapter(optographFeedAdapter);
 
-        binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(llm) {
+        binding.optographFeed.setAdapter(optographLocalGridAdapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(),4);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return optographLocalGridAdapter.get(position).is_local() ? 4 : 1;
+            }
+        });
+        manager.setOrientation(GridLayoutManager.VERTICAL);
+        binding.optographFeed.setLayoutManager(manager);
+        binding.optographFeed.setItemViewCacheSize(10);
+//
+//        View view = binding.optographFeed.getChildAt(0);
+//        Log.d("myTag","equal 0? "+(binding.optographFeed.getChildAdapterPosition(view) == 0));
+//        if(view != null && binding.optographFeed.getChildAdapterPosition(view) == 0)  {
+//            Log.d("myTag", "-view.getTop(): " + (-view.getTop()) + " /2=" + (-view.getTop() / 2));
+//            view.setTranslationY(-view.getTop() / 2);// or use view.animate().translateY();
+//            binding.headerSample.setTranslationY(-binding.headerSample.getTop() / 2);
+//        }
+
+        binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(manager) {
             int yPos = 0;
 
             @Override
@@ -137,6 +158,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                Log.d("myTag", "onScrolled yPos: " + yPos + " dy: " + dy + " dx: " + dx + " coordLayout.getHeight: " + binding.coordLayout.getHeight());
                 yPos += dy;
 
                 if (yPos > binding.coordLayout.getHeight()) {
@@ -147,6 +169,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     binding.toolbarReplace.setVisibility(View.GONE);
                 }
             }
+
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                Log.d("myTag","onScrollStateChanged.");
+//            }
         });
 
 //        GridLayoutManager glm = new GridLayoutManager(getContext(),4);
@@ -178,7 +205,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 //            }
 //        });
 
-        binding.header.attachTo(binding.optographFeed);
+//        binding.header.attachTo(binding.optographFeed);
 //        binding.header.attachTo(binding.optographLocal);
 
         return binding.getRoot();
@@ -553,25 +580,25 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
-                .subscribe(optographFeedAdapter::addItem);
+                .subscribe(optographLocalGridAdapter::addItem);
 
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             LocalOptographManager.getOptographs()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(optographFeedAdapter::addItem);
+                    .subscribe(optographLocalGridAdapter::addItem);
         }
 
     }
 
     protected void loadMore() {
-        apiConsumer.getOptographsFromPerson(person.getId(), optographFeedAdapter.getOldest().getCreated_at())
+        apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
-                .subscribe(optographFeedAdapter::addItem);
+                .subscribe(optographLocalGridAdapter::addItem);
     }
 
     protected void refresh() {
@@ -583,6 +610,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
-                .subscribe(optographFeedAdapter::addItem);
+                .subscribe(optographLocalGridAdapter::addItem);
     }
 }

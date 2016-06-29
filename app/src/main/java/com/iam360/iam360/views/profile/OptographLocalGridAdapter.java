@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -19,17 +20,26 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.iam360.iam360.BR;
+import com.iam360.iam360.GridFollowerBinding;
 import com.iam360.iam360.GridItemLocalBinding;
+import com.iam360.iam360.GridItemServerBinding;
+import com.iam360.iam360.ProfileHeaderBinding;
+import com.iam360.iam360.ProfileTabBinding;
 import com.iam360.iam360.R;
+import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
+import com.iam360.iam360.network.PersonManager;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
+import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
@@ -46,15 +56,23 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import timber.log.Timber;
 
 /**
  * Created by Mariel on 6/14/2016.
  */
-public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLocalGridAdapter.LocalViewHolder> {
+public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ITEM_WIDTH= Constants.getInstance().getDisplayMetrics().widthPixels;
+    public static final int VIEW_HEADER = 0;
+    public static final int SECOND_HEADER = 1;
+    public static final int VIEW_LOCAL = 2;
+    public static final int VIEW_SERVER = 3;
+    public static final int VIEW_FOLLOWER = 4;
+    public static final int ON_IMAGE=0;
+    public static final int ON_FOLLOWER=1;
     List<Optograph> optographs;
+    List<Follower> followers;
+    private Person person;
 
     protected Cache cache;
     private DBHelper mydb;
@@ -62,25 +80,74 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
     protected ApiConsumer apiConsumer;
     private Context context;
 
-    public OptographLocalGridAdapter(Context context) {
+    private int count;
+    private boolean isCurrentUser=false;
+    private boolean isEditMode = false;
+    private boolean needSave = false;
+
+    private int onTab;
+    private String follow, following;
+
+    public OptographLocalGridAdapter(Context context,int tab) {
         this.context = context;
         this.optographs = new ArrayList<>();
+        this.onTab = tab;
+        optographs.add(0,null);
+        optographs.add(1,null);
+
+        this.followers = new ArrayList<>();
+//        followers.add(0,null);
+//        followers.add(1,null);
 
         cache = Cache.open();
         mydb = new DBHelper(context);
+
+
+        follow = context.getResources().getString(R.string.profile_follow);
+        following = context.getResources().getString(R.string.profile_following);
 
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
     }
 
     @Override
-    public LocalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View itemView = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.grid_item_local,parent,false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType==VIEW_HEADER) {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_header, parent, false);
 
-        final LocalViewHolder viewHolder = new LocalViewHolder(itemView);
-        return viewHolder;
+            final HeaderOneViewHolder viewHolder = new HeaderOneViewHolder(itemView);
+            return viewHolder;
+        } else if (viewType==SECOND_HEADER) {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_tabs, parent, false);
+
+            final HeaderSecondViewHolder viewHolder = new HeaderSecondViewHolder(itemView);
+            return viewHolder;
+        } else if (viewType==VIEW_LOCAL) {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_local, parent, false);
+
+            final LocalViewHolder viewHolder = new LocalViewHolder(itemView);
+            return viewHolder;
+        } else if (viewType == VIEW_SERVER) {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_server, parent, false);
+
+            final ServerViewHolder viewHolder = new ServerViewHolder(itemView);
+            return viewHolder;
+        } else {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_follower, parent, false);
+
+            final FollowerViewHolder viewHolder = new FollowerViewHolder(itemView);
+            return viewHolder;
+        }
     }
 
     @Override
@@ -89,54 +156,390 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
     }
 
     @Override
-    public void onBindViewHolder(LocalViewHolder holder, int position) {
-        Optograph optograph = optographs.get(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d("myTag"," follower? "+(onTab==ON_FOLLOWER)+" position: "+position);
+        if (onTab==ON_IMAGE) {
+            Optograph optograph = optographs.get(position);
 
-        if (!optograph.equals(holder.getBinding().getOptograph())) {
-            if (holder.getBinding().getOptograph() != null) {
+            if (optograph == null && position == 0) {
+                HeaderOneViewHolder mHolder1 = (HeaderOneViewHolder) holder;
+                initializeHeaderOne(mHolder1);
+            } else if (optograph == null && position == 1) {
+                HeaderSecondViewHolder mHolder = (HeaderSecondViewHolder) holder;
+                initializeHeaderSecond(mHolder);
+            } else if (optograph.is_local()) {
+                LocalViewHolder mHolder2 = (LocalViewHolder) holder;
+                if (!optograph.equals(mHolder2.getBinding().getOptograph())) {
+                    if (mHolder2.getBinding().getOptograph() != null) {
 
-            }
+                    }
 
-            Log.d("myTag","adapter image: "+ITEM_WIDTH/4);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
-            holder.itemView.setLayoutParams(params);
+                    if (optograph.is_local()) count += 1;
 
-            holder.getBinding().setVariable(BR.optograph, optograph);
-            holder.getBinding().executePendingBindings();
+                    mHolder2.getBinding().uploadLocal.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
+                    mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
 
-            holder.getBinding().optograph2dviewLocal.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, OptographDetailsActivity.class);
-                    intent.putExtra("opto", optograph);
-                    context.startActivity(intent);
-                }
-            });
+//                mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH-30) / 4;
+                    mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().width = (ITEM_WIDTH - 30) / 4;
+                    mHolder2.getBinding().optograph2dviewLocal.requestLayout();
 
-            holder.getBinding().uploadLocal.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                    mHolder2.getBinding().textview.setText(String.valueOf(position) + " " + optograph.getText() + " star: " + optograph.getStars_count());
 
-                    if (cache.getString(Cache.USER_TOKEN).equals("")) {
-                        Snackbar.make(v, "Must login to upload.", Snackbar.LENGTH_SHORT);
-                    } else {
-                        apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
-                        holder.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
-                        holder.getBinding().uploadLocal.setVisibility(View.GONE);
-                        if (!optograph.is_data_uploaded()) {
-                            Log.d("myTag", "upload the data first. position: " + position);
-                            uploadOptonautData(position);
-                        } else if (!optograph.is_place_holder_uploaded()) {
-                            Log.d("myTag", "upload the placeholder first. position: "+position);
-                            uploadPlaceHolder(position);
-                        } else {
-                            Log.d("myTag","upload the 12 images position: "+position);
-                            updateOptograph(position);
+                    Log.d("myTag", "adapter image: " + ITEM_WIDTH / 4 + " local opto count: " + count + " position: " + position);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
+                    holder.itemView.setLayoutParams(params);
+
+                    mHolder2.getBinding().setVariable(BR.optograph, optograph);
+                    mHolder2.getBinding().executePendingBindings();
+
+                    mHolder2.getBinding().optograph2dviewLocal.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, OptographDetailsActivity.class);
+                            intent.putExtra("opto", optograph);
+                            context.startActivity(intent);
+                        }
+                    });
+
+                    mHolder2.getBinding().uploadLocal.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            if (cache.getString(Cache.USER_TOKEN).equals("")) {
+                                Snackbar.make(v, "Must login to upload.", Snackbar.LENGTH_SHORT);
+                            } else {
+                                apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
+                                mHolder2.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
+                                mHolder2.getBinding().uploadLocal.setVisibility(View.GONE);
+                                if (!optograph.is_data_uploaded()) {
+                                    Log.d("myTag", "upload the data first. position: " + position);
+                                    uploadOptonautData(position);
+                                } else if (!optograph.is_place_holder_uploaded()) {
+                                    Log.d("myTag", "upload the placeholder first. position: " + position);
+                                    uploadPlaceHolder(position);
+                                } else {
+                                    Log.d("myTag", "upload the 12 images position: " + position);
+                                    updateOptograph(position);
 //                            getLocalImage(optograph);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                ServerViewHolder mHolder3 = (ServerViewHolder) holder;
+                if (!optograph.equals(mHolder3.getBinding().getOptograph())) {
+                    if (mHolder3.getBinding().getOptograph() != null) {
+
+                    }
+//                mHolder3.getBinding().optograph2dviewServer.getLayoutParams().height = (ITEM_WIDTH - 30) / 4;
+                    mHolder3.getBinding().optograph2dviewServer.getLayoutParams().width = (ITEM_WIDTH - 30) / 4;
+                    mHolder3.getBinding().optograph2dviewServer.requestLayout();
+
+                    mHolder3.getBinding().setVariable(BR.optograph, optograph);
+                    mHolder3.getBinding().executePendingBindings();
+
+
+                    mHolder3.getBinding().optograph2dviewServer.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, OptographDetailsActivity.class);
+                            intent.putExtra("opto", optograph);
+                            context.startActivity(intent);
+                        }
+                    });
+                }
+            }
+        } else {
+            Follower follower = followers.get(position);
+
+            if (follower == null && position == 0) {
+                HeaderOneViewHolder mHolder = (HeaderOneViewHolder) holder;
+                initializeHeaderOne(mHolder);
+            } else if (follower == null && position==1) {
+                HeaderSecondViewHolder mHolder1 = (HeaderSecondViewHolder) holder;
+                initializeHeaderSecond(mHolder1);
+            } else {
+                FollowerViewHolder mHolder2 = (FollowerViewHolder) holder;
+                if (!follower.equals(mHolder2.getBinding().getFollower())) {
+                    if (mHolder2.getBinding().getFollower()!=null) {
+
+                    }
+                    mHolder2.getBinding().setVariable(BR.follower,follower);
+                    mHolder2.getBinding().executePendingBindings();
+                }
+            }
+        }
+    }
+
+    private void setTab(HeaderSecondViewHolder mHolder) {
+        if (onTab==ON_IMAGE) {
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().followerSelector.setVisibility(View.INVISIBLE);
+        } else {
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().followerSelector.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initializeHeaderSecond(HeaderSecondViewHolder mHolder) {
+
+        setTab(mHolder);
+
+        Log.d("myTag","person initializeHeaderSecond isCurrentuser? "+isCurrentUser);
+        if (!isCurrentUser) {
+            mHolder.getBinding().followerTab.setVisibility(View.GONE);
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
+        } else {
+            mHolder.getBinding().followerTab.setVisibility(View.VISIBLE);
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
+        }
+
+        mHolder.getBinding().followerTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTab = ON_FOLLOWER;
+                setTab(mHolder);
+                followers = new ArrayList<Follower>();
+                followers.add(0, null);
+                followers.add(1, null);
+                notifyDataSetChanged();
+//                apiConsumer.getFollowers()
+//                        .subscribeOn(Schedulers.newThread())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .onErrorReturn(throwable -> {
+//                            if (throwable.getMessage().contains("iterable must not be null")) {
+//                                Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
+//                            }
+//                            return null;
+//                        })
+//                        .subscribe(OptographLocalGridAdapter.this::addItem);
+                apiConsumer.getFollowersCall(new Callback<List<Follower>>() {
+                    @Override
+                    public void onResponse(Response<List<Follower>> response, Retrofit retrofit) {
+                        if (response.isSuccess() && response.body() != null) {
+                            followers = response.body();
+                            followers.add(0, null);
+                            followers.add(1, null);
+                            notifyDataSetChanged();
+                        } else {
+                            followers.add(0, null);
+                            followers.add(1, null);
+                            notifyDataSetChanged();
+                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
                     }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        followers.add(0, null);
+                        followers.add(1, null);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        mHolder.getBinding().imageTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isCurrentUser) return;
+                onTab = ON_IMAGE;
+                setTab(mHolder);
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void initializeHeaderOne(HeaderOneViewHolder mHolder1) {
+        mHolder1.getBinding().setVariable(BR.person, person);
+        mHolder1.getBinding().executePendingBindings();
+        Log.d("myTag", "person initializeHeaderOne isCurrentUser? " + isCurrentUser);
+
+        if (!isCurrentUser) {
+            mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+            mHolder1.getBinding().personIsFollowed.setVisibility(View.VISIBLE);
+            Log.d("myTag", "person null? " + (person == null));
+            if (person!=null) Log.d("myTag","person isFollwed? "+person.is_followed());
+            mHolder1.getBinding().personIsFollowed.setBackgroundResource((person!=null && person.is_followed())?R.drawable.following_btn:R.drawable.follow_btn);
+//            if (person.is_followed()) mHolder1.getBinding().personIsFollowed.setText(following);
+//            else mHolder1.getBinding().personIsFollowed.setText(follow);
+        }
+
+
+        Log.d("myTag","needSave? "+needSave);
+        if (needSave) {
+            Log.d("myTag","needSave from edit text name: "+mHolder1.getBinding().personNameEdit.getText().toString()+
+                    " desc: "+mHolder1.getBinding().personDescEdit.getText().toString());
+            mHolder1.getBinding().personName.setText(mHolder1.getBinding().personNameEdit.getText().toString());
+            mHolder1.getBinding().personDesc.setText(mHolder1.getBinding().personDescEdit.getText().toString());
+            mHolder1.getBinding().getPerson().setText(mHolder1.getBinding().personDescEdit.getText().toString());
+            mHolder1.getBinding().getPerson().setDisplay_name(mHolder1.getBinding().personNameEdit.getText().toString());
+            Log.d("myTag","needSave name: "+mHolder1.getBinding().personName.getText()+" desc: "+mHolder1.getBinding().personDesc.getText());
+            PersonManager.updatePerson(mHolder1.getBinding().personNameEdit.getText().toString(), mHolder1.getBinding().personDescEdit.getText().toString());
+            needSave=false;
+        }
+
+        if (isCurrentUser && isEditMode) {
+            mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+        } else if (isCurrentUser) {
+            mHolder1.getBinding().editBtn.setVisibility(View.VISIBLE);
+            mHolder1.getBinding().personDesc.setVisibility(View.VISIBLE);
+            mHolder1.getBinding().personName.setVisibility(View.VISIBLE);
+            mHolder1.getBinding().personDescEdit.setVisibility(View.INVISIBLE);
+            mHolder1.getBinding().personNameEdit.setVisibility(View.INVISIBLE);
+            mHolder1.getBinding().personIsFollowed.setVisibility(View.GONE);
+        }
+
+        mHolder1.getBinding().editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isCurrentUser) {
+                    mHolder1.getBinding().personDesc.setVisibility(View.INVISIBLE);
+                    mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
+                    mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
+                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
+                    isEditMode = true;
+                    updateMenuOptions();
+                    mHolder1.getBinding().editBtn.setVisibility(View.GONE);
                 }
-            });
+            }
+        });
+
+        mHolder1.getBinding().personIsFollowed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mHolder1.getBinding().getPerson().is_followed()) {
+                    Log.d("myTag","person click unfollow");
+                    apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            Log.d("myTag","person unfollow success");
+                            mHolder1.getBinding().getPerson().setIs_followed(false);
+                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
+                            mHolder1.getBinding().invalidateAll();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            Log.d("myTag","Error unfollow: "+t.getMessage());
+                        }
+                    });
+                } else {
+                    Log.d("myTag","person click follow");
+                    apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                        @Override
+                        public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            Log.d("myTag","person follow success");
+                            mHolder1.getBinding().getPerson().setIs_followed(false);
+                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
+                            mHolder1.getBinding().invalidateAll();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            Log.d("myTag","Error follow: "+t.getMessage());
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    //    @Override
+//    public void onBindViewHolder(LocalViewHolder holder, int position) {
+//        Optograph optograph = optographs.get(position);
+//
+//        Log.d("myTag","position: "+position);
+//        if (!optograph.equals(holder.getBinding().getOptograph())) {
+//            if (holder.getBinding().getOptograph() != null) {
+//
+//            }
+//
+//            if (optograph.is_local()) count+=1;
+//
+//            holder.getBinding().uploadLocal.setVisibility(optograph.is_local()?View.VISIBLE:View.GONE);
+//            holder.getBinding().uploadProgressLocal.setVisibility(optograph.is_local()?View.GONE:View.GONE);
+//
+////                holder.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH-30) / 4;
+//                holder.getBinding().optograph2dviewLocal.getLayoutParams().width = (ITEM_WIDTH-30) / 4;
+//                holder.getBinding().optograph2dviewLocal.requestLayout();
+//
+//            holder.getBinding().textview.setText(String.valueOf(position) + " " + optograph.getText() + " star: " + optograph.getStars_count());
+//
+//            Log.d("myTag","adapter image: "+ITEM_WIDTH/4+" local opto count: "+count+" position: "+position);
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
+//            holder.itemView.setLayoutParams(params);
+//
+//            holder.getBinding().setVariable(BR.optograph, optograph);
+//            holder.getBinding().executePendingBindings();
+//
+//            holder.getBinding().optograph2dviewLocal.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(context, OptographDetailsActivity.class);
+//                    intent.putExtra("opto", optograph);
+//                    context.startActivity(intent);
+//                }
+//            });
+//
+//            holder.getBinding().uploadLocal.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                    if (cache.getString(Cache.USER_TOKEN).equals("")) {
+//                        Snackbar.make(v, "Must login to upload.", Snackbar.LENGTH_SHORT);
+//                    } else {
+//                        apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
+//                        holder.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
+//                        holder.getBinding().uploadLocal.setVisibility(View.GONE);
+//                        if (!optograph.is_data_uploaded()) {
+//                            Log.d("myTag", "upload the data first. position: " + position);
+//                            uploadOptonautData(position);
+//                        } else if (!optograph.is_place_holder_uploaded()) {
+//                            Log.d("myTag", "upload the placeholder first. position: " + position);
+//                            uploadPlaceHolder(position);
+//                        } else {
+//                            Log.d("myTag", "upload the 12 images position: " + position);
+//                            updateOptograph(position);
+////                            getLocalImage(optograph);
+//                        }
+//                    }
+//                }
+//            });
+//
+////            holder.getBinding().uploadLocal.setVisibility(View.GONE);
+////            holder.getBinding().uploadProgressLocal.setVisibility(View.GONE);
+////            holder.getBinding().optograph2dviewLocal.setVisibility(View.INVISIBLE);
+//        }
+//    }
+
+    public void saveUpdate() {
+        needSave = true;
+        isEditMode = false;
+        notifyItemChanged(0);
+    }
+
+    public boolean isOnEditMode() {
+        return isEditMode;
+    }
+
+    public void setEditMode(boolean mode) {
+        isEditMode = mode;
+        notifyItemChanged(0);
+    }
+
+    private void updateMenuOptions() {
+        if (context instanceof MainActivity) {
+            ((MainActivity) context).invalidateOptionsMenu();
         }
     }
 
@@ -182,7 +585,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
                 "\n"+DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
         Log.d("myTag", "" + stringRes);
     }
-
 
     private void uploadPlaceHolder(int position) {
         Optograph opto = optographs.get(position);
@@ -290,10 +692,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
         return (flag == 1);
     }
 
-
     private void updateOptograph(int position) {
         Optograph opto = optographs.get(position);
-        Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
@@ -522,7 +922,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
 
     @Override
     public int getItemCount() {
-        return optographs.size();
+        return onTab==ON_IMAGE?optographs.size():followers.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position==0) return VIEW_HEADER;
+        if (position==1) return SECOND_HEADER;
+        if (onTab==ON_IMAGE) return get(position).is_local()?VIEW_LOCAL:VIEW_SERVER;
+        else return VIEW_FOLLOWER;
     }
 
     public Optograph get(int position) {
@@ -530,6 +938,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
     }
 
     public Optograph getOldest() {
+        Log.d("myTag","itemCount: "+getItemCount());
         return get(getItemCount() - 1);
     }
 
@@ -541,12 +950,32 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
         return optographs.isEmpty();
     }
 
-    public void addItem(Optograph optograph) {
-        if (optograph == null) {
+    public void setPerson(Person person) {
+        Log.d("myTag","setPerson");
+        this.person = person;
+        isCurrentUser = (person.getId().equals(cache.getString(Cache.USER_ID)));
+        notifyItemRangeChanged(0,2);
+    }
+
+    public void addItem(Follower follower) {
+        Log.d("myTag","follower null? "+(follower==null));
+        if (follower == null) {
             return;
         }
 
-        if (!optograph.is_local() || optograph.is_on_server()) {
+        Log.d("myTag","followers contains? "+followers.contains(follower));
+        if (followers.contains(follower)) {
+            return;
+        }
+
+        followers.add(follower);
+        Log.d("myTag","follower name: "+follower.getDisplay_name()+" count: "+getItemCount());
+//        notifyItemInserted(getItemCount());
+        notifyDataSetChanged();
+    }
+
+    public void addItem(Optograph optograph) {
+        if (optograph == null || onTab!=ON_IMAGE) {
             return;
         }
 
@@ -560,14 +989,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
-        optograph = checkToDB(optograph);
+        if (optograph.is_local()) optograph = checkToDB(optograph);
         Log.d("myTag"," opto null? "+(optograph==null));
         if (optograph==null) {
             return;
         }
 
         // if list is empty, simply add new optograph
-        if (optographs.isEmpty()) {
+        if (optographs.isEmpty() || optographs.size()==2) {
             optographs.add(optograph);
             notifyItemInserted(getItemCount());
             return;
@@ -591,7 +1020,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
             }
         }
     }
-
 
     public void saveToSQLite(Optograph opto) {
         Cursor res = mydb.getData(opto.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
@@ -662,10 +1090,60 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<OptographLoc
         public LocalViewHolder(View rowView) {
             super(rowView);
             this.binding = DataBindingUtil.bind(rowView);
-            optograph2DCubeView_local = (ImageView) itemView.findViewById(R.id.optograph2dview_local);
-            upload_Local = (ImageButton) itemView.findViewById(R.id.upload_local);
+//            optograph2DCubeView_local = (ImageView) itemView.findViewById(R.id.optograph2dview_local);
+//            upload_Local = (ImageButton) itemView.findViewById(R.id.upload_local);
         }
 
         public GridItemLocalBinding getBinding() {return binding;}
+    }
+
+    public static class ServerViewHolder extends RecyclerView.ViewHolder {
+        private GridItemServerBinding bindingServer;
+
+        public ServerViewHolder(View rowView) {
+            super(rowView);
+            this.bindingServer = DataBindingUtil.bind(rowView);
+        }
+
+        public GridItemServerBinding getBinding() {return bindingServer;}
+    }
+
+    public static class HeaderOneViewHolder extends RecyclerView.ViewHolder {
+        private ProfileHeaderBinding bindingHeader;
+
+        public HeaderOneViewHolder(View rowView) {
+            super(rowView);
+            this.bindingHeader = DataBindingUtil.bind(rowView);
+        }
+
+        public ProfileHeaderBinding getBinding() {
+            return bindingHeader;
+        }
+    }
+
+    public static class HeaderSecondViewHolder extends RecyclerView.ViewHolder {
+        private ProfileTabBinding bindingTab;
+
+        public HeaderSecondViewHolder(View rowView) {
+            super(rowView);
+            this.bindingTab = DataBindingUtil.bind(rowView);
+        }
+
+        public ProfileTabBinding getBinding() {
+            return bindingTab;
+        }
+    }
+
+    public static class FollowerViewHolder extends RecyclerView.ViewHolder {
+        private GridFollowerBinding bindingFollower;
+
+        public FollowerViewHolder(View rowView) {
+            super(rowView);
+            this.bindingFollower = DataBindingUtil.bind(rowView);
+        }
+
+        public GridFollowerBinding getBinding() {
+            return bindingFollower;
+        }
     }
 }
