@@ -3,6 +3,8 @@ package com.iam360.iam360.views.new_design;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -16,6 +18,7 @@ import android.util.Log;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import com.iam360.iam360.R;
@@ -25,6 +28,8 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.SettingsActivity;
+import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
+import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
 import im.ene.lab.toro.Toro;
@@ -210,5 +215,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
 //        Toro.detach(this);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OptographLocalGridAdapter.PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
+            for (Fragment frag :adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
+                if (frag instanceof ProfileFragmentExercise) {
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                ((ProfileFragmentExercise)frag).setAvatar(bitmap);
+            } catch (IOException e) {
+                Log.d("myTag","Error getAvatar message: "+e.getMessage());
+            }
+                }
+            }
+        }
     }
 }

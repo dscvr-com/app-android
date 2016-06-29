@@ -52,5 +52,13 @@
             android:layout_marginStart="@dimen/appbar_elevation"
             android:layout_alignParentBottom="true"
             android:background="@color/optonautMain_3"/>
+
+        <ImageButton
+            android:id="@+id/follow_unfollow_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/appbar_elevation"/>
     </RelativeLayout>
 </layout>
