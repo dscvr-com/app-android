@@ -6,25 +6,59 @@
     android:orientation="vertical"
     android:padding="15dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="@string/dialog_fb_title" />
+        android:layout_marginBottom="8dp" >
+
+        <TextView
+            android:id="@+id/cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/share_fb_cancel"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@string/dialog_fb_title" />
+
+        <TextView
+            android:id="@+id/post_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="#0076FF"
+            android:text="@string/share_fb_post"/>
+
+    </RelativeLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/text_dark" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
         android:text="@string/dialog_fb_text" />
 
     <EditText
         android:id="@+id/caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"/>
+        android:gravity="top"
+        android:padding="5dp"
+        android:lines="4"
+        android:textSize="12sp"
+        android:background="@drawable/edittext_fb_bg" />
 
 </LinearLayout>

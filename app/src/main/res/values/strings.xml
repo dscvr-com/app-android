@@ -55,7 +55,7 @@
     <string name="dialog_share_not_login">In order to share your comment you need to create an account. Your image won\'t be lost and can be shared afterwards.</string>
     <string name="dialog_continue">Continue</string>
     <string name="dialog_fb_title">Facebook</string>
-    <string name="dialog_fb_text">Say something about this 360 image</string>
+    <string name="dialog_fb_text">Say something about this 360 photo</string>
     <string name="dialog_fb_success">360 photo posted successfully.</string>
 
     <!-- Search -->
@@ -114,6 +114,8 @@
     <string name="share_text">Share this 360 image:</string>
     <string name="share_copy_to_clipboard">Link copied to clipboard.</string>
     <string name="share_email_error">There are no email clients installed.</string>
+    <string name="share_fb_cancel">CANCEL</string>
+    <string name="share_fb_post">POST</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

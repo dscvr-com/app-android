@@ -394,37 +394,35 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         alertDialogBuilder.setView(promptView);
 
         final EditText editText = (EditText) promptView.findViewById(R.id.caption);
-        alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("POST", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        apiConsumer.shareFB(new ShareFBData(optograph.getId(), editText.getText().toString().equals("") ? " " : editText.getText().toString()), new Callback<LogInReturn.EmptyResponse>() {
-                            @Override
-                            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+        final TextView cancelBtn = (TextView) promptView.findViewById(R.id.cancel_btn);
+        final TextView postBtn = (TextView) promptView.findViewById(R.id.post_btn);
 
-                                Bundle bundle = new Bundle();
-                                bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_fb_success));
-
-                                GenericOKDialog genericOKDialog = new GenericOKDialog();
-                                genericOKDialog.setArguments(bundle);
-                                genericOKDialog.show(getFragmentManager(), "Error");
-                            }
-
-                            @Override
-                            public void onFailure(Throwable t) {
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create an alert dialog
+        alertDialogBuilder.setCancelable(false);
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+
+        postBtn.setOnClickListener(v -> {
+            alert.cancel();
+            apiConsumer.shareFB(new ShareFBData(optograph.getId(), editText.getText().toString().equals("") ? " " : editText.getText().toString()), new Callback<LogInReturn.EmptyResponse>() {
+                @Override
+                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_fb_success));
+
+                    GenericOKDialog genericOKDialog = new GenericOKDialog();
+                    genericOKDialog.setArguments(bundle);
+                    genericOKDialog.show(getFragmentManager(), "Error");
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                }
+            });
+        });
+        cancelBtn.setOnClickListener(v -> {
+            alert.cancel();
+        });
     }
 
     @Override
