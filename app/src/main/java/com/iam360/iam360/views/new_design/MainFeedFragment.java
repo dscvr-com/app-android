@@ -160,7 +160,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+//                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .onErrorReturn(throwable -> {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
@@ -244,7 +244,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         apiConsumer.getOptographs(5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+//                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .onErrorReturn(throwable -> {
                     networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
