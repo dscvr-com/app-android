@@ -108,6 +108,9 @@
         <activity
             android:name=".views.new_design.MailingListActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".views.new_design.SharingActivity"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".views.SearchActivity"
             android:screenOrientation="portrait"

@@ -201,6 +201,23 @@
                     android:visibility="gone"
                     android:textColor="@color/bright" />
 
+                <RelativeLayout
+                    android:id="@+id/share_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@id/heart_container" >
+
+                    <ImageView
+                        android:id="@+id/share_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/share_bar_icn"
+                        android:layout_centerVertical="true" />
+
+                </RelativeLayout>
+
                 <ImageButton
                     android:id="@+id/delete_button"
                     android:layout_width="wrap_content"

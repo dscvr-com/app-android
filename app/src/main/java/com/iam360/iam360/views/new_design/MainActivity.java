@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setOptograph(Optograph optograph) {
-        Timber.d("PREVIEW SETOPTOGRAPH1");
         adapterViewPager.sharingFragment.setOptograph(optograph);
     }
 

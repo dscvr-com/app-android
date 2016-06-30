@@ -127,6 +127,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.gyroButton.setOnClickListener(this);
         binding.heartContainer.setOnClickListener(this);
         binding.heartLabel.setOnClickListener(this);
+        binding.shareContainer.setOnClickListener(this);
+        binding.shareBtn.setOnClickListener(this);
         binding.followContainer.setOnClickListener(this);
         binding.follow.setOnClickListener(this);
         binding.deleteButton.setOnClickListener(this);
@@ -361,6 +363,12 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             case R.id.gyro_button:
                 gyroValidation();
                 instatiateFeedDisplayButton();
+                break;
+            case R.id.share_container:
+            case R.id.share_btn:
+                Intent intent = new Intent(this, SharingActivity.class);
+                intent.putExtra("opto", optograph);
+                startActivity(intent);
                 break;
             case R.id.heart_container:
             case R.id.heart_label:

@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -163,14 +164,17 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setOptograph(Optograph optograph) {
+        Timber.d("Set Optograph.");
         this.optograph = optograph;
     }
 
     public void updateOptograph() {
-        Timber.d("Preview Update");
+        Timber.d("Preview Update.");
 
         if(optograph != null) {
             setOptographPreview();
+        } else {
+            Timber.d("Empty Optograph.");
         }
 
     }
@@ -180,26 +184,46 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         return sharingFragment;
     }
 
+    public static SharingFragment newInstance(Optograph optograph) {
+        SharingFragment sharingFragment = new SharingFragment();
+        sharingFragment.setOptograph(optograph);
+        return sharingFragment;
+    }
+
     private void setOptographPreview() {
 
-        Timber.d("Preview SetOpto");
+        Timber.d("Preview Set Opto.");
         String uri = ImageUrlBuilder.buildPlaceholderUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
 
-        if(previewImg.getWidth() > 0 && previewImg.getHeight() > 0) {
-            if (optograph.is_local()) {
-                Picasso.with(previewImg.getContext())
-                        .load(new File(uri))
-                        .resize(previewImg.getWidth(), previewImg.getHeight())
-                        .centerCrop()
-                        .into(previewImg);
-            } else {
-                Picasso.with(previewImg.getContext())
-                        .load(uri)
-                        .resize(previewImg.getWidth(), previewImg.getHeight())
-                        .centerCrop()
-                        .into(previewImg);
-            }
-        }
+//        if(previewImg.getWidth() > 0 && previewImg.getHeight() > 0) {
+//            Timber.d("Setting image.");
+
+            previewImg.getViewTreeObserver()
+                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        // Wait until layout to call Picasso
+                        @Override
+                        public void onGlobalLayout() {
+                            // Ensure we call this only once
+                            previewImg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            if (optograph.is_local()) {
+                                Picasso.with(previewImg.getContext())
+                                        .load(new File(uri))
+                                        .resize(previewImg.getWidth(), previewImg.getHeight())
+                                        .centerCrop()
+                                        .into(previewImg);
+                            } else {
+                                Picasso.with(previewImg.getContext())
+                                        .load(uri)
+                                        .resize(previewImg.getWidth(), previewImg.getHeight())
+                                        .centerCrop()
+                                        .into(previewImg);
+                            }
+                        }
+                    });
+//        } else {
+//            Timber.d("Preview image container is zero.");
+//        }
 
     }
 
@@ -407,7 +431,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_back:
-                ((MainActivity)getActivity()).setPage(MainActivity.FEED_MODE);
+                if(getContext() instanceof MainActivity)
+                    ((MainActivity)getActivity()).setPage(MainActivity.FEED_MODE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -416,7 +441,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_back).setVisible(true);
+        if(getContext() instanceof MainActivity) menu.findItem(R.id.action_back).setVisible(true);
+        else menu.findItem(R.id.action_back).setVisible(false);
     }
 
     @Override
