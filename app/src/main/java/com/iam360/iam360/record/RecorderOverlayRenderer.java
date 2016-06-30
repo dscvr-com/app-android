@@ -39,6 +39,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
     private float[] rotationMatrix = new float[16];
+    private float[] lastCmMatrix = new float[16];
 
     private boolean addedNewLineNode;
 
@@ -106,8 +107,22 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         }
 
         float[] view = new float[16];
+        float[] cmDiff = new float[16];
+        float[] smoothRotation = new float[16];
 
-        Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(cmDiff, 0, CoreMotionListener.getInstance().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
+
+        Matrix.multiplyMM(smoothRotation, 0, cmDiff, 0, rotationMatrix, 0);
+
+        //Matrix.multiplyMM(view, 0, camera, 0, CoreMotionListener.getInstance().getRotationMatrix(), 0);
+        //Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(view, 0, camera, 0, smoothRotation, 0);
+        /*Matrix.multiplyMM(view, 0, camera, 0, new float[] {
+                0, 1, 0, 0,
+                1, 0, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        }, 0);*/
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
@@ -152,7 +167,8 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     public void setRotationMatrix(float[] rotationMatrix) {
         //System.arraycopy(rotationMatrix, 0, this.rotationMatrix, 0, 16);
         Matrix.transposeM(this.rotationMatrix, 0, rotationMatrix, 0);
-        Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
+        CoreMotionListener.getInstance().getRotationMatrix(this.lastCmMatrix);
+        //Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
     }
 
     public void startRendering() {

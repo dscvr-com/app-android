@@ -21,7 +21,7 @@ public class RotationVectorListener extends RotationMatrixProvider {
         Matrix.setIdentityM(rotationMatrix, 0);
     }
 
-    public void handleSensorEvent(SensorEvent event) {
+    public synchronized void handleSensorEvent(SensorEvent event) {
         // It is good practice to check that we received the proper sensor event
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             /*
@@ -48,8 +48,9 @@ public class RotationVectorListener extends RotationMatrixProvider {
         }
     }
 
+
     @Override
-    public float[] getRotationMatrix() {
-        return rotationMatrix;
+    public synchronized void getRotationMatrix(float[] target) {
+        System.arraycopy(rotationMatrix, 0, target, 0, 16);
     }
 }

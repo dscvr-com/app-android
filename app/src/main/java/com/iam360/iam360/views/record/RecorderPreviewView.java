@@ -58,8 +58,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
     public RecorderPreviewView(Context ctx) {
         super(ctx);
         this.textureView = this;
-        //this.videoSize = new Size(720, 1280); //Size we want for stitcher input
-        this.videoSize = new Size(1280, 720); //Size we want for stitcher input
+        this.videoSize = new Size(720, 1280); //Size we want for stitcher input
     }
 
     // To be called from parent activity

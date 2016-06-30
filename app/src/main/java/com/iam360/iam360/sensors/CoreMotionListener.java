@@ -101,7 +101,8 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     }
 
     @Override
-    public synchronized float[] getRotationMatrix() {
-        return rotationMatrix;
+    public synchronized void getRotationMatrix(float[] t) {
+        if(rotationMatrix != null)
+            System.arraycopy(rotationMatrix, 0, t, 0, 16);
     }
 }
