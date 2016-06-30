@@ -1,9 +1,9 @@
 package com.iam360.iam360.views.profile;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Rect;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.facebook.login.LoginManager;
-import com.iam360.iam360.BR;
 import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
@@ -152,6 +151,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         return binding.getRoot();
     }
 
+    public void setAvatar(Bitmap bitmap) {
+        optographLocalGridAdapter.avatarUpload(bitmap);
+    }
+
     private void initializeProfileFeed() {
 
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
@@ -256,12 +259,17 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void updateHomeButton() {
+        Log.d("myTag", "menu: updateHomeButton isOnEditMode? " + optographLocalGridAdapter.isOnEditMode());
+        if (getActivity() instanceof MainActivity)
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(optographLocalGridAdapter.isOnEditMode() ? R.drawable.cancel : R.drawable.logo_small_dark);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
+        Log.d("myTag","menu: isCurrentUser? "+isCurrentUser+" isOnEditMode? "+optographLocalGridAdapter.isOnEditMode()+" mainActivity? "+(getActivity() instanceof MainActivity));
+        if (getActivity() instanceof MainActivity) Log.d("myTag","menu: not SHARING MODE? "+
+                (((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE));
         if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
             menu.findItem(R.id.action_signout).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(true);
@@ -269,6 +277,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         } else if (isCurrentUser && !optographLocalGridAdapter.isOnEditMode() && ((getActivity() instanceof MainActivity &&
                 ((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE) ||
                 getActivity() instanceof ProfileActivity)) {
+            Log.d("myTag","menu: inside second condition");
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
@@ -295,6 +304,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
                 return true;
             case R.id.action_save:
+                Log.d("myTag","menu: save was clicked");
                 isEditMode = false;
                 optographLocalGridAdapter.saveUpdate();
                 getActivity().invalidateOptionsMenu();

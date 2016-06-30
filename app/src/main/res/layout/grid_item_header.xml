@@ -71,6 +71,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@{person.display_name}"
                 android:textColor="@color/optonautMain_2"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:font="@{``}" />
 
@@ -136,7 +137,8 @@
                 android:layout_height="1dp"
                 android:layout_below="@id/person_desc_edit"
                 android:layout_marginTop="@dimen/navigation_padding_bottom"
-                android:background="@color/profile_columns_text" />
+                android:background="@color/profile_columns_text"
+                android:visibility="gone"/>
 
             <!--android:layout_marginLeft="50dp"-->
             <!--android:layout_marginRight="50dp"-->

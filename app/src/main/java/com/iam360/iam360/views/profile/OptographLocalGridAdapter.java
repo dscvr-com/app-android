@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +40,6 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
-import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
@@ -52,10 +53,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import timber.log.Timber;
 
 /**
  * Created by Mariel on 6/14/2016.
@@ -70,11 +73,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public static final int VIEW_FOLLOWER = 4;
     public static final int ON_IMAGE=0;
     public static final int ON_FOLLOWER=1;
+    public static final int PICK_IMAGE_REQUEST = 1;
     List<Optograph> optographs;
     List<Follower> followers;
-    private Person person;
 
+    private Person person;
     protected Cache cache;
+
     private DBHelper mydb;
 
     protected ApiConsumer apiConsumer;
@@ -84,9 +89,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private boolean isCurrentUser=false;
     private boolean isEditMode = false;
     private boolean needSave = false;
+    private boolean avatarChange = false;
+    private boolean fromCancelEdit = false;
 
     private int onTab;
     private String follow, following;
+    private String origPersonName, origPersonDesc;
+    private String personName, personDesc;
+    private Bitmap avatarImage;
+    private String avatarId;
 
     public OptographLocalGridAdapter(Context context,int tab) {
         this.context = context;
@@ -157,7 +168,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.d("myTag"," follower? "+(onTab==ON_FOLLOWER)+" position: "+position);
         if (onTab==ON_IMAGE) {
             Optograph optograph = optographs.get(position);
 
@@ -185,7 +195,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     mHolder2.getBinding().textview.setText(String.valueOf(position) + " " + optograph.getText() + " star: " + optograph.getStars_count());
 
-                    Log.d("myTag", "adapter image: " + ITEM_WIDTH / 4 + " local opto count: " + count + " position: " + position);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, ViewGroup.LayoutParams.WRAP_CONTENT); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
                     holder.itemView.setLayoutParams(params);
 
@@ -239,7 +248,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().setVariable(BR.optograph, optograph);
                     mHolder3.getBinding().executePendingBindings();
 
-
                     mHolder3.getBinding().optograph2dviewServer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -265,8 +273,49 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (mHolder2.getBinding().getFollower()!=null) {
 
                     }
+
                     mHolder2.getBinding().setVariable(BR.follower,follower);
                     mHolder2.getBinding().executePendingBindings();
+
+                    if (follower.is_followed()) mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.following_btn);
+                    else mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.follow_btn);
+
+                    mHolder2.getBinding().followUnfollowBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mHolder2.getBinding().getFollower().is_followed()) {
+                                apiConsumer.unfollow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                                    @Override
+                                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().getFollower().setIs_followed(false);
+                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
+                                        mHolder2.getBinding().invalidateAll();
+                                        notifyItemChanged(position);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable t) {
+                                        Log.d("myTag","Error unfollow: "+t.getMessage());
+                                    }
+                                });
+                            } else {
+                                apiConsumer.follow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
+                                    @Override
+                                    public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().getFollower().setIs_followed(true);
+                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
+                                        mHolder2.getBinding().invalidateAll();
+                                        notifyItemChanged(position);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Throwable t) {
+                                        Log.d("myTag","Error follow: "+t.getMessage());
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             }
         }
@@ -290,7 +339,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
         setTab(mHolder);
 
-        Log.d("myTag","person initializeHeaderSecond isCurrentuser? "+isCurrentUser);
         if (!isCurrentUser && onTab == ON_IMAGE) {
             mHolder.getBinding().followerTab.setVisibility(View.GONE);
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
@@ -362,42 +410,93 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private void initializeHeaderOne(HeaderOneViewHolder mHolder1) {
         mHolder1.getBinding().setVariable(BR.person, person);
         mHolder1.getBinding().executePendingBindings();
-        Log.d("myTag", "person initializeHeaderOne isCurrentUser? " + isCurrentUser);
-
-        if (!isCurrentUser) {
-            mHolder1.getBinding().editBtn.setVisibility(View.GONE);
-            mHolder1.getBinding().personIsFollowed.setVisibility(View.VISIBLE);
-            Log.d("myTag", "person null? " + (person == null));
-            if (person!=null) Log.d("myTag","person isFollwed? "+person.is_followed());
-            mHolder1.getBinding().personIsFollowed.setBackgroundResource((person!=null && person.is_followed())?R.drawable.following_btn:R.drawable.follow_btn);
-//            if (person.is_followed()) mHolder1.getBinding().personIsFollowed.setText(following);
-//            else mHolder1.getBinding().personIsFollowed.setText(follow);
+        if (avatarChange) {
+            if (avatarImage!=null) {
+                mHolder1.getBinding().personAvatarAsset.setImageBitmap(avatarImage);
+                mHolder1.getBinding().getPerson().setAvatar_asset_id(avatarId);
+            }
+            avatarChange = false;
         }
 
+        if (fromCancelEdit) {
+            mHolder1.getBinding().getPerson().setDisplay_name(origPersonName);
+            mHolder1.getBinding().getPerson().setText(origPersonDesc);
+            mHolder1.getBinding().personName.setText(origPersonName);
+            mHolder1.getBinding().personDesc.setText(origPersonDesc);
+            mHolder1.getBinding().personNameEdit.setText(origPersonName);
+            mHolder1.getBinding().personDescEdit.setText(origPersonDesc);
+            fromCancelEdit = false;
+        }
 
-        Log.d("myTag","needSave? "+needSave);
         if (needSave) {
-            Log.d("myTag","needSave from edit text name: "+mHolder1.getBinding().personNameEdit.getText().toString()+
-                    " desc: "+mHolder1.getBinding().personDescEdit.getText().toString());
             mHolder1.getBinding().personName.setText(mHolder1.getBinding().personNameEdit.getText().toString());
             mHolder1.getBinding().personDesc.setText(mHolder1.getBinding().personDescEdit.getText().toString());
             mHolder1.getBinding().getPerson().setText(mHolder1.getBinding().personDescEdit.getText().toString());
             mHolder1.getBinding().getPerson().setDisplay_name(mHolder1.getBinding().personNameEdit.getText().toString());
-            Log.d("myTag","needSave name: "+mHolder1.getBinding().personName.getText()+" desc: "+mHolder1.getBinding().personDesc.getText());
             PersonManager.updatePerson(mHolder1.getBinding().personNameEdit.getText().toString(), mHolder1.getBinding().personDescEdit.getText().toString());
             needSave=false;
         }
 
+//        mHolder1.getBinding().executePendingBindings();
+
+        if (!isCurrentUser) {
+            mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+            mHolder1.getBinding().personIsFollowed.setVisibility(View.VISIBLE);
+            mHolder1.getBinding().personIsFollowed.setBackgroundResource((person!=null && person.is_followed())?R.drawable.following_btn:R.drawable.follow_btn);
+        }
+
         if (isCurrentUser && isEditMode) {
             mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+            mHolder1.getBinding().personDesc.setVisibility(View.INVISIBLE);
+            mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
+            mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
+            mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
         } else if (isCurrentUser) {
-            mHolder1.getBinding().editBtn.setVisibility(View.VISIBLE);
+            if(context instanceof MainActivity) mHolder1.getBinding().editBtn.setVisibility(View.VISIBLE);
+            else mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+
             mHolder1.getBinding().personDesc.setVisibility(View.VISIBLE);
             mHolder1.getBinding().personName.setVisibility(View.VISIBLE);
             mHolder1.getBinding().personDescEdit.setVisibility(View.INVISIBLE);
             mHolder1.getBinding().personNameEdit.setVisibility(View.INVISIBLE);
             mHolder1.getBinding().personIsFollowed.setVisibility(View.GONE);
         }
+
+        mHolder1.getBinding().personNameEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+//                personName = s.toString();
+                mHolder1.getBinding().getPerson().setDisplay_name(s.toString());
+            }
+        });
+
+        mHolder1.getBinding().personDescEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d("myTag", "needSave beforeTextChanged Desc " + s.toString());
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("myTag", "needSave onTextChanged Desc " + s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mHolder1.getBinding().getPerson().setText(s.toString());
+//                personDesc = s.toString();
+                Log.d("myTag", "needSave afterTextChanged personDesc "+personDesc);
+            }
+        });
 
         mHolder1.getBinding().editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -407,6 +506,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
                     mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
                     mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
+                    origPersonName = mHolder1.getBinding().getPerson().getDisplay_name();
+                    origPersonDesc = mHolder1.getBinding().getPerson().getText();
                     isEditMode = true;
                     updateMenuOptions();
                     mHolder1.getBinding().editBtn.setVisibility(View.GONE);
@@ -418,11 +519,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onClick(View v) {
                 if (mHolder1.getBinding().getPerson().is_followed()) {
-                    Log.d("myTag","person click unfollow");
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Log.d("myTag","person unfollow success");
                             mHolder1.getBinding().getPerson().setIs_followed(false);
                             mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
                             mHolder1.getBinding().invalidateAll();
@@ -434,22 +533,70 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         }
                     });
                 } else {
-                    Log.d("myTag","person click follow");
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Log.d("myTag","person follow success");
-                            mHolder1.getBinding().getPerson().setIs_followed(false);
-                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
+                            mHolder1.getBinding().getPerson().setIs_followed(true);
+                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
                             mHolder1.getBinding().invalidateAll();
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
-                            Log.d("myTag","Error follow: "+t.getMessage());
+                            Log.d("myTag", "Error follow: " + t.getMessage());
                         }
                     });
                 }
+            }
+        });
+
+        mHolder1.getBinding().personAvatarAsset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEditMode) {
+                    Intent intent = new Intent();
+                    // Show only images, no vieos or anything else
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    // Always show the chooser (if there are multiple options available)
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                    }
+                }
+            }
+        });
+
+    }
+
+    public void avatarUpload(Bitmap bitmap) {
+        String avatar = UUID.randomUUID().toString();
+        avatarChange = true;
+        avatarImage = bitmap;
+        avatarId = avatar;
+        notifyItemChanged(0);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+        byte[] data = bos.toByteArray();
+
+        RequestBody fbody = RequestBody.create(MediaType.parse("image/jpeg"), data);
+        RequestBody fbodyMain = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("avatar_asset", "avatar.jpg", fbody)
+                .addFormDataPart("avatar_asset_id", avatar)
+                .build();
+
+        Timber.d("Avatar " + avatar);
+        apiConsumer.uploadAvatar(fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Timber.d("Response : " + response.message());
+//                binding.getPerson().setAvatar_asset_id(avatar);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Timber.d("OnFailure: " + t.getMessage());
             }
         });
     }
@@ -524,6 +671,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     public void saveUpdate() {
         needSave = true;
+        avatarImage = null;
+        avatarId = null;
         isEditMode = false;
         notifyItemChanged(0);
     }
@@ -533,6 +682,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void setEditMode(boolean mode) {
+        fromCancelEdit = true;
         isEditMode = mode;
         notifyItemChanged(0);
     }
@@ -550,19 +700,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Log.d("myTag", "response errorBody: " + response.errorBody());
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                     notifyItemChanged(position);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
-                    Log.d("myTag", "parsing the JSON body failed.");
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                     notifyItemChanged(position);
                     return;
                 }
-                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
                 // do things for success
                 uploadPlaceHolder(position);
             }
@@ -698,10 +845,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-                Log.d("myTag", " onResponse body: " + response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+//                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
+//                Log.d("myTag", " onResponse body: " + response.body());
+//                Log.d("myTag", " onResponse message: " + response.message());
+//                Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
@@ -862,10 +1009,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, OptoImagePreviewFragment.optoType360, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
-                Log.d("myTag", "onResponse message: " + response.message());
-                Log.d("myTag", "onResponse body: " + response.body());
-                Log.d("myTag", "onResponse raw: " + response.raw());
+//                Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
+//                Log.d("myTag", "onResponse message: " + response.message());
+//                Log.d("myTag", "onResponse body: " + response.body());
+//                Log.d("myTag", "onResponse raw: " + response.raw());
                 if (face.equals("l"))
                     opto.getLeftFace().setStatusByIndex(side, response.isSuccess());
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
@@ -951,25 +1098,21 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void setPerson(Person person) {
-        Log.d("myTag","setPerson");
         this.person = person;
         isCurrentUser = (person.getId().equals(cache.getString(Cache.USER_ID)));
         notifyItemRangeChanged(0,2);
     }
 
     public void addItem(Follower follower) {
-        Log.d("myTag","follower null? "+(follower==null));
         if (follower == null) {
             return;
         }
 
-        Log.d("myTag","followers contains? "+followers.contains(follower));
         if (followers.contains(follower)) {
             return;
         }
 
         followers.add(follower);
-        Log.d("myTag","follower name: "+follower.getDisplay_name()+" count: "+getItemCount());
 //        notifyItemInserted(getItemCount());
         notifyDataSetChanged();
     }
@@ -1036,12 +1179,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public Optograph checkToDB(Optograph optograph) {
         Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
-        Log.d("myTag","checkToDB getcount: "+res.getCount());
         if (res.getCount()==0) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
-        Log.d("myTag","checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+//        Log.d("myTag","checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
         if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
