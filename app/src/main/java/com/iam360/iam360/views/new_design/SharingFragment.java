@@ -52,6 +52,7 @@ import com.iam360.iam360.model.FBSignInData;
 import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -143,15 +144,11 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         twitterBtn.setOnClickListener(this);
         messengerBtn.setOnClickListener(this);
 
-        setFont(toolbarText);
-        setFont(shareText);
+        GeneralUtils utils = new GeneralUtils();
+        utils.setFont(toolbarText, getContext());
+        utils.setFont(shareText, getContext());
 
         return view;
-    }
-
-    private void setFont(TextView textView) {
-        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
-        textView.setTypeface(custom_font);
     }
 
     @Override

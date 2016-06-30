@@ -3,10 +3,12 @@ package com.iam360.iam360.util;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import timber.log.Timber;
 
@@ -93,6 +95,11 @@ public class GeneralUtils {
         } else {
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+    }
+
+    public void setFont(TextView textView, Context context) {
+        Typeface custom_font = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
+        textView.setTypeface(custom_font);
     }
 
 }

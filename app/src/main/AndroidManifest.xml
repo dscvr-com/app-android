@@ -105,6 +105,9 @@
         <activity
             android:name=".views.new_design.OptoImagePreviewActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".views.new_design.MailingListActivity"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".views.SearchActivity"
             android:screenOrientation="portrait"

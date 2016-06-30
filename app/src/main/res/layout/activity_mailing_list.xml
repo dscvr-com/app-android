@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:gravity="center_horizontal"
+    android:padding="10dp" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="62dp"
+        android:layout_marginBottom="55dp"
+        android:background="@drawable/logo_mailing_dark" />
+
+    <TextView
+        android:id="@+id/type_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="19sp"
+        android:layout_marginBottom="17dp"
+        android:text="@string/mailing_type_invite" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/secret_code_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/go_btn"
+            android:layout_marginRight="7dp"
+            android:padding="10dp"
+            android:textSize="19sp"
+            android:textColor="@color/text_dark"
+            android:background="@drawable/mailing_edittext" />
+
+        <Button
+            android:id="@+id/go_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/yellow_btn"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:text="@string/mailing_go" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/or_line_mailing"
+        android:layout_marginBottom="20dp"
+        android:textColor="@android:color/white"
+        android:textSize="34sp"
+        android:text="@string/mailing_or" />
+
+    <TextView
+        android:id="@+id/get_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="19sp"
+        android:text="@string/mailing_get_invite" />
+
+    <EditText
+        android:id="@+id/email_text"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="13dp"
+        android:padding="10dp"
+        android:textSize="19sp"
+        android:textColor="@color/text_dark"
+        android:background="@drawable/mailing_edittext" />
+
+    <Button
+        android:id="@+id/send_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/yellow_btn"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:text="@string/mailing_send" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|center_horizontal">
+
+        <TextView
+            android:id="@+id/reach_us_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:text="@string/mailing_reach_us" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

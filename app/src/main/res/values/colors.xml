@@ -78,4 +78,8 @@
     <color name="text_search">#FF585858</color>
     <!--<color name="text_search">#FF555555</color>-->
 
+    <!-- Button Colors -->
+    <color name="btn_yellow">#ffbc00</color>
+    <color name="mailing_edittext">#CACACA</color>
+
 </resources>
