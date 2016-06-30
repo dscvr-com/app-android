@@ -1,5 +1,6 @@
 package com.iam360.iam360.views.new_design;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -36,13 +37,14 @@ public class MailingListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         GeneralUtils utils = new GeneralUtils();
-        utils.setFont(typeText, this);
-        utils.setFont(getText, this);
-        utils.setFont(goBtn, this);
-        utils.setFont(sendBtn, this);
-        utils.setFont(reachUsText, this);
-        utils.setFont(emailText, this);
-        utils.setFont(codeText, this);
+        utils.setFont(this, typeText);
+        utils.setFont(this, getText);
+        utils.setFont(this, goBtn, Typeface.DEFAULT_BOLD);
+        utils.setFont(this, sendBtn, Typeface.DEFAULT_BOLD);
+        utils.setFont(this, reachUsText);
+        utils.setFont(this, emailText);
+        utils.setFont(this, codeText);
+
     }
 
     @Override

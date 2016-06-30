@@ -145,8 +145,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         messengerBtn.setOnClickListener(this);
 
         GeneralUtils utils = new GeneralUtils();
-        utils.setFont(toolbarText, getContext());
-        utils.setFont(shareText, getContext());
+        utils.setFont(getContext(), toolbarText);
+        utils.setFont(getContext(), shareText);
 
         return view;
     }

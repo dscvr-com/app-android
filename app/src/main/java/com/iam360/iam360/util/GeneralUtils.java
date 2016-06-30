@@ -96,10 +96,19 @@ public class GeneralUtils {
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
     }
+    public void setFont(Context context, TextView textView) {
+        setFont(context, textView, Typeface.DEFAULT);
+    }
 
-    public void setFont(TextView textView, Context context) {
+    /**
+     *
+     * @param context
+     * @param textView
+     * @param typeface Typeface.DEFAULT, Typeface.DEFAULT_BOLD
+     */
+    public void setFont(Context context, TextView textView, Typeface typeface) {
         Typeface custom_font = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
-        textView.setTypeface(custom_font);
+        textView.setTypeface(custom_font, typeface.getStyle());
     }
 
 }
