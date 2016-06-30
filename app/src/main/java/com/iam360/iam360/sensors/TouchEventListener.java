@@ -122,6 +122,11 @@ public class TouchEventListener extends RotationMatrixProvider {
         return Maths.buildRotationMatrix(rotationY, rotationX);
     }
 
+    @Override
+    public void getRotationMatrix(float[] target) {
+        System.arraycopy(getRotationMatrix(), 0, target, 0, 16);
+    }
+
     public boolean isTouching() {
         return isTouching;
     }

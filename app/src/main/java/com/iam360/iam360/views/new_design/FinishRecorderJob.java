@@ -2,6 +2,7 @@ package com.iam360.iam360.views.new_design;
 
 import android.graphics.Bitmap;
 
+import com.iam360.iam360.record.Alignment;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
@@ -58,6 +59,8 @@ public class FinishRecorderJob extends Job {
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
+
+        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
 
         Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
 //        UUID id = UUID.randomUUID();

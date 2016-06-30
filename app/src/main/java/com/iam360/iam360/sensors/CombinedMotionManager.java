@@ -78,6 +78,11 @@ public class CombinedMotionManager extends RotationMatrixProvider {
         return touchEventListener.getRotationMatrix();
     }
 
+    @Override
+    public void getRotationMatrix(float[] target) {
+        System.arraycopy(getRotationMatrix(), 0, target, 0, 16);
+    }
+
     public void registerOnCoreMotionListener() {
         CoreMotionListener.register();
         registeredOnCoreMotionListener = true;

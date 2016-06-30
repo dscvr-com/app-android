@@ -33,7 +33,7 @@ android {
     buildToolsVersion "19.1.0"
     defaultConfig {
         applicationId "co.optonaut.optonaut"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 22
         versionCode 20160524
         versionName "0.5"

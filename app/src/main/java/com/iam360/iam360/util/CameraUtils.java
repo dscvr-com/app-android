@@ -3,8 +3,12 @@ package com.iam360.iam360.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.os.Environment;
 import android.util.Log;
+import android.util.SizeF;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -87,8 +91,8 @@ public class CameraUtils {
         //float[] size = {4.6541333f, 3.4623966f};
 
         //Hard-code fix for Image size and FOV
+        //float[] size = {7.81538f, 5.86153f};
         float[] size = {4f, 3f};
-
 
         //uncomment if gba is applied
         /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -107,6 +111,7 @@ public class CameraUtils {
             }
             Timber.v("size: [%s, %s]", size[0], size[1]);
         }*/
+
         return size;
     }
 

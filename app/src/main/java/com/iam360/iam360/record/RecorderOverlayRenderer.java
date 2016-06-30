@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.iam360.iam360.opengl.Sphere;
 import com.iam360.iam360.sensors.CoreMotionListener;
+import com.iam360.iam360.util.GeneralUtils;
+
 import timber.log.Timber;
 
 /**
@@ -36,6 +39,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
     private float[] rotationMatrix = new float[16];
+    private float[] lastCmMatrix = new float[16];
 
     private boolean addedNewLineNode;
 
@@ -52,18 +56,20 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Timber.v("onSurfaceCreated");
+
         sphere.initializeProgram();
         setSpherePosition(0.9f, 0, 0);
-
-        // Set the camera position
-        Matrix.setLookAtM(camera, 0,
-                0.0f, 0.0f, 0.0f, // eye
-                0.0f, 0.0f, 0.01f, // center
-                0.0f, 1.0f, 0.0f); // up
 
         // Set the background frame color as transparent!
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GLES20.glClearDepthf(1.0f);
+
+        // Set the camera position
+        Matrix.setLookAtM(camera, 0,
+                0.0f, 0.0f, -0.01f, // eye
+                0.0f, 0.0f, 0.0f, // center
+                0.0f, 1.0f, 0.0f); // up
+
     }
 
     public void setSpherePosition(float x, float y, float z) {
@@ -86,10 +92,12 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        if(addedNewLineNode) {
-            for (LineNode node: lineNodes) {
-                if (!node.isProgramInitialized()) {
-                    node.initializeProgram();
+        synchronized (lineNodes) {
+            if (addedNewLineNode) {
+                for (LineNode node : lineNodes) {
+                    if (!node.isProgramInitialized()) {
+                        node.initializeProgram();
+                    }
                 }
             }
         }
@@ -99,21 +107,38 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         }
 
         float[] view = new float[16];
-        rotationMatrix = CoreMotionListener.getInstance().getRotationMatrixInverse();
+        float[] cmDiff = new float[16];
+        float[] smoothRotation = new float[16];
 
-        Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(cmDiff, 0, CoreMotionListener.getInstance().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
+
+        Matrix.multiplyMM(smoothRotation, 0, cmDiff, 0, rotationMatrix, 0);
+
+        //Matrix.multiplyMM(view, 0, camera, 0, CoreMotionListener.getInstance().getRotationMatrix(), 0);
+        //Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(view, 0, camera, 0, smoothRotation, 0);
+        /*Matrix.multiplyMM(view, 0, camera, 0, new float[] {
+                0, 1, 0, 0,
+                1, 0, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        }, 0);*/
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
 
+
+        // Set the background frame color as transparent!
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES20.glClearDepthf(1.0f);
+
         // Draw lines
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-//        for (LineNode node : lineNodes) {
-//            node.draw(mvpMatrix);
-//        }
 
-        for(int i=0; i<lineNodes.size(); i++) {
-            lineNodes.get(i).draw(mvpMatrix);
+        synchronized (lineNodes) {
+            for (int i = 0; i < lineNodes.size(); i++) {
+                lineNodes.get(i).draw(mvpMatrix);
+            }
         }
 
         sphere.draw(mvpMatrix);
@@ -126,13 +151,24 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     }
 
     public void addChildNode(LineNode edgeNode) {
-        addedNewLineNode = true;
-        lineNodes.add(edgeNode);
+        synchronized (lineNodes) {
+            addedNewLineNode = true;
+            lineNodes.add(edgeNode);
+        }
     }
 
     public void colorChildNode(LineNode lineNode) {
-        int index = lineNodes.indexOf(lineNode);
-        if(index >= 0) lineNodes.get(index).isRecordedEdge(true);
+        synchronized (lineNodes) {
+            int index = lineNodes.indexOf(lineNode);
+            if (index >= 0) lineNodes.get(index).isRecordedEdge(true);
+        }
+    }
+
+    public void setRotationMatrix(float[] rotationMatrix) {
+        //System.arraycopy(rotationMatrix, 0, this.rotationMatrix, 0, 16);
+        Matrix.transposeM(this.rotationMatrix, 0, rotationMatrix, 0);
+        CoreMotionListener.getInstance().getRotationMatrix(this.lastCmMatrix);
+        //Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
     }
 
     public void startRendering() {

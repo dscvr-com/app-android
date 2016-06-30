@@ -27,6 +27,7 @@ public class RecorderOverlayView extends GLSurfaceView {
 
         // we want to use this as overlay above the camera preview - while not covering other views such as OverlayNavigationFragment
         setZOrderMediaOverlay(true);
+        //setZOrderOnTop(true);
 
         // not sure why we need this, but without it we can't get transparency!
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);

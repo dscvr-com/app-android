@@ -7,12 +7,23 @@ import android.opengl.Matrix;
  * @date 2015-12-26
  */
 public abstract class RotationMatrixProvider {
-    public abstract float[] getRotationMatrix();
+    public abstract void getRotationMatrix(float[] target);
+
+    public void getRotationMatrixInverse(float[] target) {
+        float[] r = new float[16];
+        getRotationMatrix(r);
+        Matrix.invertM(target, 0, r, 0);
+    }
+
+    public float[] getRotationMatrix() {
+        float[] r = new float[16];
+        getRotationMatrix(r);
+        return r;
+    }
 
     public float[] getRotationMatrixInverse() {
-        float[] rotationMatrixInverse = new float[16];
-        Matrix.invertM(rotationMatrixInverse, 0, getRotationMatrix(), 0);
-
-        return rotationMatrixInverse;
+        float[] r = new float[16];
+        getRotationMatrixInverse(r);
+        return r;
     }
 }
