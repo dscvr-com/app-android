@@ -91,11 +91,11 @@ public class CameraUtils {
         //float[] size = {4.6541333f, 3.4623966f};
 
         //Hard-code fix for Image size and FOV
+        //float[] size = {7.81538f, 5.86153f};
         float[] size = {4f, 3f};
 
-
         //uncomment if gba is applied
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             try {
@@ -103,14 +103,14 @@ public class CameraUtils {
                 if (cameraIds.length > camNum) {
                     CameraCharacteristics character = manager.getCameraCharacteristics(cameraIds[camNum]);
                     SizeF sizeF = character.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                    size[0] = sizeF.getWidth()*1.25f;
-                    size[1] = sizeF.getHeight()*1.25f;
+                    size[0] = sizeF.getWidth();
+                    size[1] = sizeF.getHeight();
                 }
             } catch (CameraAccessException e) {
                 Timber.e("YourLogString", e.getMessage(), e);
             }
             Timber.v("size: [%s, %s]", size[0], size[1]);
-        }
+        }*/
         return size;
     }
 

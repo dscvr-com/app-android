@@ -111,4 +111,19 @@ public class GeneralUtils {
         textView.setTypeface(custom_font, typeface.getStyle());
     }
 
+    public static String mToString(float[] m) {
+        StringBuilder sb = new StringBuilder();
+        int l = (int)(Math.sqrt(m.length) + 0.5);
+        assert l * l == m.length;
+        for(int i = 0; i < l; i++) {
+            for(int j = 0; j < l; j++) {
+                sb.append(m[j + i * l]);
+                if(j != l - 1)
+                    sb.append(", ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
 }

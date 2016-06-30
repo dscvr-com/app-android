@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.iam360.iam360.util.Vector3;
 import com.iam360.iam360.views.dialogs.CancelRecordingDialog;
 import com.iam360.iam360.views.MainActivityRedesign;
 import timber.log.Timber;
+// EJ 16.6.16 - This is an old implementation, don't work here.
 
 /**
  * @author Nilan Marktanner
@@ -82,7 +84,7 @@ public class RecordFragment extends Fragment {
 
                 captureWidth = parameters.getPictureSize().width;
 
-                Recorder.push(bitmap, extrinsicsData);
+                //Recorder.push(bitmap, extrinsicsData);
 
                 // progress bar
                 ((MainActivityRedesign) getActivity()).setProgressLocation((float) (Recorder.getRecordedImagesCount()) / (float) (Recorder.getImagesToRecordCount()));
@@ -167,6 +169,8 @@ public class RecordFragment extends Fragment {
         // initialize recorder
         float[] size = CameraUtils.getCameraResolution(view.getContext(), 0);
         Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size[0], size[1], camera.getParameters().getFocalLength(), mode);
+        Log.v("marky", "focallength " + camera.getParameters().getFocalLength());
+
 
         // Create our Preview view and set it as the content of our activity.
         recordPreview = new RecordPreview(getActivity(), camera);

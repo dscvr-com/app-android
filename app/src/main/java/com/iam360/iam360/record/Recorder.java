@@ -16,7 +16,7 @@ public class Recorder {
     private static boolean isInitialized = false;
 
     private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode);
-    public static native void push(Bitmap bitmap, double[] extrinsicsData);
+    public static native void push(byte[] data, int width, int height, double[] extrinsicsData);
     public static native SelectionPoint[] getSelectionPoints();
     public static native void finish();
     private static native void dispose();

@@ -136,9 +136,8 @@
     <string name="mailing_get_invite">Request Super Secret Code</string>
     <string name="mailing_or">or</string>
     <string name="mailing_go">GO</string>
-    <string name="mailing_send">SEND</string>
+    <string name="mailing_send">REQUEST</string>
     <string name="mailing_email">E-mail</string>
-    <string name="mailing_request">REQUEST</string>
     <string name="mailing_reach_us">Reach us at TEAM@DSCVR.COM</string>
 
 </resources>
