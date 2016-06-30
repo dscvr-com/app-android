@@ -118,7 +118,7 @@
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_vr_image">VR IMAGE VIEW STYLE</string>
-    <string name="settings_view_iam_360_in">VIEW 360 IN</string>
+    <string name="settings_view_iam_360_in">VIEW 360 IMAGE IN</string>
     <string name="settings_feed_default">FEED DEFAULT DISPLAY</string>
     <string name="settings_gyro">GYRO</string>
     <string name="settings_little_planet">LITTLE PLANET</string>

@@ -17,7 +17,6 @@
             type="Location" />
     </data>
 
-
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"

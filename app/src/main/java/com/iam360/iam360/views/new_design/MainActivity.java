@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
     private Cache cache;
-    private int currentMode=0;
+    private int currentMode = 0;
+    private int savePosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                if(savePosition>state)
+                {
+                    Timber.d("SWIPE RIGHT");
+                }else
+                {
+                    Timber.d("SWIPE LEFT");
+                }
+                savePosition = state;
             }
         });
 

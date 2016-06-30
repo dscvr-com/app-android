@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_below="@id/settings_title"
-                        android:background="@drawable/logo_dark"
+                        android:background="@drawable/logo_settings"
                         android:layout_centerHorizontal="true"/>
 
                     <TextView
