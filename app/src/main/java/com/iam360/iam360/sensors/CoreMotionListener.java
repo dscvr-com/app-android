@@ -97,7 +97,15 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        if(accuracy == SensorManager.SENSOR_STATUS_ACCURACY_HIGH) {
+            Timber.w("Sensor accuracy is high");
+        }
+        else if(accuracy == SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
+            Timber.w("Sensor accuracy is low");
+        }
+        else if(accuracy == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) {
+            Timber.w("Sensor accuracy is medium");
+        }
     }
 
     @Override
