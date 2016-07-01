@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import timber.log.Timber;
+
 /**
  * Created by emi on 16/06/16.
  */
@@ -92,6 +94,10 @@ public class RecorderPreviewView extends AutoFitTextureView {
                 Log.w(TAG, "Message tag: " + msg.what);
                 if(msg.what == START_DECODER) {
                     createDecoderSurface();
+                    // So I have no idea what we wait for. So we just wait.
+                    try {
+                        Thread.sleep(2500, 0);
+                    } catch (InterruptedException e) { }
                 } else if(msg.what == FETCH_FRAME) {
                     fetchFrame();
                 } else if(msg.what == EXIT_DECODER) {
@@ -127,11 +133,14 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
         try {
             if(dataListener != null) {
-                surface.awaitNewImage();
-                surface.drawImage(false);
-                dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mHeight, surface.colorFormat);
+                if(surface.awaitNewImage()) {
+                    surface.drawImage(false);
+                    Timber.d("Fetch frame success");
+                    dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mHeight, surface.colorFormat);
+                }
             } else {
-                Thread.sleep(100, 0);
+                Timber.e("Fetch frame failed");
+                Thread.sleep(10, 0);
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
