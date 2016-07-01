@@ -416,7 +416,7 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         String optographType;
         if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
 
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType,Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {

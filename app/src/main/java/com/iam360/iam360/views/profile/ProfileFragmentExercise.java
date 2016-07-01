@@ -359,5 +359,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
+
+        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+            LocalOptographManager.getOptographs()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(optographLocalGridAdapter::addItem);
+        }
+
     }
 }

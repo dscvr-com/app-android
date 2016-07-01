@@ -218,6 +218,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
             previewImage.setImageURI(imageUri);
         }
 
+        Log.d("myTag"," upload: UPLOAD_IMAGE_MODE? "+UPLOAD_IMAGE_MODE);
         // get current location
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
@@ -442,9 +443,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
         String optographType;
         if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
 
-        Log.d("mytag", "TIME : " + optograph.getCreated_atRFC3339());
-
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType,Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
@@ -459,7 +458,6 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
                 }
                 optographGlobal.setIs_data_uploaded(true);
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, 1);
-                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
                 // do things for success
                 optographGlobal.setIs_published(true);
                 uploadPlaceHolder(optographGlobal);

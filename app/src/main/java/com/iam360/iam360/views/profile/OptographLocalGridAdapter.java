@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -695,7 +696,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     private void uploadOptonautData(int position) {
         Optograph optograph = optographs.get(position);
-        OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type());
+        OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type(),Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
@@ -1085,7 +1086,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public Optograph getOldest() {
-        Log.d("myTag","itemCount: "+getItemCount());
         return get(getItemCount() - 1);
     }
 
@@ -1100,7 +1100,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public void setPerson(Person person) {
         this.person = person;
         isCurrentUser = (person.getId().equals(cache.getString(Cache.USER_ID)));
-        notifyItemRangeChanged(0,2);
+        notifyItemRangeChanged(0, 2);
     }
 
     public void addItem(Follower follower) {
@@ -1125,6 +1125,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         DateTime created_at = optograph.getCreated_atDateTime();
 
         // skip if optograph is already in list
+//        Log.d("myTag"," upload: contains? "+optographs.contains(optograph)+" isLocal? "+
+//                optograph.is_local()+" uploaded? "+mydb.checkIfAllImagesUploaded(optograph.getId()));
+//        if (optographs.contains(optograph)) Log.d("myTag"," upload: contained isLocal? "+optographs.get(optographs.indexOf(optograph)).is_local()+" removedIndex: "+optographs.indexOf(optograph));
+//        if (optographs.contains(optograph) && optographs.get(optographs.indexOf(optograph)).is_local() && optograph.is_local() && mydb.checkIfAllImagesUploaded(optograph.getId())) {
+//            notifyItemRemoved(optographs.indexOf(optograph));
+//            return;
+//        } else
         if (optographs.contains(optograph)) {
             return;
         }
@@ -1156,7 +1163,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         // TODO: allow for "breaks" between new optograph and others...
         for (int i = 0; i < optographs.size(); i++) {
             Optograph current = optographs.get(i);
-            if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
+            if (current!=null && created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
                 notifyItemInserted(i);
                 return;
