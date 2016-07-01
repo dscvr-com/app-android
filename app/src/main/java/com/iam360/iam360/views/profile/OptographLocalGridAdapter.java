@@ -1122,6 +1122,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
+        Log.d("myTag"," zoom: local addItem: "+optograph.getOptograph_type());
+
         DateTime created_at = optograph.getCreated_atDateTime();
 
         // skip if optograph is already in list
@@ -1180,7 +1182,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                 opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
                 opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                opto.is_data_uploaded()?1:0);
+                opto.is_data_uploaded()?1:0,opto.getOptograph_type());
     }
 
     public Optograph checkToDB(Optograph optograph) {
@@ -1198,6 +1200,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (mydb.checkIfAllImagesUploaded(optograph.getId())) return null;
         optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
         optograph.setText(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+        optograph.setOptograph_type(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
 //        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
         optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);

@@ -409,7 +409,7 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0, 0);
+                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0, 0,opto.getOptograph_type());
     }
 
     private void uploadOptonautData(Optograph optograph) {
