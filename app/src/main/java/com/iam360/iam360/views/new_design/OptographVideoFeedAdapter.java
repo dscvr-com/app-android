@@ -362,7 +362,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                 opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
                 opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                opto.is_data_uploaded()?1:0);
+                opto.is_data_uploaded()?1:0,opto.getOptograph_type());
     }
 
     public Optograph get(int position) {

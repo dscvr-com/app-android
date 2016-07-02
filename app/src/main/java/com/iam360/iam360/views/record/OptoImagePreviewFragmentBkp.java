@@ -409,14 +409,14 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0, 0);
+                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0, 0,opto.getOptograph_type());
     }
 
     private void uploadOptonautData(Optograph optograph) {
         String optographType;
         if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
 
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType,Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {

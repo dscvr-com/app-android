@@ -121,30 +121,16 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                yPos += dy;
+                View view = binding.optographFeed.getChildAt(1);
+//                yPos += dy;
                 Log.d("myTag", TAG + " onScrolled yPos: " + yPos + " dy: " + dy + " toolHeight: " + binding.toolbarTitle.getHeight());
-
-                /*if (yPos > binding.toolbarTitle.getHeight()) {
+                if (view.getY()<=5) {
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
                 } else {
                     binding.toolbar.setVisibility(View.VISIBLE);
                     binding.toolbarReplace.setVisibility(View.GONE);
                 }
-
-                View view = binding.optographFeed.getChildAt(1);
-                View view1 = binding.optographFeed.getChildAt(0);
-                int grr = view.getTop()+dy;
-                Log.d("myTag",TAG+" view top: "+view.getTop()+" height: "+view1.getMeasuredHeight()+" getTop+=dy= "+
-                        grr+" yPos: "+yPos);
-                if (binding.optographFeed.getChildAdapterPosition(view)==1 && binding.optographFeed.getChildAdapterPosition(view1)==0 &&
-                        yPos>view1.getMeasuredHeight()) {
-                    binding.toolbar.setVisibility(View.GONE);
-                    binding.toolbarReplace.setVisibility(View.VISIBLE);
-                } else {
-                    binding.toolbar.setVisibility(View.VISIBLE);
-                    binding.toolbarReplace.setVisibility(View.GONE);
-                }*/
             }
         });
 
@@ -373,5 +359,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
+
+        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+            LocalOptographManager.getOptographs()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(optographLocalGridAdapter::addItem);
+        }
+
     }
 }

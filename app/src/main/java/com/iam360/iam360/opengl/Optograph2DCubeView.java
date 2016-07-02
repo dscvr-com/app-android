@@ -14,7 +14,6 @@ import java.io.File;
 
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.util.ImageUrlBuilder;
-import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -100,15 +99,16 @@ public class Optograph2DCubeView extends GLSurfaceView {
     }
 
     public void setOptograph(Optograph optograph) {
+
         // this view is set with the same optograph - abort
+        optograph2DCubeRenderer.setType(optograph.getOptograph_type());
         if (optograph.equals(this.optograph)) {
-            Timber.v("setting same optograph in 2DCubeView");
             return;
         }
 
         // this view is being reused with another optograh - reset renderer
         if (this.optograph != null) {
-            optograph2DCubeRenderer.reset();
+            optograph2DCubeRenderer.reset(optograph.getOptograph_type());
         }
 
         // actually set optograph

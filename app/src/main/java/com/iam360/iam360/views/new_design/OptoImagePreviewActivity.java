@@ -510,22 +510,20 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0);
+                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0,opto.getOptograph_type());
     }
 
     private void uploadOptonautData(Optograph optograph) {
         String optographType;
         if(UPLOAD_IMAGE_MODE) optographType = optoTypeTheta; else optographType = optoType360 ;
 
-        Log.d("mytag", "TIME : " + optograph.getCreated_atRFC3339());
-
         OptoData data = null;
-        if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_1);
-        else if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) == (Constants.THREE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_3);
-        else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType);
+        if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_1,Constants.PLATFORM+" "+Build.VERSION.RELEASE,Build.MODEL,Build.MANUFACTURER);
+        else if(optographType.equals(optoType360) && cache.getInt(Cache.CAMERA_MODE) == (Constants.THREE_RING_MODE)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optoType360_3,Constants.PLATFORM+" "+Build.VERSION.RELEASE,Build.MODEL,Build.MANUFACTURER);
+        else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType,Constants.PLATFORM+" "+Build.VERSION.RELEASE,Build.MODEL,Build.MANUFACTURER);
 
         Timber.d("OPTOGRAPHTYPE " + data.toString());
-        Log.d("myTag"," id: "+optograph.getId()+" optoType: "+optographType);
+        Log.d("myTag"," upload: "+data.toString());
 
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
@@ -545,7 +543,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
                 optographGlobal.setIs_data_uploaded(true);
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, 1);
-                Log.d("myTag", " success: id: " + opto.getId() + " personName: " + opto.getPerson().getUser_name());
                 // do things for success
                 optographGlobal.setIs_published(true);
                 uploadPlaceHolder(optographGlobal);
@@ -575,7 +572,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void uploadPlaceHolder(Optograph opto) {
-        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
         String holder = "";
@@ -914,7 +910,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         });
         builder.create().show();
     }
-
 
     private void sharedNotLoginDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

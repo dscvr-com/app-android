@@ -19,6 +19,7 @@ import timber.log.Timber;
  */
 public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float FIELD_OF_VIEW_Y = 95.0f;
+    private static final float FIELD_OF_VIEW_Y_ZOOM = 50.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
     private float scaleFactor = 1.f;
@@ -34,6 +35,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private CombinedMotionManager combinedMotionManager;
 
     private Cube cube;
+    private String optoType;
 
     public Optograph2DCubeRenderer() {
         Timber.v("cube renderer constructor");
@@ -75,7 +77,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         //Log.v(Constants.DEBUG_TAG, Arrays.toString(rotationMatrix));
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
-        Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
+        if (optoType!=null && optoType.equals("optograph_1")) Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
+        else Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
@@ -92,6 +95,11 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     public void setMode(int mode) { Log.v("mcandres", "cube renderer"); combinedMotionManager.setMode(mode);}
 
     public void reset() {
+        this.cube.resetTextures();
+    }
+
+    public void reset(String type) {
+        this.optoType = type;
         this.cube.resetTextures();
     }
 
@@ -125,5 +133,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     public CombinedMotionManager getCombinedMotionManager() {
         return combinedMotionManager;
+    }
+
+    public void setType(String type) {
+        this.optoType = type;
     }
 }

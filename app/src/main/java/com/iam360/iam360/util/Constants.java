@@ -22,6 +22,7 @@ import timber.log.Timber;
  */
 public class Constants {
     public static final String DEBUG_TAG = "Optonaut";
+    public static final String PLATFORM = "android";
     public static final float ACCELERATION_EPSILON = 1.0f;
     public static final float MINIMUM_AXIS_LENGTH = 4.0f;
 	public static final float VFOV = 95.0f;

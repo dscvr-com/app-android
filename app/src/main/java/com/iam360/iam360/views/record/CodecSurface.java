@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import timber.log.Timber;
+
 
 /**
  * Holds state associated with a Surface used for MediaCodec decoder output.
@@ -45,7 +47,7 @@ public class CodecSurface
     int mHeight;
 
     private Object mFrameSyncObject = new Object();     // guards mFrameAvailable
-    private boolean mFrameAvailable;
+    private boolean mFrameAvailable = false;
 
     private ByteBuffer mPixelBuf;                       // used by saveFrame()
 
@@ -198,8 +200,8 @@ public class CodecSurface
      * the CodecOutputSurface object.  (More specifically, it must be called on the thread
      * with the EGLContext that contains the GL texture object used by SurfaceTexture.)
      */
-    public void awaitNewImage() {
-        final int TIMEOUT_MS = 2500;
+    public boolean awaitNewImage() {
+        final int TIMEOUT_MS = 100;
 
         synchronized (mFrameSyncObject) {
             while (!mFrameAvailable) {
@@ -208,8 +210,7 @@ public class CodecSurface
                     // stalling the test if it doesn't arrive.
                     mFrameSyncObject.wait(TIMEOUT_MS);
                     if (!mFrameAvailable) {
-                        // TODO: if "spurious wakeup", continue while loop
-                        throw new RuntimeException("frame wait timed out");
+                        return false;
                     }
                 } catch (InterruptedException ie) {
                     // shouldn't happen
@@ -222,6 +223,7 @@ public class CodecSurface
         // Latch the data.
         mTextureRender.checkGlError("before updateTexImage");
         mSurfaceTexture.updateTexImage();
+        return true;
     }
 
     /**
@@ -239,7 +241,7 @@ public class CodecSurface
         if (VERBOSE) Log.d(TAG, "new frame available");
         synchronized (mFrameSyncObject) {
             if (mFrameAvailable) {
-                throw new RuntimeException("mFrameAvailable already set, frame could be dropped");
+                Timber.e("mFrameAvailable already set, frame could be dropped");
             }
             mFrameAvailable = true;
             mFrameSyncObject.notifyAll();

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -51,16 +52,11 @@ import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
-import com.iam360.iam360.opengl.Optograph2DCubeView;
-import com.iam360.iam360.sensors.CombinedMotionManager;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
-import com.iam360.iam360.views.SnappyRecyclerView;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
-import com.squareup.picasso.Picasso;
-//import com.volokh.danylo.video_player_manager.ui.VideoPlayerView;
 
 import im.ene.lab.toro.ToroAdapter;
 import im.ene.lab.toro.ToroViewHolder;
@@ -492,7 +488,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 
     private void uploadOptonautData(Optograph optograph) {
         Log.d("myTag", "uploadOptonautData id: " + optograph.getId() + " created_at: " + optograph.getCreated_atRFC3339());
-        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(),"optograph");
+        OptoData data = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(),"optograph",Constants.PLATFORM, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
@@ -922,7 +918,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                 opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
                 opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                opto.is_data_uploaded()?1:0);
+                opto.is_data_uploaded()?1:0,opto.getOptograph_type());
     }
 
     public Optograph checkToDB(Optograph optograph) {
@@ -938,6 +934,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         }
         optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
         optograph.setText(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+        optograph.setOptograph_type(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
 //        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
         optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
         optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);

@@ -69,6 +69,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
 
+        Log.d("myTag"," zoom: details type: "+optograph.getOptograph_type());
+
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
         if(isCurrentUser) {
             binding.followContainer.setVisibility(View.GONE);

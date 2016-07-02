@@ -34,6 +34,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String OPTOGRAPH_POST_FACEBOOK = "post_facebook";
     public static final String OPTOGRAPH_POST_TWITTER = "post_twitter";
     public static final String OPTOGRAPH_POST_INSTAGRAM = "post_instagram";
+    public static final String OPTOGRAPH_TYPE = "optograph_type";
     public static final String FACES_TABLE_NAME = "OptoCubeFaces";
     public static final String FACES_ID = "faces_optograph_id";
     public static final String FACES_LEFT_ZERO = "faces_left_zero";
@@ -71,7 +72,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_on_server integer not null, optograph_updated_at text not null," +
                         "optograph_is_data_uploaded integer not null,"+
                         "optograph_should_be_published integer not null, optograph_is_place_holder_uploaded integer not null," +
-                        "post_facebook integer not null, post_twitter integer not null, post_instagram integer not null )"
+                        "post_facebook integer not null, post_twitter integer not null, post_instagram integer not null," +
+                        "optograph_type text not null )"
 
         );
 
@@ -96,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    int isStarred,int sCount,int isPub,int isPri,String stitchVer,int isFeed,
                                    int onServer,String uAt,int shouldPublished,int isPHUploaded,int postFB,
-                                   int postTwit,int postInsta, int isDataUploaded) {
+                                   int postTwit,int postInsta, int isDataUploaded, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -119,6 +121,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_POST_FACEBOOK,postFB);
         contentValues.put(OPTOGRAPH_POST_TWITTER,postTwit);
         contentValues.put(OPTOGRAPH_POST_INSTAGRAM,postInsta);
+        contentValues.put(OPTOGRAPH_TYPE,type);
         db.insert(OPTO_TABLE_NAME, null, contentValues);
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put(FACES_ID,id);
@@ -169,7 +172,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    int isStarred,int sCount,int isPub,int isPri,String stitchVer,int isFeed,
-                                   int onServer,String uAt,String shouldPublished) {
+                                   int onServer,String uAt,String shouldPublished,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -187,6 +190,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_ON_SERVER, onServer);
         contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
         contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED,shouldPublished);
+        contentValues.put(OPTOGRAPH_TYPE,type);
         db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
         return true;
     }
