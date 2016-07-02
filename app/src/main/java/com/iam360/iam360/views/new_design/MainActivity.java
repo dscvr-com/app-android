@@ -12,8 +12,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.WindowManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -22,7 +24,12 @@ import java.io.IOException;
 import java.util.UUID;
 
 import com.iam360.iam360.R;
+import com.iam360.iam360.model.Gateway;
+import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.SignInData;
+import com.iam360.iam360.network.Api2Consumer;
+import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
@@ -33,6 +40,9 @@ import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
 import im.ene.lab.toro.Toro;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int PROFILE_MODE = 2;
     private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
+
     private Cache cache;
+
     private int currentMode = 0;
     private int savePosition = 0;
 
@@ -83,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
                 if(savePosition>state)
                 {
-                    Timber.d("SWIPE RIGHT");
+//                    Timber.d("SWIPE RIGHT");
                 }else
                 {
-                    Timber.d("SWIPE LEFT");
+//                    Timber.d("SWIPE LEFT");
                 }
                 savePosition = state;
             }
@@ -137,8 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeComponents() {
 
-        // instatiate cache on start of application
-        cache = Cache.getInstance(this);
+        cache = Cache.open();
 
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
@@ -153,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
         private int NUM_ITEMS = 3;
-        private Cache cache;
         private SharingFragment sharingFragment;
         private MainFeedFragment mainFeedFragment;
         private ProfileRootFragment profileRootFragment;
@@ -163,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
             profileRootFragment = new ProfileRootFragment();
             mainFeedFragment = new MainFeedFragment();
             sharingFragment = new SharingFragment();
-            cache = Cache.open();
         }
 
         // Returns total number of pages

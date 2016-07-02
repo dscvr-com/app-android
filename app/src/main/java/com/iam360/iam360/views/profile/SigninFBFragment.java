@@ -36,6 +36,9 @@ import com.iam360.iam360.network.PersonManager;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.views.MainActivityRedesign;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
+import com.iam360.iam360.views.new_design.MainActivity;
+import com.iam360.iam360.views.new_design.SigninFBActivity;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -102,80 +105,6 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
         loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
         fbButton.setOnClickListener(this);
-
-//        TextView signInText = (TextView) view.findViewById(R.id.sign_in_text);
-//        Typeface custom_font = Typeface.createFromAsset(getResources().getAssets(),"fonts/Avenir_LT_45_Book_0.ttf");
-//        signInText.setTypeface(custom_font);
-
-//        fbButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                Timber.d("FB Result : " + loginResult.getAccessToken().getToken() + " " + loginResult.getAccessToken().getUserId());
-//
-//                setButtonsClickable(false);
-//                apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
-//                    @Override
-//                    public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
-//                        Timber.d("Response : " + response.toString());
-//
-//                        if (!response.isSuccess()) {
-//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-//                            toast.setGravity(Gravity.CENTER, 0, 0);
-//                            toast.show();
-//                            setButtonsClickable(true);
-//                            return;
-//                        }
-//                        LogInReturn login = response.body();
-//                        if (login == null) {
-//                            Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
-//                            toast.setGravity(Gravity.CENTER, 0, 0);
-//                            toast.show();
-//                            setButtonsClickable(true);
-//                            return;
-//                        }
-//                        Timber.d("Login : " + login.getId() + " " + login.getToken());
-//
-//                        cache.save(Cache.USER_ID, login.getId());
-//                        cache.save(Cache.USER_TOKEN, login.getToken());
-//                        cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
-//                        cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
-//                        cache.save(Cache.USER_FB_LOGGED_IN, true);
-//
-////                        ((MainActivity) getActivity()).onBackPressed();
-////                        ((MainActivity) getActivity()).onBack();
-//                        startProfileFragment();
-//
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Throwable t) {
-//                        Timber.d("Failure " + t.toString());
-//                        LoginManager.getInstance().logOut();
-//
-//                        setButtonsClickable(true);
-//
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString(GenericOKDialog.MESSAGE_KEY, getResources().getString(R.string.dialog_network_retry));
-//
-//                        GenericOKDialog genericOKDialog = new GenericOKDialog();
-//                        genericOKDialog.setArguments(bundle);
-//                        genericOKDialog.show(getFragmentManager(), "Error");
-//                    }
-//                });
-//
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                Timber.d("onCancel");
-//            }
-//
-//            @Override
-//            public void onError(FacebookException e) {
-//                Timber.d("onError");
-//            }
-//        });
-
         return view;
     }
 
@@ -383,33 +312,14 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     }
 
     private void startProfileFragment() {
-//        getActivity().recreate();
-        getActivity().finish();
-        startActivity(getActivity().getIntent());
 
-//        FragmentTransaction trans = getFragmentManager()
-//                .beginTransaction();
-//				/*
-//				 * IMPORTANT: We use the "root frame" defined in
-//				 * "root_fragment.xml" as the reference to replace fragment
-//				 */
-//        trans.replace(R.id.root_frame, new ProfileFragment().newInstance(cache.getString(Cache.USER_ID)));
-//
-//				/*
-//				 * IMPORTANT: The following lines allow us to add the fragment
-//				 * to the stack and return to it later, by pressing back
-//				 */
-//        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//        trans.addToBackStack(null);
-//
-//        trans.commit();
-
-//        FragmentManager fragmentManager2 = getFragmentManager();
-//        FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
-//        ProfileFragment fragment2 = new ProfileFragment().newInstance(cache.getString(Cache.USER_ID));
-//        fragmentTransaction2.addToBackStack(null);
-//        fragmentTransaction2.replace(android.R.id.content, fragment2);
-//        fragmentTransaction2.commit();
-
+        if(getContext() instanceof MainActivity) {
+            getActivity().finish();
+            startActivity(getActivity().getIntent());
+        } else {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 }

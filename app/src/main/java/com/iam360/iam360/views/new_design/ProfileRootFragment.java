@@ -26,6 +26,7 @@ public class ProfileRootFragment extends Fragment {
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
+//        transaction.replace(R.id.root_frame, MailingListFragment.newInstance());
         if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
             transaction.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
         } else

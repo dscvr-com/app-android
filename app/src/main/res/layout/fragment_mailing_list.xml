@@ -35,6 +35,7 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/go_btn"
             android:layout_marginRight="7dp"
+            android:textAllCaps="true"
             android:padding="10dp"
             android:textSize="19sp"
             android:textColor="@color/text_dark"

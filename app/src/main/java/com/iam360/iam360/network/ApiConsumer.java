@@ -310,7 +310,6 @@ public class ApiConsumer {
     }
 
     public void shareFB(SharingFragment.ShareFBData data, Callback<LogInReturn.EmptyResponse> callback) {
-        Timber.d("APICONSUMER shareFB");
         Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
         call.enqueue(callback);
     }
