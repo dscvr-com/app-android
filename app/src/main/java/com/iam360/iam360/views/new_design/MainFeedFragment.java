@@ -285,10 +285,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 }
 
                 Intent intent;
-//                if(!cache.getString(Cache.GATE_CODE).equals(""))
+                if(!cache.getString(Cache.GATE_CODE).equals("")) {
                     intent = new Intent(getActivity(), RecorderActivity.class);
-//                else intent = new Intent(getActivity(), MailingListActivity.class);
-                startActivity(intent);
+                    startActivity(intent);
+                } else
+                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
+
 
                 break;
             case R.id.settings_btn:
