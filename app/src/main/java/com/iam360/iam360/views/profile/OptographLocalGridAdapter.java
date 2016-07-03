@@ -270,7 +270,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 initializeHeaderSecond(mHolder1);
             } else {
                 FollowerViewHolder mHolder2 = (FollowerViewHolder) holder;
-                if (!follower.equals(mHolder2.getBinding().getFollower())) {
+                if (mHolder2.getBinding().getFollower() != null && !follower.equals(mHolder2.getBinding().getFollower())) {
                     if (mHolder2.getBinding().getFollower()!=null) {
 
                     }
@@ -380,8 +380,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             followers.add(1, null);
                             notifyDataSetChanged();
                         } else {
-                            followers.add(0, null);
-                            followers.add(1, null);
+//                            followers.add(0, null);
+//                            followers.add(1, null);
                             notifyDataSetChanged();
                             Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
