@@ -19,7 +19,7 @@ import timber.log.Timber;
  */
 public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float FIELD_OF_VIEW_Y = 95.0f;
-    private static final float FIELD_OF_VIEW_Y_ZOOM = 50.0f;
+    private static final float FIELD_OF_VIEW_Y_ZOOM = 70.0f;
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
     private float scaleFactor = 1.f;

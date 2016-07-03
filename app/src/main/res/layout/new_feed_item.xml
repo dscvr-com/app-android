@@ -27,7 +27,6 @@
             android:background="@color/feed_text_yellow"
             android:id="@+id/bottom_wrapper"
             android:layout_width="70dp"
-            android:weightSum="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="horizontal">

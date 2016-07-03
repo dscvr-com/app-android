@@ -40,7 +40,7 @@ public abstract class OptographListFragment extends Fragment {
     protected ApiConsumer apiConsumer;
     protected Cache cache;
     protected NewFeedBinding binding;
-    private int lastVisible = 0;
+    protected int firstVisible = 0;
 
     LinearLayoutManager mLayoutManager;
 
@@ -101,6 +101,9 @@ public abstract class OptographListFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
+                firstVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+
             }
 
         });

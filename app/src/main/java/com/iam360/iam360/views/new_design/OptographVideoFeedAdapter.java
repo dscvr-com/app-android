@@ -9,8 +9,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -50,6 +52,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     private DBHelper mydb;
 
     private boolean isCurrentUser = false;
+    private boolean draggingPage = false;
 
     public OptographVideoFeedAdapter(Context context) {
         this.context = context;
@@ -72,6 +75,15 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onBindViewHolder(OptographVideoHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            holder.getBinding().swipeLayout.close(true);
+        }
     }
 
     @Override
@@ -114,9 +126,25 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             swipeLayout.setRightSwipeEnabled(false);
 
             View shareButton = swipeLayout.findViewById(R.id.bottom_wrapper);
-            swipeLayout.addDrag(SwipeLayout.DragEdge.Right, shareButton);
+//            swipeLayout.addDrag(SwipeLayout.DragEdge.Right, shareButton);
 
             LinearLayout barSwipe = (LinearLayout) holder.itemView.findViewById(R.id.bar_swipe);
+
+            swipeLayout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ViewParent parent = v.getParent();
+
+                    if(draggingPage) {
+                        parent.requestDisallowInterceptTouchEvent(false);
+                        return true;
+                    } else {
+                        parent.requestDisallowInterceptTouchEvent(true);
+                        return false;
+                    }
+
+                }
+            });
 
             swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
                 @Override
@@ -130,8 +158,10 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                     Timber.d("PREVIEW SETOPTOGRAPH1 OPEN " + optograph.getId());
 
                     ((MainActivity) context).setOptograph(optograph);
-                    ((MainActivity) context).dragSharePage();
-                    swipeLayout.close();
+//                    ((MainActivity) context).dragSharePage();
+                    draggingPage = true;
+//                    if(swipeLayout.getOpenStatus() == SwipeLayout.Status.Open)
+//                       swipeLayout.close();
                 }
 
                 @Override
@@ -381,118 +411,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         return this.optographs;
     }
 
-    public static class OptographViewHolder extends ToroViewHolder {
-        private NewFeedItemBinding binding;
-        RelativeLayout profileBar;
-        RelativeLayout descriptionBar;
-//        private Optograph2DCubeView optograph2DCubeView;
-        private TextView heart_label;
-        private ImageButton followButton;
-        private boolean isNavigationModeCombined;
-//        private VideoPlayerView videoView;
-
-
-        public OptographViewHolder(View rowView) {
-            super(rowView);
-            this.binding= DataBindingUtil.bind(rowView);
-            profileBar = (RelativeLayout) itemView.findViewById(R.id.profile_bar);
-            descriptionBar = (RelativeLayout) itemView.findViewById(R.id.description_bar);
-//            optograph2DCubeView = (Optograph2DCubeView) itemView.findViewById(R.id.optograph2dview);
-//            videoView = (VideoPlayerView) itemView.findViewById(R.id.video_view);
-            heart_label = (TextView) itemView.findViewById(R.id.heart_label);
-            followButton = (ImageButton) itemView.findViewById(R.id.follow);
-//            setInformationBarsVisible();
-        }
-
-        @Override
-        public void bind(@Nullable Object object) {
-
-        }
-
-        private void setInformationBarsVisible() {
-            profileBar.setVisibility(View.VISIBLE);
-            descriptionBar.setVisibility(View.VISIBLE);
-//            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.VISIBLE);
-            // todo: unregister touch listener
-//            optograph2DCubeView.registerRendererOnSensors();
-            isNavigationModeCombined = false;
-        }
-
-        private void setInformationBarsInvisible() {
-            profileBar.setVisibility(View.INVISIBLE);
-            descriptionBar.setVisibility(View.INVISIBLE);
-//            ((MainActivityRedesign) itemView.getContext()).setOverlayVisibility(View.INVISIBLE);
-            // todo: register touch listener
-//            optograph2DCubeView.unregisterRendererOnSensors();
-            isNavigationModeCombined = true;
-        }
-
-        public NewFeedItemBinding getBinding() {
-            return binding;
-        }
-
-        public void toggleNavigationMode() {
-            if (isNavigationModeCombined) {
-                setInformationBarsVisible();
-            } else {
-                setInformationBarsInvisible();
-            }
-        }
-
-        public boolean isNavigationModeCombined() {
-            return isNavigationModeCombined;
-        }
-
-        @Override
-        public boolean wantsToPlay() {
-            return false;
-        }
-
-        @Override
-        public boolean isAbleToPlay() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public String getVideoId() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public View getVideoView() {
-            return null;
-        }
-
-        @Override
-        public void start() {
-
-        }
-
-        @Override
-        public void pause() {
-
-        }
-
-        @Override
-        public int getDuration() {
-            return 0;
-        }
-
-        @Override
-        public int getCurrentPosition() {
-            return 0;
-        }
-
-        @Override
-        public void seekTo(int pos) {
-
-        }
-
-        @Override
-        public boolean isPlaying() {
-            return false;
-        }
+    public void disableDraggingPage(int position) {
+        Timber.d("DRAG POSITION : " + position);
+        this.draggingPage = false;
+        notifyItemRangeChanged(position - 1, 3, "test");
     }
 }
