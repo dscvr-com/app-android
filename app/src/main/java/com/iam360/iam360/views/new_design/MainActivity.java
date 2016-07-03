@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Timber.d("Position : " + position);
 
                 switch (position) {
                     case FEED_MODE:
@@ -93,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-
-                Timber.d("Position : " + position);
 
                 switch (position) {
                     case FEED_MODE:

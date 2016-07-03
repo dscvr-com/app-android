@@ -412,7 +412,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     public void disableDraggingPage(int position) {
-        Timber.d("DRAG POSITION : " + position);
         this.draggingPage = false;
         notifyItemRangeChanged(position - 1, 3, "test");
     }
