@@ -169,6 +169,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             case R.id.sign_out:
                 cache.save(Cache.USER_ID,"");
                 cache.save(Cache.USER_TOKEN,"");
+                cache.save(Cache.GATE_CODE,"");
 
                 LoginManager.getInstance().logOut();
 
@@ -283,6 +284,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 // remove user cache, remove this fragment
                 cache.save(Cache.USER_ID, "");
                 cache.save(Cache.USER_TOKEN, "");
+                cache.save(Cache.GATE_CODE,"");
 
 //                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
                 backToSignInPage();

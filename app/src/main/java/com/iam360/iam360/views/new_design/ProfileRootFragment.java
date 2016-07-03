@@ -13,6 +13,8 @@ import com.iam360.iam360.views.profile.ProfileFragment;
 import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
+import timber.log.Timber;
+
 public class ProfileRootFragment extends Fragment {
 
     private Cache cache;
@@ -26,11 +28,16 @@ public class ProfileRootFragment extends Fragment {
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-//        transaction.replace(R.id.root_frame, MailingListFragment.newInstance());
+
         if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
             transaction.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
-        } else
-            transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
+        } else {
+            Timber.d("Not logged in.");
+            if (cache.getString(Cache.GATE_CODE).isEmpty()) {
+                transaction.replace(R.id.root_frame, MailingListFragment.newInstance());
+            } else
+                transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
+        }
 
         transaction.commit();
 

@@ -35,9 +35,9 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/go_btn"
             android:layout_marginRight="7dp"
-            android:textAllCaps="true"
+            android:inputType="textCapCharacters"
             android:padding="10dp"
-            android:textSize="19sp"
+            android:textSize="18sp"
             android:textColor="@color/text_dark"
             android:background="@drawable/mailing_edittext" />
 
@@ -64,20 +64,20 @@
 
     <TextView
         android:id="@+id/get_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:textColor="@android:color/white"
         android:textSize="19sp"
-        android:text="@string/mailing_get_invite" />
+        android:gravity="center" />
 
-    <EditText
+    <TextView
         android:id="@+id/email_text"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="13dp"
         android:padding="10dp"
-        android:textSize="19sp"
+        android:textSize="18sp"
         android:textColor="@color/text_dark"
         android:background="@drawable/mailing_edittext" />
 

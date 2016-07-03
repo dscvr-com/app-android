@@ -304,6 +304,11 @@ public class ApiConsumer {
         return service.getFollowers().flatMap(Observable::from);
     }
 
+    public void getUser(Callback<Person> callback) {
+        Call<Person> call = service.getUser();
+        call.enqueue(callback);
+    }
+
     public void  getFollowersCall(Callback<List<Follower>> callback) {
         Call<List<Follower>> call = service.getFollowersCall();
         call.enqueue(callback);

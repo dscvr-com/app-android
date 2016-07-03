@@ -111,6 +111,9 @@ public interface ApiEndpoints {
     @GET("persons/search")
     Call<List<Person>> getSearchResultCall(@Query("keyword") String key);
 
+    @GET("persons/me")
+    Call<Person> getUser();
+
     @GET("persons/followers")
     Observable<List<Follower>> getFollowers();
 

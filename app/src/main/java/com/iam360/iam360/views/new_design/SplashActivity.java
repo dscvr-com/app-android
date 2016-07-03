@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.views.profile.SigninFBActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -19,9 +20,8 @@ public class SplashActivity extends AppCompatActivity {
         String token = cache.getString(Cache.USER_TOKEN);
         Intent intent;
 
-//        if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
-//        else
-        intent = new Intent(this, MainActivity.class);
+        if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
+        else intent = new Intent(this, MainActivity.class);
 
         startActivity(intent);
         finish();

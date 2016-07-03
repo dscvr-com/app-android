@@ -1,4 +1,4 @@
-package com.iam360.iam360.views.new_design;
+package com.iam360.iam360.views.profile;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -46,6 +46,27 @@ public class PersonManager {
         }
     }
 
+    public static void savePersonInfoToCache() {
+        Log.v(DEBUG_TAG, "savePersonInfoToCache");
+
+        Cache cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+            apiConsumer.getUser(new Callback<Person>() {
+                @Override
+                public void onResponse(Response<Person> response, Retrofit retrofit) {
+                    Person person = response.body();
+                    cache.save(Cache.USER_EMAIL, person.getEmail());
+                    Log.v(DEBUG_TAG, "User email : " + person.getEmail());
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.v(DEBUG_TAG, "Failed to load person!");
+                }
+            });
+    }
+
     public static void updatePerson(String displayName, String text) {
 
         Cache cache = Cache.open();

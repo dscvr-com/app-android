@@ -112,7 +112,7 @@
             android:name=".views.new_design.SharingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.SigninFBActivity"
+            android:name=".views.profile.SigninFBActivity"
             android:screenOrientation="portrait" />
 
         <activity android:name=".views.SearchActivity"

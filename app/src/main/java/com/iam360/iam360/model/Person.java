@@ -32,6 +32,7 @@ public class Person implements Parcelable {
     private String deleted_at;
     private String display_name;
     private String user_name;
+    private String email;
     private String text;
     private String avatar_asset_id;
     private int optographs_count;
@@ -49,6 +50,7 @@ public class Person implements Parcelable {
         deleted_at = "";
         display_name = "";
         user_name = "";
+        email = "";
         text = "";
         avatar_asset_id = "";
         optographs_count = 0;
@@ -68,6 +70,7 @@ public class Person implements Parcelable {
         this.deleted_at = source.readString();
         this.display_name = source.readString();
         this.user_name = source.readString();
+        this.email = source.readString();
         this.text = source.readString();
         this.avatar_asset_id = source.readString();
         this.optographs_count = source.readInt();
@@ -121,6 +124,14 @@ public class Person implements Parcelable {
 
     public boolean is_followed() {
         return is_followed;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setDisplay_name(String display_name) {
@@ -200,6 +211,7 @@ public class Person implements Parcelable {
         dest.writeString(this.deleted_at);
         dest.writeString(this.display_name);
         dest.writeString(this.user_name);
+        dest.writeString(this.email);
         dest.writeString(this.text);
         dest.writeString(this.avatar_asset_id);
         dest.writeInt(this.optographs_count);

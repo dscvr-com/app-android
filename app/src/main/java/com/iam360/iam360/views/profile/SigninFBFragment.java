@@ -37,7 +37,6 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.views.MainActivityRedesign;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
 import com.iam360.iam360.views.new_design.MainActivity;
-import com.iam360.iam360.views.new_design.SigninFBActivity;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -263,6 +262,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 //                        ((MainActivity) getActivity()).onBackPressed();
 //                        ((MainActivity) getActivity()).onBack();
                                 PersonManager.updatePerson();
+                                PersonManager.savePersonInfoToCache();
                                 startProfileFragment();
 
                             }
