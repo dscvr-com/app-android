@@ -35,8 +35,8 @@ android {
         applicationId "com.iam360.iam360"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 20160528
-        versionName "0.6"
+        versionCode 20160703
+        versionName "0.7"
         multiDexEnabled true
     }
 //    dexOptions { javaMaxHeapSize "4g" }

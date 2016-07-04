@@ -306,8 +306,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
-                Intent intent1 = new Intent(getActivity(), ImagePicker.class);
-                startActivity(intent1);
+                Intent intent1;
+                if(!cache.getString(Cache.GATE_CODE).equals("")) {
+                    intent = new Intent(getActivity(), ImagePicker.class);
+                    startActivity(intent);
+                } else
+                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
 
 //                Intent intent1 = new Intent();
 //                intent1.setType("image/*");

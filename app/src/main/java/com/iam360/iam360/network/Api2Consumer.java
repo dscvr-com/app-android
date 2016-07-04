@@ -58,10 +58,12 @@ public class Api2Consumer {
     private boolean finish = false;
 
     public Api2Consumer(String token) {
+
+        Timber.d("Api2Consumer");
         this.token = token;
         client = new OkHttpClient();
-        client.setConnectTimeout(10, TimeUnit.MINUTES);
-        client.setReadTimeout(10, TimeUnit.MINUTES);
+//        client.setConnectTimeout(10, TimeUnit.MINUTES);
+//        client.setReadTimeout(10, TimeUnit.MINUTES);
         cache = Cache.open();
 
         client.interceptors().add(new Interceptor() {
@@ -81,14 +83,14 @@ public class Api2Consumer {
                             .build();
                 }
 
-                Request request = chain.request();
+//                Request request = chain.request();
 
-                Timber.v(request.headers().toString());
-                Timber.v(request.toString());
+                Timber.v(newRequest.headers().toString());
+                Timber.v(newRequest.toString());
 
-                com.squareup.okhttp.Response response = chain.proceed(request);
-                Timber.v(response.headers().toString());
-                Timber.v(response.toString());
+//                com.squareup.okhttp.Response response = chain.proceed(request);
+//                Timber.v(response.headers().toString());
+//                Timber.v(response.toString());
 
                 return chain.proceed(newRequest);
             }
