@@ -20,7 +20,7 @@ import timber.log.Timber;
 public class ImageUrlBuilder {
 //    private static final String OPTO_SPACE = "http://opto.space/";
 //    private static final String OPTO_SPACE = "http://share.iam360.io/";
-    private static final String OPTO_SPACE = "http://wow.dscvr.com/";
+    private static final String OPTO_SPACE = "https://wow.dscvr.com/";
 //    private static final String OPTO_SPACE = "http://192.168.1.69:8004/";
 //    private static final String THUMBOR_URL = "http://images.optonaut.co";
 //    private static final String THUMBOR_URL = "http://images.iam360.io";

@@ -262,16 +262,16 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                 case R.id.fb_share_btn:
                     Set<String> permissions = null;
                     if(AccessToken.getCurrentAccessToken() == null)
-                        loginToFB();
+                        loginToFB(getResources().getString(R.string.share_subject_web_viewer) + "\n" + shareUrl);
 //                        Snackbar.make(v, getActivity().getString(R.string.profile_login_first), Snackbar.LENGTH_SHORT).show();
                     else {
                         permissions = AccessToken.getCurrentAccessToken().getPermissions();
 
                         if (permissions.contains("publish_actions")) {
-                            showInputDialog();
+                            showInputDialog(getResources().getString(R.string.share_subject_web_viewer) + "\n" + shareUrl);
                             Timber.d("facebook publish permission NOT login");
                         } else {
-                            loginToFB();
+                            loginToFB(getResources().getString(R.string.share_subject_web_viewer) + "\n" + shareUrl);
                             Timber.d("facebook publish permission login " + permissions.toString());
                         }
 //                    ShareDialog shareDialog = new ShareDialog(this);
@@ -315,7 +315,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void loginToFB() {
+    private void loginToFB(String text) {
         final List<String> PUBLISH_PERMISSIONS = Arrays.asList("publish_actions");
         LoginManager.getInstance().logInWithPublishPermissions(this, PUBLISH_PERMISSIONS);
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -349,7 +349,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                         cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
                         cache.save(Cache.USER_FB_LOGGED_IN, true);
                         PersonManager.updatePerson();
-                        showInputDialog();
+                        showInputDialog(getResources().getString(R.string.share_subject_web_viewer) + "\n" + text);
 
                     }
 
@@ -385,7 +385,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void showInputDialog() {
+    private void showInputDialog(String text) {
 
         // get prompts.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -397,6 +397,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
         final TextView cancelBtn = (TextView) promptView.findViewById(R.id.cancel_btn);
         final TextView postBtn = (TextView) promptView.findViewById(R.id.post_btn);
 
+        editText.setText(text);
         alertDialogBuilder.setCancelable(false);
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
