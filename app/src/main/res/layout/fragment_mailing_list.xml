@@ -78,8 +78,9 @@
         android:layout_marginBottom="13dp"
         android:padding="10dp"
         android:textSize="18sp"
-        android:textColor="@color/text_dark"
-        android:background="@drawable/mailing_edittext" />
+        android:gravity="center"
+        android:textColor="@color/text_bright" />
+        <!--android:background="@drawable/mailing_edittext" />-->
 
     <Button
         android:id="@+id/send_btn"

@@ -5,7 +5,8 @@ include $(CLEAR_VARS)
 OPENCV_CAMERA_MODULES:=off
 OPENCV_LIB_TYPE:=STATIC
 
-include /Users/emi/Projects/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk
+include $(OPENCV_ANDROID_PATH)
+#include /Users/emi/Projects/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk
 
 LOCAL_MODULE    := ndkmodule
 LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \

@@ -17,6 +17,7 @@
             android:layout_centerVertical="true"
             android:padding="10dp"
             android:text="@string/cancel_label"
+            android:textColor="@color/text_bright"
             android:textStyle="bold"/>
 
         <RelativeLayout

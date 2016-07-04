@@ -153,12 +153,14 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_optoimage_preview);
 
+        Timber.d("CACHEISSUE onCreate");
         // fb initialization
         FacebookSdk.sdkInitialize(this);
         callbackManager = CallbackManager.Factory.create();
         cache = Cache.open();
         context = this;
 
+        Timber.d("CACHEISSUE onCreate open");
         // get bundles
         optographId = getIntent().getStringExtra("id");
         imagePath = getIntent().getStringExtra("path");//randomUUID
@@ -229,6 +231,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         } else {
             optograph.setOptograph_type(optoTypeTheta);
         }
+        Timber.d("CACHEISSUE end oncreate");
 
     }
 

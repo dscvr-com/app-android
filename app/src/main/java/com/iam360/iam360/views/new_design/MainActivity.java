@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeComponents() {
-
+//        cache = Cache.getInstance(this);
         cache = Cache.open();
 
         Constants.initializeConstants(this);
