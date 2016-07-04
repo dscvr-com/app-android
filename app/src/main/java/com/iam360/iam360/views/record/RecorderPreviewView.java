@@ -299,7 +299,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             Log.w(TAG, "Locking Exposure.");
             previewBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
             previewBuilder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
-            previewBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
+            previewBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF);
             previewSession.stopRepeating();
             previewSession.setRepeatingRequest(previewBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
