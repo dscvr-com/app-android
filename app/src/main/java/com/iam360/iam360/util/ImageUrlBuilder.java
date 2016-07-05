@@ -29,7 +29,7 @@ public class ImageUrlBuilder {
     //private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
 //    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
 //    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
-    private static final String S3_URL = "bucket.iam360.io";
+    private static final String S3_URL = "bucket.dscvr.com";
 
     private static final String URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
