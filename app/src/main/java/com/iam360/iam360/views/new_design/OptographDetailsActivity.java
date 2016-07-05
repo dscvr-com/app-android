@@ -1,6 +1,7 @@
 package com.iam360.iam360.views.new_design;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.hardware.Sensor;
@@ -51,6 +52,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private Cache cache;
     private DBHelper mydb;
     protected ApiConsumer apiConsumer;
+    private AlertDialog alert = null;
 
     private boolean arrowClicked = false;
     private boolean isCurrentUser = false;
@@ -127,6 +129,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.arrowMenu.setOnClickListener(this);
         binding.littlePlanetButton.setOnClickListener(this);
         binding.gyroButton.setOnClickListener(this);
+        binding.vrButton.setOnClickListener(this);
         binding.heartContainer.setOnClickListener(this);
         binding.heartLabel.setOnClickListener(this);
         binding.shareContainer.setOnClickListener(this);
@@ -199,6 +202,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private void switchToVRMode() {
         inVRMode = true;
 
+        if(alert != null) alert.dismiss();
         Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
         intent.putExtra("optograph", optograph);
         startActivity(intent);
@@ -244,6 +248,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.closeContainer.setVisibility(View.INVISIBLE);
             binding.profileBar.setVisibility(View.INVISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);
+            binding.deleteButton.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
             getWindow().getDecorView().setSystemUiVisibility(
@@ -253,6 +258,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             );
             binding.closeContainer.setVisibility(View.VISIBLE);
             binding.profileBar.setVisibility(View.VISIBLE);
+            binding.deleteButton.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);// change to VISIBLE if settings is needed here
             isFullScreenMode = false;
         }
@@ -361,6 +367,22 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             case R.id.little_planet_button:
                 littlePlanetValidation();
                 instatiateFeedDisplayButton();
+                break;
+            case R.id.vr_button:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getResources().getString(R.string.dialog_vrmode_explanation));
+                builder.setCancelable(true);
+
+                builder.setPositiveButton(
+                        "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alert = builder.create();
+                alert.show();
                 break;
             case R.id.gyro_button:
                 gyroValidation();
