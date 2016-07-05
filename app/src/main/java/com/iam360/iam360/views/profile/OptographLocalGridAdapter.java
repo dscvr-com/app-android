@@ -270,12 +270,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 initializeHeaderSecond(mHolder1);
             } else {
                 FollowerViewHolder mHolder2 = (FollowerViewHolder) holder;
-                if (mHolder2.getBinding().getFollower() != null && !follower.equals(mHolder2.getBinding().getFollower())) {
+                if (!follower.equals(mHolder2.getBinding().getFollower())) {
                     if (mHolder2.getBinding().getFollower()!=null) {
 
                     }
 
-                    mHolder2.getBinding().setVariable(BR.follower,follower);
+                    mHolder2.getBinding().setVariable(BR.follower, follower);
                     mHolder2.getBinding().executePendingBindings();
 
                     if (follower.is_followed()) mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.following_btn);
