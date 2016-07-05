@@ -16,16 +16,21 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.animator.from_right_to_left, R.animator.from_left_to_right);
         setContentView(R.layout.activity_profile);
-        Person person = getIntent().getExtras().getParcelable("person");
+        if (getIntent().getExtras().getParcelable("person")!=null) {
+            Person person = getIntent().getExtras().getParcelable("person");
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, ProfileFragmentExercise.newInstance(person)).commit();
+        } else {
+            String id = getIntent().getStringExtra("id");
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, ProfileFragmentExercise.newInstance(id)).commit();
+        }
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, ProfileFragmentExercise.newInstance(person)).commit();
 
     }
 
     @Override
     public void onBackPressed() {
-        Log.d("myTag","ProfileActivity onBackPressed");
         super.onBackPressed();
         overridePendingTransition(R.animator.to_right, R.animator.to_left);
     }

@@ -43,6 +43,7 @@ import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
+import com.iam360.iam360.views.new_design.ProfileActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -317,9 +318,22 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             }
                         }
                     });
+
+                    mHolder2.getBinding().followerItemLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startProfile(follower.getId());
+                        }
+                    });
                 }
             }
         }
+    }
+
+    private void startProfile(String id) {
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("id", id);
+        context.startActivity(intent);
     }
 
     private void setTab(HeaderSecondViewHolder mHolder) {

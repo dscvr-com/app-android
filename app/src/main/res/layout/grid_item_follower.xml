@@ -10,6 +10,7 @@
     </data>
 
     <RelativeLayout
+        android:id="@+id/follower_item_layout"
         android:layout_width="match_parent"
         android:layout_height="56dp">
 

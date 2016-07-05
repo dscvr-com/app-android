@@ -80,9 +80,12 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
     @Override
     public void onBindViewHolder(OptographVideoHolder holder, int position, List<Object> payloads) {
+        Log.d("myTag"," feed: onBind with payloads.");
         if (payloads.isEmpty()) {
+            Log.d("myTag"," feed: onBind payload is empty.");
             onBindViewHolder(holder, position);
         } else {
+            Log.d("myTag"," feed: onBind else.");
             holder.getBinding().swipeLayout.close(true);
         }
     }
@@ -90,9 +93,11 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     @Override
     public void onBindViewHolder(OptographVideoHolder holder, int position) {
         super.onBindViewHolder(holder, position);
+        Log.d("myTag", " feed: onBindViewHolder");
         Optograph optograph = optographs.get(position);
 
         if (!optograph.equals(holder.getBinding().getOptograph())) {
+            Log.d("myTag"," feed: onBind inside condition.");;
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
             holder.itemView.setLayoutParams(params);
 
@@ -361,10 +366,10 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
-            optographs.add(optograph);
+            optographs.add(optographs.size(),optograph);
 //            notifyItemInserted(getItemCount());
             notifyItemInserted(optographs.size()-1);
-            Log.d("myTag"," feed: add an item.");
+            Log.d("myTag"," feed: add an item1.");
             return;
         }
 
@@ -372,8 +377,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
 //            notifyItemInserted(getItemCount());
-            notifyItemInserted(optographs.size()-1);
-            Log.d("myTag", " feed: add an item.");
+            notifyDataSetChanged();
+            Log.d("myTag", " feed: add an item2.");
             return;
         }
 
