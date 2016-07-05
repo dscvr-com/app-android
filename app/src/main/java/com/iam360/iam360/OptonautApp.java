@@ -32,6 +32,7 @@ public class OptonautApp extends Application {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+            Fabric.with(this, new Crashlytics());
         } else {
             Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashReportingTree());

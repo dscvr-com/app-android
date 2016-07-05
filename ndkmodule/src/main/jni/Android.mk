@@ -32,6 +32,4 @@ LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
 LOCAL_EXPORT_LDLIBS := -llog
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lz
 LOCAL_LDFLAGS += -ljnigraphics
-APP_OPTIM := release
-LOCAL_CFLAGS += -O3
 include $(BUILD_SHARED_LIBRARY)
