@@ -84,7 +84,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 if (!s.toString().isEmpty()) {
                     newText = s.toString();
                     clearSearch.setVisibility(View.VISIBLE);
-                    if (s.toString().length() >= 3) {
+                    if (s.toString().length() != 0) {
                         newText = s.toString();
                         loadSuggestion(newText);
                         searchValue = newText;

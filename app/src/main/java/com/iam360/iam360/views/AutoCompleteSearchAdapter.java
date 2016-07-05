@@ -88,7 +88,7 @@ public class AutoCompleteSearchAdapter extends RecyclerView.Adapter<AutoComplete
             }
 
             holder.getBinding().personAvatarAsset.setOnClickListener(v -> startProfile(person));
-            holder.getBinding().personLocationInformation.setOnClickListener(v -> startProfile(person));
+            holder.getBinding().profileBar.setOnClickListener(v -> startProfile(person));
 
             holder.getBinding().setVariable(BR.person, person);
             holder.getBinding().executePendingBindings();
