@@ -23,17 +23,17 @@ public class ImageUrlBuilder {
     private static final String OPTO_SPACE = "https://wow.dscvr.com/";
 //    private static final String OPTO_SPACE = "http://192.168.1.69:8004/";
 //    private static final String THUMBOR_URL = "http://images.optonaut.co";
-//    private static final String THUMBOR_URL = "http://images.iam360.io";
-    private static final String THUMBOR_URL = "http://photos.dscvr.com";
+    private static final String THUMBOR_URL = "http://images.dscvr.com";
+//    private static final String THUMBOR_URL = "http://photos.dscvr.com";
 //    private static final String THUMBOR_URL = "http://192.168.1.69:11000";
     //private static final String S3_URL = "optonaut-ios-beta-staging.s3.amazonaws.com";
 //    private static final String S3_URL = "resources.optonaut.co.s3.amazonaws.com";
-//    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
-    private static final String S3_URL = "bucket.iam360.io";
+    private static final String S3_URL = "resources.staging-iam360.io.s3.amazonaws.com";
+//    private static final String S3_URL = "bucket.dscvr.com";
 
     private static final String URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures";
     private static final String SECURITY_KEY = "lBgF7SQaW3TDZ75ZiCuPXIDyWoADA6zY3KUkro5i";
-    private static final String IMAGE_BUCKET_URL = "https://bucket.iam360.io/textures/";
+    private static final String IMAGE_BUCKET_URL = "https://bucket.dscvr.com/textures/";
     private static final String S3_FULL_URL = "https://s3-ap-southeast-1.amazonaws.com/resources.staging-iam360.io/textures/";
 
     // TODO: use special formula, use different HFOV for VRmode and normal feed
@@ -119,7 +119,8 @@ public class ImageUrlBuilder {
     private static String getSignedUrl(String urlPartToSign) {
         try {
             String hmacUrlPart = hmacSha1(urlPartToSign, SECURITY_KEY);
-            return String.format("%s/%s/%s", THUMBOR_URL, hmacUrlPart, urlPartToSign);
+//            return String.format("%s/%s/%s", THUMBOR_URL, hmacUrlPart, urlPartToSign);
+            return String.format("%s/%s/%s", THUMBOR_URL, "unsafe", urlPartToSign);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
