@@ -65,20 +65,23 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <ProgressBar
         android:id="@+id/search_progress"
         style="@android:style/Widget.ProgressBar.Small.Inverse"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="@dimen/fab_content_size"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/no_result_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fab_content_size"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:textSize="16sp"
         android:text="No Results Found"/>
 
@@ -87,4 +90,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"/>
+    </RelativeLayout>
 </LinearLayout>
