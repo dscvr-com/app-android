@@ -105,6 +105,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
+
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -158,10 +159,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private void checkItem() {
         if (mAdapter.getItemCount()==0) {
             noResultText.setVisibility(View.VISIBLE);
+            personList.setVisibility(View.GONE);
             searchProgressVisibility(View.GONE);
         } else {
-            searchProgressVisibility(View.GONE);
             personList.setVisibility(View.VISIBLE);
+            searchProgressVisibility(View.GONE);
+            noResultText.setVisibility(View.GONE);
         }
         if (newText.isEmpty()) {
             clearSearch.setVisibility(View.GONE);

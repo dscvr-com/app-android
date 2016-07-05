@@ -347,6 +347,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
     public void addItem(Optograph optograph) {
         Timber.d("Add Item.");
+        Log.d("myTag"," feed: addItem");
         if (optograph == null) {
             return;
         }
@@ -361,14 +362,18 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
             optographs.add(optograph);
-            notifyItemInserted(getItemCount());
+//            notifyItemInserted(getItemCount());
+            notifyItemInserted(optographs.size()-1);
+            Log.d("myTag"," feed: add an item.");
             return;
         }
 
         // if optograph is oldest, simply append to list
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
-            notifyItemInserted(getItemCount());
+//            notifyItemInserted(getItemCount());
+            notifyItemInserted(optographs.size()-1);
+            Log.d("myTag", " feed: add an item.");
             return;
         }
 
