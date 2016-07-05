@@ -2,6 +2,8 @@ package com.iam360.iam360.views.new_design;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -81,6 +83,16 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.numberLocalImage.setOnClickListener(this);
         binding.numberImage.setOnClickListener(this);
         binding.searchButton.setOnClickListener(this);
+
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+            String version = pInfo.versionName;
+            binding.version.setText("v" + version);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
 //        Settings start
         initializeButtons();
