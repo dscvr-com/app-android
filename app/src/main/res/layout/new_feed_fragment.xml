@@ -162,15 +162,6 @@
                         android:layout_centerHorizontal="true"/>
 
                     <TextView
-                        android:id="@+id/version"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_dark"
-                        android:layout_below="@+id/iam_logo"
-                        android:layout_marginTop="20dp"
-                        android:text="0.84" />
-
-                    <TextView
                         android:id="@+id/settings_vr_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -524,6 +515,15 @@
                         </LinearLayout>
 
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_dark"
+                        android:layout_margin="10dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true" />
 
                 </RelativeLayout>
 

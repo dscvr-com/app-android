@@ -413,7 +413,11 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
                     GenericOKDialog genericOKDialog = new GenericOKDialog();
                     genericOKDialog.setArguments(bundle);
-                    genericOKDialog.show(getFragmentManager(), "Error");
+                    try {
+                        genericOKDialog.show(getFragmentManager(), "Error");
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override

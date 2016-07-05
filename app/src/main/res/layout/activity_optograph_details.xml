@@ -51,20 +51,37 @@
 
         </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/gyro_button"
+        <LinearLayout
+            android:id="@+id/menu_layout_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/gyro_inactive_icn_copy"
+            android:orientation="vertical"
             android:layout_gravity="end"
             android:layout_marginTop="40dp"
-            android:layout_marginRight="18dp"/>
+            android:layout_marginRight="18dp">
+
+            <ImageButton
+                android:id="@+id/vr_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/vr_icon"
+                android:layout_marginBottom="20dp" />
+
+            <ImageButton
+                android:id="@+id/gyro_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gyro_inactive_icn_copy"/>
+
+
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/menu_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:visibility="gone"
             android:layout_marginTop="40dp"
             android:layout_marginRight="18dp">
 
@@ -98,6 +115,16 @@
             </LinearLayout>
 
         </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/delete_icn"
+            android:background="@color/transparentOverlay"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="65dp"
+            android:padding="@dimen/fab_elevation"/>
 
         <RelativeLayout
             android:id="@+id/profile_bar"
@@ -217,16 +244,6 @@
                         android:layout_centerVertical="true" />
 
                 </RelativeLayout>
-
-                <ImageButton
-                    android:id="@+id/delete_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/delete_icn_white"
-                    android:background="@color/transparentOverlay"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:padding="@dimen/fab_elevation"/>
 
                 <!--android:layout_alignParentRight="true"-->
                 <RelativeLayout
