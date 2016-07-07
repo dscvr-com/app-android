@@ -153,11 +153,18 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
     // To be called from parent activity
     public void onPause() {
-        closeCamera();
         stopBackgroundThread();
+        closeCamera();
+    }
+
+    public void stopPreviewFeed() {
+        stopBackgroundThread();
+        closeCamera();
     }
 
     private void stopBackgroundThread() {
+        if(backgroundThread == null)
+            return;
         backgroundThread.quitSafely();
         try {
             backgroundThread.join();

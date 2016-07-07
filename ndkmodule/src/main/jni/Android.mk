@@ -6,7 +6,6 @@ OPENCV_CAMERA_MODULES:=off
 OPENCV_LIB_TYPE:=STATIC
 
 include $(OPENCV_ANDROID_PATH)
-#include /Users/emi/Projects/OpenCV-android-sdk/sdk/native/jni/OpenCV.mk
 
 LOCAL_MODULE    := ndkmodule
 LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
@@ -33,3 +32,6 @@ LOCAL_EXPORT_LDLIBS := -llog
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lz
 LOCAL_LDFLAGS += -ljnigraphics
 include $(BUILD_SHARED_LIBRARY)
+
+APP_OPTIM := release
+LOCAL_CFLAGS += -O3
