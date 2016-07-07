@@ -36,6 +36,7 @@ import com.iam360.iam360.network.PersonManager;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.views.MainActivityRedesign;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
+import com.iam360.iam360.views.new_design.CreateUsernameActivity;
 import com.iam360.iam360.views.new_design.MainActivity;
 
 import retrofit.Callback;
@@ -134,13 +135,9 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 cache.save(Cache.USER_ID, login.getId());
                 cache.save(Cache.USER_TOKEN, login.getToken());
 
-//                getActivity().setResult(2);
-//                getActivity().finish();
                 Log.d("myTag", "success login. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
-//                ((MainActivity)getActivity()).onBackPressed();
-//                ((MainActivity) getActivity()).onBack();
-//                ((MainActivity)getActivity()).setPage(MainActivity.PROFILE_MODE);
-                startProfileFragment();
+//                startProfileFragment();
+                startCreateUserPage();
             }
 
             @Override
@@ -263,7 +260,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 //                        ((MainActivity) getActivity()).onBack();
                                 PersonManager.updatePerson();
                                 PersonManager.savePersonInfoToCache();
-                                startProfileFragment();
+//                                startProfileFragment();
+                                startCreateUserPage();
 
                             }
 
@@ -322,4 +320,17 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
             getActivity().finish();
         }
     }
+
+    private void startCreateUserPage() {
+
+        if(getContext() instanceof MainActivity) {
+            getActivity().finish();
+            startActivity(getActivity().getIntent());
+        } else {
+            Intent intent = new Intent(getActivity(), CreateUsernameActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
+    }
+
 }

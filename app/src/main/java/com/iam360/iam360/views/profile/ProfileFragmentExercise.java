@@ -146,7 +146,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
-            cache.save(Cache.USER_NAME,person.getDisplay_name());
+            cache.save(Cache.USER_DISPLAY_NAME, person.getDisplay_name());
         } else {
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
         }

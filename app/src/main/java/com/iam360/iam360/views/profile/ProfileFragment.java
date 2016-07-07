@@ -279,7 +279,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 binding.getPerson().setDisplay_name(binding.personNameEdit.getText().toString());
                 binding.personName.setText(binding.personNameEdit.getText().toString());
                 binding.personDesc.setText(binding.personDescEdit.getText().toString());
-                PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
+                PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString(), null);
                 binding.editBtn.setVisibility(View.VISIBLE);
                 getActivity().invalidateOptionsMenu();
                 updateHomeButton();
@@ -352,7 +352,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             binding.personIsFollowed.setVisibility(View.GONE);
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
 //            binding.personIsFollowed.setBackgroundResource(R.drawable.messenger_share_btn);
-            cache.save(Cache.USER_NAME,person.getDisplay_name());
+            cache.save(Cache.USER_DISPLAY_NAME,person.getDisplay_name());
         } else {
             binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
             binding.editBtn.setVisibility(View.GONE);
@@ -403,7 +403,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     isEditMode = false;
                     binding.personName.setText(binding.personNameEdit.getText().toString());
                     binding.personDesc.setText(binding.personDescEdit.getText().toString());
-                    PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString());
+                    PersonManager.updatePerson(binding.personNameEdit.getText().toString(), binding.personDescEdit.getText().toString(), null);
                     getActivity().invalidateOptionsMenu();
                 } else if (isCurrentUser) {
                     binding.personDesc.setVisibility(View.INVISIBLE);

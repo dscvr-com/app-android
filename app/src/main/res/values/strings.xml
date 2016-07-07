@@ -140,4 +140,14 @@
     <string name="mailing_email">E-mail</string>
     <string name="mailing_reach_us">Reach us at TEAM@DSCVR.COM</string>
 
+    <!-- Create User Name -->
+    <string name="create_username_text">Create your username :</string>
+    <string name="create_username_hint">Username</string>
+    <string name="create_username_symbol">\@</string>
+    <string name="create_username_taken">Username is taken</string>
+    <string name="create_username_available">Username is available</string>
+    <string name="create_username_create">CREATE USERNAME</string>
+    <string name="create_username_sucessful">User successfully created.</string>
+    <string name="create_username_failed">Error in creatting username. Please try again.</string>
+
 </resources>

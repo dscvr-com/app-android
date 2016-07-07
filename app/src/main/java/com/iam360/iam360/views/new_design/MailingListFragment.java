@@ -106,8 +106,8 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
         GeneralUtils utils = new GeneralUtils();
         utils.setFont(getContext(), typeText);
         utils.setFont(getContext(), getText);
-        utils.setFont(getContext(), goBtn, Typeface.DEFAULT_BOLD);
-        utils.setFont(getContext(), sendBtn, Typeface.DEFAULT_BOLD);
+        utils.setFont(getContext(), goBtn, Typeface.BOLD);
+        utils.setFont(getContext(), sendBtn, Typeface.BOLD);
         utils.setFont(getContext(), reachUsText);
         utils.setFont(getContext(), emailText);
         utils.setFont(getContext(), codeText);

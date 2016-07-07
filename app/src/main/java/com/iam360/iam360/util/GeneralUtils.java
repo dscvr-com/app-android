@@ -97,18 +97,18 @@ public class GeneralUtils {
         }
     }
     public void setFont(Context context, TextView textView) {
-        setFont(context, textView, Typeface.DEFAULT);
+        setFont(context, textView, Typeface.NORMAL);
     }
 
     /**
      *
      * @param context
      * @param textView
-     * @param typeface Typeface.DEFAULT, Typeface.DEFAULT_BOLD
+     * @param typeface Typeface.BOLD, Typeface.ITALIC
      */
-    public void setFont(Context context, TextView textView, Typeface typeface) {
+    public void setFont(Context context, TextView textView, int typeface) {
         Typeface custom_font = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
-        textView.setTypeface(custom_font, typeface.getStyle());
+        textView.setTypeface(custom_font, typeface);
     }
 
     public static String mToString(float[] m) {

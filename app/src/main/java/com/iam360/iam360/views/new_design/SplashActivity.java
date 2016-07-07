@@ -20,8 +20,10 @@ public class SplashActivity extends AppCompatActivity {
         String token = cache.getString(Cache.USER_TOKEN);
         Intent intent;
 
-        if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
-        else intent = new Intent(this, MainActivity.class);
+//        if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
+//        else intent = new Intent(this, MainActivity.class);
+
+        intent = new Intent(this, SigninFBActivity.class);
 
         startActivity(intent);
         finish();

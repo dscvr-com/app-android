@@ -114,10 +114,10 @@
         <activity
             android:name=".views.profile.SigninFBActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".views.SearchActivity"
+        <activity
+            android:name=".views.SearchActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity android:name=".views.SettingsActivity" />
         <activity android:name=".views.new_design.ImagePicker" />
 
@@ -149,6 +149,7 @@
             android:authorities="com.facebook.app.FacebookContentProvider221219334902804"
             android:exported="true" />
 
+        <activity android:name=".views.new_design.CreateUsernameActivity"></activity>
     </application>
 
 </manifest>

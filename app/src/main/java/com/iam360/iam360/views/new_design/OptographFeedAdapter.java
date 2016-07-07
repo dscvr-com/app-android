@@ -962,9 +962,9 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 
         Person person = new Person();
         person.setFacebook_token(cache.getString(Cache.USER_FB_TOKEN));
-        person.setDisplay_name(cache.getString(Cache.USER_NAME));
+        person.setDisplay_name(cache.getString(Cache.USER_DISPLAY_NAME));
         person.setFacebook_user_id(cache.getString(Cache.USER_FB_ID));
-        person.setUser_name(cache.getString(Cache.USER_NAME));
+        person.setUser_name(cache.getString(Cache.USER_DISPLAY_NAME));
 
         optograph.setPerson(person);
         return optograph;

@@ -57,6 +57,7 @@ public class PersonManager {
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
                     Person person = response.body();
                     cache.save(Cache.USER_EMAIL, person.getEmail());
+                    cache.save(Cache.USER_NAME, person.getUser_name());
                     Log.v(DEBUG_TAG, "User email : " + person.getEmail());
                 }
 
@@ -67,15 +68,17 @@ public class PersonManager {
             });
     }
 
-    public static void updatePerson(String displayName, String text) {
+    public static void updatePerson(String displayName, String text, String userName) {
 
         Cache cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         ApiConsumer apiConsumer = new ApiConsumer(token.equals("") ? null : token);
         try {
-            apiConsumer.updatePerson(new UpdatePersonData(displayName, text), new Callback<Person>() {
+            apiConsumer.updatePerson(new UpdatePersonData(displayName, text, userName), new Callback<Person>() {
                 @Override
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
+                    if(response.isSuccess()) Timber.d("Updated person : " + response.body());
+                    else Timber.d("Updated person : failed.");
                 }
 
                 @Override
@@ -111,14 +114,17 @@ public class PersonManager {
         }
     }
 
-    static class UpdatePersonData {
+    public static class UpdatePersonData {
         final String display_name;
         final String text;
+        final String user_name;
 
-        public UpdatePersonData(String display_name, String text) {
+        public UpdatePersonData(String display_name, String text, String user_name) {
             this.display_name = display_name;
             this.text = text;
+            this.user_name = user_name;
         }
+
     }
 
     static class UpdatePersonSocialData{

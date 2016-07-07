@@ -54,8 +54,8 @@ public class MailingListActivity extends AppCompatActivity implements View.OnCli
         GeneralUtils utils = new GeneralUtils();
         utils.setFont(this, typeText);
         utils.setFont(this, getText);
-        utils.setFont(this, goBtn, Typeface.DEFAULT_BOLD);
-        utils.setFont(this, sendBtn, Typeface.DEFAULT_BOLD);
+        utils.setFont(this, goBtn, Typeface.BOLD);
+        utils.setFont(this, sendBtn, Typeface.BOLD);
         utils.setFont(this, reachUsText);
         utils.setFont(this, emailText);
         utils.setFont(this, codeText);
