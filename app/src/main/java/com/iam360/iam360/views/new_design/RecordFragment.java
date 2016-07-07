@@ -280,6 +280,9 @@ public class RecordFragment extends Fragment {
         GlobalState.isAnyJobRunning = true;
         UUID id = UUID.randomUUID();
 
+        recordPreview.setPreviewListener(null);
+        recordPreview.stopPreviewFeed();
+
         // start a background thread to finish recorder
         OptonautApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
 
@@ -288,7 +291,10 @@ public class RecordFragment extends Fragment {
     }
 
     public void cancelRecording() {
-        GlobalState.isAnyJobRunning = true;
+        recordPreview.setPreviewListener(null);
+        recordPreview.stopPreviewFeed();
+
+        recordPreview.onPause();
 
         // start background thread to cancel recorder
         OptonautApp.getInstance().getJobManager().addJobInBackground(new CancelRecorderJob());

@@ -3,6 +3,8 @@ package com.iam360.iam360.views.new_design;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,8 +16,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
@@ -57,9 +63,13 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean arrowClicked = false;
     private boolean isCurrentUser = false;
 
+    private boolean hasSoftKey=false;
+    private int viewsWithSoftKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         optograph = getIntent().getExtras().getParcelable("opto");
         cache = Cache.open();
         mydb = new DBHelper(this);
@@ -70,8 +80,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
-
-        Log.d("myTag"," zoom: details type: "+optograph.getOptograph_type());
 
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
         if(isCurrentUser) {
@@ -141,11 +149,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         setHeart(optograph.is_starred(), optograph.getStars_count());
         followPerson(optograph.getPerson().is_followed());
 
-//        getWindow().getDecorView().setSystemUiVisibility(
-//                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//        );
+        adjustIfHasSoftKeys();
+        getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
 
     }
 
@@ -235,7 +240,47 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         }
     }
 
+//    http://stackoverflow.com/questions/20264268/how-to-get-height-and-width-of-navigation-bar-programmatically
+//    adjustIfHasSoftKeys and isTablet
+    private void adjustIfHasSoftKeys() {
+            viewsWithSoftKey = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+
+        boolean hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey();
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+
+        if(!hasMenuKey && !hasBackKey) {
+            //The device has a navigation bar
+            Resources resources = this.getResources();
+
+            int orientation = getResources().getConfiguration().orientation;
+            int resourceId;
+            if (isTablet(this)) {
+                resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
+            } else {
+                resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_width", "dimen", "android");
+            }
+
+            if (resourceId > 0) {
+                Log.d("myTag", " softkey: resourceId >0: " + resources.getDimensionPixelSize(resourceId) + " instance of Margin? " + (binding.profileBar.getLayoutParams() instanceof ViewGroup.MarginLayoutParams));
+                if (binding.profileBar1.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                    ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) binding.profileBar1.getLayoutParams();
+                    p.setMargins(0, 0, 0, resources.getDimensionPixelSize(resourceId));
+                    binding.profileBar1.requestLayout();
+                }
+            }
+        }
+    }
+
+    private boolean isTablet(Context c) {
+        return (c.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
     private void toggleFullScreen() {
+        adjustIfHasSoftKeys();
         if(!isFullScreenMode) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -252,16 +297,13 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.deleteButton.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            );
+            getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
+
             binding.closeContainer.setVisibility(View.VISIBLE);
             binding.profileBar.setVisibility(View.VISIBLE);
-            binding.deleteButton.setVisibility(View.VISIBLE);
+            if(isCurrentUser) binding.deleteButton.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);// change to VISIBLE if settings is needed here
-            binding.menuLayout1.setVisibility(View.INVISIBLE);// change to VISIBLE if settings is needed here
+            binding.menuLayout1.setVisibility(View.VISIBLE);// change to VISIBLE if settings is needed here
             isFullScreenMode = false;
         }
     }

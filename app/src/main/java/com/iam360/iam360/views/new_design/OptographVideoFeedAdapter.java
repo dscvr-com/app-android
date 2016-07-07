@@ -97,7 +97,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         Optograph optograph = optographs.get(position);
 
         if (!optograph.equals(holder.getBinding().getOptograph())) {
-            Log.d("myTag"," feed: onBind inside condition.");;
+            Log.d("myTag"," feed: onBind inside condition.");
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
             holder.itemView.setLayoutParams(params);
 

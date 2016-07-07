@@ -5,7 +5,9 @@
     <data class=".OptographDetailsBinding">
 
         <import type="com.iam360.iam360.model.Optograph" />
+
         <import type="com.iam360.iam360.model.Person" />
+
         <import type="com.iam360.iam360.model.Location" />
 
         <variable
@@ -38,16 +40,16 @@
             android:id="@+id/close_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="25dp"
+            android:paddingBottom="15dp"
             android:paddingRight="15dp"
-            android:paddingBottom="15dp">
+            android:paddingTop="25dp">
 
             <ImageButton
                 android:id="@+id/close_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/close_x_icn"
-                android:layout_margin="10dp" />
+                android:layout_margin="10dp"
+                android:background="@drawable/close_x_icn" />
 
         </RelativeLayout>
 
@@ -55,23 +57,23 @@
             android:id="@+id/menu_layout_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_gravity="end"
+            android:layout_marginRight="18dp"
             android:layout_marginTop="40dp"
-            android:layout_marginRight="18dp">
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/vr_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/vr_icon"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/vr_icon" />
 
             <ImageButton
                 android:id="@+id/gyro_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gyro_inactive_icn_copy"/>
+                android:background="@drawable/gyro_inactive_icn_copy" />
 
 
         </LinearLayout>
@@ -81,217 +83,224 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:visibility="gone"
+            android:layout_marginRight="18dp"
             android:layout_marginTop="40dp"
-            android:layout_marginRight="18dp">
+            android:visibility="gone">
 
             <ImageButton
                 android:id="@+id/arrow_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/arrow_up_icn"/>
+                android:background="@drawable/arrow_up_icn" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_below="@id/arrow_menu"
-                android:layout_centerHorizontal="true">
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical">
 
                 <ImageButton
                     android:id="@+id/little_planet_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/little_planet_inactive_icn_copy"
-                    android:layout_marginTop="12dp" />
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/little_planet_inactive_icn_copy" />
 
                 <!--<ImageButton-->
-                    <!--android:id="@+id/gyro_button"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:background="@drawable/gyro_inactive_icn_copy"-->
-                    <!--android:layout_marginTop="12dp" />-->
+                <!--android:id="@+id/gyro_button"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@drawable/gyro_inactive_icn_copy"-->
+                <!--android:layout_marginTop="12dp" />-->
 
             </LinearLayout>
 
         </RelativeLayout>
 
-        <ImageButton
-            android:id="@+id/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/delete_icn"
-            android:background="@color/transparentOverlay"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="65dp"
-            android:padding="@dimen/fab_elevation"/>
-
         <RelativeLayout
-            android:id="@+id/profile_bar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_gravity="bottom"
-            android:background="@color/feed_bar">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/person_avatar_asset_padding"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="14dp"
-                android:layout_marginBottom="5dp"
-                android:layout_alignParentLeft="true"
-                app:civ_border_width="0dp"
-                android:background="@drawable/profile_avatar_background"/>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:background="@color/transparentOverlay"
-                android:id="@+id/person_avatar_asset"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginBottom="5dp"
-                android:layout_alignParentLeft="true"
-                app:person="@{person}"
-                app:civ_border_width="0dp"/>
+            android:id="@+id/profile_bar_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:id="@+id/follow_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-                <ImageButton
-                    android:id="@+id/follow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="3dp"
-                    android:background="@drawable/feed_follow_icn"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
+                android:id="@+id/profile_bar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@id/person_avatar_asset_padding" >
+                android:background="@color/feed_bar">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/person_avatar_asset_padding"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="14dp"
+                    android:background="@drawable/profile_avatar_background"
+                    app:civ_border_width="0dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/person_avatar_asset"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="16dp"
+                    android:background="@color/transparentOverlay"
+                    app:civ_border_width="0dp"
+                    app:person="@{person}" />
 
                 <RelativeLayout
-                    android:id="@+id/person_location_information"
+                    android:id="@+id/follow_container"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="12dp" >
+                    android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/person_name_label"
-                        android:layout_above="@+id/dummy"
-                        android:layout_gravity="top"
+                    <ImageButton
+                        android:id="@+id/follow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:textColor="@color/feed_text_yellow"
-                        android:textSize="15dp"
-                        android:layout_marginBottom="0dp"
-                        android:text="@{person.display_name}" />
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/feed_follow_icn" />
 
-                    <View
-                        android:id="@+id/dummy"
-                        android:layout_width="1dp"
-                        android:layout_height="1dp"
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@id/person_avatar_asset_padding">
+
+                    <RelativeLayout
+                        android:id="@+id/person_location_information"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_centerVertical="true"
-                        android:visibility="invisible" />
+                        android:layout_marginLeft="12dp">
 
-                    <TextView
-                        android:id="@+id/location_label"
-                        android:layout_below="@+id/dummy"
+                        <TextView
+                            android:id="@+id/person_name_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/dummy"
+                            android:layout_alignParentLeft="true"
+                            android:layout_gravity="top"
+                            android:layout_marginBottom="0dp"
+                            android:text="@{person.display_name}"
+                            android:textColor="@color/feed_text_yellow"
+                            android:textSize="15dp" />
+
+                        <View
+                            android:id="@+id/dummy"
+                            android:layout_width="1dp"
+                            android:layout_height="1dp"
+                            android:layout_centerVertical="true"
+                            android:visibility="invisible" />
+
+                        <TextView
+                            android:id="@+id/location_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_below="@+id/dummy"
+                            android:layout_marginTop="0dp"
+                            android:text="@{location.text}"
+                            android:textColor="@color/feed_text_white"
+                            android:textSize="11dp" />
+
+                    </RelativeLayout>
+
+                    <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:textColor="@color/feed_text_white"
-                        android:layout_marginTop="0dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="16dp"
+                        android:layout_toLeftOf="@+id/heart_container"
+                        android:background="@drawable/follow_btn_selector"
+                        android:textColor="@color/bright"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/share_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toLeftOf="@id/heart_container">
+
+                        <ImageView
+                            android:id="@+id/share_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/share_bar_icn" />
+
+                    </RelativeLayout>
+
+                    <!--android:layout_toLeftOf="@id/delete_button"-->
+                    <RelativeLayout
+                        android:id="@+id/heart_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignWithParentIfMissing="true">
+
+                        <TextView
+                            android:id="@+id/heart_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:drawablePadding="5dp"
+                            android:drawableRight="@drawable/like_icn"
+                            android:text="1"
+                            android:textColor="@color/bright" />
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/settings_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="21dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="16dp"
+                        android:textColor="@color/settingsFontColor"
+                        android:textSize="21dp"
+                        android:visibility="gone" />
+
+
+                    <TextView
+                        android:id="@+id/time_ago"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="5dp"
+                        android:layout_toLeftOf="@+id/settings_button"
+                        android:textColor="@color/timeAgoFontColor"
                         android:textSize="11dp"
-                        android:text="@{location.text}"/>
+                        android:visibility="gone"
+                        app:createdAt="@{optograph.created_at}" />
 
                 </RelativeLayout>
-
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:layout_toLeftOf="@+id/heart_container"
-                    android:background="@drawable/follow_btn_selector"
-                    android:visibility="gone"
-                    android:textColor="@color/bright" />
-
-                <RelativeLayout
-                    android:id="@+id/share_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/heart_container" >
-
-                    <ImageView
-                        android:id="@+id/share_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="12dp"
-                        android:layout_marginLeft="12dp"
-                        android:src="@drawable/share_bar_icn"
-                        android:layout_centerVertical="true" />
-
-                </RelativeLayout>
-
-                <!--android:layout_alignParentRight="true"-->
-                <RelativeLayout
-                    android:id="@+id/heart_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/delete_button"
-                    android:layout_alignWithParentIfMissing="true">
-
-                    <TextView
-                        android:id="@+id/heart_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="5dp"
-                        android:layout_marginRight="12dp"
-                        android:layout_marginLeft="12dp"
-                        android:layout_centerVertical="true"
-                        android:text="1"
-                        android:drawableRight="@drawable/like_icn"
-                        android:textColor="@color/bright" />
-
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/settings_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="21dp"
-                    android:textSize="21dp"
-                    android:textColor="@color/settingsFontColor"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="16dp"
-                    android:visibility="gone"/>
-
-
-                <TextView
-                    android:id="@+id/time_ago"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/timeAgoFontColor"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/settings_button"
-                    android:layout_marginRight="5dp"
-                    android:textSize="11dp"
-                    android:visibility="gone"
-                    app:createdAt="@{optograph.created_at}"/>
-
             </RelativeLayout>
+
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/profile_bar"
+                android:layout_alignParentEnd="true"
+                android:background="@color/transparentOverlay"
+                android:padding="@dimen/fab_elevation"
+                android:layout_marginBottom="@dimen/appbar_elevation"
+                android:src="@drawable/delete_icn" />
 
         </RelativeLayout>
 
@@ -310,8 +319,8 @@
                 android:layout_marginLeft="0dp"
                 android:layout_toLeftOf="@+id/description_label"
                 android:textColor="@color/bright"
-                app:font="@{``}"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:font="@{``}" />
 
             <com.iam360.iam360.views.ExpandableTextView
                 android:id="@+id/description_label"
@@ -319,9 +328,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:maxWidth="288dp"
-                app:font="@{``}"
                 android:text="@{optograph.text}"
                 android:textColor="@color/bright"
+                app:font="@{``}"
                 app:trimLength="32" />
 
             <TextView
@@ -335,9 +344,9 @@
                 android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
                 android:paddingBottom="3dp"
                 android:text="upload"
-                app:font="@{``}"
                 android:textColor="@color/bright"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:font="@{``}" />
 
             <ProgressBar
                 android:id="@+id/feed_upload_progress"
