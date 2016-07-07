@@ -34,11 +34,11 @@
             android:background="@color/transparentOverlay"
             app:optograph="@{optograph}" />
 
+        <!--android:paddingTop="25dp"-->
         <RelativeLayout
             android:id="@+id/close_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="25dp"
             android:paddingRight="15dp"
             android:paddingBottom="15dp">
 
@@ -51,13 +51,13 @@
 
         </RelativeLayout>
 
+        <!--android:layout_marginTop="40dp"-->
         <LinearLayout
             android:id="@+id/menu_layout_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="end"
-            android:layout_marginTop="40dp"
             android:layout_marginRight="18dp">
 
             <ImageButton
@@ -65,6 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/vr_icon"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp" />
 
             <ImageButton
