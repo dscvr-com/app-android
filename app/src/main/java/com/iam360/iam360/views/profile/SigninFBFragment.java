@@ -1,6 +1,7 @@
 package com.iam360.iam360.views.profile;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import java.util.Arrays;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.FBSignInData;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.Person;
 import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.model.SignUpReturn;
 import com.iam360.iam360.network.ApiConsumer;
@@ -54,6 +57,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     private ImageButton loginButton;
     private ImageButton registerButton;
     private TextView resetPasswordButton;
+    private ProgressBar progressBar;
 
     private ApiConsumer apiConsumer;
     private CallbackManager callbackManager;
@@ -97,10 +101,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
         loginButton = (ImageButton) view.findViewById(R.id.login_button);
         registerButton = (ImageButton) view.findViewById(R.id.register_button);
         resetPasswordButton = (TextView) view.findViewById(R.id.reset_password);
-
         fbButton = (ImageButton) view.findViewById(R.id.fb_button);
-//        fbButton.setReadPermissions("email");
-//        fbButton.setFragment(this);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
         loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
@@ -219,12 +221,13 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.fb_button:
-                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile","user_friends"));
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile","user_friends", "user_photos"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId()+" token: "+loginResult.getAccessToken().getToken());
 
+                        progressBar.setVisibility(View.VISIBLE);
                         apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
                             @Override
                             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
@@ -259,9 +262,10 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 //                        ((MainActivity) getActivity()).onBackPressed();
 //                        ((MainActivity) getActivity()).onBack();
                                 PersonManager.updatePerson();
-                                PersonManager.savePersonInfoToCache();
+                                savePersonInfoToCache();
+//                                PersonManager.savePersonInfoToCache();
 //                                startProfileFragment();
-                                startCreateUserPage();
+//                                startCreateUserPage();
 
                             }
 
@@ -301,6 +305,31 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
             default:
                 break;
         }
+    }
+
+    public void savePersonInfoToCache() {
+        Timber.d("savePersonInfoToCache");
+
+        String token = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        apiConsumer.getUser(new Callback<Person>() {
+            @Override
+            public void onResponse(Response<Person> response, Retrofit retrofit) {
+                Person person = response.body();
+                cache.save(Cache.USER_EMAIL, person.getEmail());
+                cache.save(Cache.USER_NAME, person.getUser_name());
+                Timber.d("User email : " + person.getEmail());
+
+                progressBar.setVisibility(View.GONE);
+                startCreateUserPage();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Timber.d("Failed to load person!");
+            }
+        });
     }
 
     private void setButtonsClickable(boolean clickable) {
