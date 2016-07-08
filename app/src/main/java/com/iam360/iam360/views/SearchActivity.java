@@ -44,7 +44,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private AutoCompleteSearchAdapter mAdapter;
     private String newText;
     private String searchValue;
-    List<Person> listPerson = new ArrayList<>();
 
     protected ApiConsumer apiConsumer;
     protected Cache cache;
@@ -134,12 +133,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                    return null;
 //                })
 //                .subscribe(mAdapter::addItem);
-        apiConsumer.getSearchResultCall(search, new Callback<List<Person>>() {
+        apiConsumer.getSearchResultCall(search, new Callback<Person>() {
             @Override
-            public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
+            public void onResponse(Response<Person> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body()!=null) {
-                    listPerson = response.body();
-                    mAdapter.setObjects(listPerson);
+                    Person person = response.body();
+                    if(person.getId().isEmpty()) {
+                        mAdapter.setObjects(new ArrayList<>());
+                    } else {
+                        List<Person> personList = new ArrayList<Person>();
+                        personList.add(person);
+                        mAdapter.setObjects(personList);
+                    }
                 } else {
                     mAdapter.setObjects(new ArrayList<>());
                 }

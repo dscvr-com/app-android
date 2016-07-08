@@ -18,9 +18,11 @@ public class SplashActivity extends AppCompatActivity {
         cache = Cache.getInstance(this);
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
+        String username = cache.getString(Cache.USER_NAME);
         Intent intent;
 
         if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
+        else if(username.length() == 0 || username.length() > 15) intent = new Intent(this, CreateUsernameActivity.class);
         else intent = new Intent(this, MainActivity.class);
 
         startActivity(intent);

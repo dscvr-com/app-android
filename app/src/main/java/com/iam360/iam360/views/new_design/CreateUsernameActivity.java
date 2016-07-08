@@ -85,9 +85,9 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         // minimum username length is 4
         if(s.length() >= 4) {
-            apiConsumer.getSearchResultCall(s.toString(), new Callback<List<Person>>() {
+            apiConsumer.getSearchResultCall(s.toString(), new Callback<Person>() {
                 @Override
-                public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
+                public void onResponse(Response<Person> response, Retrofit retrofit) {
                     if (response.isSuccess()) {
                         checkIfValidUserName(response.body());
                     }
@@ -113,8 +113,9 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
 
     }
 
-    private void checkIfValidUserName(List<Person> person) {
-        if(person == null) {
+    private void checkIfValidUserName(Person person) {
+
+        if(person.getUser_name().isEmpty()) {
             userNameCheck.setTextColor(getResources().getColor(R.color.text_yellow));
             userNameCheck.setText(getResources().getString(R.string.create_username_available));
             createBtn.setTextColor(getResources().getColor(R.color.text_dark));
