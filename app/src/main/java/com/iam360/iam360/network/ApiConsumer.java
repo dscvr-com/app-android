@@ -296,8 +296,8 @@ public class ApiConsumer {
         return service.getSearchResult(key).flatMap(Observable::from);
     }
 
-    public void getSearchResultCall(String key, Callback<List<Person>> callback) {
-        Call<List<Person>> call = service.getSearchResultCall(key);
+    public void getSearchResultCall(String key, Callback<Person> callback) {
+        Call<Person> call = service.getSearchResultCall(key);
         call.enqueue(callback);
     }
 
