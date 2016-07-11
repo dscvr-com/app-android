@@ -69,6 +69,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mydb = new DBHelper(getContext());
+        setHasOptionsMenu(true);
     }
 
     @Override

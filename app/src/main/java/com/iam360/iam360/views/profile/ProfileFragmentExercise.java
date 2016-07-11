@@ -1,12 +1,11 @@
 package com.iam360.iam360.views.profile;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,8 +58,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         cache = Cache.open();
         String token = cache.getString(cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
@@ -77,11 +76,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding = DataBindingUtil.inflate(inflater, R.layout.profile_fragment_exercise,container, false);
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(getActivity() instanceof ProfileActivity ? R.drawable.back_arrow : R.drawable.logo_small_dark);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(getActivity() instanceof ProfileActivity ? R.drawable.back_arrow : R.drawable.logo_small_dark);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        binding.homeBtn.setImageResource(getActivity() instanceof ProfileActivity? R.drawable.back_arrow : R.drawable.logo_small_dark);
 
         Log.d("myTag", TAG + " person null? " + (person == null));
         if (person != null) {
@@ -91,7 +91,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 
         binding.homeBtn.setOnClickListener(this);
-        binding.signOut.setOnClickListener(this);
+        binding.saveBtn.setOnClickListener(this);
+        binding.cancelBtn.setOnClickListener(this);
+        binding.overflowBtn.setOnClickListener(this);
 
         binding.optographFeed.setAdapter(optographLocalGridAdapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(),4);
@@ -124,11 +126,13 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 View view = binding.optographFeed.getChildAt(1);
 //                yPos += dy;
                 Log.d("myTag", TAG + " onScrolled yPos: " + yPos + " dy: " + dy + " toolHeight: " + binding.toolbarTitle.getHeight());
-                if (view.getY()<=5) {
+                if (view.getY() <= 5) {
                     binding.toolbar.setVisibility(View.GONE);
+                    binding.toolbarLayout.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
                 } else {
-                    binding.toolbar.setVisibility(View.VISIBLE);
+                    binding.toolbarLayout.setVisibility(View.VISIBLE);
+//                    binding.toolbar.setVisibility(View.VISIBLE);
                     binding.toolbarReplace.setVisibility(View.GONE);
                 }
             }
@@ -145,10 +149,13 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
-            binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
+//            binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
+            binding.pageTitle.setText(getResources().getString(R.string.profile_my_profile));
             cache.save(Cache.USER_DISPLAY_NAME, person.getDisplay_name());
         } else {
-            binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
+            isCurrentUser = false;
+//            binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
+            binding.pageTitle.setText(getResources().getString(R.string.profile_text));
         }
 
         getActivity().invalidateOptionsMenu();
@@ -160,20 +167,44 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.home_btn:
-                if (getActivity() instanceof MainActivity) {
-                    getActivity().onBackPressed();
-                } else {
-                    getActivity().finish();
-                }
+                if (getActivity() instanceof ProfileActivity) {
+                    Log.d("myTag", "ProfileActivity? " + (getActivity() instanceof ProfileActivity));
+                    ((ProfileActivity)getActivity()).onBackPressed();
+                } else if (getActivity() instanceof MainActivity)
+                    ((MainActivity) getActivity()).onBackPressed();
+                else getActivity().finish();
                 break;
-            case R.id.sign_out:
-                cache.save(Cache.USER_ID,"");
-                cache.save(Cache.USER_TOKEN,"");
-                cache.save(Cache.GATE_CODE,"");
+            case R.id.save_btn:
+                isEditMode = false;
+                optographLocalGridAdapter.saveUpdate();
+                updateHomeButton();
+                break;
+            case R.id.cancel_btn:
+                isEditMode = false;
+                optographLocalGridAdapter.setEditMode(isEditMode);
+                binding.cancelBtn.setVisibility(View.VISIBLE);
+                binding.homeBtn.setVisibility(View.GONE);
+                updateHomeButton();
+                break;
+            case R.id.overflow_btn:
+                PopupMenu popupMenu = new PopupMenu(getActivity(), binding.overflowBtn);
+                popupMenu.getMenuInflater()
+                        .inflate(R.menu.profile_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        // logs out
+                        // remove user cache, remove this fragment
+                        cache.save(Cache.USER_ID, "");
+                        cache.save(Cache.USER_TOKEN, "");
+                        cache.save(Cache.GATE_CODE, "");
 
-                LoginManager.getInstance().logOut();
-
-                backToSignInPage();
+                        backToSignInPage();
+                        LoginManager.getInstance().logOut();
+                        return true;
+                    }
+                });
+                popupMenu.show();
                 break;
         }
     }
@@ -246,17 +277,38 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void updateHomeButton() {
-        Log.d("myTag", "menu: updateHomeButton isOnEditMode? " + optographLocalGridAdapter.isOnEditMode());
-        if (getActivity() instanceof MainActivity)
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(optographLocalGridAdapter.isOnEditMode() ? R.drawable.cancel : R.drawable.logo_small_dark);
+//        if (getActivity() instanceof MainActivity)
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(optographLocalGridAdapter.isOnEditMode() ? R.drawable.cancel : R.drawable.logo_small_dark);
+        if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
+            binding.homeBtn.setVisibility(View.GONE);
+            binding.overflowBtn.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.VISIBLE);
+            binding.saveBtn.setVisibility(View.VISIBLE);
+        } else if (isCurrentUser && !optographLocalGridAdapter.isOnEditMode() && ((getActivity() instanceof MainActivity &&
+                ((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE) ||
+                getActivity() instanceof ProfileActivity)) {
+            binding.homeBtn.setVisibility(View.VISIBLE);
+            binding.overflowBtn.setVisibility(View.VISIBLE);
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.saveBtn.setVisibility(View.GONE);
+        } else {
+            binding.homeBtn.setVisibility(View.VISIBLE);
+            binding.overflowBtn.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.saveBtn.setVisibility(View.GONE);
+        }
+        if (optographLocalGridAdapter.isOnEditMode()) {
+            binding.cancelBtn.setVisibility(View.VISIBLE);
+            binding.homeBtn.setVisibility(View.GONE);
+        } else {
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.homeBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
-        Log.d("myTag","menu: isCurrentUser? "+isCurrentUser+" isOnEditMode? "+optographLocalGridAdapter.isOnEditMode()+" mainActivity? "+(getActivity() instanceof MainActivity));
-        if (getActivity() instanceof MainActivity) Log.d("myTag","menu: not SHARING MODE? "+
-                (((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE));
         if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
             menu.findItem(R.id.action_signout).setVisible(false);
             menu.findItem(R.id.action_save).setVisible(true);
@@ -264,7 +316,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         } else if (isCurrentUser && !optographLocalGridAdapter.isOnEditMode() && ((getActivity() instanceof MainActivity &&
                 ((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE) ||
                 getActivity() instanceof ProfileActivity)) {
-            Log.d("myTag","menu: inside second condition");
             menu.findItem(R.id.action_signout).setVisible(true);
             menu.findItem(R.id.action_save).setVisible(false);
             menu.findItem(R.id.cancel_edit).setVisible(false);
@@ -292,7 +343,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
                 return true;
             case R.id.action_save:
-                Log.d("myTag","menu: save was clicked");
                 isEditMode = false;
                 optographLocalGridAdapter.saveUpdate();
                 getActivity().invalidateOptionsMenu();
