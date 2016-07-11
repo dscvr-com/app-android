@@ -45,6 +45,8 @@ import timber.log.Timber;
 
 public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
+    private static final float ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
+    private static final float DENSITY = Constants.getInstance().getDisplayMetrics().density;
     private List<Optograph> optographs;
 
     protected ApiConsumer apiConsumer;
@@ -93,12 +95,11 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     @Override
     public void onBindViewHolder(OptographVideoHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        Log.d("myTag", " feed: onBindViewHolder");
         Optograph optograph = optographs.get(position);
 
         if (!optograph.equals(holder.getBinding().getOptograph())) {
-            Log.d("myTag"," feed: onBind inside condition.");
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
+//            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (ITEM_WIDTH + (15 * DENSITY))); // (width, height)
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph));
