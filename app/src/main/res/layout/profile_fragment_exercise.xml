@@ -21,7 +21,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true">
+                android:layout_alignParentTop="true"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/toolbar_title"
@@ -57,28 +58,55 @@
             <RelativeLayout
                 android:id="@+id/toolbar_layout"
                 android:layout_width="match_parent"
-                android:layout_height="39dp"
-                android:visibility="gone">
+                android:layout_height="39dp">
 
+                <!--android:src="@drawable/logo_small_dark"-->
                 <ImageButton
                     android:id="@+id/home_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/fab_margin"
-                    android:background="@color/transparentOverlay"
-                    android:src="@drawable/logo_arrow_small_light" />
+                    android:padding="@dimen/appbar_elevation"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/fab_elevation"
+                    android:background="@color/transparentOverlay"/>
 
                 <TextView
-                    android:id="@+id/sign_out"
+                    android:id="@+id/cancel_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/fab_elevation"
+                    android:text="Cancel"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone"/>
+
+
+                <TextView
+                    android:id="@+id/page_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="16sp"
+                    android:text="My Profile"/>
+
+                <TextView
+                    android:id="@+id/save_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginRight="@dimen/fab_margin"
-                    android:paddingTop="@dimen/fab_elevation"
-                    android:text="Sign out"
-                    android:textColor="@color/optonautMain_2"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/fab_elevation"
+                    android:text="Save"
+                    android:visibility="gone"/>
+
+                <ImageView
+                    android:id="@+id/overflow_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:padding="@dimen/fab_translation_z_pressed"
+                    android:layout_marginEnd="@dimen/fab_elevation"
+                    android:src="@drawable/more_settings"/>
             </RelativeLayout>
 
         </LinearLayout>
