@@ -1,12 +1,8 @@
 package com.iam360.iam360.network;
 
-import com.iam360.iam360.model.Follower;
-import com.iam360.iam360.views.new_design.SharingFragment;
-import com.squareup.okhttp.RequestBody;
-
-import java.util.List;
-
 import com.iam360.iam360.model.FBSignInData;
+import com.iam360.iam360.model.Follower;
+import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
@@ -16,6 +12,11 @@ import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.model.SignUpReturn;
+import com.iam360.iam360.views.new_design.SharingFragment;
+import com.squareup.okhttp.RequestBody;
+
+import java.util.List;
+
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -63,6 +64,9 @@ public interface ApiEndpoints {
 
     @POST("persons/login")
     Call<LogInReturn> logIn(@Body SignInData data);
+
+    @PUT("persons/me")
+    Call<String> sendGCMToken(@Body GCMToken data);
 
     @POST("persons/facebook/signin")
     Call<LogInReturn> fbLogin(@Body FBSignInData data);
