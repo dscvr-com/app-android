@@ -82,12 +82,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
     @Override
     public void onBindViewHolder(OptographVideoHolder holder, int position, List<Object> payloads) {
-        Log.d("myTag"," feed: onBind with payloads.");
         if (payloads.isEmpty()) {
-            Log.d("myTag"," feed: onBind payload is empty.");
             onBindViewHolder(holder, position);
         } else {
-            Log.d("myTag"," feed: onBind else.");
             holder.getBinding().swipeLayout.close(true);
         }
     }
@@ -142,6 +139,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 public boolean onTouch(View v, MotionEvent event) {
                     ViewParent parent = v.getParent();
 
+                    if(event.getAction() == MotionEvent.ACTION_UP) {
+                        swipeLayout.close(true);
+                    }
                     if(draggingPage) {
                         parent.requestDisallowInterceptTouchEvent(false);
                         return true;
@@ -162,13 +162,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
                 @Override
                 public void onOpen(SwipeLayout layout) {
-                    Timber.d("PREVIEW SETOPTOGRAPH1 OPEN " + optograph.getId());
-
                     ((MainActivity) context).setOptograph(optograph);
-//                    ((MainActivity) context).dragSharePage();
                     draggingPage = true;
-//                    if(swipeLayout.getOpenStatus() == SwipeLayout.Status.Open)
-//                       swipeLayout.close();
                 }
 
                 @Override
@@ -352,8 +347,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     public void addItem(Optograph optograph) {
-        Timber.d("Add Item.");
-        Log.d("myTag"," feed: addItem");
         if (optograph == null) {
             return;
         }
@@ -367,10 +360,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
-            optographs.add(optographs.size(),optograph);
+            optographs.add(optographs.size(), optograph);
 //            notifyItemInserted(getItemCount());
-            notifyItemInserted(optographs.size()-1);
-            Log.d("myTag"," feed: add an item1.");
+            notifyItemInserted(optographs.size() - 1);
             return;
         }
 
@@ -379,7 +371,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             optographs.add(optograph);
 //            notifyItemInserted(getItemCount());
             notifyDataSetChanged();
-            Log.d("myTag", " feed: add an item2.");
             return;
         }
 

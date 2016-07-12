@@ -172,7 +172,6 @@
                         android:layout_alignEnd="@+id/iam_logo"
                         android:layout_below="@+id/iam_logo"/>
 
-
                     <TextView
                         android:id="@+id/settings_vr_image"
                         android:layout_width="wrap_content"
