@@ -162,12 +162,24 @@
                         android:layout_centerHorizontal="true"/>
 
                     <TextView
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_dark"
+                        android:layout_marginTop="10dp"
+                        android:textSize="10dp"
+                        app:font="@{``}"
+                        android:layout_alignEnd="@+id/iam_logo"
+                        android:layout_below="@+id/iam_logo"/>
+
+
+                    <TextView
                         android:id="@+id/settings_vr_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_dark"
-                        android:layout_below="@+id/iam_logo"
-                        android:layout_marginTop="20dp"
+                        android:layout_below="@+id/version"
+                        android:layout_marginTop="10dp"
                         app:font="@{`bold`}"
                         android:text="@string/settings_vr_image" />
 
@@ -381,7 +393,6 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
                             android:orientation="horizontal">
 
                             <LinearLayout
@@ -515,15 +526,6 @@
                         </LinearLayout>
 
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/version"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/text_dark"
-                        android:layout_margin="10dp"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentRight="true" />
 
                 </RelativeLayout>
 
