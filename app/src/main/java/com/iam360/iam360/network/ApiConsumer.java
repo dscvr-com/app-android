@@ -2,8 +2,20 @@ package com.iam360.iam360.network;
 
 import android.util.Log;
 
+import com.iam360.iam360.model.FBSignInData;
 import com.iam360.iam360.model.Follower;
-import com.iam360.iam360.model.SearchPersonResult;
+import com.iam360.iam360.model.GCMToken;
+import com.iam360.iam360.model.GeocodeDetails;
+import com.iam360.iam360.model.GeocodeReverse;
+import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.OptoData;
+import com.iam360.iam360.model.OptoDataUpdate;
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
+import com.iam360.iam360.model.SignInData;
+import com.iam360.iam360.model.SignUpReturn;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,18 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.iam360.iam360.model.FBSignInData;
-import com.iam360.iam360.model.GeocodeDetails;
-import com.iam360.iam360.model.GeocodeReverse;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.OptoData;
-import com.iam360.iam360.model.OptoDataUpdate;
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.model.Person;
-import com.iam360.iam360.model.SignInData;
-import com.iam360.iam360.model.SignUpReturn;
-import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.util.RFC3339DateFormatter;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -169,6 +169,11 @@ public class ApiConsumer {
 
     public void logIn(SignInData data, Callback<LogInReturn> callback) {
         Call<LogInReturn> call = service.logIn(data);
+        call.enqueue(callback);
+    }
+
+    public void gcmTokenToServer(GCMToken data, Callback<String> callback) {
+        Call<String> call = service.sendGCMToken(data);
         call.enqueue(callback);
     }
 

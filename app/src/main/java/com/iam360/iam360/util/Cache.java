@@ -23,6 +23,7 @@ public class Cache {
     private final SharedPreferences user;
     private final Context context;
 
+    public static final String GCM_TOKEN = "GCM_TOKEN";
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_ID = "USER_ID";
     public static final String USER_DISPLAY_NAME = "USER_DISPLAY_NAME";
