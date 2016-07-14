@@ -128,7 +128,7 @@ public class PersonManager {
 
                 @Override
                 public void onFailure(Throwable t) {
-                    Timber.v("Failed logging out." + t.toString());
+                    Timber.v("Failed loggin" + t.toString());
                 }
             });
         } catch (IOException e) {

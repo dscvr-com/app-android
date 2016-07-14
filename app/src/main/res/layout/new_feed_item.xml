@@ -162,7 +162,7 @@
                                 android:textColor="@color/feed_text_yellow"
                                 android:textSize="15dp"
                                 android:layout_marginBottom="0dp"
-                                android:text="@{person.display_name}" />
+                                android:text="@{person.user_name}" />
 
                             <View
                                 android:id="@+id/dummy"

@@ -434,7 +434,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         if (fromCancelEdit) {
-            mHolder1.getBinding().getPerson().setDisplay_name(origPersonName);
+            mHolder1.getBinding().getPerson().setUser_name(origPersonName);
             mHolder1.getBinding().getPerson().setText(origPersonDesc);
             mHolder1.getBinding().personName.setText(origPersonName);
             mHolder1.getBinding().personDesc.setText(origPersonDesc);
@@ -447,8 +447,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             mHolder1.getBinding().personName.setText(mHolder1.getBinding().personNameEdit.getText().toString());
             mHolder1.getBinding().personDesc.setText(mHolder1.getBinding().personDescEdit.getText().toString());
             mHolder1.getBinding().getPerson().setText(mHolder1.getBinding().personDescEdit.getText().toString());
-            mHolder1.getBinding().getPerson().setDisplay_name(mHolder1.getBinding().personNameEdit.getText().toString());
-            PersonManager.updatePerson(mHolder1.getBinding().personNameEdit.getText().toString(), mHolder1.getBinding().personDescEdit.getText().toString(), null);
+            mHolder1.getBinding().getPerson().setUser_name(mHolder1.getBinding().personNameEdit.getText().toString());
+            PersonManager.updatePerson(mHolder1.getBinding().personNameEdit.getText().toString(), mHolder1.getBinding().personDescEdit.getText().toString(), mHolder1.getBinding().personNameEdit.getText().toString());
             needSave=false;
         }
 
@@ -490,7 +490,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void afterTextChanged(Editable s) {
 //                personName = s.toString();
-                mHolder1.getBinding().getPerson().setDisplay_name(s.toString());
+                mHolder1.getBinding().getPerson().setUser_name(s.toString());
             }
         });
 
@@ -521,7 +521,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
                     mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
                     mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
-                    origPersonName = mHolder1.getBinding().getPerson().getDisplay_name();
+                    origPersonName = mHolder1.getBinding().getPerson().getUser_name();
                     origPersonDesc = mHolder1.getBinding().getPerson().getText();
                     isEditMode = true;
                     updateMenuOptions();
