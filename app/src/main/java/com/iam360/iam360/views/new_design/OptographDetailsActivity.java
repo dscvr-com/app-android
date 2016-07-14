@@ -81,12 +81,16 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
 
+        Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
+        if (optograph.is_local()) isCurrentUser = true;// TODO: if the Person table is created on the local DB remove this line and set the person's data on the optograph(OptographLocalGridAdapter->addItem(Optograph))
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
         if(isCurrentUser) {
             binding.followContainer.setVisibility(View.GONE);
             binding.follow.setVisibility(View.GONE);
             binding.deleteButton.setVisibility(View.VISIBLE);//change to VISIBLE if delete is needed here.
         } else binding.deleteButton.setVisibility(View.GONE);
+
+        if (optograph.is_local()) binding.shareContainer.setVisibility(View.GONE);
 
         instatiateFeedDisplayButton();
 
@@ -551,8 +555,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 if (response.isSuccess()) {
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
-                    Log.d("myTag", " time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
+                    Log.d("myTag", " delete: time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) +" id: "+optograph.getId() + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("id", optograph.getId());
+                    setResult(RESULT_OK, intent);
                     finish();
                 } else Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
             }

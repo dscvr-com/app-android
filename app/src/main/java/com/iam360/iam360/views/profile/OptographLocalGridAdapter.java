@@ -76,6 +76,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public static final int ON_IMAGE=0;
     public static final int ON_FOLLOWER=1;
     public static final int PICK_IMAGE_REQUEST = 1;
+    public static final int DELETE_IMAGE = 2;
+    public static final int COLUMNS=3;
     List<Optograph> optographs;
     List<Follower> followers;
 
@@ -191,7 +193,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().uploadLocal.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
                     mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
 
-//                mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH-30) / 4;
+                    mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH) / 5;
                     mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().width = (ITEM_WIDTH - 30) / 4;
                     mHolder2.getBinding().optograph2dviewLocal.requestLayout();
 
@@ -209,6 +211,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
                             intent.putExtra("opto", optograph);
                             context.startActivity(intent);
+//                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
                         }
                     });
 
@@ -244,7 +247,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     }
 //                mHolder3.getBinding().optograph2dviewServer.getLayoutParams().height = (ITEM_WIDTH - 30) / 4;
-                    mHolder3.getBinding().optograph2dviewServer.getLayoutParams().width = (ITEM_WIDTH - 30) / 4;
+                    mHolder3.getBinding().optograph2dviewServer.getLayoutParams().width = (ITEM_WIDTH - 30) / COLUMNS;
                     mHolder3.getBinding().optograph2dviewServer.requestLayout();
 
                     mHolder3.getBinding().setVariable(BR.optograph, optograph);
@@ -255,7 +258,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         public void onClick(View v) {
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
                             intent.putExtra("opto", optograph);
-                            context.startActivity(intent);
+//                            context.startActivity(intent);
+                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
                         }
                     });
                 }
@@ -581,6 +585,17 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         });
 
+    }
+
+    public void refreshAfterDelete(String id) {
+        for (Optograph opto:optographs) {
+            if (opto!=null && opto.getId().equals(id)) {
+                int position = optographs.indexOf(opto);
+                optographs.remove(opto);
+                notifyItemRemoved(position);
+                return;
+            }
+        }
     }
 
     public void avatarUpload(Bitmap bitmap) {
@@ -1136,14 +1151,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
-        Log.d("myTag"," zoom: local addItem: "+optograph.getOptograph_type());
-
         DateTime created_at = optograph.getCreated_atDateTime();
 
+        Log.d("myTag"," delete: optoId: "+optograph.getId());
         // skip if optograph is already in list
-//        Log.d("myTag"," upload: contains? "+optographs.contains(optograph)+" isLocal? "+
-//                optograph.is_local()+" uploaded? "+mydb.checkIfAllImagesUploaded(optograph.getId()));
-//        if (optographs.contains(optograph)) Log.d("myTag"," upload: contained isLocal? "+optographs.get(optographs.indexOf(optograph)).is_local()+" removedIndex: "+optographs.indexOf(optograph));
+        Log.d("myTag"," delete: contains? "+optographs.contains(optograph)+" isLocal? "+
+                optograph.is_local()+" uploaded? "+mydb.checkIfAllImagesUploaded(optograph.getId()));
+        if (optographs.contains(optograph)) Log.d("myTag"," delete: contained isLocal? "+optographs.get(optographs.indexOf(optograph)).is_local()+" removedIndex: "+optographs.indexOf(optograph)+" deletedAt: "+optograph.getDeleted_at());
 //        if (optographs.contains(optograph) && optographs.get(optographs.indexOf(optograph)).is_local() && optograph.is_local() && mydb.checkIfAllImagesUploaded(optograph.getId())) {
 //            notifyItemRemoved(optographs.indexOf(optograph));
 //            return;
@@ -1160,6 +1174,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph==null) {
             return;
         }
+
+        Log.d("myTag"," delete: opto isLocal? "+optograph.is_local()+" deleted: "+optograph.getDeleted_at());
+
+        if (optograph.getDeleted_at()!=null && !optograph.getDeleted_at().isEmpty()) return;
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty() || optographs.size()==2) {
@@ -1206,7 +1224,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
-//        Log.d("myTag","checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+        Log.d("myTag"," delete: checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
         if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;

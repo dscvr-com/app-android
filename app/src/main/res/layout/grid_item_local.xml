@@ -16,7 +16,7 @@
             android:id="@+id/optograph2dview_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/appbar_elevation"
+            android:layout_marginLeft="@dimen/fab_elevation"
             android:layout_marginRight="@dimen/appbar_elevation"
             android:layout_marginBottom="@dimen/snackbar_elevation"
             android:layout_marginTop="@dimen/snackbar_elevation"

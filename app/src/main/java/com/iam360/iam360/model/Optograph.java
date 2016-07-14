@@ -276,6 +276,10 @@ public class Optograph implements Parcelable {
         return leftFace;
     }
 
+    public void setDeleted_at(String deleted_at) {
+        this.deleted_at = deleted_at;
+    }
+
     public String getDeleted_at() {
         return deleted_at;
     }

@@ -1,5 +1,6 @@
 package com.iam360.iam360.views.profile;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
+import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
@@ -96,14 +98,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         binding.overflowBtn.setOnClickListener(this);
 
         binding.optographFeed.setAdapter(optographLocalGridAdapter);
-        GridLayoutManager manager = new GridLayoutManager(getContext(),4);
+        GridLayoutManager manager = new GridLayoutManager(getContext(),OptographLocalGridAdapter.COLUMNS);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
 //                Log.d("myTag",TAG+" position: "+position+" getSpanSize: "+optographLocalGridAdapter.getItemViewType(position));
                 int pos = optographLocalGridAdapter.getItemViewType(position);
                 if (pos==OptographLocalGridAdapter.VIEW_HEADER || pos == OptographLocalGridAdapter.SECOND_HEADER
-                        || pos == OptographLocalGridAdapter.VIEW_LOCAL || pos == OptographLocalGridAdapter.VIEW_FOLLOWER) return 4;
+                        || pos == OptographLocalGridAdapter.VIEW_LOCAL || pos == OptographLocalGridAdapter.VIEW_FOLLOWER)
+                    return OptographLocalGridAdapter.COLUMNS;
                 return 1;
             }
         });
@@ -143,6 +146,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     public void setAvatar(Bitmap bitmap) {
         optographLocalGridAdapter.avatarUpload(bitmap);
+    }
+
+    public void refreshAfterDelete(String id) {
+        optographLocalGridAdapter.refreshAfterDelete(id);
     }
 
     private void initializeProfileFeed() {
@@ -261,6 +268,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         super.onResume();
         BusProvider.getInstance().register(this);
 
+       Log.d("myTag"," delete: PFE onResume person null? "+(person==null));
         if(person == null) setPerson();
         else refresh();
     }
@@ -418,5 +426,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("myTag"," delete: onActResult");
     }
 }

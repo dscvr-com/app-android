@@ -68,19 +68,19 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 //If the broadcast has received with success
                 //that means device is registered successfully
-                if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_SUCCESS)){
+                if (intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_SUCCESS)) {
                     //Getting the registration token from the intent
                     String token = intent.getStringExtra("token");
                     //Displaying the token as toast
 //                    Toast.makeText(getApplicationContext(), "Registration token:" + token, Toast.LENGTH_LONG).show();
-                        Log.d("MARK","Registration token:" + token);
+                    Log.d("MARK", "Registration token:" + token);
                     //if the intent is not with success then displaying error messages
-                } else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
+                } else if (intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)) {
 //                    Toast.makeText(getApplicationContext(), "GCM registration error!", Toast.LENGTH_LONG).show();
-                    Log.d("MARK","GCM registration error!");
+                    Log.d("MARK", "GCM registration error!");
                 } else {
 //                    Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_LONG).show();
-                    Log.d("MARK","GCM registration Error occurred!");
+                    Log.d("MARK", "GCM registration Error occurred!");
                 }
             }
         };
@@ -89,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
         //if play service is not available
-        if(ConnectionResult.SUCCESS != resultCode) {
+        if (ConnectionResult.SUCCESS != resultCode) {
             //If play service is supported but not installed
-            if(GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 //Displaying message that play service is not installed
                 Toast.makeText(getApplicationContext(), "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
                 GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
@@ -151,11 +151,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if(savePosition>state)
-                {
+                if (savePosition > state) {
 //                    Timber.d("SWIPE RIGHT");
-                }else
-                {
+                } else {
 //                    Timber.d("SWIPE LEFT");
                 }
                 savePosition = state;
@@ -184,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
         return currentMode;
     }
 
-    public void dragSharePage () {
-        viewPager.setCurrentItem(SHARING_MODE,true);
+    public void dragSharePage() {
+        viewPager.setCurrentItem(SHARING_MODE, true);
 
     }
 
@@ -197,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     public void startImagePreview(UUID id, String imagePath) {
         Intent intent = new Intent(this, OptoImagePreviewActivity.class);
         intent.putExtra("id", id.toString());
-        if(imagePath != null) intent.putExtra("path", imagePath);
+        if (imagePath != null) intent.putExtra("path", imagePath);
         startActivity(intent);
     }
 
@@ -256,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemPosition(Object object) {
-            if(object instanceof  SharingFragment) {
+            if (object instanceof SharingFragment) {
             } else if (object instanceof SigninFBFragment) {
                 return POSITION_NONE;
             }
@@ -274,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("myTag","MainActivity onBackPressed. Profile?"+(viewPager.getCurrentItem()==PROFILE_MODE));
+        Log.d("myTag", "MainActivity onBackPressed. Profile?" + (viewPager.getCurrentItem() == PROFILE_MODE));
         if (viewPager.getCurrentItem() != FEED_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
@@ -294,18 +292,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("myTag"," delete: onActResult MainActivity");
+        Log.d("myTag"," delete: code equal? "+(requestCode==OptographLocalGridAdapter.DELETE_IMAGE)
+                +" result ok? "+(resultCode==RESULT_OK)+" data null? "+(data==null));
         if (requestCode == OptographLocalGridAdapter.PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
-            for (Fragment frag :adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
+            for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
                 if (frag instanceof ProfileFragmentExercise) {
-            Uri uri = data.getData();
+                    Uri uri = data.getData();
 
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                ((ProfileFragmentExercise)frag).setAvatar(bitmap);
-            } catch (IOException e) {
-                Log.d("myTag","Error getAvatar message: "+e.getMessage());
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        ((ProfileFragmentExercise) frag).setAvatar(bitmap);
+                    } catch (IOException e) {
+                        Log.d("myTag", "Error getAvatar message: " + e.getMessage());
+                    }
+                }
             }
+        } else if (requestCode == OptographLocalGridAdapter.DELETE_IMAGE && resultCode == RESULT_OK &&
+                data != null) {
+            for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
+                if (frag instanceof ProfileFragmentExercise) {
+                    String id = data.getStringExtra("id");
+                    Log.d("myTag"," delete: id: "+id);
+
+                    ((ProfileFragmentExercise) frag).refreshAfterDelete(id);
                 }
             }
         }
