@@ -194,13 +194,16 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         // logs out
+
+                        PersonManager.logoutPerson();
+                        LoginManager.getInstance().logOut();
+                        backToSignInPage();
+
                         // remove user cache, remove this fragment
                         cache.save(Cache.USER_ID, "");
                         cache.save(Cache.USER_TOKEN, "");
                         cache.save(Cache.GATE_CODE, "");
 
-                        backToSignInPage();
-                        LoginManager.getInstance().logOut();
                         return true;
                     }
                 });
@@ -333,13 +336,14 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             case R.id.action_signout:
                 // logs out
                 // remove user cache, remove this fragment
-                cache.save(Cache.USER_ID, "");
-                cache.save(Cache.USER_TOKEN, "");
-                cache.save(Cache.GATE_CODE,"");
-
-//                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
-                backToSignInPage();
-                LoginManager.getInstance().logOut();
+//                cache.save(Cache.USER_ID, "");
+//                cache.save(Cache.USER_TOKEN, "");
+//                cache.save(Cache.GATE_CODE, "");
+//
+////                ((MainActivityRedesign) getActivity()).removeCurrentFragment();
+//                PersonManager.logoutPerson();
+//                LoginManager.getInstance().logOut();
+//                backToSignInPage();
 
                 return true;
             case R.id.action_save:

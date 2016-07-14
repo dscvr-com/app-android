@@ -134,7 +134,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     private List<GeocodeReverse> listOfLoc;
     private Context context;
 
-    public static final int WEBVIEW_REQUEST_CODE = 100;
+    public final static int WEBVIEW_REQUEST_CODE = 100;
     public final static String optoType360 = "optograph";
     public final static String optoType360_1 = "optograph_1";
     public final static String optoType360_3 = "optograph_3";
@@ -1164,11 +1164,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         uploadProgress.setVisibility(View.GONE);
         blackCircle.setVisibility(View.GONE);
         doneUpload = true;
-    }
-
-    @Subscribe
-    public void receiveFinishEvent(RecordFinishedEvent recordFinishedEvent) {
-        Timber.d("recordFinishedEvent");
     }
 
 }

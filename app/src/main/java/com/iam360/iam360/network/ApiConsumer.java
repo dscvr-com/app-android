@@ -172,6 +172,11 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void logout(Callback<LogInReturn.EmptyResponse> callback) throws IOException {
+        Call<LogInReturn.EmptyResponse> call = service.logout();
+        call.enqueue(callback);
+    }
+
     public void gcmTokenToServer(GCMToken data, Callback<String> callback) {
         Call<String> call = service.sendGCMToken(data);
         call.enqueue(callback);

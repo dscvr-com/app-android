@@ -62,6 +62,9 @@ public interface ApiEndpoints {
     @POST("persons")
     Call<SignUpReturn> signUp(@Body SignInData data);
 
+    @POST("persons/logout")
+    Call<LogInReturn.EmptyResponse> logout();
+
     @POST("persons/login")
     Call<LogInReturn> logIn(@Body SignInData data);
 
