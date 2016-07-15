@@ -158,6 +158,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void onResume() {
         super.onResume();
         inVRMode = false;
+
+        Timber.d("ONRESUME");
+
+        if(GlobalState.isAnyJobRunning) {
+            binding.cameraBtn.setEnabled(false);
+            binding.recordProgress.setVisibility(View.VISIBLE);
+        } else {
+            binding.cameraBtn.setEnabled(true);
+            binding.recordProgress.setVisibility(View.GONE);
+        }
+
 //        optographs = new ArrayList<>();
 //        localImagesUIUpdate();
         BusProvider.getInstance().register(this);
@@ -251,7 +262,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     protected void refresh() {
 
-        Timber.d("REFRESH");
+        Timber.d("Refresh");
         if(apiConsumer == null) return;
 
         apiConsumer.getOptographs(5)
@@ -415,7 +426,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private void gyroValidation() {
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
         boolean lilPlanet = cache.getBoolean(Cache.LITTLE_PLANET_ENABLE,false);
-        if (!gyro && lilPlanet) cache.save(Cache.LITTLE_PLANET_ENABLE,false);
+        if (!gyro && lilPlanet) cache.save(Cache.LITTLE_PLANET_ENABLE, false);
         cache.save(Cache.GYRO_ENABLE,!gyro);
     }
 
@@ -433,7 +444,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_big_active_icn:R.drawable.gyro_big_inactive_icn);
         binding.settingsGyro.setTextColor(gyro?getResources().getColor(R.color.text_active):getResources().getColor(R.color.text_inactive));
         binding.littlePlanetButton.setBackgroundResource(lilPlanet?R.drawable.little_planet_big_active_icn:R.drawable.little_planet_big_inactive_icn);
-        binding.settingsLittlePlanet.setTextColor(lilPlanet?getResources().getColor(R.color.text_active):getResources().getColor(R.color.text_inactive));
+        binding.settingsLittlePlanet.setTextColor(lilPlanet ? getResources().getColor(R.color.text_active) : getResources().getColor(R.color.text_inactive));
     }
 
     private void activeOneRing() {
@@ -462,6 +473,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
         binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
         binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
+    } // Settings end
+
+    @Subscribe
+    public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
+        Timber.d("receiveFinishedImage");
+        binding.recordProgress.setVisibility(View.GONE);
+        binding.cameraBtn.setEnabled(true);
     }
-    // Settings end
+
 }
