@@ -134,10 +134,24 @@
                             android:layout_alignParentBottom="true"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
-                            android:layout_marginBottom="3dp"
+                            android:layout_marginBottom="5dp"
                             android:background="@drawable/feed_follow_icn"/>
 
                     </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:visibility="@{person.elite_status ? 0 : 2}">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginLeft="10dp"
+                            android:background="@color/transparentOverlay"
+                            android:src="@drawable/elite_beta_user_badge"/>
+                        </RelativeLayout>
 
                     <RelativeLayout
                         android:layout_width="match_parent"

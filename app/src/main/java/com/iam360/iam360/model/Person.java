@@ -10,22 +10,22 @@ import android.os.Parcelable;
 
 /*
 "person":{
-"id":"1064fd0e-833b-4a6b-b4bc-d90a03074eba",
-"created_at":"2015-09-28T16:23:26.871373Z",
-"deleted_at":null,"wants_newsletter":false,
-"display_name":"Emanuel",
-"user_name":"emi",
-"text":"@optonaut cofounder, dev, entrepreneur, photographer, KIT MSc student",
-"avatar_asset_id":"5d8793da-0325-4655-b213-5ec97cd7f478",
-"optographs":null,
-"optographs_count": 0,
-"followers_count":23,
-"followed_count":22,
-"is_followed":false
-}
-
-
- */
+    "id": "8230b4e8-8478-4b5b-a20e-9efbacff5516",
+    "created_at": "2016-04-25T13:45:45.416436Z",
+    "updated_at": "0001-01-01T00:00:00Z",
+    "deleted_at": null,
+    "wants_newsletter": false,
+    "display_name": "sakuraLi",
+    "user_name": "mariela",
+    "text": "i <3 anime",
+    "elite_status": false,
+    "avatar_asset_id": "8a46c4d3-6d3a-4f4e-aa76-05216469202c",
+    "optographs": null,
+    "optographs_count": 121,
+    "followers_count": 2,
+    "followed_count": 5,
+    "is_followed": false
+}*/
 public class Person implements Parcelable {
     private String id;
     private String created_at;
@@ -34,6 +34,7 @@ public class Person implements Parcelable {
     private String user_name;
     private String email;
     private String text;
+    private boolean elite_status;
     private String avatar_asset_id;
     private int optographs_count;
     private int followers_count;
@@ -52,6 +53,7 @@ public class Person implements Parcelable {
         user_name = "";
         email = "";
         text = "";
+        elite_status = false;
         avatar_asset_id = "";
         optographs_count = 0;
         followers_count = 0;
@@ -72,6 +74,7 @@ public class Person implements Parcelable {
         this.user_name = source.readString();
         this.email = source.readString();
         this.text = source.readString();
+        this.elite_status = source.readByte() != 0;
         this.avatar_asset_id = source.readString();
         this.optographs_count = source.readInt();
         this.followers_count = source.readInt();
@@ -146,6 +149,14 @@ public class Person implements Parcelable {
         this.text = text;
     }
 
+    public boolean isElite_status() {
+        return elite_status;
+    }
+
+    public void setElite_status(boolean elite_status) {
+        this.elite_status = elite_status;
+    }
+
     public void setAvatar_asset_id(String avatar_asset_id) {
         this.avatar_asset_id = avatar_asset_id;
     }
@@ -213,6 +224,7 @@ public class Person implements Parcelable {
         dest.writeString(this.user_name);
         dest.writeString(this.email);
         dest.writeString(this.text);
+        dest.writeByte((byte) (this.elite_status ? 1 : 0));
         dest.writeString(this.avatar_asset_id);
         dest.writeInt(this.optographs_count);
         dest.writeInt(this.followers_count);
