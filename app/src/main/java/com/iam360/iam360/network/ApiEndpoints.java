@@ -127,4 +127,6 @@ public interface ApiEndpoints {
     @POST("optographs/share_facebook")
     Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
 
+    @POST("optographs/share_facebook/{ownerId}/{triggererId}/{actionType}/")
+    Call<String> triggerNotif(@Path("ownerId") String ownerId, @Path("triggererId") String triggererId, @Path("actionType") String actionType);
 }

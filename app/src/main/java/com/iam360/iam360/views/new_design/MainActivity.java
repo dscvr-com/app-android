@@ -85,31 +85,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        //Checking play service is available or not
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-
-        //if play service is not available
-        if (ConnectionResult.SUCCESS != resultCode) {
-            //If play service is supported but not installed
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                //Displaying message that play service is not installed
-                Toast.makeText(getApplicationContext(), "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
-                GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
-
-                //If play service is not supported
-                //Displaying an error message
-            } else {
-                Toast.makeText(getApplicationContext(), "This device does not support for Google Play Service!", Toast.LENGTH_LONG).show();
-            }
-
-            //If play service is available
-        } else {
-            //Starting intent to register device
-            Intent itent = new Intent(this, GCMRegistrationIntentService.class);
-            startService(itent);
-        }
-
-
         viewPager = (ViewPager) findViewById(R.id.vpPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);

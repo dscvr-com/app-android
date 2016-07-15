@@ -23,9 +23,8 @@ import android.os.Parcelable;
 "followed_count":22,
 "is_followed":false
 }
+*/
 
-
- */
 public class Person implements Parcelable {
     private String id;
     private String created_at;

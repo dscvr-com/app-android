@@ -33,7 +33,7 @@ android {
         // have gradle.properties in same directory as this file with following lines
         // ndk_build_path=/home/transcendent/android-ndk/ndk-build
         // ndk_module_path=NDK_MODULE_PATH=/home/transcendent/projects/Optonaut/ndkmodule
-        commandLine ndk_build_path, '-C', file('src/main/jni').absolutePath, 'NDK_DEBUG=0'
+        commandLine ndk_build_path, '-C', file('src/main/jni').absolutePath, 'NDK_DEBUG=1'
     }
 
     tasks.withType(JavaCompile) {

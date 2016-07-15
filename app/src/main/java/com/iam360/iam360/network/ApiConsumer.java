@@ -325,4 +325,10 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+
+    public void triggerNotif(String ownerId, String triggererId, String actionType, Callback<String> callback) {
+        Call<String> call = service.triggerNotif(ownerId, triggererId, actionType);
+        call.enqueue(callback);
+    }
+
 }
