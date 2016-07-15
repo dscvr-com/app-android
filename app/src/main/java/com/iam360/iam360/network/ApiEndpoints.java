@@ -62,6 +62,9 @@ public interface ApiEndpoints {
     @POST("persons")
     Call<SignUpReturn> signUp(@Body SignInData data);
 
+    @POST("persons/logout")
+    Call<LogInReturn.EmptyResponse> logout();
+
     @POST("persons/login")
     Call<LogInReturn> logIn(@Body SignInData data);
 
@@ -112,8 +115,8 @@ public interface ApiEndpoints {
     @GET("persons/search")
     Observable<List<Person>> getSearchResult(@Query("keyword") String key);
 
-    @GET("persons/search")
-    Call<Person> getSearchResultCall(@Query("keyword") String key);
+    @GET("persons/username_search")
+    Call<Person> getUserName(@Query("keyword") String key);
 
     @GET("persons/me")
     Call<Person> getUser();

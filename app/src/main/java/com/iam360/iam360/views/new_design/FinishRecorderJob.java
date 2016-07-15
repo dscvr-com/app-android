@@ -2,6 +2,7 @@ package com.iam360.iam360.views.new_design;
 
 import android.graphics.Bitmap;
 
+import com.iam360.iam360.OptonautApp;
 import com.iam360.iam360.record.Alignment;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -81,10 +82,13 @@ public class FinishRecorderJob extends Job {
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
 
         // TODO: fire event or otherwise handle refresh
-         BusProvider.getInstance().post(new RecordFinishedEvent());
+        BusProvider.getInstance().post(new RecordFinishedEvent());
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
         Timber.v("finish all job");
+
+        OptonautApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(id));
+
     }
 
     @Override

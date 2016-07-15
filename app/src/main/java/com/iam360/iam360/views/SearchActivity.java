@@ -133,7 +133,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                    return null;
 //                })
 //                .subscribe(mAdapter::addItem);
-        apiConsumer.getSearchResultCall(search, new Callback<Person>() {
+        apiConsumer.getSearchUsername(search, new Callback<Person>() {
             @Override
             public void onResponse(Response<Person> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body()!=null) {
