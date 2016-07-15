@@ -87,6 +87,7 @@ public class Optograph implements Parcelable {
     private boolean postInstagram;
     private boolean is_published;
     private String optograph_type;
+    private boolean is_uploading;
 
     // default value for parsing from JSON
     private boolean is_local = false;
@@ -123,6 +124,7 @@ public class Optograph implements Parcelable {
         postInstagram = false;
         is_published = false;
         optograph_type = "";
+        is_uploading = false;
     }
 
     public Optograph(Parcel source) {
@@ -157,6 +159,7 @@ public class Optograph implements Parcelable {
         this.postInstagram = source.readByte()!=0;
         this.is_published = source.readByte()!=0;
         this.optograph_type = source.readString();
+        this.is_uploading = source.readByte()!=0;
     }
 
     public String getId() {
@@ -290,6 +293,14 @@ public class Optograph implements Parcelable {
 
     public void setStitcher_version(String stitcher_version) {
         this.stitcher_version = stitcher_version;
+    }
+
+    public boolean isIs_uploading() {
+        return is_uploading;
+    }
+
+    public void setIs_uploading(boolean is_uploading) {
+        this.is_uploading = is_uploading;
     }
 
     public String getText() {
@@ -427,6 +438,7 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte)(this.postInstagram?1:0));
         dest.writeByte((byte)(this.is_published?1:0));
         dest.writeString(this.optograph_type);
+        dest.writeByte((byte) (this.is_uploading ? 1 : 0));
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

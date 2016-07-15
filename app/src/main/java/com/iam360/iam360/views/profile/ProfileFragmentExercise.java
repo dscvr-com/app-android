@@ -85,7 +85,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.homeBtn.setImageResource(getActivity() instanceof ProfileActivity? R.drawable.back_arrow : R.drawable.logo_small_dark);
 
-        Log.d("myTag", TAG + " person null? " + (person == null));
+        Log.d("myTag", " overflow: person null? " + (person == null));
         if (person != null) {
 //            binding.setVariable(BR.person, person);
             binding.executePendingBindings();
@@ -148,22 +148,23 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         optographLocalGridAdapter.avatarUpload(bitmap);
     }
 
-    public void refreshAfterDelete(String id) {
-        optographLocalGridAdapter.refreshAfterDelete(id);
+    public void refreshAfterDelete(String id,boolean isLocal) {
+        optographLocalGridAdapter.refreshAfterDelete(id,isLocal);
     }
 
     private void initializeProfileFeed() {
 
+        Log.d("myTag"," overflow: before condition for currentuser isCurrentUser? "+isCurrentUser);
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
 //            binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
             binding.pageTitle.setText(getResources().getString(R.string.profile_my_profile));
             cache.save(Cache.USER_DISPLAY_NAME, person.getDisplay_name());
         } else {
-            isCurrentUser = false;
 //            binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
             binding.pageTitle.setText(getResources().getString(R.string.profile_text));
         }
+        Log.d("myTag"," overflow: after condition for currentuser isCurrentUser? "+isCurrentUser);
 
         getActivity().invalidateOptionsMenu();
 
@@ -385,7 +386,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -403,7 +404,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -415,7 +416,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);

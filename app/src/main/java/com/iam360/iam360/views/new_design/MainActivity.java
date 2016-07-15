@@ -314,9 +314,9 @@ public class MainActivity extends AppCompatActivity {
             for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
                 if (frag instanceof ProfileFragmentExercise) {
                     String id = data.getStringExtra("id");
-                    Log.d("myTag"," delete: id: "+id);
-
-                    ((ProfileFragmentExercise) frag).refreshAfterDelete(id);
+                    boolean local = data.getBooleanExtra("local",false);
+                    Log.d("myTag"," delete: id: "+id+" local? "+local);
+                    ((ProfileFragmentExercise) frag).refreshAfterDelete(id,local);
                 }
             }
         }

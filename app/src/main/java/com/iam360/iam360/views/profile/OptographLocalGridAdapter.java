@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
@@ -41,6 +42,7 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.new_design.ProfileActivity;
@@ -188,10 +190,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     }
 
+                    Log.d("myTag"," delete: isUploading? "+optograph.isIs_uploading());
+
                     if (optograph.is_local()) count += 1;
 
-                    mHolder2.getBinding().uploadLocal.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
-                    mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
+                    GeneralUtils utils = new GeneralUtils();
+                    utils.setFont(context, mHolder2.getBinding().uploadLocalBtn, Typeface.NORMAL);
+//                    mHolder2.getBinding().uploadLocal.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
+//                    mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
+                    mHolder2.getBinding().uploadLocalBtn.setText(optograph.isIs_uploading()?context.getString(R.string.profile_uploading):context.getString(R.string.profile_upload));
 
                     mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH) / 5;
                     mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().width = (ITEM_WIDTH - 30) / 4;
@@ -210,21 +217,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         public void onClick(View v) {
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
                             intent.putExtra("opto", optograph);
-                            context.startActivity(intent);
-//                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+//                            context.startActivity(intent);
+                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
                         }
                     });
 
-                    mHolder2.getBinding().uploadLocal.setOnClickListener(new View.OnClickListener() {
+                    mHolder2.getBinding().uploadLocalBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            if (optograph.isIs_uploading()) return;
                             if (cache.getString(Cache.USER_TOKEN).equals("")) {
                                 Snackbar.make(v, "Must login to upload.", Snackbar.LENGTH_SHORT);
                             } else {
+                                optograph.setIs_uploading(true);
                                 apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
-                                mHolder2.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
-                                mHolder2.getBinding().uploadLocal.setVisibility(View.GONE);
+//                                mHolder2.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
+//                                mHolder2.getBinding().uploadLocal.setVisibility(View.GONE);
+                                mHolder2.getBinding().uploadLocalBtn.setText(context.getString(R.string.profile_uploading));
                                 if (!optograph.is_data_uploaded()) {
                                     Log.d("myTag", "upload the data first. position: " + position);
                                     uploadOptonautData(position);
@@ -457,8 +466,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
 //        mHolder1.getBinding().executePendingBindings();
-
-        if (!isCurrentUser) {
+        if (person==null) {
+            mHolder1.getBinding().editBtn.setVisibility(View.GONE);
+            mHolder1.getBinding().personIsFollowed.setVisibility(View.GONE);
+        } else if (!isCurrentUser) {
             mHolder1.getBinding().editBtn.setVisibility(View.GONE);
             mHolder1.getBinding().personIsFollowed.setVisibility(View.VISIBLE);
             mHolder1.getBinding().personIsFollowed.setBackgroundResource((person!=null && person.is_followed())?R.drawable.following_btn:R.drawable.follow_btn);
@@ -467,17 +478,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (isCurrentUser && isEditMode) {
             mHolder1.getBinding().editBtn.setVisibility(View.GONE);
             mHolder1.getBinding().personDesc.setVisibility(View.INVISIBLE);
-            mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
             mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
-            mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
+            // siince edit username is not applicable
+//            mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
+//            mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
         } else if (isCurrentUser) {
             if(context instanceof MainActivity) mHolder1.getBinding().editBtn.setVisibility(View.VISIBLE);
             else mHolder1.getBinding().editBtn.setVisibility(View.GONE);
 
             mHolder1.getBinding().personDesc.setVisibility(View.VISIBLE);
-            mHolder1.getBinding().personName.setVisibility(View.VISIBLE);
             mHolder1.getBinding().personDescEdit.setVisibility(View.INVISIBLE);
-            mHolder1.getBinding().personNameEdit.setVisibility(View.INVISIBLE);
+//            mHolder1.getBinding().personName.setVisibility(View.VISIBLE);
+//            mHolder1.getBinding().personNameEdit.setVisibility(View.INVISIBLE);
             mHolder1.getBinding().personIsFollowed.setVisibility(View.GONE);
         }
 
@@ -522,9 +534,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onClick(View v) {
                 if (isCurrentUser) {
                     mHolder1.getBinding().personDesc.setVisibility(View.INVISIBLE);
-                    mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
                     mHolder1.getBinding().personDescEdit.setVisibility(View.VISIBLE);
-                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
+//                    mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
+//                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
                     origPersonName = mHolder1.getBinding().getPerson().getDisplay_name();
                     origPersonDesc = mHolder1.getBinding().getPerson().getText();
                     isEditMode = true;
@@ -587,9 +599,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     }
 
-    public void refreshAfterDelete(String id) {
+    public void refreshAfterDelete(String id, boolean isLocal) {
         for (Optograph opto:optographs) {
-            if (opto!=null && opto.getId().equals(id)) {
+            if (opto!=null && opto.getId().equals(id) && opto.is_local()==isLocal) {
                 int position = optographs.indexOf(opto);
                 optographs.remove(opto);
                 notifyItemRemoved(position);
@@ -731,12 +743,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                    optograph.setIs_uploading(false);
                     notifyItemChanged(position);
                     return;
                 }
                 Optograph opto = response.body();
                 if (opto == null) {
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                    optograph.setIs_uploading(false);
                     notifyItemChanged(position);
                     return;
                 }
@@ -747,6 +761,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag", " onFailure: " + t.getMessage());
+                Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                optograph.setIs_uploading(false);
                 notifyItemChanged(position);
             }
         });
@@ -849,6 +865,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 opto.setIs_place_holder_uploaded(response.isSuccess());
                 mydb.updateColumnOptograph(opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, flag);
                 opto.setIs_place_holder_uploaded(response.isSuccess());
+                Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                opto.setIs_uploading(false);
                 notifyItemChanged(position);
             }
 
@@ -856,6 +874,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onFailure(Throwable t) {
                 Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
                 flag = 0;
+                Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
+                opto.setIs_uploading(false);
                 notifyItemChanged(position);
             }
         });
@@ -883,6 +903,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     Log.d("myTag", "response errorBody: " + response.errorBody());
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                     cache.save(Cache.UPLOAD_ON_GOING, false);
+                    opto.setIs_uploading(false);
                     notifyItemChanged(position);
                     return;
                 }
@@ -893,6 +914,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onFailure(Throwable t) {
                 Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show();
                 cache.save(Cache.UPLOAD_ON_GOING, false);
+                opto.setIs_uploading(false);
                 notifyItemChanged(position);
             }
         });
@@ -1004,6 +1026,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
                 optograph.setIs_on_server(true);
             }
+            optograph.setIs_uploading(false);
             cache.save(Cache.UPLOAD_ON_GOING, false);
             notifyItemChanged(mPosition);
         }
@@ -1068,6 +1091,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side, false);
                 else opto.getRightFace().setStatusByIndex(side, false);
 //                notifyItemRangeChanged(position,1);
+                opto.setIs_uploading(false);
                 notifyItemChanged(position);
                 flag = 0;
             }

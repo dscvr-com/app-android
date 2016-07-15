@@ -25,7 +25,7 @@ import timber.log.Timber;
 public class CameraUtils {
     public static final String CACHE_PATH = Constants.getInstance().getCachePath().concat("/");
     public static final String PERSISTENT_STORAGE_PATH = Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_PICTURES).getPath().concat("/").concat("IAM360").concat("/");
+            Environment.DIRECTORY_PICTURES).getPath().concat("/").concat("DSCVR").concat("/");
 
     public static Camera getCameraInstance(){
         Camera camera = null;
