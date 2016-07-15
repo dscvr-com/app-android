@@ -16,7 +16,7 @@
             android:id="@+id/optograph2dview_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/appbar_elevation"
+            android:layout_marginLeft="@dimen/fab_elevation"
             android:layout_marginRight="@dimen/appbar_elevation"
             android:layout_marginBottom="@dimen/snackbar_elevation"
             android:layout_marginTop="@dimen/snackbar_elevation"
@@ -31,6 +31,16 @@
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
+        <Button
+            android:id="@+id/upload_local_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:padding="@dimen/appbar_elevation"
+            android:background="@drawable/upload_yellow_btn_bg"
+            android:textSize="14sp"
+            android:layout_gravity="right|center_vertical"/>
+
         <ImageButton
             android:id="@+id/upload_local"
             android:layout_width="wrap_content"
@@ -38,7 +48,8 @@
             android:padding="@dimen/navigation_elevation"
             android:layout_marginEnd="@dimen/appbar_elevation"
             android:background="@drawable/upload_yellow_btn"
-            android:layout_gravity="right|center_vertical"/>
+            android:layout_gravity="right|center_vertical"
+            android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/upload_progress_local"
@@ -46,7 +57,8 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/navigation_elevation"
             android:layout_gravity="right|center_vertical"
-            style="@android:style/Widget.ProgressBar.Small.Inverse"/>
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:visibility="gone"/>
         <!--<RelativeLayout-->
             <!--android:id="@+id/description_bar"-->
             <!--android:layout_width="match_parent"-->

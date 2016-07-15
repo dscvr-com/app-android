@@ -30,8 +30,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="My Profile"
-                    android:textSize="21sp"
-                    app:font="@{``}" />
+                    android:textSize="21sp" />
 
             </android.support.v7.widget.Toolbar>
 
@@ -48,10 +47,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text='IAM360 Images'
+                    android:text="DSCVR Images"
                     android:textColor="@color/profile_bg"
-                    android:textSize="18sp"
-                    app:font="@{``}" />
+                    android:textSize="18sp"/>
 
             </LinearLayout>
 
@@ -65,7 +63,7 @@
                     android:id="@+id/home_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/appbar_elevation"
+                    android:padding="@dimen/fab_translation_z_pressed"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/fab_elevation"
                     android:background="@color/transparentOverlay"/>
@@ -85,8 +83,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:textSize="16sp"
-                    android:text="My Profile"/>
+                    android:textSize="17sp"
+                    android:text="My Profile"
+                    app:font="@{``}"/>
 
                 <TextView
                     android:id="@+id/save_btn"
@@ -96,6 +95,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/fab_elevation"
                     android:text="Save"
+                    app:font="@{``}"
                     android:visibility="gone"/>
 
                 <ImageView

@@ -210,7 +210,7 @@
                                 android:layout_centerVertical="true"
                                 android:text="1"
                                 android:drawableRight="@drawable/like_icn"
-                                android:textColor="@color/bright" />
+                                android:textColor="@color/bright"/>
 
                         </RelativeLayout>
 

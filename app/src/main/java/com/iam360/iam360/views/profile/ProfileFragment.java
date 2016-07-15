@@ -577,7 +577,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -595,7 +595,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -607,7 +607,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);

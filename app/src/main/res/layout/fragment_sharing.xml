@@ -57,7 +57,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="15dp"
             android:textSize="21sp"
-            android:text="@string/share_text" />
+            android:text="@string/share_text"/>
 
         <ImageButton
             android:id="@+id/copy_share_btn"

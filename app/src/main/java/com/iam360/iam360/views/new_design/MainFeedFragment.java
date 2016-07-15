@@ -186,7 +186,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .observeOn(AndroidSchedulers.mainThread())
 //                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
@@ -247,7 +247,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
@@ -270,7 +270,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .observeOn(AndroidSchedulers.mainThread())
 //                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);

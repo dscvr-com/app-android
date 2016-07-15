@@ -193,7 +193,7 @@
                             android:layout_marginBottom="0dp"
                             android:text="@{person.display_name}"
                             android:textColor="@color/feed_text_yellow"
-                            android:textSize="15dp" />
+                            android:textSize="15dp"/>
 
                         <View
                             android:id="@+id/dummy"
@@ -260,7 +260,7 @@
                             android:drawablePadding="5dp"
                             android:drawableRight="@drawable/like_icn"
                             android:text="1"
-                            android:textColor="@color/bright" />
+                            android:textColor="@color/bright"/>
 
                     </RelativeLayout>
 
@@ -319,8 +319,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_toLeftOf="@+id/description_label"
                 android:textColor="@color/bright"
-                android:visibility="gone"
-                app:font="@{``}" />
+                android:visibility="gone"/>
 
             <com.iam360.iam360.views.ExpandableTextView
                 android:id="@+id/description_label"
@@ -330,7 +329,6 @@
                 android:maxWidth="288dp"
                 android:text="@{optograph.text}"
                 android:textColor="@color/bright"
-                app:font="@{``}"
                 app:trimLength="32" />
 
             <TextView
@@ -345,8 +343,7 @@
                 android:paddingBottom="3dp"
                 android:text="upload"
                 android:textColor="@color/bright"
-                android:visibility="gone"
-                app:font="@{``}" />
+                android:visibility="gone"/>
 
             <ProgressBar
                 android:id="@+id/feed_upload_progress"
