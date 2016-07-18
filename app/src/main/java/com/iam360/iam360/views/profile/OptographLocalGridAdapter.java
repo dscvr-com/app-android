@@ -544,7 +544,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                    mHolder1.getBinding().personName.setVisibility(View.INVISIBLE);
 //                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
                     origPersonName = mHolder1.getBinding().getPerson().getDisplay_name();
-                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
+//                    mHolder1.getBinding().personNameEdit.setVisibility(View.VISIBLE);
                     origPersonName = mHolder1.getBinding().getPerson().getUser_name();
                     origPersonDesc = mHolder1.getBinding().getPerson().getText();
                     isEditMode = true;
