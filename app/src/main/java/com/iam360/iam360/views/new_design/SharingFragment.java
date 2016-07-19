@@ -138,6 +138,11 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
+        Log.d("myTag"," share: isSharingActivity? "+(getActivity() instanceof SharingActivity));
+        if (getActivity() instanceof SharingActivity) {
+            ((SharingActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((SharingActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);
+        }
 
         copyBtn.setOnClickListener(this);
         emailBtn.setOnClickListener(this);
@@ -436,6 +441,9 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
             case R.id.action_back:
                 if(getContext() instanceof MainActivity)
                     ((MainActivity)getActivity()).setPage(MainActivity.FEED_MODE);
+                return true;
+            case android.R.id.home:
+                if (getActivity() instanceof SharingActivity) getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

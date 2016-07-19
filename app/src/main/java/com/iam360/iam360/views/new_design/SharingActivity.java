@@ -18,6 +18,7 @@ public class SharingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_share);
         Optograph optograph = getIntent().getExtras().getParcelable("opto");
 
+
         SharingFragment sharingFragment = SharingFragment.newInstance(optograph);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, sharingFragment).commit();

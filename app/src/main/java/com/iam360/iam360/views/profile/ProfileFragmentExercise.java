@@ -3,6 +3,7 @@ package com.iam360.iam360.views.profile;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -115,6 +116,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(manager) {
             int yPos = 0;
+            float height01=0;
 
             @Override
             public void onLoadMore() {
@@ -126,9 +128,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 View view = binding.optographFeed.getChildAt(1);
-//                yPos += dy;
-                Log.d("myTag"," header: onScrolled yPos: " + yPos + " dy: " + dy + " toolHeight: " + binding.toolbarTitle.getHeight());
-                if (view.getY() <= 0) {
+                yPos += dy;
+                float top = view.getY();
+//                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
+                if((top + view.getHeight())>height01) {
+                    height01 = top + view.getHeight();
+                }
+//                    Log.d("myTag", " header: onScrolled 0Height: " +binding.optographFeed.getChildAt(1).getHeight()+
+//                            " 1Height: "+ view.getHeight() +" dy: "+dy+" yPos: "+yPos+" 01: "+height01);
+                if (height01 <= yPos) {
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarLayout.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
