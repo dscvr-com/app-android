@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
+import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.network.ApiConsumer;
 
@@ -20,12 +21,13 @@ import retrofit.Retrofit;
  */
 public class NotificationSender {
 
-    public static void triggerSendNotification(Optograph optograph, String type){
+    public static void triggerSendNotification(Optograph optograph, String type, String optoId){
         ApiConsumer apiConsumer;
-        Cache cache = Cache.open();;
+        Cache cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
-        apiConsumer.triggerNotif(optograph.getPerson().getId(), cache.getString(Cache.USER_ID), type, new Callback<String>() {
+        NotificationTriggerData data = new NotificationTriggerData(optograph.getPerson().getId(), cache.getString(Cache.USER_ID), optoId, type);
+        apiConsumer.triggerNotif(data, new Callback<String>() {
             @Override
             public void onResponse(Response<String> response, Retrofit retrofit) {
                 Log.d("MARK","triggerSendNotification sent success = "+type);

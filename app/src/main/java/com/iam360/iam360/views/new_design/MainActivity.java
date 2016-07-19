@@ -16,12 +16,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.iam360.iam360.R;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.Optograph;
@@ -138,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 //        new GeneralUtils().setStatusBarTranslucent(this, true);
 //        setStatusBarTranslucent(true);
 //        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
+
     }
 
     protected void setStatusBarTranslucent(boolean makeTranslucent) {
@@ -316,4 +314,5 @@ public class MainActivity extends AppCompatActivity {
         Log.w("MainActivity", "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
+
 }

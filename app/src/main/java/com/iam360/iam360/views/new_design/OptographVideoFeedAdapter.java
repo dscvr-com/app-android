@@ -274,7 +274,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             optograph.setStars_count(optograph.getStars_count() - 1);
                             updateHeartLabel(optograph, holder);
 
-                            NotificationSender.triggerSendNotification(optograph, "like");
+                            NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
                     }
 
@@ -336,7 +336,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             holder.getBinding().follow.setImageResource(R.drawable.feed_follow_icn);
         }
 
-        NotificationSender.triggerSendNotification(optograph, "follow");
+        NotificationSender.triggerSendNotification(optograph, "follow", "");
     }
 
     @Override

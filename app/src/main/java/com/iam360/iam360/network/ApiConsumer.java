@@ -8,6 +8,7 @@ import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -326,8 +327,8 @@ public class ApiConsumer {
     }
 
 
-    public void triggerNotif(String ownerId, String triggererId, String actionType, Callback<String> callback) {
-        Call<String> call = service.triggerNotif(ownerId, triggererId, actionType);
+    public void triggerNotif(NotificationTriggerData data, Callback<String> callback) {
+        Call<String> call = service.triggerNotif(data);
         call.enqueue(callback);
     }
 
