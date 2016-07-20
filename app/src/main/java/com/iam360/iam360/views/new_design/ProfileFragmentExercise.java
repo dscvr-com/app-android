@@ -1,9 +1,7 @@
-package com.iam360.iam360.views.profile;
+package com.iam360.iam360.views.new_design;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,7 +21,6 @@ import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
-import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
@@ -32,8 +29,7 @@ import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
-import com.iam360.iam360.views.new_design.MainActivity;
-import com.iam360.iam360.views.new_design.ProfileActivity;
+import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
 import com.squareup.otto.Subscribe;
 
 import rx.android.schedulers.AndroidSchedulers;

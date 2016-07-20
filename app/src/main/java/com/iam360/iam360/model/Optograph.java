@@ -379,6 +379,10 @@ public class Optograph implements Parcelable {
         return is_local;
     }
 
+    public void setIs_local(boolean is_local) {
+        this.is_local = is_local;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -138,7 +138,6 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
-        Log.d("myTag"," share: isSharingActivity? "+(getActivity() instanceof SharingActivity));
         if (getActivity() instanceof SharingActivity) {
             ((SharingActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((SharingActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_arrow);

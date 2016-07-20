@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.views.profile.ProfileFragment;
-import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
 import timber.log.Timber;
@@ -42,5 +40,11 @@ public class ProfileRootFragment extends Fragment {
         transaction.commit();
 
         return view;
+    }
+
+    public void refresh() {
+        for (Fragment frag:getFragmentManager().getFragments()) {
+            if (frag instanceof ProfileFragmentExercise) ((ProfileFragmentExercise) frag).refresh();
+        }
     }
 }

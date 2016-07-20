@@ -2,12 +2,9 @@ package com.iam360.iam360.views.new_design;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.model.Person;
-import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 
 public class SharingActivity extends AppCompatActivity {
 
