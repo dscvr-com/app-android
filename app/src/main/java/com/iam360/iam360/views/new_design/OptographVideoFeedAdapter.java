@@ -95,8 +95,11 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         Optograph optograph = optographs.get(position);
 
         if (!optograph.equals(holder.getBinding().getOptograph())) {
+            int width = (int) ITEM_WIDTH;
+            int height = (int)(ITEM_WIDTH / 3) * 2;
+//            int height = (int)((ITEM_WIDTH + (15 * DENSITY)) / 3) * 2;
 //            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ((int)(ITEM_HEIGHT * 0.6))); // (width, height)
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (ITEM_WIDTH + (15 * DENSITY))); // (width, height)
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height); // (width, height)
             holder.itemView.setLayoutParams(params);
 
             holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph));
