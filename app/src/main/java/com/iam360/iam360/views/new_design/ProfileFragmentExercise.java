@@ -1,4 +1,4 @@
-package com.iam360.iam360.views.profile;
+package com.iam360.iam360.views.new_design;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -29,8 +29,7 @@ import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
-import com.iam360.iam360.views.new_design.MainActivity;
-import com.iam360.iam360.views.new_design.ProfileActivity;
+import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
 import com.squareup.otto.Subscribe;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -113,6 +112,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(manager) {
             int yPos = 0;
+            float height01=0;
 
             @Override
             public void onLoadMore() {
@@ -124,9 +124,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 View view = binding.optographFeed.getChildAt(1);
-//                yPos += dy;
-                Log.d("myTag"," header: onScrolled yPos: " + yPos + " dy: " + dy + " toolHeight: " + binding.toolbarTitle.getHeight());
-                if (view.getY() <= 0) {
+                yPos += dy;
+                float top = view.getY();
+//                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
+                if((top + view.getHeight())>height01) {
+                    height01 = top + view.getHeight();
+                }
+//                    Log.d("myTag", " header: onScrolled 0Height: " +binding.optographFeed.getChildAt(1).getHeight()+
+//                            " 1Height: "+ view.getHeight() +" dy: "+dy+" yPos: "+yPos+" 01: "+height01);
+                if (height01 <= yPos) {
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarLayout.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);

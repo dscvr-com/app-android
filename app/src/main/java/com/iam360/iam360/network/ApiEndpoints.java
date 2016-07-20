@@ -113,7 +113,7 @@ public interface ApiEndpoints {
     Call<GeocodeDetails> getLocationDetails(@Path("placeid") String placeid);
 
     @GET("persons/search")
-    Observable<List<Person>> getSearchResult(@Query("keyword") String key);
+    Call<List<Person>> getSearchResult(@Query("keyword") String key);
 
     @GET("persons/username_search")
     Call<Person> getUserName(@Query("keyword") String key);

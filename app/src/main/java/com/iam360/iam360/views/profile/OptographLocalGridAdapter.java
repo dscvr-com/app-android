@@ -1042,6 +1042,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 optograph.setIs_on_server(true);
                 optographs.remove(optograph);
                 notifyItemRemoved(mPosition);
+//                optograph.setIs_local(true);
+//                optographs.add(,optograph);
+//                notifyItemInserted();
+                if (context instanceof ProfileActivity) ((ProfileActivity) context).refresh();
+                else if (context instanceof MainActivity) ((MainActivity) context).refresh();
             } else {
                 notifyItemChanged(mPosition);
             }
