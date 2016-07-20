@@ -1,33 +1,11 @@
 package com.iam360.iam360.network;
 
-import com.iam360.iam360.model.FBSignInData;
-import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.Gateway;
-import com.iam360.iam360.model.GeocodeDetails;
-import com.iam360.iam360.model.GeocodeReverse;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.OptoData;
-import com.iam360.iam360.model.OptoDataUpdate;
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.model.Person;
-import com.iam360.iam360.model.SignInData;
-import com.iam360.iam360.model.SignUpReturn;
-import com.iam360.iam360.views.new_design.SharingFragment;
-import com.squareup.okhttp.RequestBody;
-
-import java.util.List;
+import com.iam360.iam360.model.NotificationTriggerData;
 
 import retrofit.Call;
 import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
 import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import rx.Observable;
 
 /**
  * @author Nilan Marktanner
@@ -43,5 +21,8 @@ public interface Api2Endpoints {
 
     @POST("use_code")
     Call<Gateway.UseCodeResponse> useCode(@Body Gateway.UseCodeData data);
+
+    @POST("notification/create")
+    Call<String> triggerNotif(@Body NotificationTriggerData data);
 
 }

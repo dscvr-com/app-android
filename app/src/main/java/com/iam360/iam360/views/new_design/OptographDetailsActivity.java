@@ -10,11 +10,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -24,10 +24,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
-
 import com.iam360.iam360.BR;
 import com.iam360.iam360.OptographDetailsBinding;
 import com.iam360.iam360.R;
@@ -36,11 +32,20 @@ import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.sensors.CombinedMotionManager;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.VRModeActivity;
+
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+
+import java.io.File;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -454,6 +459,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                                 // revert star count on failure
                                 if (!response.isSuccess()) {
                                     setHeart(false, optograph.getStars_count() - 1);
+                                }else{
+                                    NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                                 }
                             }
 
@@ -549,6 +556,20 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     }
 
     private void deleteOptograph(Optograph optograph) {
+        if (optograph.is_local()) {
+            deleteOptographFromPhone(optograph.getId());
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+//            mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optograph.getId());
+//            mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optograph.getId());
+            Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.putExtra("id", optograph.getId());
+            intent.putExtra("local",true);
+            setResult(RESULT_OK, intent);
+            finish();
+            return;
+        }
         apiConsumer.deleteOptonaut(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -559,6 +580,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());
+                    intent.putExtra("local",false);
                     setResult(RESULT_OK, intent);
                     finish();
                 } else Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
@@ -570,5 +592,30 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void deleteOptographFromPhone(String id) {
+        Log.d("myTag", " delete: Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
+        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
+
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    for (File file1: file.listFiles()) {
+                        boolean result = file1.delete();
+                        Log.d("myTag", " delete: getName: " + file1.getName() + " getPath: " + file1.getPath()+" delete: "+result);
+                    }
+                    boolean result = file.delete();
+                    Log.d("myTag", "delete: getName: " + file.getName() + " getPath: " + file.getPath()+" delete: "+result);
+                } else {
+                    // ignore
+                }
+            }
+            boolean result = dir.delete();
+            Log.d("myTag", "delete: getName: " + dir.getName() + " getPath: " + dir.getPath()+" delete: "+result);
+        }
     }
 }

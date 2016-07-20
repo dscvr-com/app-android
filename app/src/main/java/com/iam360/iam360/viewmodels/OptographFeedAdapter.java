@@ -24,6 +24,25 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.iam360.iam360.BR;
+import com.iam360.iam360.FeedItemBinding;
+import com.iam360.iam360.R;
+import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.OptoData;
+import com.iam360.iam360.model.OptoDataUpdate;
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.network.ApiConsumer;
+import com.iam360.iam360.opengl.Optograph2DCubeView;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.CameraUtils;
+import com.iam360.iam360.util.Constants;
+import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
+import com.iam360.iam360.util.RFC3339DateFormatter;
+import com.iam360.iam360.views.GestureDetectors;
+import com.iam360.iam360.views.MainActivityRedesign;
+import com.iam360.iam360.views.SnappyRecyclerView;
+import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -35,24 +54,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iam360.iam360.BR;
-import com.iam360.iam360.FeedItemBinding;
-import com.iam360.iam360.R;
-import com.iam360.iam360.util.DBHelper;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.OptoData;
-import com.iam360.iam360.model.OptoDataUpdate;
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.network.ApiConsumer;
-import com.iam360.iam360.opengl.Optograph2DCubeView;
-import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.util.CameraUtils;
-import com.iam360.iam360.util.Constants;
-import com.iam360.iam360.util.RFC3339DateFormatter;
-import com.iam360.iam360.views.GestureDetectors;
-import com.iam360.iam360.views.MainActivityRedesign;
-import com.iam360.iam360.views.SnappyRecyclerView;
-import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -250,6 +251,8 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                                 optograph.setIs_starred(response.isSuccess());
                                 optograph.setStars_count(optograph.getStars_count() -1);
 //                                updateHeartLabel(optograph,holder);
+                            }else{
+                                NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                             }
                         }
 

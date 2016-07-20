@@ -45,11 +45,13 @@
                 android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/tab_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="DSCVR Images"
+                    android:text="@string/profile_header_image"
                     android:textColor="@color/profile_bg"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    app:font="@{``}"/>
 
             </LinearLayout>
 

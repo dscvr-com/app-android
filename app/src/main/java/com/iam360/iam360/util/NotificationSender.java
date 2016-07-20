@@ -3,14 +3,14 @@ package com.iam360.iam360.util;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.network.ApiConsumer;
+import com.iam360.iam360.model.Person;
+import com.iam360.iam360.network.Api2Consumer;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -22,11 +22,35 @@ import retrofit.Retrofit;
 public class NotificationSender {
 
     public static void triggerSendNotification(Optograph optograph, String type, String optoId){
-        ApiConsumer apiConsumer;
+        Api2Consumer apiConsumer;
         Cache cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
-        apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        apiConsumer = new Api2Consumer(token.equals("") ? null : token, "triggerNotif");
+        Log.d("MARK","triggerSendNotification type = "+type+" optoId = "+optoId+" owner_id = "+optograph.getPerson().getId());
+        Log.d("MARK","triggerSendNotification follower_id = "+cache.getString(Cache.USER_ID));
+
         NotificationTriggerData data = new NotificationTriggerData(optograph.getPerson().getId(), cache.getString(Cache.USER_ID), optoId, type);
+        apiConsumer.triggerNotif(data, new Callback<String>() {
+            @Override
+            public void onResponse(Response<String> response, Retrofit retrofit) {
+                Log.d("MARK","triggerSendNotification sent success = "+type);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("MARK","triggerSendNotification sent failed = "+type);
+            }
+        });
+    }
+
+    public static void triggerSendNotification(Person person, String type){
+        Api2Consumer apiConsumer;
+        Cache cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        apiConsumer = new Api2Consumer(token.equals("") ? null : token, "triggerNotif");
+        Log.d("MARK","triggerSendNotification type = "+type+" owner_id = "+person.getId());
+        Log.d("MARK","triggerSendNotification follower_id = "+cache.getString(Cache.USER_ID));
+        NotificationTriggerData data = new NotificationTriggerData(person.getId(), cache.getString(Cache.USER_ID), "", type);
         apiConsumer.triggerNotif(data, new Callback<String>() {
             @Override
             public void onResponse(Response<String> response, Retrofit retrofit) {
@@ -51,13 +75,15 @@ public class NotificationSender {
             //If play service is supported but not installed
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 //Displaying message that play service is not installed
-                Toast.makeText(context, "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
+//                Toast.makeText(context, "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
+                Log.d("MARK","Google Play Service is not install/enabled in this device!");
                 GooglePlayServicesUtil.showErrorNotification(resultCode,context);
 
                 //If play service is not supported
                 //Displaying an error message
             } else {
-                Toast.makeText(context, "This device does not support for Google Play Service!", Toast.LENGTH_LONG).show();
+                Log.d("MARK","This device does not support for Google Play Service!");
+//                Toast.makeText(context, "This device does not support for Google Play Service!", Toast.LENGTH_LONG).show();
             }
 
             //If play service is available
@@ -67,5 +93,4 @@ public class NotificationSender {
             context.startService(itent);
         }
     }
-
 }

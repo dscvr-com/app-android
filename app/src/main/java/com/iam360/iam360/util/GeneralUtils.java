@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import timber.log.Timber;
@@ -111,6 +112,16 @@ public class GeneralUtils {
         textView.setTypeface(custom_font, typeface);
     }
 
+    /**
+     *
+     * @param context
+     * @param button
+     * @param typeface Typeface.BOLD, Typeface.ITALIC
+     */
+    public void setFont(Context context, Button textView, int typeface) {
+        Typeface custom_font = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
+        textView.setTypeface(custom_font, typeface);
+    }
     public static String mToString(float[] m) {
         StringBuilder sb = new StringBuilder();
         int l = (int)(Math.sqrt(m.length) + 0.5);

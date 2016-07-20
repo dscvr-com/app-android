@@ -273,7 +273,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             optograph.setIs_starred(response.isSuccess());
                             optograph.setStars_count(optograph.getStars_count() - 1);
                             updateHeartLabel(optograph, holder);
-
+                        }else {
                             NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
                     }
@@ -330,13 +330,12 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
             holder.getBinding().follow.setImageResource(R.drawable.feed_following_icn);
+            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
             holder.getBinding().follow.setImageResource(R.drawable.feed_follow_icn);
         }
-
-        NotificationSender.triggerSendNotification(optograph, "follow", "");
     }
 
     @Override

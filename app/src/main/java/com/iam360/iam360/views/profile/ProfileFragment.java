@@ -3,16 +3,13 @@ package com.iam360.iam360.views.profile;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,9 +20,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.facebook.login.LoginManager;
+import com.iam360.iam360.BR;
+import com.iam360.iam360.ProfileBinding;
+import com.iam360.iam360.R;
+import com.iam360.iam360.bus.BusProvider;
+import com.iam360.iam360.bus.PersonReceivedEvent;
+import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
+import com.iam360.iam360.network.ApiConsumer;
+import com.iam360.iam360.network.PersonManager;
+import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
+import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
+import com.iam360.iam360.viewmodels.OptographGridAdapter;
+import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
+import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.ProfileActivity;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -36,20 +48,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import com.iam360.iam360.BR;
-import com.iam360.iam360.ProfileBinding;
-import com.iam360.iam360.R;
-import com.iam360.iam360.bus.BusProvider;
-import com.iam360.iam360.bus.PersonReceivedEvent;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.Person;
-import com.iam360.iam360.network.ApiConsumer;
-import com.iam360.iam360.network.PersonManager;
-import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.viewmodels.InfiniteScrollListener;
-import com.iam360.iam360.viewmodels.OptographGridAdapter;
-import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
-import com.iam360.iam360.views.new_design.MainActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -435,6 +433,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                             binding.getPerson().setIs_followed(true);
                             binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() + 1);
                             binding.invalidateAll();
+                            NotificationSender.triggerSendNotification(binding.getPerson(), "follow");
                         }
 
                         @Override
@@ -577,7 +576,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -595,7 +594,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -607,7 +606,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);

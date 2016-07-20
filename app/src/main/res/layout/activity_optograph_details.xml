@@ -171,6 +171,20 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:visibility="@{person.elite_status ? 0 : 2}">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="10dp"
+                        android:background="@color/transparentOverlay"
+                        android:src="@drawable/elite_beta_user_badge"/>
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_alignParentBottom="true"
@@ -191,7 +205,7 @@
                             android:layout_alignParentLeft="true"
                             android:layout_gravity="top"
                             android:layout_marginBottom="0dp"
-                            android:text="@{person.display_name}"
+                            android:text="@{person.user_name}"
                             android:textColor="@color/feed_text_yellow"
                             android:textSize="15dp"/>
 

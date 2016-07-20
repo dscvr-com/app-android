@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".GridFollowerBinding">
-        <import type="com.iam360.iam360.model.Follower"/>
+
+        <import type="com.iam360.iam360.model.Follower" />
+
         <variable
             name="follower"
-            type="Follower"/>
+            type="Follower" />
     </data>
 
     <RelativeLayout
@@ -37,14 +39,29 @@
             app:civ_border_width="0dp"
             app:follower="@{follower}" />
 
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/person_avatar_asset_padding"
-            android:layout_marginStart="12dp"
-            android:textColor="@color/feed_text_yellow"
-            android:layout_centerVertical="true"
-            android:text="@{follower.display_name}"/>
+            android:layout_height="match_parent"
+            android:visibility="@{follower.elite_status ? 0 : 2}">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:background="@color/transparentOverlay"
+                android:src="@drawable/elite_beta_user_badge"/>
+        </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/person_avatar_asset_padding"
+                android:layout_marginStart="12dp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/feed_text_yellow"
+                android:text="@{follower.user_name}"
+                android:ems="10"
+                app:font="@{``}" />
 
         <View
             android:layout_width="match_parent"
@@ -52,7 +69,7 @@
             android:layout_toRightOf="@id/person_avatar_asset_padding"
             android:layout_marginStart="@dimen/appbar_elevation"
             android:layout_alignParentBottom="true"
-            android:background="@color/optonautMain_3"/>
+            android:background="@color/optonautMain_3" />
 
         <ImageButton
             android:id="@+id/follow_unfollow_btn"
@@ -60,6 +77,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/appbar_elevation"/>
+            android:layout_marginEnd="@dimen/appbar_elevation" />
     </RelativeLayout>
 </layout>

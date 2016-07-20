@@ -6,7 +6,6 @@ import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -63,6 +62,9 @@ public interface ApiEndpoints {
     @POST("persons")
     Call<SignUpReturn> signUp(@Body SignInData data);
 
+    @POST("persons/logout")
+    Call<LogInReturn.EmptyResponse> logout();
+
     @POST("persons/login")
     Call<LogInReturn> logIn(@Body SignInData data);
 
@@ -113,8 +115,8 @@ public interface ApiEndpoints {
     @GET("persons/search")
     Observable<List<Person>> getSearchResult(@Query("keyword") String key);
 
-    @GET("persons/search")
-    Call<Person> getSearchResultCall(@Query("keyword") String key);
+    @GET("persons/username_search")
+    Call<Person> getUserName(@Query("keyword") String key);
 
     @GET("persons/me")
     Call<Person> getUser();
@@ -127,7 +129,4 @@ public interface ApiEndpoints {
 
     @POST("optographs/share_facebook")
     Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
-
-    @POST("notification/create")
-    Call<String> triggerNotif(@Body NotificationTriggerData data);
 }

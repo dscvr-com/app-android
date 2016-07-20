@@ -85,7 +85,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         // minimum username length is 4
         if(s.length() >= 5) {
-            apiConsumer.getSearchResultCall(s.toString(), new Callback<Person>() {
+            apiConsumer.getSearchUsername(s.toString(), new Callback<Person>() {
                 @Override
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
                     if (response.isSuccess()) {

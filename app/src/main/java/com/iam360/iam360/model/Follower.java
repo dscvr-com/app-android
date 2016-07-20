@@ -12,8 +12,9 @@ package com.iam360.iam360.model;
 "wants_newsletter": true,
 "email": "lebron_gtteuxa_james@tfbnw.net",
 "display_name": "Lebron",
-"user_name": "3d2a03ef2758477f8cacc39b90343b3e",
+"user_name": "LebronJames",
 "text": "",
+"elite_status": false,
 "avatar_asset_id": "dad5bea1-ed0d-4782-b0c4-a9ce1714abf8",
 "optographs": null,
 "optographs_count": 0,
@@ -31,6 +32,7 @@ public class Follower {
     private String display_name;
     private String user_name;
     private String text;
+    private boolean elite_status;
     private String avatar_asset_id;
     private int optographs_count;
     private int followers_count;
@@ -47,6 +49,7 @@ public class Follower {
         display_name = "";
         user_name = "";
         text = "";
+        elite_status = false;
         avatar_asset_id = "";
         optographs_count = 0;
         followers_count = 0;
@@ -120,6 +123,14 @@ public class Follower {
 
     public String getText() {
         return text;
+    }
+
+    public boolean isElite_status() {
+        return elite_status;
+    }
+
+    public void setElite_status(boolean elite_status) {
+        this.elite_status = elite_status;
     }
 
     public void setText(String text) {

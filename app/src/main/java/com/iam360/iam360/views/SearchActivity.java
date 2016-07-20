@@ -25,8 +25,6 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Mariel on 6/7/2016.
@@ -133,7 +131,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                    return null;
 //                })
 //                .subscribe(mAdapter::addItem);
-        apiConsumer.getSearchResultCall(search, new Callback<Person>() {
+        apiConsumer.getSearchUsername(search, new Callback<Person>() {
             @Override
             public void onResponse(Response<Person> response, Retrofit retrofit) {
                 if (response.isSuccess() && response.body()!=null) {

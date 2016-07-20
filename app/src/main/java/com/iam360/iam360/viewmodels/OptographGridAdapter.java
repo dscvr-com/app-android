@@ -16,16 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.iam360.iam360.BR;
 import com.iam360.iam360.GridItemBinding;
@@ -39,12 +31,20 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
+
+import org.joda.time.DateTime;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -201,6 +201,8 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                             // revert star count on failure
                             if (!response.isSuccess()) {
                                 setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
+                            }else{
+                                NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                             }
                         }
 

@@ -8,7 +8,6 @@ import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -173,6 +172,11 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void logout(Callback<LogInReturn.EmptyResponse> callback) throws IOException {
+        Call<LogInReturn.EmptyResponse> call = service.logout();
+        call.enqueue(callback);
+    }
+
     public void gcmTokenToServer(GCMToken data, Callback<String> callback) {
         Call<String> call = service.sendGCMToken(data);
         call.enqueue(callback);
@@ -302,8 +306,8 @@ public class ApiConsumer {
         return service.getSearchResult(key).flatMap(Observable::from);
     }
 
-    public void getSearchResultCall(String key, Callback<Person> callback) {
-        Call<Person> call = service.getSearchResultCall(key);
+    public void getSearchUsername(String key, Callback<Person> callback) {
+        Call<Person> call = service.getUserName(key);
         call.enqueue(callback);
     }
 
@@ -325,11 +329,4 @@ public class ApiConsumer {
         Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
         call.enqueue(callback);
     }
-
-
-    public void triggerNotif(NotificationTriggerData data, Callback<String> callback) {
-        Call<String> call = service.triggerNotif(data);
-        call.enqueue(callback);
-    }
-
 }

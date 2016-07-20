@@ -1,12 +1,10 @@
 package com.iam360.iam360.views.new_design;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Person;
-import com.iam360.iam360.views.profile.ProfileFragment;
 import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -25,8 +23,6 @@ public class ProfileActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ProfileFragmentExercise.newInstance(id)).commit();
         }
-
-
     }
 
     @Override

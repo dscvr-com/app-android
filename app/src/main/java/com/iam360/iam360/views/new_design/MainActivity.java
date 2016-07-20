@@ -22,6 +22,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.iam360.iam360.R;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
@@ -189,6 +190,18 @@ public class MainActivity extends AppCompatActivity {
         AppEventsLogger.activateApp(this);
 //        Toro.attach(this);
 
+        Intent intent;
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("person")!=null) {
+            Person person = getIntent().getExtras().getParcelable("person");
+            intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("person", person);
+            startActivity(intent);
+        }else if(getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("opto")!=null){
+            Optograph optograph = getIntent().getExtras().getParcelable("opto");
+            intent = new Intent(this, OptographDetailsActivity.class);
+            intent.putExtra("opto", optograph);
+            startActivity(intent);
+        }
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
@@ -287,9 +300,9 @@ public class MainActivity extends AppCompatActivity {
             for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
                 if (frag instanceof ProfileFragmentExercise) {
                     String id = data.getStringExtra("id");
-                    Log.d("myTag"," delete: id: "+id);
-
-                    ((ProfileFragmentExercise) frag).refreshAfterDelete(id);
+                    boolean local = data.getBooleanExtra("local",false);
+                    Log.d("myTag"," delete: id: "+id+" local? "+local);
+                    ((ProfileFragmentExercise) frag).refreshAfterDelete(id,local);
                 }
             }
         }

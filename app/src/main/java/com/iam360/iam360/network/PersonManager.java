@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
+import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.util.Cache;
 import retrofit.Callback;
@@ -101,12 +102,33 @@ public class PersonManager {
                     cache.getString(Cache.USER_TWITTER_SECRET)), new Callback<Person>() {
                 @Override
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
-                    Timber.v("success updating social data of user? "+response.isSuccess());
+                    Timber.v("success updating social data of user? " + response.isSuccess());
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    Timber.v("failed to update social data of user: "+t.toString());
+                    Timber.v("failed to update social data of user: " + t.toString());
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void logoutPerson() {
+        Cache cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(token.equals("")?null:token);
+        try {
+            apiConsumer.logout(new Callback<LogInReturn.EmptyResponse>() {
+                @Override
+                public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                    Timber.v("Logged out." + response.isSuccess());
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    Timber.v("Failed loggin" + t.toString());
                 }
             });
         } catch (IOException e) {
