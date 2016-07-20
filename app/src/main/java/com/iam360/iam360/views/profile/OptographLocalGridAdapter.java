@@ -77,6 +77,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public static final int VIEW_FOLLOWER = 4;
     public static final int ON_IMAGE=0;
     public static final int ON_FOLLOWER=1;
+    public static final int ON_NOTIFICATION =2;
     public static final int PICK_IMAGE_REQUEST = 1;
     public static final int DELETE_IMAGE = 2;
     public static final int COLUMNS=3;
@@ -361,6 +362,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffbc00"));
             mHolder.getBinding().followerSelector.setVisibility(View.VISIBLE);
         }
+    }
+
+    public boolean isTab(int tab) {
+        if (onTab==tab) return true;
+        return false;
     }
 
     private void initializeHeaderSecond(HeaderSecondViewHolder mHolder) {
@@ -1024,13 +1030,21 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
                 mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
             }*/
+            optograph.setIs_uploading(false);
+            cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(optograph.getId())) {
                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
                 optograph.setIs_on_server(true);
+                optographs.remove(optograph);
+                notifyItemRemoved(mPosition);
+//                optograph.setIs_local(true);
+//                optographs.add(,optograph);
+//                notifyItemInserted();
+                if (context instanceof ProfileActivity) ((ProfileActivity) context).refresh();
+                else if (context instanceof MainActivity) ((MainActivity) context).refresh();
+            } else {
+                notifyItemChanged(mPosition);
             }
-            optograph.setIs_uploading(false);
-            cache.save(Cache.UPLOAD_ON_GOING, false);
-            notifyItemChanged(mPosition);
         }
     }
 

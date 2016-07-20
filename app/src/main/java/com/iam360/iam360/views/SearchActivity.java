@@ -133,32 +133,52 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                    return null;
 //                })
 //                .subscribe(mAdapter::addItem);
-        apiConsumer.getSearchUsername(search, new Callback<Person>() {
-            @Override
-            public void onResponse(Response<Person> response, Retrofit retrofit) {
-                if (response.isSuccess() && response.body()!=null) {
-                    Person person = response.body();
-                    if(person.getId().isEmpty()) {
-                        mAdapter.setObjects(new ArrayList<>());
-                    } else {
-                        List<Person> personList = new ArrayList<Person>();
-                        personList.add(person);
-                        mAdapter.setObjects(personList);
-                    }
-                } else {
-                    mAdapter.setObjects(new ArrayList<>());
-                }
-                checkItem();
-            }
+//        apiConsumer.getSearchUsername(search, new Callback<Person>() {
+//            @Override
+//            public void onResponse(Response<Person> response, Retrofit retrofit) {
+//                if (response.isSuccess() && response.body()!=null) {
+//                    Person person = response.body();
+//                    if(person.getId().isEmpty()) {
+//                        mAdapter.setObjects(new ArrayList<>());
+//                    } else {
+//                        List<Person> personList = new ArrayList<Person>();
+//                        personList.add(person);
+//                        mAdapter.setObjects(personList);
+//                    }
+//                } else {
+//                    mAdapter.setObjects(new ArrayList<>());
+//                }
+//                checkItem();
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//                mAdapter.setObjects(new ArrayList<>());
+//                checkItem();
+//                if (networkProblemDialog.isAdded() || t.getMessage().contains("iterable must not be null")) return;
+//                networkProblemDialog.show(getSupportFragmentManager(), "networkProblemDialog");
+//            }
+//        });
 
-            @Override
-            public void onFailure(Throwable t) {
-                mAdapter.setObjects(new ArrayList<>());
-                checkItem();
-                if (networkProblemDialog.isAdded() || t.getMessage().contains("iterable must not be null")) return;
+       apiConsumer.getSearchResult(search,new Callback<List<Person>>() {
+           @Override
+           public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
+               if (response.isSuccess() && response.body()!=null) {
+                   mAdapter.setObjects(response.body());
+               } else {
+                   mAdapter.setObjects(new ArrayList<>());
+               }
+               checkItem();
+           }
+
+           @Override
+           public void onFailure(Throwable t) {
+               mAdapter.setObjects(new ArrayList<>());
+               checkItem();
+               if (networkProblemDialog.isAdded() || t.getMessage().contains("iterable must not be null")) return;
                 networkProblemDialog.show(getSupportFragmentManager(), "networkProblemDialog");
-            }
-        });
+           }
+       });
     }
 
     private void checkItem() {

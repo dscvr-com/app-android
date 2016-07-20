@@ -31,7 +31,6 @@ import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.SettingsActivity;
 import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
-import com.iam360.iam360.views.profile.ProfileFragmentExercise;
 import com.iam360.iam360.views.profile.SigninFBFragment;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
+        cache = Cache.open();
 
         //Initializing our broadcast receiver
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeComponents() {
 //        cache = Cache.getInstance(this);
-        cache = Cache.open();
+//        cache = Cache.open();
 
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
@@ -340,5 +339,9 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         Log.w("MainActivity", "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    public void refresh() {
+        adapterViewPager.profileRootFragment.refresh();
     }
 }

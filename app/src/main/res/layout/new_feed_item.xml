@@ -151,7 +151,7 @@
                             android:layout_marginLeft="10dp"
                             android:background="@color/transparentOverlay"
                             android:src="@drawable/elite_beta_user_badge"/>
-                        </RelativeLayout>
+                    </RelativeLayout>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -174,7 +174,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentLeft="true"
                                 android:textColor="@color/feed_text_yellow"
-                                android:textSize="15dp"
+                                android:textSize="13sp"
                                 android:layout_marginBottom="0dp"
                                 android:text="@{person.user_name}" />
 
@@ -193,7 +193,7 @@
                                 android:layout_alignParentLeft="true"
                                 android:textColor="@color/feed_text_white"
                                 android:layout_marginTop="0dp"
-                                android:textSize="11dp"
+                                android:textSize="9sp"
                                 android:text="@{location.text}"/>
 
                         </RelativeLayout>

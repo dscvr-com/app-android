@@ -1,6 +1,5 @@
-package com.iam360.iam360.views.profile;
+package com.iam360.iam360.views.new_design;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
-import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
@@ -31,8 +29,7 @@ import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
-import com.iam360.iam360.views.new_design.MainActivity;
-import com.iam360.iam360.views.new_design.ProfileActivity;
+import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
 import com.squareup.otto.Subscribe;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -85,7 +82,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.homeBtn.setImageResource(getActivity() instanceof ProfileActivity? R.drawable.back_arrow : R.drawable.logo_small_dark);
 
-        Log.d("myTag", " overflow: person null? " + (person == null));
         if (person != null) {
 //            binding.setVariable(BR.person, person);
             binding.executePendingBindings();
@@ -116,23 +112,35 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(manager) {
             int yPos = 0;
+            float height01=0;
 
             @Override
             public void onLoadMore() {
                 Log.d("myTag", TAG + " onLoadMore");
-                loadMore();
+                if(optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE))loadMore();
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 View view = binding.optographFeed.getChildAt(1);
-//                yPos += dy;
-                Log.d("myTag", TAG + " onScrolled yPos: " + yPos + " dy: " + dy + " toolHeight: " + binding.toolbarTitle.getHeight());
-                if (view.getY() <= 5) {
+                yPos += dy;
+                float top = view.getY();
+//                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
+                if((top + view.getHeight())>height01) {
+                    height01 = top + view.getHeight();
+                }
+//                    Log.d("myTag", " header: onScrolled 0Height: " +binding.optographFeed.getChildAt(1).getHeight()+
+//                            " 1Height: "+ view.getHeight() +" dy: "+dy+" yPos: "+yPos+" 01: "+height01);
+                if (height01 <= yPos) {
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarLayout.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
+                    String tab;
+                    if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_FOLLOWER)) tab = getResources().getString(R.string.profile_header_follower);
+                    else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) tab = getResources().getString(R.string.profile_header_notif);
+                    else tab = getResources().getString(R.string.profile_header_image);
+                    binding.tabTitle.setText(tab);
                 } else {
                     binding.toolbarLayout.setVisibility(View.VISIBLE);
 //                    binding.toolbar.setVisibility(View.VISIBLE);
@@ -154,19 +162,19 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     private void initializeProfileFeed() {
 
-        Log.d("myTag"," overflow: before condition for currentuser isCurrentUser? "+isCurrentUser);
         if (person.getId().equals(cache.getString(Cache.USER_ID))) {
             isCurrentUser = true;
 //            binding.toolbarTitle.setText(getResources().getString(R.string.profile_my_profile));
             binding.pageTitle.setText(getResources().getString(R.string.profile_my_profile));
             cache.save(Cache.USER_DISPLAY_NAME, person.getDisplay_name());
         } else {
+            isCurrentUser = false;
 //            binding.toolbarTitle.setText(getResources().getString(R.string.profile_text));
             binding.pageTitle.setText(getResources().getString(R.string.profile_text));
         }
-        Log.d("myTag"," overflow: after condition for currentuser isCurrentUser? "+isCurrentUser);
 
-        getActivity().invalidateOptionsMenu();
+//        getActivity().invalidateOptionsMenu();
+        updateHomeButton();
 
         initializeFeed();
     }
@@ -321,21 +329,22 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
-        if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
-            menu.findItem(R.id.action_signout).setVisible(false);
-            menu.findItem(R.id.action_save).setVisible(true);
-//            menu.findItem(R.id.cancel_edit).setVisible(true);
-        } else if (isCurrentUser && !optographLocalGridAdapter.isOnEditMode() && ((getActivity() instanceof MainActivity &&
-                ((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE) ||
-                getActivity() instanceof ProfileActivity)) {
-            menu.findItem(R.id.action_signout).setVisible(true);
-            menu.findItem(R.id.action_save).setVisible(false);
-            menu.findItem(R.id.cancel_edit).setVisible(false);
-        } else {
-            menu.findItem(R.id.action_signout).setVisible(false);
-            menu.findItem(R.id.action_save).setVisible(false);
-            menu.findItem(R.id.cancel_edit).setVisible(false);
-        }
+//        if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
+//            menu.findItem(R.id.action_signout).setVisible(false);
+//            menu.findItem(R.id.action_save).setVisible(true);
+////            menu.findItem(R.id.cancel_edit).setVisible(true);
+//        } else if (isCurrentUser && !optographLocalGridAdapter.isOnEditMode() && ((getActivity() instanceof MainActivity &&
+//                ((MainActivity)getActivity()).getCurrentPage()!=MainActivity.SHARING_MODE) ||
+//                getActivity() instanceof ProfileActivity)) {
+//            menu.findItem(R.id.action_signout).setVisible(true);
+//            menu.findItem(R.id.action_save).setVisible(false);
+//            menu.findItem(R.id.cancel_edit).setVisible(false);
+//        } else {
+//            menu.findItem(R.id.action_signout).setVisible(false);
+//            menu.findItem(R.id.action_save).setVisible(false);
+//            menu.findItem(R.id.cancel_edit).setVisible(false);
+//        }
+        menu.findItem(R.id.action_signout).setVisible(false);
         updateHomeButton();
     }
 
@@ -431,11 +440,5 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("myTag"," delete: onActResult");
     }
 }
