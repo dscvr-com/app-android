@@ -3,7 +3,7 @@
 #include <android/bitmap.h>
 #include "online-stitcher/src/recorder/recorder.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
-#include "online-stitcher/src/recorder/storageSink.hpp"
+#include "online-stitcher/src/recorder/imageSink.hpp"
 #include "online-stitcher/src/recorder/recorderGraph.hpp"
 
 using namespace optonaut;
@@ -14,9 +14,10 @@ int counter = 0;
 
 Mat intrinsics;
 
-std::shared_ptr<CheckpointStore> leftStore;
-std::shared_ptr<CheckpointStore> rightStore;
-std::shared_ptr<StorageSink> sink;
+//std::shared_ptr<CheckpointStore> leftStore;
+//std::shared_ptr<CheckpointStore> rightStore;
+std::shared_ptr<CheckpointStore> postStore;
+std::shared_ptr<ImageSink> sink;
 
 std::shared_ptr<Recorder> recorder;
 std::string debugPath;
@@ -25,7 +26,8 @@ extern "C" {
     // storagePath should end on "/"!
     void Java_com_iam360_iam360_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
 
-    void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
+    void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData);
+//    void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
 
     void Java_com_iam360_iam360_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle);
 
@@ -92,13 +94,17 @@ void Java_com_iam360_iam360_record_Recorder_initRecorder(JNIEnv *env, jobject th
     std::string path(cString);
     __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
-    leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
-    rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+    //leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
+    //rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+    postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
 
-    leftStore->Clear();
-    rightStore->Clear();
 
-    sink =std::make_shared<StorageSink>(*leftStore, *rightStore);
+
+    //leftStore->Clear();
+    //rightStore->Clear();
+    postStore->Clear();
+
+    sink =std::make_shared<ImageSink>(*postStore);
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -118,21 +124,12 @@ void Java_com_iam360_iam360_record_Recorder_initRecorder(JNIEnv *env, jobject th
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode, true);
+    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode);
 }
 
-void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData) {
-    AndroidBitmapInfo  info;
-    uint32_t          *pixels;
-    int                ret;
+void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
 
-    AndroidBitmap_getInfo(env, bitmap, &info);
-
-    if(info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        __android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, "%s", "Bitmap format is not RGBA_8888!");
-    }
-
-    AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
+    char *pixels = (char *)env->GetByteArrayElements(bitmap, NULL);
 
     // Now you can use the pixel array 'pixels', which is in RGBA format
     double *temp = (double *) (env)->GetDoubleArrayElements(extrinsicsData, NULL);
@@ -142,9 +139,9 @@ void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobj
     InputImageP image(new InputImage());
     InputImageRef inputImageRef;
     inputImageRef.data = pixels;
-    inputImageRef.width = info.width;
-    inputImageRef.height = info.height;
-    inputImageRef.colorSpace = colorspace::RGBA;
+    inputImageRef.width = width;
+    inputImageRef.height = height;
+    inputImageRef.colorSpace = colorspace::BGRA;
     image->dataRef = inputImageRef;
     image->id = counter++;
     image->originalExtrinsics = extrinsics.clone();
@@ -152,8 +149,7 @@ void Java_com_iam360_iam360_record_Recorder_push(JNIEnv *env, jobject thiz, jobj
 
     recorder->Push(image);
     env->ReleaseDoubleArrayElements(extrinsicsData, (jdouble *) temp, 0);
-
-    AndroidBitmap_unlockPixels(env, bitmap);
+    env->ReleaseByteArrayElements(bitmap, (jbyte *) pixels, 0);
 }
 
 void Java_com_iam360_iam360_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle)
