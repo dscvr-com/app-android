@@ -10,11 +10,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -23,10 +23,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 import com.iam360.iam360.BR;
 import com.iam360.iam360.OptographDetailsBinding;
@@ -39,9 +35,14 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.GestureDetectors;
 import com.iam360.iam360.views.VRModeActivity;
+
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import java.io.File;
 
@@ -458,6 +459,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                                 // revert star count on failure
                                 if (!response.isSuccess()) {
                                     setHeart(false, optograph.getStars_count() - 1);
+                                }else{
+                                    NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                                 }
                             }
 

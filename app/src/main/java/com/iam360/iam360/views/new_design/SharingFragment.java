@@ -54,6 +54,7 @@ import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
 import com.iam360.iam360.util.GeneralUtils;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -354,6 +355,7 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                         cache.save(Cache.USER_FB_LOGGED_IN, true);
                         PersonManager.updatePerson();
                         showInputDialog(getResources().getString(R.string.share_subject_web_viewer) + "\n" + text);
+                        NotificationSender.sendGCMRegService(getContext());
 
                     }
 

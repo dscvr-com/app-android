@@ -129,5 +129,4 @@ public interface ApiEndpoints {
 
     @POST("optographs/share_facebook")
     Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
-
 }

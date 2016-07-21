@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -21,30 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.danikula.videocache.HttpProxyCacheServer;
-import com.iam360.iam360.OptonautApp;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
-
-import org.joda.time.DateTime;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.iam360.iam360.BR;
 import com.iam360.iam360.NewFeedItemBinding;
+import com.iam360.iam360.OptonautApp;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.OptoData;
@@ -56,7 +40,18 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.RequestBody;
+
+import org.joda.time.DateTime;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import im.ene.lab.toro.ToroAdapter;
 import im.ene.lab.toro.ToroViewHolder;
@@ -381,6 +376,8 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                             optograph.setIs_starred(response.isSuccess());
                             optograph.setStars_count(optograph.getStars_count() - 1);
                             updateHeartLabel(optograph, holder);
+                        }else{
+                            NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
                     }
 
@@ -479,6 +476,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
             holder.followButton.setImageResource(R.drawable.feed_following_icn);
+            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);

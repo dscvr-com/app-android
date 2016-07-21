@@ -184,11 +184,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         switch (v.getId()) {
             case R.id.home_btn:
                 if (getActivity() instanceof ProfileActivity) {
-                    Log.d("myTag", "ProfileActivity? " + (getActivity() instanceof ProfileActivity));
+                    Log.d("MARK", "ProfileActivity? " + (getActivity() instanceof ProfileActivity));
                     ((ProfileActivity)getActivity()).onBackPressed();
-                } else if (getActivity() instanceof MainActivity)
+                } else if (getActivity() instanceof MainActivity) {
+                    Log.d("MARK", "MainActivity? " + (getActivity() instanceof ProfileActivity));
                     ((MainActivity) getActivity()).onBackPressed();
-                else getActivity().finish();
+                }else {
+                    Log.d("MARK", "else Acti? " + (getActivity() instanceof ProfileActivity));
+                    getActivity().finish();
+                }
                 break;
             case R.id.save_btn:
                 isEditMode = false;

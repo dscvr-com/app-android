@@ -43,6 +43,7 @@ import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.util.GeneralUtils;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.new_design.ProfileActivity;
@@ -177,7 +178,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (onTab==ON_IMAGE) {
             Optograph optograph = optographs.get(position);
-
             if (optograph == null && position == 0) {
                 HeaderOneViewHolder mHolder1 = (HeaderOneViewHolder) holder;
                 initializeHeaderOne(mHolder1);
@@ -324,6 +324,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                         mHolder2.getBinding().getFollower().setIs_followed(true);
                                         mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
                                         mHolder2.getBinding().invalidateAll();
+                                        if(position < optographs.size()){
+                                            Optograph optograph = optographs.get(position);
+                                            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
+                                        }
                                         notifyItemChanged(position);
                                     }
 
@@ -581,6 +585,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             mHolder1.getBinding().getPerson().setIs_followed(true);
                             mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
                             mHolder1.getBinding().invalidateAll();
+                            NotificationSender.triggerSendNotification(mHolder1.getBinding().getPerson(), "follow");
                         }
 
                         @Override

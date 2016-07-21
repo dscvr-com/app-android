@@ -3,25 +3,19 @@ package com.iam360.iam360.views.new_design;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.iam360.iam360.BR;
-import com.iam360.iam360.NewFeedItemBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.Optograph;
@@ -30,6 +24,7 @@ import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 
 import org.joda.time.DateTime;
 
@@ -37,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.ene.lab.toro.ToroAdapter;
-import im.ene.lab.toro.ToroViewHolder;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -281,6 +275,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             optograph.setIs_starred(response.isSuccess());
                             optograph.setStars_count(optograph.getStars_count() - 1);
                             updateHeartLabel(optograph, holder);
+                        }else {
+                            NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
                     }
 
@@ -336,6 +332,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
             holder.getBinding().follow.setImageResource(R.drawable.feed_following_icn);
+            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);

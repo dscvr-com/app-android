@@ -31,6 +31,7 @@ public class GCMRegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.w("GCMRegIntentService", "GCMRegistrationIntentService intent:" + intent);
         registerGCM();
     }
 
@@ -53,14 +54,15 @@ public class GCMRegistrationIntentService extends IntentService {
     }
 
     private void sendRegistrationTokenToServer(final String token) {
-        ApiConsumer apiConsumer = new ApiConsumer(null);
         Cache cache = Cache.open();
+        String userToken = cache.getString(Cache.USER_TOKEN);
+        ApiConsumer apiConsumer = new ApiConsumer(userToken);
         cache.save(Cache.GCM_TOKEN, token);
         apiConsumer.gcmTokenToServer(new GCMToken(token), new Callback<String>(){
 
             @Override
             public void onResponse(Response<String> response, Retrofit retrofit) {
-                Log.d("MARK","sendRegistrationTokenToServer success = "+response.body());
+                Log.d("MARK","sendRegistrationTokenToServer response.isSuccess() = "+response.isSuccess());
             }
 
             @Override

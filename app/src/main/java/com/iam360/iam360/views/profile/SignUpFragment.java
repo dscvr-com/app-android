@@ -17,6 +17,8 @@ import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.model.SignUpReturn;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.NotificationSender;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -113,6 +115,7 @@ public class SignUpFragment extends Fragment{
 
                 getActivity().setResult(2);
                 getActivity().finish();
+
 
             }
 

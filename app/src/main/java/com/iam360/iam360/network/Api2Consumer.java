@@ -2,38 +2,20 @@ package com.iam360.iam360.network;
 
 import android.util.Log;
 
-import com.iam360.iam360.model.FBSignInData;
-import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.Gateway;
-import com.iam360.iam360.model.GeocodeDetails;
-import com.iam360.iam360.model.GeocodeReverse;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.OptoData;
-import com.iam360.iam360.model.OptoDataUpdate;
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.model.Person;
-import com.iam360.iam360.model.SignInData;
-import com.iam360.iam360.model.SignUpReturn;
+import com.iam360.iam360.model.NotificationTriggerData;
 import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.util.RFC3339DateFormatter;
-import com.iam360.iam360.views.new_design.SharingFragment;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-
-import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
-import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -42,6 +24,7 @@ import timber.log.Timber;
  */
 public class Api2Consumer {
     private static final String BASE_URL = "https://www.dscvr.com/api/";
+    private static final String BASE_URL2 = "https://www.dscvr.com/";
 
     private static final int DEFAULT_LIMIT = 5;
     public static final int PROFILE_GRID_LIMIT = 12;
@@ -57,7 +40,7 @@ public class Api2Consumer {
     private boolean flag = false;
     private boolean finish = false;
 
-    public Api2Consumer(String token) {
+    public Api2Consumer(String token, String type) {
 
         Timber.d("Api2Consumer");
         this.token = token;
@@ -95,8 +78,14 @@ public class Api2Consumer {
                 return chain.proceed(newRequest);
             }
         });
+
+        String bs_URL = BASE_URL;
+        if(type.equals("triggerNotif")){
+            bs_URL = BASE_URL2;
+        }
+
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(bs_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(client)
@@ -117,6 +106,11 @@ public class Api2Consumer {
 
     public void useCode(Gateway.UseCodeData data, Callback<Gateway.UseCodeResponse> callback) {
         Call<Gateway.UseCodeResponse> call = service.useCode(data);
+        call.enqueue(callback);
+    }
+
+    public void triggerNotif(NotificationTriggerData data, Callback<String> callback) {
+        Call<String> call = service.triggerNotif(data);
         call.enqueue(callback);
     }
 

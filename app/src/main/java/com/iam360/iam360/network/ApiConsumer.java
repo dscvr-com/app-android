@@ -330,5 +330,4 @@ public class ApiConsumer {
         Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
         call.enqueue(callback);
     }
-
 }
