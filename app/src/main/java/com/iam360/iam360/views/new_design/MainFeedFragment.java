@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 
@@ -146,6 +147,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             }
         });
 
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
     }
 
     @Override
@@ -158,8 +165,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void onResume() {
         super.onResume();
         inVRMode = false;
-
-        Timber.d("ONRESUME");
 
         if(GlobalState.isAnyJobRunning) {
             binding.cameraBtn.setEnabled(false);
@@ -243,6 +248,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void loadMore() {
+
+        Timber.d("loadMore");
+
         apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -281,6 +289,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .subscribe(this::countLocal);
 
         disableDrag();
+        binding.swipeRefreshLayout.setRefreshing(false);
+
     }
 
     public void disableDrag() {
