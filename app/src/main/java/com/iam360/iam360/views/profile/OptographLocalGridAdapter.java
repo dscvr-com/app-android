@@ -27,11 +27,14 @@ import com.iam360.iam360.BR;
 import com.iam360.iam360.GridFollowerBinding;
 import com.iam360.iam360.GridItemLocalBinding;
 import com.iam360.iam360.GridItemServerBinding;
+import com.iam360.iam360.GridNotificationFollowBinding;
+import com.iam360.iam360.GridNotificationStarBinding;
 import com.iam360.iam360.ProfileHeaderBinding;
 import com.iam360.iam360.ProfileTabBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Follower;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.Notification;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -44,6 +47,8 @@ import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.util.NotificationSender;
+import com.iam360.iam360.util.RFC3339DateFormatter;
+import com.iam360.iam360.util.TimeUtils;
 import com.iam360.iam360.views.new_design.MainActivity;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.new_design.ProfileActivity;
@@ -76,14 +81,25 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public static final int VIEW_LOCAL = 2;
     public static final int VIEW_SERVER = 3;
     public static final int VIEW_FOLLOWER = 4;
+    public static final int VIEW_NOTIFICATION_STAR = 5;
+    public static final int VIEW_NOTIFICATION_FOLLOW = 6;
+    public static final int VIEW_NOTIFICATION_COMMENT = 7;
+    public static final int VIEW_NOTIFICATION_VIEWS = 8;
     public static final int ON_IMAGE=0;
     public static final int ON_FOLLOWER=1;
     public static final int ON_NOTIFICATION =2;
     public static final int PICK_IMAGE_REQUEST = 1;
     public static final int DELETE_IMAGE = 2;
     public static final int COLUMNS=3;
+
+    public static final String NOTIF_STAR_TYPE = "star";
+    public static final String NOTIF_FOLLOW_TYPE = "follow";
+    public static final String NOTIF_COMMENT_TYPE = "comment";
+    public static final String NOTIF_VIEWS_TYPE = "view";
+
     List<Optograph> optographs;
     List<Follower> followers;
+    List<Notification> notifications;
 
     private Person person;
     protected Cache cache;
@@ -107,7 +123,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private Bitmap avatarImage;
     private String avatarId;
 
-    public OptographLocalGridAdapter(Context context, int tab) {
+    public OptographLocalGridAdapter(Context context,int tab) {
         this.context = context;
         this.optographs = new ArrayList<>();
         this.onTab = tab;
@@ -117,6 +133,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         this.followers = new ArrayList<>();
 //        followers.add(0,null);
 //        followers.add(1,null);
+
+        this.notifications = new ArrayList<Notification>();
 
         cache = Cache.open();
         mydb = new DBHelper(context);
@@ -159,12 +177,26 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             final ServerViewHolder viewHolder = new ServerViewHolder(itemView);
             return viewHolder;
-        } else {
+        } else if (viewType == VIEW_FOLLOWER) {
             final View itemView = LayoutInflater
                     .from(parent.getContext())
                     .inflate(R.layout.grid_item_follower, parent, false);
 
             final FollowerViewHolder viewHolder = new FollowerViewHolder(itemView);
+            return viewHolder;
+        } else if (viewType==VIEW_NOTIFICATION_STAR) {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_notification_star,parent,false);
+
+            final NotificationStarViewHolder viewHolder = new NotificationStarViewHolder(itemView);
+            return viewHolder;
+        } else {
+            final View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.grid_item_notification_follow,parent,false);
+
+            final NotificationFollowViewHolder viewHolder = new NotificationFollowViewHolder(itemView);
             return viewHolder;
         }
     }
@@ -178,6 +210,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (onTab==ON_IMAGE) {
             Optograph optograph = optographs.get(position);
+
             if (optograph == null && position == 0) {
                 HeaderOneViewHolder mHolder1 = (HeaderOneViewHolder) holder;
                 initializeHeaderOne(mHolder1);
@@ -280,7 +313,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     });
                 }
             }
-        } else {
+        } else if (onTab == ON_FOLLOWER) {
             Follower follower = followers.get(position);
 
             if (follower == null && position == 0) {
@@ -301,6 +334,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     if (follower.is_followed()) mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.following_btn);
                     else mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.follow_btn);
+
+                    mHolder2.getBinding().badgeLayout.setVisibility(follower.isElite_status()?View.VISIBLE:View.GONE);
 
                     mHolder2.getBinding().followUnfollowBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -351,6 +386,82 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     });
                 }
             }
+        } else {
+            Notification notif = notifications.get(position);
+            Log.d("myTag"," notif: notif null? "+(notif==null)+" position: "+position);
+            if (notif!=null) Log.d("myTag"," notif: type: "+notif.getType()+" isRead? "+notif.isIs_read());
+
+            if (notif == null && position == 0) {
+                HeaderOneViewHolder mHolder = (HeaderOneViewHolder) holder;
+                initializeHeaderOne(mHolder);
+            } else if (notif == null && position ==1) {
+                HeaderSecondViewHolder mHolder1 = (HeaderSecondViewHolder) holder;
+                initializeHeaderSecond(mHolder1);
+            } else if (notif.getType().equals(NOTIF_STAR_TYPE)) {
+                NotificationStarViewHolder mHolder2 = (NotificationStarViewHolder) holder;
+                if (!notif.equals(mHolder2.getBinding().getNotification())) {
+                    if (mHolder2.getBinding().getNotification()!=null) {
+
+                    }
+
+                    Log.d("myTag"," notif: position: "+position+" opto null? "+(notif.getActivity_resource_star().getOptograph()==null));
+
+                    if (notif.getDeleted_at()!=null) return;
+
+                    mHolder2.getBinding().setVariable(BR.notification, notif);
+                    mHolder2.getBinding().setVariable(BR.person, notif.getActivity_resource_star().getCausing_person());
+                    mHolder2.getBinding().setVariable(BR.optograph, notif.getActivity_resource_star().getOptograph());
+                    mHolder2.getBinding().executePendingBindings();
+
+                    mHolder2.getBinding().starLayout.setBackgroundColor(notif.isIs_read()?context.getResources().getColor(R.color.profile_bg):context.getResources().getColor(R.color.profile_notif_not_read));
+                    mHolder2.getBinding().badgeLayout.setVisibility(notif.getActivity_resource_star().getCausing_person().isElite_status()?View.VISIBLE:View.GONE);
+                    mHolder2.getBinding().timeAgo.setText(TimeUtils.getTimeAgo(RFC3339DateFormatter.fromRFC3339String(notif.getCreated_at())));
+
+                    mHolder2.getBinding().personUsername.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startProfile(notif.getActivity_resource_star().getCausing_person().getId());
+                        }
+                    });
+
+                    mHolder2.getBinding().starLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Optograph opto = notif.getActivity_resource_star().getOptograph();
+                            opto.setPerson(person);
+                            Intent intent = new Intent(context, OptographDetailsActivity.class);
+                            intent.putExtra("opto", opto);
+//                            context.startActivity(intent);
+                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                        }
+                    });
+                }
+            } else if (notif.getType().equals(NOTIF_FOLLOW_TYPE)) {
+                NotificationFollowViewHolder mHolder3 = (NotificationFollowViewHolder) holder;
+                if (!notif.equals(mHolder3.getBinding().getNotification())) {
+                    if (mHolder3.getBinding().getNotification()!=null) {
+
+                    }
+
+                    if (notif.getDeleted_at()!=null) return;
+
+                    mHolder3.getBinding().setVariable(BR.notification, notif);
+                    mHolder3.getBinding().setVariable(BR.person, notif.getActivity_resource_follow().getCausing_person());
+                    mHolder3.getBinding().executePendingBindings();
+
+                    mHolder3.getBinding().followLayout.setBackgroundColor(notif.isIs_read() ? context.getResources().getColor(R.color.profile_bg) : context.getResources().getColor(R.color.profile_notif_not_read));
+                    mHolder3.getBinding().badgeLayout.setVisibility(notif.getActivity_resource_follow().getCausing_person().isElite_status() ? View.VISIBLE : View.GONE);
+                    mHolder3.getBinding().timeAgo.setText(TimeUtils.getTimeAgo(RFC3339DateFormatter.fromRFC3339String(notif.getCreated_at())));
+                    mHolder3.getBinding().followNotif.setImageResource(notif.getActivity_resource_follow().getCausing_person().is_followed() ? R.drawable.feed_following_icn : R.drawable.feed_follow_icn);
+
+                    mHolder3.getBinding().followLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startProfile(notif.getActivity_resource_follow().getCausing_person().getId());
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -366,11 +477,22 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
             mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffffff"));
             mHolder.getBinding().followerSelector.setVisibility(View.INVISIBLE);
-        } else {
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().notificationSelector.setVisibility(View.INVISIBLE);
+        } else if (onTab == ON_FOLLOWER) {
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
             mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffbc00"));
             mHolder.getBinding().followerSelector.setVisibility(View.VISIBLE);
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().notificationSelector.setVisibility(View.INVISIBLE);
+        } else {
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().followerSelector.setVisibility(View.INVISIBLE);
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().notificationSelector.setVisibility(View.VISIBLE);
         }
     }
 
@@ -385,14 +507,51 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
         if (!isCurrentUser && onTab == ON_IMAGE) {
             mHolder.getBinding().followerTab.setVisibility(View.GONE);
+            mHolder.getBinding().notificationTab.setVisibility(View.GONE);
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
         } else if (onTab == ON_IMAGE){
             mHolder.getBinding().followerTab.setVisibility(View.VISIBLE);
+            mHolder.getBinding().notificationTab.setVisibility(View.VISIBLE);
             mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
             mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
         }
 
+        mHolder.getBinding().notificationTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTab = ON_NOTIFICATION;
+                setTab(mHolder);
+                notifications = new ArrayList<Notification>();
+                notifications.add(0,null);
+                notifications.add(1,null);
+                notifyDataSetChanged();
+                apiConsumer.getNotifications(new Callback<List<Notification>>() {
+                    @Override
+                    public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
+                        Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
+                        if (response.isSuccess() && response.body() != null) {
+                            notifications = response.body();
+                            notifications.add(0,null);
+                            notifications.add(1,null);
+                            notifyDataSetChanged();
+                        } else {
+                            notifyDataSetChanged();
+                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Log.d("myTag"," notif: onFailure message."+t.getMessage());
+                        notifications.add(0,null);
+                        notifications.add(1,null);
+                        notifyDataSetChanged();
+                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
         mHolder.getBinding().followerTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1150,7 +1309,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        return onTab==ON_IMAGE?optographs.size():followers.size();
+        if (onTab==ON_IMAGE) return optographs.size();
+        if (onTab==ON_FOLLOWER) return  followers.size();
+        return notifications.size();
     }
 
     @Override
@@ -1158,7 +1319,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (position==0) return VIEW_HEADER;
         if (position==1) return SECOND_HEADER;
         if (onTab==ON_IMAGE) return get(position).is_local()?VIEW_LOCAL:VIEW_SERVER;
-        else return VIEW_FOLLOWER;
+        else if (onTab==ON_FOLLOWER) return VIEW_FOLLOWER;
+        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_STAR_TYPE)) return VIEW_NOTIFICATION_STAR;
+        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_FOLLOW_TYPE)) return VIEW_NOTIFICATION_FOLLOW;
+        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_COMMENT_TYPE)) return VIEW_NOTIFICATION_COMMENT;
+        else return VIEW_NOTIFICATION_VIEWS;
+    }
+
+    public Notification getNotif(int position) {
+        return notifications.get(position);
     }
 
     public Optograph get(int position) {
@@ -1381,6 +1550,32 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
         public GridFollowerBinding getBinding() {
             return bindingFollower;
+        }
+    }
+
+    public static class NotificationStarViewHolder extends RecyclerView.ViewHolder {
+        public GridNotificationStarBinding bindingStar;
+
+        public NotificationStarViewHolder(View rowView) {
+            super(rowView);
+            this.bindingStar = DataBindingUtil.bind(rowView);
+        }
+
+        public GridNotificationStarBinding getBinding() {
+            return bindingStar;
+        }
+    }
+
+    public static class NotificationFollowViewHolder extends RecyclerView.ViewHolder {
+        public GridNotificationFollowBinding bindingFollow;
+
+        public NotificationFollowViewHolder(View rowView) {
+            super(rowView);
+            this.bindingFollow = DataBindingUtil.bind(rowView);
+        }
+
+        public GridNotificationFollowBinding getBinding() {
+            return bindingFollow;
         }
     }
 }

@@ -8,6 +8,7 @@ import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.Notification;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -328,6 +329,11 @@ public class ApiConsumer {
 
     public void shareFB(SharingFragment.ShareFBData data, Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
+        call.enqueue(callback);
+    }
+
+    public void getNotifications(Callback<List<Notification>> callback) {
+        Call<List<Notification>> call = service.getNotifications();
         call.enqueue(callback);
     }
 }

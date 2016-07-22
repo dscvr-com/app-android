@@ -149,6 +149,8 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 //            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph));
 //            holder.optograph2DCubeView.setOnClickListener(v -> callDetailsPage(optograph));
 
+            holder.heart_label.setVisibility(optograph.getPerson().isElite_status()?View.VISIBLE:View.GONE);
+
             holder.heart_label.setTypeface(Constants.getInstance().getIconTypeface());
             holder.heart_label.setOnClickListener(v -> {
                 setHeart(optograph, holder, v);

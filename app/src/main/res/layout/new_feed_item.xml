@@ -140,10 +140,11 @@
 
                     </RelativeLayout>
 
+                    <!--android:visibility="@{person.elite_status ? 0 : 2}"-->
                     <RelativeLayout
+                        android:id="@+id/badge_layout"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:visibility="@{person.elite_status ? 0 : 2}">
+                        android:layout_height="match_parent">
 
                         <ImageView
                             android:layout_width="wrap_content"

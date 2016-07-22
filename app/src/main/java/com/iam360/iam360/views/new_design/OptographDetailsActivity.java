@@ -100,6 +100,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.deleteButton.setVisibility(View.VISIBLE);//change to VISIBLE if delete is needed here.
         } else binding.deleteButton.setVisibility(View.GONE);
 
+        binding.badgeLayout.setVisibility(optograph.getPerson().isElite_status()?View.VISIBLE:View.GONE);
+
         if (optograph.is_local()) binding.shareContainer.setVisibility(View.GONE);
 
         instatiateFeedDisplayButton();

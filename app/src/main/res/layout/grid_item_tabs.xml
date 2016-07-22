@@ -24,7 +24,7 @@
                 android:layout_centerInParent="true"
                 android:textColor="@color/optonautMain_2"
                 android:text="Images"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 app:font="@{``}"/>
 
             <View
@@ -47,8 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:textColor="@color/bright"
-                android:text="Followers"
-                android:textSize="18sp"
+                android:text="@string/profile_header_follower"
+                android:textSize="16sp"
                 app:font="@{``}" />
 
             <View
@@ -60,5 +60,29 @@
                 android:visibility="invisible" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/notification_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/notification_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/bright"
+                android:text="@string/profile_header_notif"
+                android:textSize="16sp"
+                app:font="@{``}" />
+
+            <View
+                android:id="@+id/notification_selector"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/optonautMain_2"
+                android:visibility="invisible" />
+        </RelativeLayout>
     </LinearLayout>
 </layout>
