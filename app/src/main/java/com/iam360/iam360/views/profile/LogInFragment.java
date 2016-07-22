@@ -18,6 +18,8 @@ import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.NotificationSender;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -76,6 +78,8 @@ public class LogInFragment extends Fragment{
                         Intent returnIntent = new Intent();
                         getActivity().setResult(Activity.RESULT_OK, returnIntent);
                         getActivity().finish();
+
+                        NotificationSender.sendGCMRegService(getContext());
 
                     }
 

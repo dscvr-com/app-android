@@ -3,6 +3,8 @@ package com.iam360.iam360.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.iam360.iam360.util.RFC3339DateFormatter;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -11,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-
-import com.iam360.iam360.util.RFC3339DateFormatter;
 
 /**
  * @author Nilan Marktanner
@@ -315,16 +315,32 @@ public class Optograph implements Parcelable {
         return views_count;
     }
 
+    public void setViews_count(int views_count) {
+        this.views_count = views_count;
+    }
+
     public boolean is_staff_picked() {
         return is_staff_picked;
+    }
+
+    public void setIs_staff_picked(boolean is_staff_picked) {
+        this.is_staff_picked = is_staff_picked;
     }
 
     public String getShare_alias() {
         return share_alias;
     }
 
+    public void setShare_alias(String share_alias) {
+        this.share_alias = share_alias;
+    }
+
     public boolean is_private() {
         return is_private;
+    }
+
+    public void setIs_private(boolean is_private) {
+        this.is_private = is_private;
     }
 
     public String getPreview_asset_id() {
@@ -335,12 +351,24 @@ public class Optograph implements Parcelable {
         return left_texture_asset_id;
     }
 
+    public void setLeft_texture_asset_id(String left_texture_asset_id) {
+        this.left_texture_asset_id = left_texture_asset_id;
+    }
+
     public String getRight_texture_asset_id() {
         return right_texture_asset_id;
     }
 
+    public void setRight_texture_asset_id(String right_texture_asset_id) {
+        this.right_texture_asset_id = right_texture_asset_id;
+    }
+
     public Location getLocation() {
         return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public Person getPerson() {
@@ -367,12 +395,20 @@ public class Optograph implements Parcelable {
         return comments_count;
     }
 
+    public void setComments_count(int comments_count) {
+        this.comments_count = comments_count;
+    }
+
     public boolean is_starred() {
         return is_starred;
     }
 
     public String getHashtag_string() {
         return hashtag_string;
+    }
+
+    public void setHashtag_string(String hashtag_string) {
+        this.hashtag_string = hashtag_string;
     }
 
     public boolean is_local() {

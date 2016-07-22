@@ -37,6 +37,7 @@ import com.iam360.iam360.model.SignUpReturn;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.views.MainActivityRedesign;
 import com.iam360.iam360.views.dialogs.GenericOKDialog;
 import com.iam360.iam360.views.new_design.CreateUsernameActivity;
@@ -267,6 +268,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 //                                startProfileFragment();
 //                                startCreateUserPage();
 
+                                NotificationSender.sendGCMRegService(getContext());
+
                             }
 
                             @Override
@@ -354,6 +357,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
         if(getContext() instanceof MainActivity) {
             getActivity().finish();
+            NotificationSender.sendGCMRegService(getContext());
             startActivity(getActivity().getIntent());
         } else {
             Intent intent = new Intent(getActivity(), CreateUsernameActivity.class);

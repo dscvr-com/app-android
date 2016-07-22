@@ -72,48 +72,96 @@ public class Location implements Parcelable {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getCreated_at() {
         return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public String getUpdated_at() {
         return updated_at;
     }
 
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
     public String getDeleted_at() {
         return deleted_at;
+    }
+
+    public void setDeleted_at(String deleted_at) {
+        this.deleted_at = deleted_at;
     }
 
     public String getLatitude() {
         return latitude;
     }
 
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
     public String getLongitude() {
         return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getText() {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public String getCountry() {
         return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getCountry_short() {
         return country_short;
     }
 
+    public void setCountry_short(String country_short) {
+        this.country_short = country_short;
+    }
+
     public String getPlace() {
         return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
     }
 
     public String getRegion() {
         return region;
     }
 
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public boolean isPoi() {
         return poi;
+    }
+
+    public void setPoi(boolean poi) {
+        this.poi = poi;
     }
 
     @Override

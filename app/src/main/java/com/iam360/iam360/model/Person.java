@@ -91,12 +91,24 @@ public class Person implements Parcelable {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getCreated_at() {
         return created_at;
     }
 
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
     public String getDeleted_at() {
         return deleted_at;
+    }
+
+    public void setDeleted_at(String deleted_at) {
+        this.deleted_at = deleted_at;
     }
 
     public String getDisplay_name() {

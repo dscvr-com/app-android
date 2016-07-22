@@ -25,6 +25,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.iam360.iam360.R;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
@@ -84,31 +85,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        //Checking play service is available or not
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-
-        //if play service is not available
-        if (ConnectionResult.SUCCESS != resultCode) {
-            //If play service is supported but not installed
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                //Displaying message that play service is not installed
-                Toast.makeText(getApplicationContext(), "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
-                GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
-
-                //If play service is not supported
-                //Displaying an error message
-            } else {
-                Toast.makeText(getApplicationContext(), "This device does not support for Google Play Service!", Toast.LENGTH_LONG).show();
-            }
-
-            //If play service is available
-        } else {
-            //Starting intent to register device
-            Intent itent = new Intent(this, GCMRegistrationIntentService.class);
-            startService(itent);
-        }
-
-
         viewPager = (ViewPager) findViewById(R.id.vpPager);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
@@ -162,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 //        new GeneralUtils().setStatusBarTranslucent(this, true);
 //        setStatusBarTranslucent(true);
 //        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
+
     }
 
     protected void setStatusBarTranslucent(boolean makeTranslucent) {
@@ -215,6 +192,18 @@ public class MainActivity extends AppCompatActivity {
         AppEventsLogger.activateApp(this);
 //        Toro.attach(this);
 
+        Intent intent;
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("person")!=null) {
+            Person person = getIntent().getExtras().getParcelable("person");
+            intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("person", person);
+            startActivity(intent);
+        }else if(getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("opto")!=null){
+            Optograph optograph = getIntent().getExtras().getParcelable("opto");
+            intent = new Intent(this, OptographDetailsActivity.class);
+            intent.putExtra("opto", optograph);
+            startActivity(intent);
+        }
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {

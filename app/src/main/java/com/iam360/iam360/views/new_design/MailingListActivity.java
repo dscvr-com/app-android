@@ -44,7 +44,7 @@ public class MailingListActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.fragment_mailing_list);
 
         cache = Cache.open();
-        api2Consumer = new Api2Consumer(null);
+        api2Consumer = new Api2Consumer(null,"");
 
         ButterKnife.bind(this);
 

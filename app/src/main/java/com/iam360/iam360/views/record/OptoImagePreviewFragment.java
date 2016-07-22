@@ -36,6 +36,24 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.iam360.iam360.R;
+import com.iam360.iam360.bus.BusProvider;
+import com.iam360.iam360.bus.RecordFinishedEvent;
+import com.iam360.iam360.bus.RecordFinishedPreviewEvent;
+import com.iam360.iam360.model.GeocodeReverse;
+import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.OptoData;
+import com.iam360.iam360.model.OptoDataUpdate;
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.network.ApiConsumer;
+import com.iam360.iam360.network.PersonManager;
+import com.iam360.iam360.record.GlobalState;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.CameraUtils;
+import com.iam360.iam360.util.Constants;
+import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.views.MainActivityRedesign;
+import com.iam360.iam360.views.WebViewActivity;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -49,24 +67,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import com.iam360.iam360.R;
-import com.iam360.iam360.bus.BusProvider;
-import com.iam360.iam360.bus.RecordFinishedEvent;
-import com.iam360.iam360.bus.RecordFinishedPreviewEvent;
-import com.iam360.iam360.model.GeocodeReverse;
-import com.iam360.iam360.util.DBHelper;
-import com.iam360.iam360.model.LogInReturn;
-import com.iam360.iam360.model.OptoData;
-import com.iam360.iam360.model.OptoDataUpdate;
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.network.ApiConsumer;
-import com.iam360.iam360.network.PersonManager;
-import com.iam360.iam360.record.GlobalState;
-import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.util.CameraUtils;
-import com.iam360.iam360.util.Constants;
-import com.iam360.iam360.views.MainActivityRedesign;
-import com.iam360.iam360.views.WebViewActivity;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -436,7 +436,7 @@ public class OptoImagePreviewFragment extends Fragment implements View.OnClickLi
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0,opto.getOptograph_type());
+                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0,opto.getOptograph_type(),"Optograph");
     }
 
     private void uploadOptonautData(Optograph optograph) {

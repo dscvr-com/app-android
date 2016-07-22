@@ -16,16 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.joda.time.DateTime;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.iam360.iam360.BR;
 import com.iam360.iam360.GridItemBinding;
@@ -39,12 +31,20 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.record.OptoImagePreviewFragment;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
+
+import org.joda.time.DateTime;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -201,6 +201,8 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                             // revert star count on failure
                             if (!response.isSuccess()) {
                                 setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
+                            }else{
+                                NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                             }
                         }
 
@@ -309,7 +311,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
 
     private void uploadOptonautData(int position) {
         Optograph optograph = optographs.get(position);
-        OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type(),Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
+        OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type(), Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
@@ -338,15 +340,15 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             }
         });
 
-        Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res==null || res.getCount()==0) return;
         res.moveToFirst();
-        String stringRes = ""+DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
-                "\n"+DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
-                "\n"+DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
-                "\n"+DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
-                "\n"+DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
-                "\n"+DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
+        String stringRes = ""+ DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
+                "\n"+ DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
+                "\n"+ DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
+                "\n"+ DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
+                "\n"+ DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
+                "\n"+ DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
         Log.d("myTag", "" + stringRes);
     }
 
@@ -530,7 +532,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
     }
 
     public void saveToSQLite(Optograph opto) {
-        Cursor res = mydb.getData(opto.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount()!=0) return;
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
@@ -538,11 +540,11 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                 opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
                 opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                opto.is_data_uploaded()?1:0,opto.getOptograph_type());
+                opto.is_data_uploaded()?1:0,opto.getOptograph_type(),"Optograph");
     }
 
     public Optograph checkToDB(Optograph optograph) {
-        Cursor res = mydb.getData(optograph.getId(),DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         Log.d("myTag","checkToDB getcount: "+res.getCount());
         if (res.getCount()==0) {
@@ -566,7 +568,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
         optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
         optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
-        Cursor face = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
+        Cursor face = mydb.getData(optograph.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
         face.moveToFirst();
         if (face.getCount()==0) return optograph;
 
@@ -673,21 +675,21 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Cursor res = mydb.getData(optograph.getId(),DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID);
+            Cursor res = mydb.getData(optograph.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             if (res==null || res.getCount()==0) return;
             res.moveToFirst();
-            String stringRes = ""+DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
-                    "\n"+DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
-                    "\n"+DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
-                    "\n"+DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
-                    "\n"+DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
-                    "\n"+DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
-                    "\n"+DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
-                    "\n"+DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
-                    "\n"+DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
-                    "\n"+DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
-                    "\n"+DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
-                    "\n"+DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
+            String stringRes = ""+ DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
+                    "\n"+ DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
+                    "\n"+ DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
+                    "\n"+ DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
+                    "\n"+ DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
+                    "\n"+ DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
+                    "\n"+ DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
+                    "\n"+ DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
+                    "\n"+ DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
+                    "\n"+ DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
+                    "\n"+ DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
+                    "\n"+ DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
             Log.d("myTag", "" + stringRes);
             /*if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
                 mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
@@ -775,7 +777,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         return (flag == 1);
     }
 
-    private void updateFace(Optograph opto, String face,int side,int value) {
+    private void updateFace(Optograph opto, String face, int side, int value) {
         String column = "faces_";
         if (face.equals("l")) column +="left_";
         else column += "right_";
