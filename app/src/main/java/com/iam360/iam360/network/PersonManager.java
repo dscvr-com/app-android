@@ -140,11 +140,13 @@ public class PersonManager {
         final String display_name;
         final String text;
         final String user_name;
+        final int onboarding_version;
 
         public UpdatePersonData(String display_name, String text, String user_name) {
             this.display_name = display_name;
             this.text = text;
             this.user_name = user_name;
+            this.onboarding_version = 1;
         }
 
     }

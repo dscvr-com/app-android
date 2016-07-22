@@ -39,6 +39,7 @@ public class Person implements Parcelable {
     private int optographs_count;
     private int followers_count;
     private int followed_count;
+    private int onboarding_version;
     private boolean is_followed;
     private String facebook_user_id;
     private String facebook_token;
@@ -58,6 +59,7 @@ public class Person implements Parcelable {
         optographs_count = 0;
         followers_count = 0;
         followed_count = 0;
+        onboarding_version = 0;
         is_followed = false;
         facebook_user_id = "";
         facebook_token = "";
@@ -79,6 +81,7 @@ public class Person implements Parcelable {
         this.optographs_count = source.readInt();
         this.followers_count = source.readInt();
         this.followed_count = source.readInt();
+        this.onboarding_version = source.readInt();
         // see http://stackoverflow.com/a/7089687/1176596
         this.is_followed = source.readByte() != 0;
         this.facebook_user_id = source.readString();
@@ -137,6 +140,10 @@ public class Person implements Parcelable {
         return followed_count;
     }
 
+    public int getOnboardingVersion() {
+        return onboarding_version;
+    }
+
     public boolean is_followed() {
         return is_followed;
     }
@@ -184,6 +191,8 @@ public class Person implements Parcelable {
     public void setFollowed_count(int followed_count) {
         this.followed_count = followed_count;
     }
+
+    public void setOnboardingVersion(int onboarding_version) { this.onboarding_version = onboarding_version; }
 
     public void setIs_followed(boolean is_followed) {
         this.is_followed = is_followed;
@@ -241,6 +250,7 @@ public class Person implements Parcelable {
         dest.writeInt(this.optographs_count);
         dest.writeInt(this.followers_count);
         dest.writeInt(this.followed_count);
+        dest.writeInt(this.onboarding_version);
         // see http://stackoverflow.com/a/7089687/1176596
         dest.writeByte((byte) (this.is_followed ? 1 : 0));
         dest.writeString(this.facebook_user_id);

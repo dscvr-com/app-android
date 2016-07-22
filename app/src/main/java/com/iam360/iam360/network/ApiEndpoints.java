@@ -116,7 +116,7 @@ public interface ApiEndpoints {
     Call<List<Person>> getSearchResult(@Query("keyword") String key);
 
     @GET("persons/username_search")
-    Call<Person> getUserName(@Query("keyword") String key);
+    Call<List<Person>> getUserName(@Query("keyword") String key);
 
     @GET("persons/me")
     Call<Person> getUser();

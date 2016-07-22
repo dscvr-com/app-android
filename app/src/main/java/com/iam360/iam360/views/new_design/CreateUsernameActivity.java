@@ -50,13 +50,12 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
 
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
-        String username = cache.getString(Cache.USER_NAME);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        int onboardingVersion = cache.getInt(Cache.ONBOARDING_VERSION);
         networkProblemDialog = new NetworkProblemDialog();
 
-        Timber.d("USERNAME : " + username);
-        // username should be 4-8 characters, if it is longer, it means username has not been setup yet
-        if(username.length() > 0 && username.length() < 15) {
+        Timber.d("ONBOARDING_VERSION : " + onboardingVersion);
+        if(onboardingVersion > 0) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -85,9 +84,11 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         // minimum username length is 4
         if(s.length() >= 5) {
-            apiConsumer.getSearchUsername(s.toString(), new Callback<Person>() {
+            apiConsumer.getSearchUsername(s.toString(), new Callback<List<Person>>() {
                 @Override
-                public void onResponse(Response<Person> response, Retrofit retrofit) {
+                public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
+                    Timber.d("isSuccess : " + response.isSuccess());
+                    Timber.d("body : " + response.body());
                     if (response.isSuccess()) {
                         checkIfValidUserName(response.body());
                     }
@@ -113,21 +114,22 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
 
     }
 
-    private void checkIfValidUserName(Person person) {
+    private void checkIfValidUserName(List<Person> persons) {
 
-        if(person.getUser_name().isEmpty()) {
-            userNameCheck.setTextColor(getResources().getColor(R.color.text_yellow));
-            userNameCheck.setText(getResources().getString(R.string.create_username_available));
-            createBtn.setTextColor(getResources().getColor(R.color.text_dark));
-            createBtn.setEnabled(true);
-            createBtn.setBackgroundResource(R.drawable.yellow_btn);
-        } else {
+        if(persons != null && persons.size() > 0) {
             userNameCheck.setTextColor(getResources().getColor(R.color.text_light));
             userNameCheck.setText(getResources().getString(R.string.create_username_taken));
             createBtn.setTextColor(getResources().getColor(R.color.text_dark));
             createBtn.setEnabled(false);
             createBtn.setBackgroundResource(R.drawable.gray_btn);
+        } else {
+            userNameCheck.setTextColor(getResources().getColor(R.color.text_yellow));
+            userNameCheck.setText(getResources().getString(R.string.create_username_available));
+            createBtn.setTextColor(getResources().getColor(R.color.text_dark));
+            createBtn.setEnabled(true);
+            createBtn.setBackgroundResource(R.drawable.yellow_btn);
         }
+
     }
 
     @Override
@@ -140,6 +142,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
                         public void onResponse(Response<Person> response, Retrofit retrofit) {
                             Timber.d("Update person : " + response.isSuccess() + " body:" + response.body());
                             if(response.isSuccess()) {
+                                cache.save(Cache.ONBOARDING_VERSION, 1);
                                 showPrompt(getResources().getString(R.string.create_username_sucessful), true);
                             }
                         }

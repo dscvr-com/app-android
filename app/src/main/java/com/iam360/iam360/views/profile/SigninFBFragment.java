@@ -321,6 +321,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 Person person = response.body();
                 cache.save(Cache.USER_EMAIL, person.getEmail());
                 cache.save(Cache.USER_NAME, person.getUser_name());
+                cache.save(Cache.ONBOARDING_VERSION, person.getOnboardingVersion());
                 Timber.d("User email : " + person.getEmail());
 
                 progressBar.setVisibility(View.GONE);

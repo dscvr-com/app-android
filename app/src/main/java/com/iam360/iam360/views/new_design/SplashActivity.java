@@ -25,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         String username = cache.getString(Cache.USER_NAME);
+        int onboarding = cache.getInt(Cache.ONBOARDING_VERSION);
         Intent intent;
 
         // intent from notification service @GCMPushReceiverService
@@ -47,7 +48,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         if(token.equals("")) intent = new Intent(this, SigninFBActivity.class);
-        else if(username.length() == 0 || username.length() > 15) intent = new Intent(this, CreateUsernameActivity.class);
+        else if(onboarding == 0) intent = new Intent(this, CreateUsernameActivity.class);
         else intent = new Intent(this, MainActivity.class);
 
         startActivity(intent);
