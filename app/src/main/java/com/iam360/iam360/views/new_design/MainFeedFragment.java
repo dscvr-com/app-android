@@ -1,9 +1,11 @@
 package com.iam360.iam360.views.new_design;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -14,16 +16,33 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 
+import com.google.gson.Gson;
+import com.iam360.iam360.R;
+import com.iam360.iam360.bus.BusProvider;
+import com.iam360.iam360.bus.RecordFinishedEvent;
+import com.iam360.iam360.gcm.Optographs;
+import com.iam360.iam360.model.Location;
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.Person;
+import com.iam360.iam360.record.GlobalState;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.GeneralUtils;
+import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.SearchActivity;
+import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +58,7 @@ import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -168,6 +188,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         super.onResume();
         inVRMode = false;
 
+        Timber.d("ONRESUME");
+
         if(GlobalState.isAnyJobRunning) {
             binding.cameraBtn.setEnabled(false);
             binding.recordProgress.setVisibility(View.VISIBLE);
@@ -180,23 +202,51 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 //        localImagesUIUpdate();
         BusProvider.getInstance().register(this);
         if (GlobalState.shouldHardRefreshFeed) {
-            initializeFeed();
+            initializeFeed(false);
         }
 
     }
 
     @Override
-    protected void initializeFeed() {
-
-        apiConsumer.getOptographs(5)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-                .onErrorReturn(throwable -> {
-                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                    return null;
-                })
-                .subscribe(optographFeedAdapter::addItem);
+    protected void initializeFeed(boolean fromList) {
+        Cursor curs = mydb.getAllFeedsData();
+        Log.d("MARK","initializeFeed curs.getCount() = "+curs.getCount());
+        if (curs.getCount() > 0) {
+            cur2Json(curs,5)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() ->{
+//                        mydb.deleteAllTable(DBHelper.OPTO_TABLE_NAME_FEEDS);
+                        apiConsumer.getOptographs(5)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+//                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                                .onErrorReturn(throwable -> {
+                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                                    return null;
+                                })
+                                .subscribe(optographFeedAdapter::addItem);
+                    })
+                    .onErrorReturn(throwable -> {
+                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        return null;
+                    })
+                    .subscribe(optographFeedAdapter::addItem);
+        }else{
+            ProgressDialog progress = new ProgressDialog(getActivity());
+            progress.setTitle("Fetching...");
+//            progress.setMessage("Wait while loading...");
+            progress.show();
+            apiConsumer.getOptographs(5)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() -> progress.dismiss() )
+                    .onErrorReturn(throwable -> {
+                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        return null;
+                    })
+                    .subscribe(optographFeedAdapter::addItem);
+        }
 
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -208,6 +258,106 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
         else binding.notifBadge.setVisibility(View.GONE);
 
+    }
+
+    public Observable<Optograph> cur2Json(Cursor cursor, int limit) {
+        JSONArray resultSet = new JSONArray();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            int totalColumn = cursor.getColumnCount();
+            JSONObject rowObject = new JSONObject();
+            for (int i = 0; i < limit; i++) {
+                if (cursor.getColumnName(i) != null) {
+                    try {
+                        String columnName = cursor.getColumnName(i);
+                        rowObject.put(columnName,
+                                cursor.getString(i));
+                    } catch (Exception e) {
+                        Log.d(TAG, e.getMessage());
+                    }
+                }
+            }
+            resultSet.put(rowObject);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+
+        List<Optograph> optographs = new LinkedList<>();
+        for(int i=0; i < resultSet.length(); i++){
+            try {
+                String json = resultSet.get(i).toString();
+                Log.d("MARK","List<Optograph> opto = "+json);
+                Gson gson = new Gson();
+                Optographs data = gson.fromJson(json, Optographs.class);
+
+                Optograph opto = new Optograph(data.optograph_id);
+
+                Person person = new Person();
+                if(data.person_id !=null && !data.person_id.equals("")){
+                    Cursor res = mydb.getData(data.optograph_id, DBHelper.PERSON_TABLE_NAME,"id");
+                    res.moveToFirst();
+                    if (res.getCount()!= 0) {
+                        person.setId(res.getString(res.getColumnIndex("id")));
+                        person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                        person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
+                        person.setUser_name(res.getString(res.getColumnIndex("user_name")));
+                        person.setText(res.getString(res.getColumnIndex("text")));
+                        person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
+                    }
+                }
+                Log.d("MARK","cur2Json person = "+person.toString());
+                opto.setPerson(person);
+                Log.d("MARK","cur2Json data.optograph_created_at = "+data.optograph_created_at);
+
+                opto.setCreated_at(data.optograph_created_at);
+                opto.setDeleted_at(data.optograph_deleted_at);
+                opto.setStitcher_version(data.optograph_stitcher_version);
+                opto.setText(data.optograph_text);
+                opto.setViews_count(data.optograph_views_count);
+                opto.setIs_staff_picked(data.optograph_is_staff_pick);
+                opto.setShare_alias(data.optograph_share_alias);
+                opto.setIs_private(data.optograph_is_private);
+                opto.setIs_published(data.optograph_is_published);
+                opto.setLeft_texture_asset_id(data.optograph_left_texture_asset_id);
+                opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
+                opto.setIs_local(false);
+
+                Location location = new Location();
+                if(data.location_id !=null && !data.location_id.equals("")){
+                    Cursor res = mydb.getData(data.location_id, DBHelper.LOCATION_TABLE_NAME,"id");
+                    res.moveToFirst();
+                    if (res.getCount()!= 0) {
+                        location.setId(res.getString(res.getColumnIndex("id")));
+                        location.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                        location.setText(res.getString(res.getColumnIndex("text")));
+                        location.setCountry(res.getString(res.getColumnIndex("id")));
+                        location.setCountry_short(res.getString(res.getColumnIndex("country")));
+                        location.setPlace(res.getString(res.getColumnIndex("place")));
+                        location.setRegion(res.getString(res.getColumnIndex("region")));
+                        location.setPoi(Boolean.parseBoolean(res.getString(res.getColumnIndex("poi"))));
+                        location.setLatitude(res.getString(res.getColumnIndex("latitude")));
+                        location.setLongitude(res.getString(res.getColumnIndex("longitude")));
+                    }
+                }
+                Log.d("MARK","cur2Json location = "+location.toString());
+                opto.setLocation(location);
+
+
+                opto.setOptograph_type(data.optograph_type);
+                opto.setStars_count(data.optograph_stars_count);
+                opto.setComments_count(data.optograph_comments_count);
+                opto.setHashtag_string(data.optograph_hashtag_string);
+
+                optographs.add(opto);
+                Log.d("MARK","data id = "+data.optograph_id);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("MARK","cur2Json optographs.size = "+optographs.size());
+        return Observable.from(optographs);
     }
 
     private void countLocal(Optograph optograph) {
@@ -276,20 +426,42 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void refresh() {
-
         Timber.d("Refresh");
         if(apiConsumer == null) return;
-
-        apiConsumer.getOptographs(5)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-                .onErrorReturn(throwable -> {
-                    if (!networkProblemDialog.isAdded())
-                        networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                    return null;
-                })
-                .subscribe(optographFeedAdapter::addItem);
+        Cursor curs = mydb.getAllFeedsData();
+        Log.d("MARK","refresh cursCount - "+curs.getCount());
+        if (curs.getCount() > 0) {
+            cur2Json(curs,5)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() ->{
+//                        MixpanelHelper.trackViewViewer2D(getActivity())
+                        apiConsumer.getOptographs(5)
+                                .subscribeOn(Schedulers.newThread())
+                                .observeOn(AndroidSchedulers.mainThread())
+//                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                                .onErrorReturn(throwable -> {
+                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                                    return null;
+                                })
+                                .subscribe(optographFeedAdapter::addItem);
+                    })
+                    .onErrorReturn(throwable -> {
+                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        return null;
+                    })
+                    .subscribe(optographFeedAdapter::addItem);
+        }else{
+            apiConsumer.getOptographs(5)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+//                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                    .onErrorReturn(throwable -> {
+                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        return null;
+                    })
+                    .subscribe(optographFeedAdapter::addItem);
+        }
 
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -311,7 +483,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Subscribe
     public void recordFinished(RecordFinishedEvent event) {
-        initializeFeed();
+        initializeFeed(false);
     }
 
     @Override
@@ -391,7 +563,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 }
                 break;
             case R.id.manual_button:
-                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!=Constants.MANUAL_MODE) {
+                if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!= Constants.MANUAL_MODE) {
                     cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
                     activeManualType();
                 }
@@ -442,7 +614,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             activeThreeRing();
         else activeOneRing();
 
-        if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)==Constants.MANUAL_MODE)
+        if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)== Constants.MANUAL_MODE)
             activeManualType();
         else activeMotorType();
     }
