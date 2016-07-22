@@ -21,6 +21,7 @@ import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
+import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
@@ -98,12 +99,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-//                Log.d("myTag",TAG+" position: "+position+" getSpanSize: "+optographLocalGridAdapter.getItemViewType(position));
+                Log.d("myTag"," notif: position: "+position+" getSpanSize: "+optographLocalGridAdapter.getItemViewType(position)+" onNotif: "+(optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)));
                 int pos = optographLocalGridAdapter.getItemViewType(position);
-                if (pos==OptographLocalGridAdapter.VIEW_HEADER || pos == OptographLocalGridAdapter.SECOND_HEADER
-                        || pos == OptographLocalGridAdapter.VIEW_LOCAL || pos == OptographLocalGridAdapter.VIEW_FOLLOWER)
-                    return OptographLocalGridAdapter.COLUMNS;
-                return 1;
+                if (pos==OptographLocalGridAdapter.VIEW_SERVER)
+                    return 1;
+                return OptographLocalGridAdapter.COLUMNS;
             }
         });
         manager.setOrientation(GridLayoutManager.VERTICAL);

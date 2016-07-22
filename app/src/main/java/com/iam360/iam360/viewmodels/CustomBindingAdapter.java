@@ -143,7 +143,9 @@ public class CustomBindingAdapter {
     public static void setFont(TextView textView, String font) {
         Typeface typeface = Typeface.createFromAsset(textView.getContext().getAssets(), "fonts/" + "Avenir_LT_45_Book_0.ttf");
         Typeface boldTypeface = Typeface.create(typeface, Typeface.BOLD);
+        Typeface italicTypeface = Typeface.create(typeface, Typeface.ITALIC);
         if (font != null && font.equals("bold")) textView.setTypeface(boldTypeface);
+        else if (font != null && font.equals("italic")) textView.setTypeface(italicTypeface);
         else if (font != null && !font.equals(""))
             textView.setTypeface(Typeface.createFromAsset(textView.getContext().getAssets(), "fonts/" + font));
         else

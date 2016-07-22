@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class=".GridNotificationStarBinding">
+
+    <import type="com.iam360.iam360.model.Notification" />
+    <import type="com.iam360.iam360.model.Optograph" />
+    <import type="com.iam360.iam360.model.Person" />
+
+    <variable
+    name="notification"
+    type="Notification" />
+
+    <variable
+    name="optograph"
+    type="Optograph" />
+
+    <variable
+    name="person"
+    type="Person" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/star_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/person_avatar_asset_padding"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="14dp"
+            android:background="@drawable/profile_avatar_background"
+            app:civ_border_width="0dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/person_avatar_asset"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="16dp"
+            android:background="@color/transparentOverlay"
+            app:civ_border_width="0dp"
+            app:person="@{person}" />
+
+        <!--android:visibility="@{person.elite_status ? 0 : 2}"-->
+        <RelativeLayout
+            android:id="@+id/badge_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:background="@color/transparentOverlay"
+                android:src="@drawable/elite_beta_user_badge" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_toRightOf="@id/person_avatar_asset_padding"
+            android:layout_marginStart="@dimen/appbar_elevation"
+            android:layout_alignParentBottom="true"
+            android:background="@color/profile_line_separator" />
+
+        <ImageView
+            android:id="@+id/image_notif"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/fab_elevation"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:layout_marginStart="@dimen/appbar_elevation"
+            android:background="@color/transparentOverlay"
+            app:optograph_profile="@{optograph}"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toRightOf="@id/person_avatar_asset_padding"
+            android:layout_toLeftOf="@id/image_notif"
+            android:layout_marginStart="12dp"
+            android:layout_centerVertical="true">
+        <LinearLayout
+            android:id="@+id/message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/person_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/feed_text_yellow"
+                android:text="@{person.user_name}"
+                android:textSize="16sp"
+                app:font="@{`bold`}" />
+
+            <TextView
+                android:id="@+id/reason_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_dark"
+                android:layout_marginStart="@dimen/appbar_elevation"
+                android:textSize="13sp"
+                android:text="@string/profile_notif_star_text"
+                app:font="@{`italic`}" />
+
+        </LinearLayout>
+        <!--app:createdAt="@{notification.created_at}"-->
+        <TextView
+            android:id="@+id/time_ago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/person_avatar_asset_padding"
+            android:layout_below="@id/message_layout"
+            android:textColor="@color/text_inactive"
+            android:textSize="11sp"
+            app:font="@{``}"/>
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

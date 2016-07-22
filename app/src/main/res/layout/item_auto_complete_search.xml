@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_marginBottom="0dp"
-                        android:text="@{String.valueOf(person.display_name).isEmpty()?person.user_name:person.display_name}"
+                        android:text="@{person.user_name}"
                         android:textColor="@color/text_search"
                         android:textSize="16sp" />
 

@@ -6,6 +6,7 @@ import com.iam360.iam360.model.GCMToken;
 import com.iam360.iam360.model.GeocodeDetails;
 import com.iam360.iam360.model.GeocodeReverse;
 import com.iam360.iam360.model.LogInReturn;
+import com.iam360.iam360.model.Notification;
 import com.iam360.iam360.model.OptoData;
 import com.iam360.iam360.model.OptoDataUpdate;
 import com.iam360.iam360.model.Optograph;
@@ -130,4 +131,6 @@ public interface ApiEndpoints {
     @POST("optographs/share_facebook")
     Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
 
+    @GET("activities")
+    Call<List<Notification>> getNotifications();
 }
