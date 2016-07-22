@@ -152,7 +152,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
                 @Override
                 public void onStartOpen(SwipeLayout layout) {
-                    barSwipe.setVisibility(View.GONE);
+//                    barSwipe.setVisibility(View.GONE);
                     //((MainActivity) context).setOptograph(optograph);
                 }
 

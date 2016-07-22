@@ -8,16 +8,26 @@ import android.util.Log;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Person;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
 import com.iam360.iam360.views.profile.ProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity {
+
+    private Cache cache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.animator.from_right_to_left, R.animator.from_left_to_right);
         setContentView(R.layout.activity_profile);
+
+        cache = Cache.open();
+        if (getIntent().getExtras().getParcelable("notif")!=null) {
+            new GeneralUtils().decrementBadgeCount(cache, this);
+        }
+
         if (getIntent().getExtras().getParcelable("person")!=null) {
             Person person = getIntent().getExtras().getParcelable("person");
             getSupportFragmentManager().beginTransaction()

@@ -18,6 +18,7 @@ import com.iam360.iam360.R;
 import com.iam360.iam360.model.Location;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
+import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.views.new_design.OptographDetailsActivity;
 import com.iam360.iam360.views.new_design.ProfileActivity;
 import com.iam360.iam360.views.new_design.SplashActivity;
@@ -28,14 +29,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+import timber.log.Timber;
+
 /**
  * Created by Joven on 7/11/2016.
  */
 public class GCMPushReceiverService extends GcmListenerService {
 
+    private boolean isAppRunning = false;
+    private int badgeCount;
+
     //This method will be called on every new message received
     @Override
     public void onMessageReceived(String from, Bundle data) {
+
+        isAppRunning = checkIfAppRunning();
+        addBadgeCount();
         Log.d("MARK","onMessageReceived BundleData = "+data.toString());
         String message = data.getString("message");
         String title = data.getString("title");
@@ -52,7 +62,7 @@ public class GCMPushReceiverService extends GcmListenerService {
         String userId;
         if(type.equals("optograph")){
 //            intent = new Intent(this, SplashActivity.class);
-            if(checkIfAppRunning()){
+            if(isAppRunning){
                 intent = new Intent(this, OptographDetailsActivity.class);
             }else{
                 intent = new Intent(this, SplashActivity.class);
@@ -61,9 +71,11 @@ public class GCMPushReceiverService extends GcmListenerService {
             userId = optograph.getPerson().getId();
             avatarId = optograph.getPerson().getAvatar_asset_id();
             intent.putExtra("opto", optograph);
+            intent.putExtra("notif", true);
+            intent.removeExtra("person");
         }else{
 //            intent = new Intent(this, SplashActivity.class);
-            if(checkIfAppRunning()){
+            if(isAppRunning){
                 intent = new Intent(this, ProfileActivity.class);
             }else{
                 intent = new Intent(this, SplashActivity.class);
@@ -71,7 +83,9 @@ public class GCMPushReceiverService extends GcmListenerService {
             Person person = getPersons(json);
             userId = person.getId();
             avatarId = person.getAvatar_asset_id();
+            intent.putExtra("notif", true);
             intent.putExtra("person", person);
+            intent.removeExtra("opto");
         }
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -85,11 +99,22 @@ public class GCMPushReceiverService extends GcmListenerService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         builder.setAutoCancel(true);
         builder.getNotification().flags |= Notification.FLAG_AUTO_CANCEL;
-        notificationManager.notify(1, builder.build());
+        notificationManager.notify(badgeCount, builder.build());
+        Timber.d("MARK notify : " + badgeCount);
+    }
+
+    private void addBadgeCount() {
+        Cache cache;
+
+        if(!isAppRunning) Cache.getInstance(this);
+        cache = Cache.open();
+        badgeCount = cache.getInt(Cache.NOTIF_COUNT);
+        ShortcutBadger.applyCount(getApplicationContext(), ++badgeCount);
+        cache.save(Cache.NOTIF_COUNT, badgeCount);
     }
 
     public boolean checkIfAppRunning(){
-        Context appContext = getBaseContext();;
+        Context appContext = getBaseContext();
         ActivityManager activityManager = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> services = activityManager
                 .getRunningTasks(Integer.MAX_VALUE);

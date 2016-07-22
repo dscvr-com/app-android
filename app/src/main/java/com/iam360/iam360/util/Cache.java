@@ -43,6 +43,7 @@ public class Cache {
     public static final String LITTLE_PLANET_ENABLE = "LITTLE_PLANET_ENABLE";
     public static final String VR_3D_ENABLE = "VR_3D_ENABLE";
     public static final String GATE_CODE = "GATE_CODE";
+    public static final String NOTIF_COUNT = "NOTIF_COUNT";
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 

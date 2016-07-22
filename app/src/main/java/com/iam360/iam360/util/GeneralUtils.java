@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import timber.log.Timber;
 
 public class GeneralUtils {
@@ -122,6 +123,7 @@ public class GeneralUtils {
         Typeface custom_font = Typeface.createFromAsset(context.getResources().getAssets(), "fonts/Avenir_LT_45_Book_0.ttf");
         textView.setTypeface(custom_font, typeface);
     }
+
     public static String mToString(float[] m) {
         StringBuilder sb = new StringBuilder();
         int l = (int)(Math.sqrt(m.length) + 0.5);
@@ -136,5 +138,12 @@ public class GeneralUtils {
         }
         return sb.toString();
     }
+
+    public void decrementBadgeCount(Cache cache, Context context) {
+        int badgeCount = cache.getInt(Cache.NOTIF_COUNT);
+        ShortcutBadger.applyCount(context, --badgeCount);
+        cache.save(Cache.NOTIF_COUNT, badgeCount);
+    }
+
 
 }

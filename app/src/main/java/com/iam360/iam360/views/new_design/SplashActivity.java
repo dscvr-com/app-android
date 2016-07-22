@@ -7,11 +7,15 @@ import android.os.Bundle;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.views.profile.SigninFBActivity;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class SplashActivity extends AppCompatActivity {
 
     private Cache cache;
+    private GeneralUtils generalUtils = new GeneralUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +27,13 @@ public class SplashActivity extends AppCompatActivity {
         String username = cache.getString(Cache.USER_NAME);
         Intent intent;
 
-
+        // intent from notification service @GCMPushReceiverService
         if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("person")!=null) {
             Person person = getIntent().getExtras().getParcelable("person");
             intent = new Intent(this, MainActivity.class);
             intent.putExtra("person", person);
             startActivity(intent);
+            generalUtils.decrementBadgeCount(cache, this);
             finish();
             return;
         }else if(getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("opto")!=null){
@@ -36,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
             intent = new Intent(this, MainActivity.class);
             intent.putExtra("opto", optograph);
             startActivity(intent);
+            generalUtils.decrementBadgeCount(cache, this);
             finish();
             return;
         }

@@ -37,6 +37,8 @@ import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.util.MixpanelHelper;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
 import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -201,6 +203,11 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
                 .subscribe(this::countLocal);
         GlobalState.shouldHardRefreshFeed = false;
+
+        // refresh notification badge
+        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
+        else binding.notifBadge.setVisibility(View.GONE);
+
     }
 
     private void countLocal(Optograph optograph) {
@@ -278,7 +285,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .observeOn(AndroidSchedulers.mainThread())
 //                .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                 .onErrorReturn(throwable -> {
-                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    if (!networkProblemDialog.isAdded())
+                        networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographFeedAdapter::addItem);
@@ -290,6 +298,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
         disableDrag();
         binding.swipeRefreshLayout.setRefreshing(false);
+
+        // refresh notification badge
+        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
+        else binding.notifBadge.setVisibility(View.GONE);
 
     }
 
@@ -308,6 +320,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             case R.id.number_image:
             case R.id.number_local_image:
             case R.id.profile_btn:
+                cache.save(Cache.NOTIF_COUNT, 0);
+                ShortcutBadger.removeCount(getActivity());
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
                 break;
             case R.id.search_button:

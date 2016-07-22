@@ -219,7 +219,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
                             intent.putExtra("opto", optograph);
 //                            context.startActivity(intent);
-                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            if(context instanceof ProfileActivity)
+                                ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            else if(context instanceof MainActivity)
+                                ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
                         }
                     });
 
