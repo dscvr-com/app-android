@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 
 import com.iam360.iam360.NewFeedBinding;
 import com.iam360.iam360.R;
@@ -18,6 +17,9 @@ import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.views.SnappyLinearLayoutManager;
+
+import im.ene.lab.toro.Toro;
+
 //import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
 //import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
 //import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
@@ -27,9 +29,6 @@ import com.iam360.iam360.views.SnappyLinearLayoutManager;
 //import com.volokh.danylo.visibility_utils.calculator.SingleListViewItemActiveCalculator;
 //import com.volokh.danylo.visibility_utils.scroll_utils.ItemsPositionGetter;
 //import com.volokh.danylo.visibility_utils.scroll_utils.RecyclerViewItemPositionGetter;
-
-import im.ene.lab.toro.Toro;
-import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -114,7 +113,7 @@ public abstract class OptographListFragment extends Fragment {
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // load first few optographs
-        initializeFeed();
+        initializeFeed(true);
     }
 
     public Optograph getCurrentOptograph() {
@@ -128,7 +127,7 @@ public abstract class OptographListFragment extends Fragment {
         return optograph;
     }
 
-    protected abstract void initializeFeed();
+    protected abstract void initializeFeed(boolean fromList);
     protected abstract void loadMore();
     protected abstract void refresh();
 

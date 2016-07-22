@@ -1,15 +1,14 @@
 package com.iam360.iam360.views.new_design;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.views.profile.OptographLocalGridAdapter;
-import com.iam360.iam360.views.profile.ProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity {
 
