@@ -187,7 +187,7 @@ public class ApiConsumer {
         Call<LogInReturn> call = service.fbLogin(data);
         call.enqueue(callback);
     }
-    
+
     public void uploadOptoData(OptoData data, Callback<Optograph> callback) {
 //        Call<Optograph> call = service.uploadOptoData("Bearer "+token,data);
         Call<Optograph> call = service.uploadOptoData(data);
@@ -334,6 +334,11 @@ public class ApiConsumer {
 
     public void getNotifications(Callback<List<Notification>> callback) {
         Call<List<Notification>> call = service.getNotifications();
+        call.enqueue(callback);
+    }
+
+    public void setNotificationToRead(String id, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.setNotificationToRead(id);
         call.enqueue(callback);
     }
 }

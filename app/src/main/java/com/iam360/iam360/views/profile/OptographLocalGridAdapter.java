@@ -252,7 +252,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
                             intent.putExtra("opto", optograph);
 //                            context.startActivity(intent);
-                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            if(context instanceof ProfileActivity)
+                                ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            else if(context instanceof MainActivity)
+                                ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
                         }
                     });
 
@@ -417,6 +420,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().personUsername.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            notif.setIs_read(true);
+                            setRead(notif);
                             startProfile(notif.getActivity_resource_star().getCausing_person().getId());
                         }
                     });
@@ -424,6 +429,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().starLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            notif.setIs_read(true);
+                            setRead(notif);
                             Optograph opto = notif.getActivity_resource_star().getOptograph();
                             opto.setPerson(person);
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
@@ -454,12 +461,32 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().followLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            notif.setIs_read(true);
+                            setRead(notif);
                             startProfile(notif.getActivity_resource_follow().getCausing_person().getId());
                         }
                     });
                 }
             }
         }
+    }
+
+    private void setRead(Notification notif) {
+        Log.d("myTag"," notif: id: "+notif.getId());
+        apiConsumer.setNotificationToRead(notif.getId(), new Callback<LogInReturn.EmptyResponse>() {
+            @Override
+            public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                Log.d("myTag"," onResponse setNotificationToRead success? "+response.isSuccess());
+                if (response.isSuccess()) notif.setIs_read(true);
+                else notif.setIs_read(false);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag"," onFailure setNotificationToRead message: "+t.getMessage());
+                notif.setIs_read(false);
+            }
+        });
     }
 
     private void startProfile(String id) {

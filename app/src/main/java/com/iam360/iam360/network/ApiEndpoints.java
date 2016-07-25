@@ -75,7 +75,7 @@ public interface ApiEndpoints {
     @POST("persons/facebook/signin")
     Call<LogInReturn> fbLogin(@Body FBSignInData data);
 
-//    @Headers("Content-Type: application/json")
+    //    @Headers("Content-Type: application/json")
     @POST("optographs")
 //    Call<Optograph> uploadOptoData(@Header("Authorization") String authorization,@Body OptographFeedAdapter.OptoData data);
     Call<Optograph> uploadOptoData(@Body OptoData data);
@@ -133,4 +133,7 @@ public interface ApiEndpoints {
 
     @GET("activities")
     Call<List<Notification>> getNotifications();
+
+    @POST("activities/{id}/read")
+    Call<LogInReturn.EmptyResponse> setNotificationToRead(@Path("id") String id);
 }
