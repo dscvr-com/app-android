@@ -440,22 +440,24 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                     if(opto.getOptograph_type() !=null && !opto.getOptograph_type().equals("")){
                         mydb.updateTableColumn(tb,id, opto.getId(), "optograph_type", opto.getOptograph_type());
                     }
+                }else{
+                    mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
+                            opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
+                            opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
+                            opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
+                            opto.is_data_uploaded()?1:0,opto.getOptograph_type(), DBHelper.OPTO_TABLE_NAME_FEEDS);
                 }
                 String loc = opto.getLocation()==null?"":opto.getLocation().getId();
                 String per = opto.getPerson()==null?"":opto.getPerson().getId();
                 Log.d("MARK","saveToSQLiteFeeds opto.getId() = "+opto.getId());
-                mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
-                        opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
-                        opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
-                        opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                        opto.is_data_uploaded()?1:0,opto.getOptograph_type(), DBHelper.OPTO_TABLE_NAME_FEEDS);
+
 
                 if(!per.equals("")){
                     res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME,"id");
                     res.moveToFirst();
                     if(opto.getPerson().getId() != null) {
                         Person person = opto.getPerson();
-                        if (res.getCount()!=0){
+                        if (res.getCount() > 0){
                             String id = "id";
                             String tb = DBHelper.PERSON_TABLE_NAME;
                             if(person.getCreated_at() !=null && !person.getCreated_at().equals("")){
@@ -495,11 +497,11 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             if(person.getTwitter_secret() !=null && !person.getTwitter_secret().equals("")){
                                 mydb.updateTableColumn(tb,id, person.getId(), "twitter_secret", String.valueOf(person.getTwitter_secret()));
                             }
+                        }else{
+                            mydb.insertPerson(person.getId(),person.getCreated_at(),person.getEmail(),person.getDeleted_at(), person.isElite_status(),
+                                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+                                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
                         }
-
-                        mydb.insertPerson(person.getId(),person.getCreated_at(),person.getEmail(),person.getDeleted_at(), person.isElite_status(),
-                                person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
-                                person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
                     }
                 }
 
@@ -542,10 +544,10 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                                 mydb.updateTableColumn(tb,id, locs.getId(), "region", locs.getRegion());
                             }
                             mydb.updateTableColumn(tb,id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
+                        }else{
+                            mydb.insertLocation(locs.getId(),locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(),locs.getText(),
+                                    locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                         }
-
-                        mydb.insertLocation(locs.getId(),locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(),locs.getText(),
-                                locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                     }
                 }
             }

@@ -2,6 +2,7 @@ package com.iam360.iam360.views.new_design;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -99,7 +100,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                Log.d("myTag"," notif: position: "+position+" getSpanSize: "+optographLocalGridAdapter.getItemViewType(position)+" onNotif: "+(optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)));
                 int pos = optographLocalGridAdapter.getItemViewType(position);
                 if (pos==OptographLocalGridAdapter.VIEW_SERVER)
                     return 1;
@@ -136,11 +136,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     binding.toolbar.setVisibility(View.GONE);
                     binding.toolbarLayout.setVisibility(View.GONE);
                     binding.toolbarReplace.setVisibility(View.VISIBLE);
-                    String tab;
-                    if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_FOLLOWER)) tab = getResources().getString(R.string.profile_header_follower);
-                    else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) tab = getResources().getString(R.string.profile_header_notif);
-                    else tab = getResources().getString(R.string.profile_header_image);
-                    binding.tabTitle.setText(tab);
+                    setTab();
                 } else {
                     binding.toolbarLayout.setVisibility(View.VISIBLE);
 //                    binding.toolbar.setVisibility(View.VISIBLE);
@@ -150,6 +146,43 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         });
 
         return binding.getRoot();
+    }
+
+    private void setTab() {
+        if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
+            binding.imageText.setTextColor(Color.parseColor("#ffbc00"));
+            binding.imageSelector.setVisibility(View.VISIBLE);
+            binding.followerText.setTextColor(Color.parseColor("#ffffff"));
+            binding.followerSelector.setVisibility(View.INVISIBLE);
+            binding.notificationText.setTextColor(Color.parseColor("#ffffff"));
+            binding.notificationSelector.setVisibility(View.INVISIBLE);
+        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_FOLLOWER)) {
+            binding.imageText.setTextColor(Color.parseColor("#ffffff"));
+            binding.imageSelector.setVisibility(View.INVISIBLE);
+            binding.followerText.setTextColor(Color.parseColor("#ffbc00"));
+            binding.followerSelector.setVisibility(View.VISIBLE);
+            binding.notificationText.setTextColor(Color.parseColor("#ffffff"));
+            binding.notificationSelector.setVisibility(View.INVISIBLE);
+        } else {
+            binding.imageText.setTextColor(Color.parseColor("#ffffff"));
+            binding.imageSelector.setVisibility(View.INVISIBLE);
+            binding.followerText.setTextColor(Color.parseColor("#ffffff"));
+            binding.followerSelector.setVisibility(View.INVISIBLE);
+            binding.notificationText.setTextColor(Color.parseColor("#ffbc00"));
+            binding.notificationSelector.setVisibility(View.VISIBLE);
+        }
+
+        if (!isCurrentUser && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
+            binding.followerTab.setVisibility(View.GONE);
+            binding.notificationTab.setVisibility(View.GONE);
+            binding.imageText.setTextColor(Color.parseColor("#ffffff"));
+            binding.imageSelector.setVisibility(View.INVISIBLE);
+        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)){
+            binding.followerTab.setVisibility(View.VISIBLE);
+            binding.notificationTab.setVisibility(View.VISIBLE);
+            binding.imageText.setTextColor(Color.parseColor("#ffbc00"));
+            binding.imageSelector.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setAvatar(Bitmap bitmap) {
@@ -284,9 +317,13 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         super.onResume();
         BusProvider.getInstance().register(this);
 
-       Log.d("myTag"," delete: PFE onResume person null? "+(person==null));
+        Log.d("myTag"," delete: PFE onResume person null? "+(person==null)+" isNotif? "+(optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)));
         if(person == null) setPerson();
         else refresh();
+
+        if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) {
+            optographLocalGridAdapter.notifyItemRangeChanged(2,optographLocalGridAdapter.getItemCount()-2);
+        }
     }
 
     @Override

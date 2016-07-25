@@ -1,6 +1,5 @@
 package com.iam360.iam360.model;
 
-
 /**
  * Created by Mariel on 7/20/2016.
  */
@@ -150,6 +149,10 @@ public class Notification {
 
     public boolean isIs_read() {
         return is_read;
+    }
+
+    public void setIs_read(boolean is_read) {
+        this.is_read = is_read;
     }
 
     public Person getPerson() {
