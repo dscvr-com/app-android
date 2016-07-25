@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 
@@ -45,6 +46,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.iam360.iam360.R;
+import com.iam360.iam360.bus.BusProvider;
+import com.iam360.iam360.bus.RecordFinishedEvent;
+import com.iam360.iam360.record.GlobalState;
+import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.util.Constants;
+import com.iam360.iam360.util.GeneralUtils;
+import com.iam360.iam360.util.MixpanelHelper;
+import com.iam360.iam360.viewmodels.LocalOptographManager;
+import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -156,6 +169,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             }
         });
 
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
     }
 
     @Override
@@ -234,6 +253,11 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
                 .subscribe(this::countLocal);
         GlobalState.shouldHardRefreshFeed = false;
+
+        // refresh notification badge
+        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
+        else binding.notifBadge.setVisibility(View.GONE);
+
     }
 
     public Observable<Optograph> cur2Json(Cursor cursor, int limit) {
@@ -381,6 +405,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     protected void loadMore() {
+
+        Timber.d("loadMore");
+
         apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -442,6 +469,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .subscribe(this::countLocal);
 
         disableDrag();
+        binding.swipeRefreshLayout.setRefreshing(false);
+
+        // refresh notification badge
+        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
+        else binding.notifBadge.setVisibility(View.GONE);
+
     }
 
     public void disableDrag() {
@@ -459,6 +492,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             case R.id.number_image:
             case R.id.number_local_image:
             case R.id.profile_btn:
+                cache.save(Cache.NOTIF_COUNT, 0);
+                ShortcutBadger.removeCount(getActivity());
                 ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
                 break;
             case R.id.search_button:

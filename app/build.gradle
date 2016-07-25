@@ -145,8 +145,8 @@ dependencies {
 //    compile 'com.github.danylovolokh:list-visibility-utils:0.2.0'
     compile 'com.danikula:videocache:2.3.4'
     compile 'com.github.eneim:Toro:1.2.0'
-
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'me.leolin:ShortcutBadger:1.1.6@aar'
 }
 
 configurations {

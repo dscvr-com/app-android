@@ -35,6 +35,7 @@ import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.views.GestureDetectors;
@@ -80,6 +81,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+
+        if (getIntent().getExtras().getParcelable("notif")!=null) {
+            new GeneralUtils().decrementBadgeCount(cache, this);
+        }
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_optograph_details);
         binding.setVariable(BR.optograph, optograph);

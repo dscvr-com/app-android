@@ -308,8 +308,8 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void getSearchUsername(String key, Callback<Person> callback) {
-        Call<Person> call = service.getUserName(key);
+    public void getSearchUsername(String key, Callback<List<Person>> callback) {
+        Call<List<Person>> call = service.getUserName(key);
         call.enqueue(callback);
     }
 

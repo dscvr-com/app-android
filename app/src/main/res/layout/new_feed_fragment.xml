@@ -25,11 +25,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <com.iam360.iam360.views.SnappyRecyclerView
-                    android:id="@+id/optographFeed"
+                <android.support.v4.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"/>
+                    android:layout_height="match_parent">
+
+                    <com.iam360.iam360.views.SnappyRecyclerView
+                        android:id="@+id/optographFeed"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"/>
+
+                </android.support.v4.widget.SwipeRefreshLayout>
 
                 <ImageButton
                     android:id="@+id/header_logo"
@@ -555,6 +562,14 @@
             android:layout_alignParentRight="true"
             android:src="@drawable/profile_icn"
             android:background="@color/transparentOverlay"/>
+
+        <View
+            android:id="@+id/notif_badge"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/notification_circle"/>
 
         <ImageButton
             android:id="@+id/search_button"
