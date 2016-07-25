@@ -46,6 +46,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -59,6 +60,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     private DateTime inVRPositionSince;
     private Optograph optograph;
+    private ArrayList<Optograph> optographList;
     private boolean isFullScreenMode = false;
     private OptographDetailsBinding binding;
     private Cache cache;
@@ -76,7 +78,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        optograph = getIntent().getExtras().getParcelable("opto");
+        optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
+//        optograph = getIntent().getExtras().getParcelable("opto");
+
+        if(optographList != null) optograph = optographList.get(0);
+
         cache = Cache.open();
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
@@ -224,9 +230,16 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         inVRMode = true;
 
         if(alert != null) alert.dismiss();
-        Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
-        intent.putExtra("optograph", optograph);
-        startActivity(intent);
+
+        if(true) {
+            Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", optographList);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
+            intent.putExtra("optograph", optograph);
+            startActivity(intent);
+        }
     }
 
     private void setHeart(boolean liked, int count) {

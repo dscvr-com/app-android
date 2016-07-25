@@ -98,9 +98,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
             holder.itemView.setLayoutParams(params);
 
-            holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph));
-            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph));
-            holder.getBinding().previewImage.setOnClickListener(v -> callDetailsPage(optograph));
+            holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph, position));
+            holder.getBinding().videoView.setOnClickListener(v -> callDetailsPage(optograph, position));
+            holder.getBinding().previewImage.setOnClickListener(v -> callDetailsPage(optograph, position));
 
             holder.getBinding().heartLabel.setTypeface(Constants.getInstance().getIconTypeface());
             holder.getBinding().heartLabel.setOnClickListener(v -> setHeart(optograph, holder, v));
@@ -213,10 +213,31 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         }
     }
 
-    private void callDetailsPage(Optograph optograph) {
-        Intent intent = new Intent(context, OptographDetailsActivity.class);
-        intent.putExtra("opto", optograph);
-        context.startActivity(intent);
+    private void callDetailsPage(Optograph optograph, int position) {
+
+        if(true) {
+            Intent intent = new Intent(context, OptographDetailsActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
+            context.startActivity(intent);
+        } else {
+            Intent intent = new Intent(context, OptographDetailsActivity.class);
+            intent.putExtra("opto", optograph);
+            context.startActivity(intent);
+        }
+    }
+
+    private ArrayList<Optograph> getNextOptographList(int position, int count) {
+        int optoListCount = optographs.size();
+        count = (count < optoListCount) ? count : optoListCount;
+
+        ArrayList<Optograph> optographList = new ArrayList<Optograph>();
+
+        for(int i = 0; i < count; i++) {
+            optographList.add(optographs.get((position+1) % optoListCount));
+            position++;
+        }
+
+        return optographList;
     }
 
     private void followOrUnfollow(Optograph optograph, OptographVideoHolder holder, View v) {
