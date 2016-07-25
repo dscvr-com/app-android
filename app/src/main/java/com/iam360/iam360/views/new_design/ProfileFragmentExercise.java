@@ -365,6 +365,16 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             binding.cancelBtn.setVisibility(View.GONE);
             binding.homeBtn.setVisibility(View.VISIBLE);
         }
+        enableScroll(!optographLocalGridAdapter.isOnEditMode());
+    }
+
+    private void enableScroll(boolean enabled) {
+        binding.overlayEdit.setVisibility(enabled?View.GONE:View.VISIBLE);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.overlayEdit.getLayoutParams();
+//        params.width = 200; params.leftMargin = 100;
+        View view = binding.optographFeed.getChildAt(1);
+        params.topMargin = view.getTop()+binding.toolbarLayout.getHeight();
+        binding.overlayEdit.requestLayout();
     }
 
     @Override

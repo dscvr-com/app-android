@@ -420,8 +420,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().personUsername.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             startProfile(notif.getActivity_resource_star().getCausing_person().getId());
                         }
                     });
@@ -429,8 +431,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().starLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             Optograph opto = notif.getActivity_resource_star().getOptograph();
                             opto.setPerson(person);
                             Intent intent = new Intent(context, OptographDetailsActivity.class);
@@ -461,8 +465,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().followLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             startProfile(notif.getActivity_resource_follow().getCausing_person().getId());
                         }
                     });
