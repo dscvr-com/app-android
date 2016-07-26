@@ -17,6 +17,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.model.Optograph;
@@ -34,13 +35,17 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 500;
 
     private CardboardRenderer cardboardRenderer;
-    private Optograph optograph;
+//    private Optograph optograph;
+    private ArrayList<Optograph> optographList;
 
     private DateTime creationTime;
     private boolean thresholdForSwitchReached;
 
     private boolean inVRMode;
     private SensorManager sensorManager;
+
+    private int currentIndex = 0;
+    private int optoListSize = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,14 +100,14 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     }
 
     private void initializeTextures() {
-        if (optograph == null) {
+        if (optographList.get(currentIndex) == null) {
             return;
         }
 
         for (int i = 0; i < Cube.FACES.length; ++i) {
-            String leftUri = ImageUrlBuilder.buildCubeUrl(this.optograph, true, Cube.FACES[i]);
-            String rightUri  = ImageUrlBuilder.buildCubeUrl(this.optograph, false, Cube.FACES[i]);
-            if (optograph.is_local()) {
+            String leftUri = ImageUrlBuilder.buildCubeUrl(optographList.get(currentIndex), true, Cube.FACES[i]);
+            String rightUri  = ImageUrlBuilder.buildCubeUrl(optographList.get(currentIndex), false, Cube.FACES[i]);
+            if (optographList.get(currentIndex).is_local()) {
                 Picasso.with(this)
                         .load(new File(leftUri))
                         .into(cardboardRenderer.getLeftCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
@@ -125,13 +130,19 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private void initializeOptograph() {
         Intent intent = getIntent();
         if (intent != null) {
-            this.optograph = intent.getExtras().getParcelable("optograph");
-            if (optograph == null) {
+
+            optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
+            optoListSize = optographList.size();
+//        optograph = getIntent().getExtras().getParcelable("opto");
+
+//            if(optographArr != null) optograph = optographArr[0];
+
+//            if (optograph == null) {
                 //throw new RuntimeException("No optograph reveiced in VRActivity!");
-                Timber.e("No optograph reveiced in VRActivity!");
-            } else {
-                Timber.v("creating VRActivity for Optograph %s", optograph.getId());
-            }
+//                Timber.e("No optograph reveiced in VRActivity!");
+//            } else {
+//                Timber.v("creating VRActivity for Optograph %s", optograph.getId());
+//            }
         }
     }
 
@@ -170,6 +181,15 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public void onCardboardTrigger() {
+        Timber.v("onCardboardTrigger " + currentIndex);
+        currentIndex++;
+        currentIndex = currentIndex % optoListSize;
+        initializeTextures();
+        super.onCardboardTrigger();
     }
 
     private void switchToNormalMode() {

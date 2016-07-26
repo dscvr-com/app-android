@@ -47,6 +47,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -60,6 +61,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     private DateTime inVRPositionSince;
     private Optograph optograph;
+    private ArrayList<Optograph> optographList;
     private boolean isFullScreenMode = false;
     private OptographDetailsBinding binding;
     private Cache cache;
@@ -70,14 +72,27 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean arrowClicked = false;
     private boolean isCurrentUser = false;
 
-    private boolean hasSoftKey=false;
+    private boolean hasSoftKey = false;
+    private boolean isMultipleOpto = false;
     private int viewsWithSoftKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        optograph = getIntent().getExtras().getParcelable("opto");
+        optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
+
+        if(optographList != null) {
+            isMultipleOpto = true;
+            optograph = optographList.get(0);
+            Timber.d("optographList1 " + (optograph == null ? true : false));
+        } else {
+            isMultipleOpto = false;
+            optograph = getIntent().getExtras().getParcelable("opto");
+            optographList = new ArrayList<>();
+            Timber.d("optographList2 " + (optograph == null ? true : false));
+        }
+
         cache = Cache.open();
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
@@ -225,9 +240,20 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         inVRMode = true;
 
         if(alert != null) alert.dismiss();
-        Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
-        intent.putExtra("optograph", optograph);
-        startActivity(intent);
+
+        if(isMultipleOpto) {
+            Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", optographList);
+            startActivity(intent);
+        } else {
+            optographList.add(optograph);
+            Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", optographList);
+            startActivity(intent);
+//            Intent intent = new Intent(OptographDetailsActivity.this, VRModeActivity.class);
+//            intent.putExtra("optograph", optograph);
+//            startActivity(intent);
+        }
     }
 
     private void setHeart(boolean liked, int count) {
