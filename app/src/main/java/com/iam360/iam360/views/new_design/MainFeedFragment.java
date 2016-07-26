@@ -46,17 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import com.iam360.iam360.R;
-import com.iam360.iam360.bus.BusProvider;
-import com.iam360.iam360.bus.RecordFinishedEvent;
-import com.iam360.iam360.record.GlobalState;
-import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.util.Constants;
-import com.iam360.iam360.util.GeneralUtils;
-import com.iam360.iam360.util.MixpanelHelper;
-import com.iam360.iam360.viewmodels.LocalOptographManager;
-import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
-
 import me.leolin.shortcutbadger.ShortcutBadger;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -243,6 +232,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .doOnCompleted(() -> progress.dismiss() )
                     .onErrorReturn(throwable -> {
                         if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        progress.dismiss();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
@@ -263,10 +253,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public Observable<Optograph> cur2Json(Cursor cursor, int limit) {
         JSONArray resultSet = new JSONArray();
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        if(limit > cursor.getCount()){
+            limit = cursor.getCount();
+        }
+        for(int a=0; a < limit; a++){
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
-            for (int i = 0; i < limit; i++) {
+            for (int i = 0; i < totalColumn; i++) {
                 if (cursor.getColumnName(i) != null) {
                     try {
                         String columnName = cursor.getColumnName(i);
@@ -295,23 +288,25 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 Optograph opto = new Optograph(data.optograph_id);
 
                 Person person = new Person();
-                if(data.person_id !=null && !data.person_id.equals("")){
-                    Cursor res = mydb.getData(data.optograph_id, DBHelper.PERSON_TABLE_NAME,"id");
+                if(data.optograph_person_id !=null && !data.optograph_person_id.equals("")){
+                    Cursor res = mydb.getData(data.optograph_person_id, DBHelper.PERSON_TABLE_NAME,"id");
                     res.moveToFirst();
                     if (res.getCount()!= 0) {
                         person.setId(res.getString(res.getColumnIndex("id")));
                         person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
                         person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
+//                        Log.d("MARK","cur2Json user_name = "+res.getString(res.getColumnIndex("user_name")));
                         person.setUser_name(res.getString(res.getColumnIndex("user_name")));
                         person.setText(res.getString(res.getColumnIndex("text")));
                         person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
                     }
                 }
-                Log.d("MARK","cur2Json person = "+person.toString());
+//                if(!person.is_followed()){
+//                    continue;
+//                }
                 opto.setPerson(person);
-                Log.d("MARK","cur2Json data.optograph_created_at = "+data.optograph_created_at);
-
                 opto.setCreated_at(data.optograph_created_at);
+                opto.setIs_starred(data.optograph_is_starred);
                 opto.setDeleted_at(data.optograph_deleted_at);
                 opto.setStitcher_version(data.optograph_stitcher_version);
                 opto.setText(data.optograph_text);
@@ -325,8 +320,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 opto.setIs_local(false);
 
                 Location location = new Location();
-                if(data.location_id !=null && !data.location_id.equals("")){
-                    Cursor res = mydb.getData(data.location_id, DBHelper.LOCATION_TABLE_NAME,"id");
+                if(data.optograph_location_id !=null && !data.optograph_location_id.equals("")){
+                    Cursor res = mydb.getData(data.optograph_location_id, DBHelper.LOCATION_TABLE_NAME,"id");
                     res.moveToFirst();
                     if (res.getCount()!= 0) {
                         location.setId(res.getString(res.getColumnIndex("id")));
@@ -341,9 +336,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         location.setLongitude(res.getString(res.getColumnIndex("longitude")));
                     }
                 }
-                Log.d("MARK","cur2Json location = "+location.toString());
                 opto.setLocation(location);
-
 
                 opto.setOptograph_type(data.optograph_type);
                 opto.setStars_count(data.optograph_stars_count);
@@ -351,12 +344,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 opto.setHashtag_string(data.optograph_hashtag_string);
 
                 optographs.add(opto);
-                Log.d("MARK","data id = "+data.optograph_id);
+//                Log.d("MARK","cur2Json opto = "+opto.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        Log.d("MARK","cur2Json optographs.size = "+optographs.size());
+//        Log.d("MARK","cur2Json optographs.size = "+optographs.size());
         return Observable.from(optographs);
     }
 

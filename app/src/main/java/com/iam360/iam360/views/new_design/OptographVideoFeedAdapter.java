@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -190,6 +189,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             holder.getBinding().setVariable(BR.person, optograph.getPerson());
             holder.getBinding().setVariable(BR.location, optograph.getLocation());
 
+
             holder.getBinding().executePendingBindings();
         } else {
         }
@@ -284,7 +284,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     private void setHeart(Optograph optograph, OptographVideoHolder holder, View v) {
-
         if(!cache.getString(Cache.USER_TOKEN).equals("")) {
             if (!optograph.is_starred()) {
                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
@@ -300,6 +299,12 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             optograph.setStars_count(optograph.getStars_count() - 1);
                             updateHeartLabel(optograph, holder);
                         }else {
+                            Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                            res.moveToFirst();
+                            if (res.getCount() > 0) {
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(true));
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                            }
                             NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
                     }
@@ -325,6 +330,13 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             optograph.setIs_starred(response.isSuccess());
                             optograph.setStars_count(optograph.getStars_count() + 1);
                             updateHeartLabel(optograph, holder);
+                        }else{
+                            Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                            res.moveToFirst();
+                            if (res.getCount() > 0) {
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(false));
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                            }
                         }
                     }
 
@@ -352,6 +364,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     private void followPerson(Optograph optograph, boolean isFollowed, OptographVideoHolder holder) {
+        Cursor res = mydb.getData(optograph.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+        res.moveToFirst();
         if(isFollowed) {
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
@@ -361,6 +375,10 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
             holder.getBinding().follow.setImageResource(R.drawable.feed_follow_icn);
+        }
+        if (res.getCount() > 0) {
+            mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "is_followed", String.valueOf(optograph.getPerson().is_followed()));
+            mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "followers_count", String.valueOf(optograph.getPerson().getFollowers_count()));
         }
     }
 
@@ -373,7 +391,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         if (optograph == null) {
             return;
         }
-        Log.d("MARK","addItem = "+optograph);
+//        Log.d("MARK","addItem = "+optograph);
         saveToSQLiteFeeds(optograph);
         DateTime created_at = optograph.getCreated_atDateTime();
 
@@ -470,7 +488,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 }
                 String loc = opto.getLocation()==null?"":opto.getLocation().getId();
                 String per = opto.getPerson()==null?"":opto.getPerson().getId();
-                Log.d("MARK","saveToSQLiteFeeds opto.getId() = "+opto.getId());
+//                Log.d("MARK","saveToSQLiteFeeds opto.getId() = "+opto.getId());
 
 
                 if(!per.equals("")){

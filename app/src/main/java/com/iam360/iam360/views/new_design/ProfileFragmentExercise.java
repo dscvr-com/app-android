@@ -365,6 +365,26 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             binding.cancelBtn.setVisibility(View.GONE);
             binding.homeBtn.setVisibility(View.VISIBLE);
         }
+        enableScroll(!optographLocalGridAdapter.isOnEditMode());
+        setMessage(optographLocalGridAdapter.getMessage()==null?"":optographLocalGridAdapter.getMessage());
+    }
+
+    private void enableScroll(boolean enabled) {
+        binding.overlayEdit.setVisibility(enabled?View.GONE:View.VISIBLE);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.overlayEdit.getLayoutParams();
+//        params.width = 200; params.leftMargin = 100;
+        View view = binding.optographFeed.getChildAt(1);
+        params.topMargin = view.getTop()+binding.toolbarLayout.getHeight();
+        binding.overlayEdit.requestLayout();
+    }
+
+    public void setMessage(String message) {
+        binding.tabMessage.setVisibility(message.isEmpty()?View.GONE:View.VISIBLE);
+        binding.tabMessage.setText(message);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.tabMessage.getLayoutParams();
+        View view = binding.optographFeed.getChildAt(1);
+        params.topMargin = view.getTop()+binding.toolbarLayout.getHeight()+view.getHeight();
+        binding.tabMessage.requestLayout();
     }
 
     @Override
@@ -450,7 +470,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(optographLocalGridAdapter::addItem);
         }
-
+        if (optographLocalGridAdapter.getItemCount()-2==0) {
+            optographLocalGridAdapter.setMessage("You have no image.");
+        } else optographLocalGridAdapter.setMessage("");
     }
 
     protected void loadMore() {
@@ -481,5 +503,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
+        if (optographLocalGridAdapter.getItemCount()-2==0) {
+            optographLocalGridAdapter.setMessage("You have no image.");
+        } else optographLocalGridAdapter.setMessage("");
     }
 }

@@ -193,6 +193,24 @@
             android:layout_gravity="center_horizontal|top"
             android:clipToPadding="false"
             android:layout_below="@id/top_bar"/>
+
+        <TextView
+            android:id="@+id/tab_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/text_inactive"
+            android:textSize="14sp"
+            android:gravity="center"
+            app:font="@{``}"
+            android:visibility="gone"/>
+
+        <View
+            android:id="@+id/overlay_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="@color/semiTransparentOverlay"
+            android:visibility="gone"/>
     </RelativeLayout>
 
 </layout>

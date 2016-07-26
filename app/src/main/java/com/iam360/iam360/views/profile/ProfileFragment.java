@@ -1,6 +1,7 @@
 package com.iam360.iam360.views.profile;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -414,10 +415,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Timber.d("Unfollow : " + response);
-                            binding.getPerson().setIs_followed(false);
-                            binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() - 1);
-                            binding.invalidateAll();
+                            if(response.isSuccess()){
+                                Timber.d("Unfollow : " + response);
+                                binding.getPerson().setIs_followed(false);
+                                binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() - 1);
+                                binding.invalidateAll();
+
+                                Cursor res = mydb.getData(binding.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", binding.getPerson().getId(), "is_followed", String.valueOf(binding.getPerson().is_followed()));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", binding.getPerson().getId(), "followers_count", String.valueOf(binding.getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override
@@ -429,11 +439,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            Timber.d("Follow : " + response.message() + " " + retrofit.baseUrl() + " ");
-                            binding.getPerson().setIs_followed(true);
-                            binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() + 1);
-                            binding.invalidateAll();
-                            NotificationSender.triggerSendNotification(binding.getPerson(), "follow");
+                            if(response.isSuccess()){
+                                Timber.d("Follow : " + response.message() + " " + retrofit.baseUrl() + " ");
+                                binding.getPerson().setIs_followed(true);
+                                binding.getPerson().setFollowers_count(binding.getPerson().getFollowers_count() + 1);
+                                binding.invalidateAll();
+                                NotificationSender.triggerSendNotification(binding.getPerson(), "follow");
+                                Cursor res = mydb.getData(binding.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", binding.getPerson().getId(), "is_followed", String.valueOf(binding.getPerson().is_followed()));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", binding.getPerson().getId(), "followers_count", String.valueOf(binding.getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override

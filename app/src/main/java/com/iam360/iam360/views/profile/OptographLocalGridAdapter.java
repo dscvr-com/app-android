@@ -122,6 +122,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private String personName, personDesc;
     private Bitmap avatarImage;
     private String avatarId;
+    private String message;
 
     public OptographLocalGridAdapter(Context context,int tab) {
         this.context = context;
@@ -332,10 +333,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.unfollow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                        mHolder2.getBinding().getFollower().setIs_followed(false);
-                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
-                                        mHolder2.getBinding().invalidateAll();
-                                        notifyItemChanged(position);
+                                        if (response.isSuccess()) {
+                                            mHolder2.getBinding().getFollower().setIs_followed(false);
+                                            mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
+                                            mHolder2.getBinding().invalidateAll();
+                                            notifyItemChanged(position);
+
+                                            Cursor res = mydb.getData(mHolder2.getBinding().getFollower().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                            res.moveToFirst();
+                                            if (res.getCount() > 0) {
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "is_followed", String.valueOf(false));
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "followers_count", String.valueOf(mHolder2.getBinding().getFollower().getFollowers_count()));
+                                            }
+                                        }
+
                                     }
 
                                     @Override
@@ -347,14 +358,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.follow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                        mHolder2.getBinding().getFollower().setIs_followed(true);
-                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
-                                        mHolder2.getBinding().invalidateAll();
-                                        if(position < optographs.size()){
-                                            Optograph optograph = optographs.get(position);
-                                            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
+                                        if (response.isSuccess()) {
+                                            mHolder2.getBinding().getFollower().setIs_followed(true);
+                                            mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
+                                            mHolder2.getBinding().invalidateAll();
+                                            if(position < optographs.size()){
+                                                Optograph optograph = optographs.get(position);
+                                                NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
+                                                Cursor res = mydb.getData(optograph.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                                res.moveToFirst();
+                                                if (res.getCount() > 0) {
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "is_followed", String.valueOf(true));
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "followers_count", String.valueOf(optograph.getPerson().getFollowers_count()));
+                                                }
+                                            }
+                                            notifyItemChanged(position);
                                         }
-                                        notifyItemChanged(position);
+
                                     }
 
                                     @Override
@@ -408,8 +428,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().personUsername.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             startProfile(notif.getActivity_resource_star().getCausing_person().getId());
                         }
                     });
@@ -417,8 +439,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().starLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             Optograph opto = notif.getActivity_resource_star().getOptograph();
                             opto.setPerson(person);
                             callDetailsPage(position);
@@ -446,8 +470,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().followLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            notif.setIs_read(true);
-                            setRead(notif);
+                            if (notif.isIs_read()) {
+                                notif.setIs_read(true);
+                                setRead(notif);
+                            }
                             startProfile(notif.getActivity_resource_follow().getCausing_person().getId());
                         }
                     });
@@ -534,6 +560,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         return false;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+        updateMenuOptions();
+    }
+
     private void initializeHeaderSecond(HeaderSecondViewHolder mHolder) {
 
         setTab(mHolder);
@@ -559,19 +590,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 notifications.add(0,null);
                 notifications.add(1,null);
                 notifyDataSetChanged();
+                setMessage("");
                 apiConsumer.getNotifications(new Callback<List<Notification>>() {
                     @Override
                     public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
                         Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
                         if (response.isSuccess() && response.body() != null) {
                             notifications = response.body();
-                            notifications.add(0,null);
+                            notifications.add(0, null);
                             notifications.add(1,null);
                             notifyDataSetChanged();
                         } else {
                             notifyDataSetChanged();
-                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
+//                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
                         }
+                        if (getItemCount()-2==0)
+                            setMessage("You have no notification.");
+                        else setMessage("");
                     }
 
                     @Override
@@ -580,7 +615,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         notifications.add(0,null);
                         notifications.add(1,null);
                         notifyDataSetChanged();
-                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
+                        setMessage("Network Problem.");
+//                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -594,6 +630,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 followers.add(0, null);
                 followers.add(1, null);
                 notifyDataSetChanged();
+                setMessage("");
 //                apiConsumer.getFollowers()
 //                        .subscribeOn(Schedulers.newThread())
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -618,8 +655,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            followers.add(0, null);
 //                            followers.add(1, null);
                             notifyDataSetChanged();
-                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
+                            message = "You have no follower.";
+                            updateMenuOptions();
+//                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
+                        if (getItemCount()-2==0)
+                            setMessage("You have no follower.");
+                        else setMessage("");
                     }
 
                     @Override
@@ -627,7 +669,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         followers.add(0, null);
                         followers.add(1, null);
                         notifyDataSetChanged();
-                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
+                        setMessage("Network Problem.");
+//                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -639,6 +682,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 onTab = ON_IMAGE;
                 setTab(mHolder);
                 notifyDataSetChanged();
+                setMessage(getItemCount()-2==0?"You have no image.":"");
             }
         });
     }
@@ -763,9 +807,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            mHolder1.getBinding().getPerson().setIs_followed(false);
-                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
-                            mHolder1.getBinding().invalidateAll();
+                            if(response.isSuccess()){
+                                mHolder1.getBinding().getPerson().setIs_followed(false);
+                                mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
+                                mHolder1.getBinding().invalidateAll();
+
+                                Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(false));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override
@@ -777,10 +830,19 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            mHolder1.getBinding().getPerson().setIs_followed(true);
-                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
-                            mHolder1.getBinding().invalidateAll();
-                            NotificationSender.triggerSendNotification(mHolder1.getBinding().getPerson(), "follow");
+                            if(response.isSuccess()) {
+                                mHolder1.getBinding().getPerson().setIs_followed(true);
+                                mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
+                                mHolder1.getBinding().invalidateAll();
+                                NotificationSender.triggerSendNotification(mHolder1.getBinding().getPerson(), "follow");
+
+                                Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(true));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override
@@ -938,6 +1000,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         fromCancelEdit = true;
         isEditMode = mode;
         notifyItemChanged(0);
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     private void updateMenuOptions() {

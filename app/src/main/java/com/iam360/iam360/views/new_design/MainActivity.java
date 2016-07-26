@@ -54,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        cache = Cache.open();
         initializeComponents();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        cache = Cache.open();
 
         //Initializing our broadcast receiver
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
