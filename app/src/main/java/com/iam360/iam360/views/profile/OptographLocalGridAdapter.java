@@ -136,6 +136,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //        followers.add(1,null);
 
         this.notifications = new ArrayList<Notification>();
+        this.notifications.add(0,null);
+        this.notifications.add(1,null);
 
         cache = Cache.open();
         mydb = new DBHelper(context);
@@ -146,6 +148,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
+
+        Log.d("myTag"," notif: isCurrentUser? "+isCurrentUser);
+        if (onTab==ON_NOTIFICATION) setNotifications();
     }
 
     @Override
@@ -440,18 +445,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().personUsername.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (notif.isIs_read()) {
+                            if (!notif.isIs_read()) {
                                 notif.setIs_read(true);
                                 setRead(notif);
                             }
-                            startProfile(notif.getActivity_resource_star().getCausing_person().getId());
+                            startProfile(notif.getActivity_resource_star().getCausing_person());
                         }
                     });
 
                     mHolder2.getBinding().starLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (notif.isIs_read()) {
+                            if (!notif.isIs_read()) {
                                 notif.setIs_read(true);
                                 setRead(notif);
                             }
@@ -485,11 +490,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().followLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (notif.isIs_read()) {
+                            if (!notif.isIs_read()) {
                                 notif.setIs_read(true);
                                 setRead(notif);
                             }
-                            startProfile(notif.getActivity_resource_follow().getCausing_person().getId());
+                            Log.d("myTag"," notif: personcause notif: "+notif.getActivity_resource_follow().getCausing_person().getId());
+                            startProfile(notif.getActivity_resource_follow().getCausing_person());
                         }
                     });
                 }
@@ -513,6 +519,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 notif.setIs_read(false);
             }
         });
+    }
+
+    private void startProfile(Person person) {
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("person", person);
+        context.startActivity(intent);
     }
 
     private void startProfile(String id) {
@@ -577,39 +589,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onClick(View v) {
                 onTab = ON_NOTIFICATION;
                 setTab(mHolder);
-                notifications = new ArrayList<Notification>();
-                notifications.add(0,null);
-                notifications.add(1,null);
-                notifyDataSetChanged();
-                setMessage("");
-                apiConsumer.getNotifications(new Callback<List<Notification>>() {
-                    @Override
-                    public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
-                        Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
-                        if (response.isSuccess() && response.body() != null) {
-                            notifications = response.body();
-                            notifications.add(0, null);
-                            notifications.add(1,null);
-                            notifyDataSetChanged();
-                        } else {
-                            notifyDataSetChanged();
-//                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
-                        }
-                        if (getItemCount()-2==0)
-                            setMessage("You have no notification.");
-                        else setMessage("");
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {
-                        Log.d("myTag"," notif: onFailure message."+t.getMessage());
-                        notifications.add(0,null);
-                        notifications.add(1,null);
-                        notifyDataSetChanged();
-                        setMessage("Network Problem.");
-//                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
-                    }
-                });
+                setNotifications();
             }
         });
         mHolder.getBinding().followerTab.setOnClickListener(new View.OnClickListener() {
@@ -674,6 +654,42 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 setTab(mHolder);
                 notifyDataSetChanged();
                 setMessage(getItemCount()-2==0?"You have no image.":"");
+            }
+        });
+    }
+
+    private void setNotifications() {
+        notifications = new ArrayList<Notification>();
+        notifications.add(0,null);
+        notifications.add(1,null);
+        notifyDataSetChanged();
+        setMessage("");
+        apiConsumer.getNotifications(new Callback<List<Notification>>() {
+            @Override
+            public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
+                Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
+                if (response.isSuccess() && response.body() != null) {
+                    notifications = response.body();
+                    notifications.add(0, null);
+                    notifications.add(1,null);
+                    notifyDataSetChanged();
+                } else {
+                    notifyDataSetChanged();
+//                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
+                }
+                if (getItemCount()-2==0)
+                    setMessage("You have no notification.");
+                else setMessage("");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag"," notif: onFailure message."+t.getMessage());
+                notifications.add(0,null);
+                notifications.add(1,null);
+                notifyDataSetChanged();
+                setMessage("Network Problem.");
+//                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
             }
         });
     }
