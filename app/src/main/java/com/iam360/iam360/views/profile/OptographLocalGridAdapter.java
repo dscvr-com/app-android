@@ -122,6 +122,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private String personName, personDesc;
     private Bitmap avatarImage;
     private String avatarId;
+    private String message;
 
     public OptographLocalGridAdapter(Context context,int tab) {
         this.context = context;
@@ -531,6 +532,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         return false;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+        updateMenuOptions();
+    }
+
     private void initializeHeaderSecond(HeaderSecondViewHolder mHolder) {
 
         setTab(mHolder);
@@ -556,19 +562,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 notifications.add(0,null);
                 notifications.add(1,null);
                 notifyDataSetChanged();
+                setMessage("");
                 apiConsumer.getNotifications(new Callback<List<Notification>>() {
                     @Override
                     public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
                         Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
                         if (response.isSuccess() && response.body() != null) {
                             notifications = response.body();
-                            notifications.add(0,null);
+                            notifications.add(0, null);
                             notifications.add(1,null);
                             notifyDataSetChanged();
                         } else {
                             notifyDataSetChanged();
-                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
+//                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
                         }
+                        if (getItemCount()-2==0)
+                            setMessage("You have no notification.");
+                        else setMessage("");
                     }
 
                     @Override
@@ -577,7 +587,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         notifications.add(0,null);
                         notifications.add(1,null);
                         notifyDataSetChanged();
-                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
+                        setMessage("Network Problem.");
+//                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -591,6 +602,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 followers.add(0, null);
                 followers.add(1, null);
                 notifyDataSetChanged();
+                setMessage("");
 //                apiConsumer.getFollowers()
 //                        .subscribeOn(Schedulers.newThread())
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -615,8 +627,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            followers.add(0, null);
 //                            followers.add(1, null);
                             notifyDataSetChanged();
-                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
+                            message = "You have no follower.";
+                            updateMenuOptions();
+//                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
+                        if (getItemCount()-2==0)
+                            setMessage("You have no follower.");
+                        else setMessage("");
                     }
 
                     @Override
@@ -624,7 +641,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         followers.add(0, null);
                         followers.add(1, null);
                         notifyDataSetChanged();
-                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
+                        setMessage("Network Problem.");
+//                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -636,6 +654,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 onTab = ON_IMAGE;
                 setTab(mHolder);
                 notifyDataSetChanged();
+                setMessage(getItemCount()-2==0?"You have no image.":"");
             }
         });
     }
@@ -935,6 +954,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         fromCancelEdit = true;
         isEditMode = mode;
         notifyItemChanged(0);
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     private void updateMenuOptions() {

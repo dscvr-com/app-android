@@ -61,6 +61,7 @@
     <color name="profile_grid_bar">#000000</color>
     <color name="profile_notif_not_read">#ffededed</color>
     <color name="profile_line_separator">#eaeaea</color>
+    <color name="profile_edittext_bg">#ffffff</color>
 
     <!-- Sign in -->
     <color name="signin_bg">#f7f7f7</color>

@@ -194,6 +194,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
                                 setButtonsClickable(true);
+                                progressBar.setVisibility(View.GONE);
                                 return;
                             }
                             SignUpReturn signUpReturn = response.body();
@@ -209,6 +210,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
                             Timber.d(response.toString());
                             setButtonsClickable(true);
+                            progressBar.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -217,6 +219,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             setButtonsClickable(true);
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -238,6 +241,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
+                                    progressBar.setVisibility(View.GONE);
                                     return;
                                 }
                                 LogInReturn login = response.body();
@@ -246,6 +250,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
+                                    progressBar.setVisibility(View.GONE);
                                     return;
                                 }
 
@@ -284,6 +289,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 GenericOKDialog genericOKDialog = new GenericOKDialog();
                                 genericOKDialog.setArguments(bundle);
                                 genericOKDialog.show(getFragmentManager(), "Error");
+                                progressBar.setVisibility(View.GONE);
                             }
                         });
                     }
