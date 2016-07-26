@@ -23,8 +23,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "https://www.dscvr.com/api/";
-    private static final String BASE_URL2 = "https://www.dscvr.com/";
+    private static final String BASE_URL = "https://api.dscvr.com/api/";
+    private static final String BASE_URL2 = "https://api.dscvr.com/";
 
     private static final int DEFAULT_LIMIT = 5;
     public static final int PROFILE_GRID_LIMIT = 12;

@@ -249,13 +249,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().optograph2dviewLocal.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(context, OptographDetailsActivity.class);
-                            intent.putExtra("opto", optograph);
-//                            context.startActivity(intent);
-                            if(context instanceof ProfileActivity)
-                                ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
-                            else if(context instanceof MainActivity)
-                                ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            callDetailsPage(position);
                         }
                     });
 
@@ -302,13 +296,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().optograph2dviewServer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(context, OptographDetailsActivity.class);
-                            intent.putExtra("opto", optograph);
-//                            context.startActivity(intent);
-                            if(context instanceof ProfileActivity)
-                                ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
-                            else if(context instanceof MainActivity)
-                                ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            callDetailsPage(position);
                         }
                     });
                 }
@@ -433,10 +421,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             setRead(notif);
                             Optograph opto = notif.getActivity_resource_star().getOptograph();
                             opto.setPerson(person);
-                            Intent intent = new Intent(context, OptographDetailsActivity.class);
-                            intent.putExtra("opto", opto);
-//                            context.startActivity(intent);
-                            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+                            callDetailsPage(position);
                         }
                     });
                 }
@@ -469,6 +454,30 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             }
         }
+    }
+
+    private void callDetailsPage(int position) {
+        Intent intent = new Intent(context, OptographDetailsActivity.class);
+        intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
+        if(context instanceof ProfileActivity)
+            ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+        else if(context instanceof MainActivity)
+            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+
+    }
+
+    private ArrayList<Optograph> getNextOptographList(int position, int count) {
+        int optoListCount = optographs.size();
+        count = (count < optoListCount) ? count : optoListCount;
+
+        ArrayList<Optograph> optographList = new ArrayList<Optograph>();
+
+        for(int i = 0; i < count; i++) {
+            optographList.add(optographs.get((position) % optoListCount));
+            position++;
+        }
+
+        return optographList;
     }
 
     private void setRead(Notification notif) {
@@ -1413,7 +1422,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
-        if (optograph.is_local()) optograph = checkToDB(optograph);
+        if (optograph.is_local()) {
+            optograph = checkToDB(optograph);
+            optograph.setPerson(person);
+        }
         Log.d("myTag"," opto null? "+(optograph==null));
         if (optograph==null) {
             return;

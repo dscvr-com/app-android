@@ -523,7 +523,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.header_logo:
-                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+//                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
                 Intent intent1;
