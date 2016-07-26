@@ -15,6 +15,7 @@ public class Optographs {
     public String optograph_right_texture_asset_id;
     public boolean optograph_is_private;
     public boolean optograph_is_staff_pick;
+    public boolean optograph_is_starred;
     public boolean optograph_is_published;
     public String optograph_share_alias;
     public String optograph_direction_phi;
@@ -22,7 +23,7 @@ public class Optographs {
     public String optograph_type;
     public String optograph_platform;
     public String optograph_model;
-    String optograph_make;
+    public String optograph_make;
     public int optograph_stars_count;
     public int optograph_comments_count;
     public String optograph_hashtag_string;
@@ -45,4 +46,7 @@ public class Optographs {
     public boolean location_poi;
     public String location_latitude;
     public String location_longitude;
+
+    public String optograph_location_id;
+    public String optograph_person_id;
 }

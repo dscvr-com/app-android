@@ -253,6 +253,12 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
 //                                updateHeartLabel(optograph,holder);
                             }else{
                                 NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
+                                Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(true));
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                }
                             }
                         }
 
@@ -278,6 +284,13 @@ public class OptographFeedAdapter extends RecyclerView.Adapter<OptographFeedAdap
                                 optograph.setIs_starred(response.isSuccess());
                                 optograph.setStars_count(optograph.getStars_count() + 1);
 //                                updateHeartLabel(optograph, holder);
+                            }else{
+                                Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(false));
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                }
                             }
                         }
 

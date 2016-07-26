@@ -203,6 +203,12 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                                 setHeart(optograph, holder.getBinding().heartLabel, false, optograph.getStars_count() - 1);
                             }else{
                                 NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
+                                Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(true));
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                }
                             }
                         }
 
@@ -221,6 +227,13 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                             // revert star count on failure
                             if (!response.isSuccess()) {
                                 setHeart(optograph, holder.getBinding().heartLabel, true, optograph.getStars_count() + 1);
+                            }else{
+                                Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(false));
+                                    mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                }
                             }
                         }
 
