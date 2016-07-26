@@ -249,7 +249,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column, value);
-        db.update(FACES_TABLE_NAME, contentValues, FACES_ID+" = ? ", new String[] { id } );
+        db.update(FACES_TABLE_NAME, contentValues, FACES_ID+"   = ? ", new String[] { id } );
         return true;
     }
 
@@ -334,10 +334,10 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        Log.d("MARK","updateTableColumn tableName="+tableName);
-        Log.d("MARK","updateTableColumn contentValues="+contentValues);
-        Log.d("MARK","updateTableColumn primaryColumn="+primaryColumn);
-        Log.d("MARK","updateTableColumn primaryColumnValue="+primaryColumnValue);
+//        Log.d("MARK","updateTableColumn tableName="+tableName);
+//        Log.d("MARK","updateTableColumn contentValues="+contentValues);
+//        Log.d("MARK","updateTableColumn primaryColumn="+primaryColumn);
+//        Log.d("MARK","updateTableColumn primaryColumnValue="+primaryColumnValue);
         db.update(tableName,contentValues,primaryColumn+" =  ? ",new String[] {String.valueOf(primaryColumnValue)});
         return  true;
     }

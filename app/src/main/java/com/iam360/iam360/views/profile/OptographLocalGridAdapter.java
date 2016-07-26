@@ -345,10 +345,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.unfollow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                        mHolder2.getBinding().getFollower().setIs_followed(false);
-                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
-                                        mHolder2.getBinding().invalidateAll();
-                                        notifyItemChanged(position);
+                                        if (response.isSuccess()) {
+                                            mHolder2.getBinding().getFollower().setIs_followed(false);
+                                            mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
+                                            mHolder2.getBinding().invalidateAll();
+                                            notifyItemChanged(position);
+
+                                            Cursor res = mydb.getData(mHolder2.getBinding().getFollower().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                            res.moveToFirst();
+                                            if (res.getCount() > 0) {
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "is_followed", String.valueOf(false));
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "followers_count", String.valueOf(mHolder2.getBinding().getFollower().getFollowers_count()));
+                                            }
+                                        }
+
                                     }
 
                                     @Override
@@ -360,14 +370,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.follow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                                        mHolder2.getBinding().getFollower().setIs_followed(true);
-                                        mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
-                                        mHolder2.getBinding().invalidateAll();
-                                        if(position < optographs.size()){
-                                            Optograph optograph = optographs.get(position);
-                                            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
+                                        if (response.isSuccess()) {
+                                            mHolder2.getBinding().getFollower().setIs_followed(true);
+                                            mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
+                                            mHolder2.getBinding().invalidateAll();
+                                            if(position < optographs.size()){
+                                                Optograph optograph = optographs.get(position);
+                                                NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
+                                                Cursor res = mydb.getData(optograph.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                                res.moveToFirst();
+                                                if (res.getCount() > 0) {
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "is_followed", String.valueOf(true));
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "followers_count", String.valueOf(optograph.getPerson().getFollowers_count()));
+                                                }
+                                            }
+                                            notifyItemChanged(position);
                                         }
-                                        notifyItemChanged(position);
+
                                     }
 
                                     @Override
@@ -779,9 +798,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            mHolder1.getBinding().getPerson().setIs_followed(false);
-                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
-                            mHolder1.getBinding().invalidateAll();
+                            if(response.isSuccess()){
+                                mHolder1.getBinding().getPerson().setIs_followed(false);
+                                mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count()-1);
+                                mHolder1.getBinding().invalidateAll();
+
+                                Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(false));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override
@@ -793,10 +821,19 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                            mHolder1.getBinding().getPerson().setIs_followed(true);
-                            mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
-                            mHolder1.getBinding().invalidateAll();
-                            NotificationSender.triggerSendNotification(mHolder1.getBinding().getPerson(), "follow");
+                            if(response.isSuccess()) {
+                                mHolder1.getBinding().getPerson().setIs_followed(true);
+                                mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
+                                mHolder1.getBinding().invalidateAll();
+                                NotificationSender.triggerSendNotification(mHolder1.getBinding().getPerson(), "follow");
+
+                                Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                res.moveToFirst();
+                                if (res.getCount() > 0) {
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(true));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                }
+                            }
                         }
 
                         @Override
