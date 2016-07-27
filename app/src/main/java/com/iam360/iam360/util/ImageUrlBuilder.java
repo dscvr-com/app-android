@@ -53,6 +53,7 @@ public class ImageUrlBuilder {
 
 
     public static String buildSmallCubeUrl(Optograph optograph, boolean isLeftId, int face) {
+        if(optograph == null) return null;
         String id = optograph.getId();
         if (!optograph.is_local()) {
 //            http://images.iam360.io/E89S0VsHDDD5cVmeEtLrawAyhfM=/0x0/filters:subface(0,0,1,1024)/resources.staging-iam360.io.s3.amazonaws.com/textures/05353858-493d-46b4-be79-ed759f427e82/l0.jpg
