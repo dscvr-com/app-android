@@ -95,6 +95,13 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         binding.cancelBtn.setOnClickListener(this);
         binding.overflowBtn.setOnClickListener(this);
 
+//        setAdapter();
+
+        return binding.getRoot();
+    }
+
+    private void setAdapter() {
+
         binding.optographFeed.setAdapter(optographLocalGridAdapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(),OptographLocalGridAdapter.COLUMNS);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -145,7 +152,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             }
         });
 
-        return binding.getRoot();
     }
 
     private void setTab() {
@@ -207,6 +213,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 
 //        getActivity().invalidateOptionsMenu();
+        Log.d("myTag"," notif: initializeProfileFeed isCurrentUser? "+isCurrentUser);
+        if (isCurrentUser) {
+            optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(), OptographLocalGridAdapter.ON_NOTIFICATION);
+        } else optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(), OptographLocalGridAdapter.ON_IMAGE);
+        setAdapter();
         updateHomeButton();
 
         initializeFeed();
@@ -340,6 +351,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void updateHomeButton() {
 //        if (getActivity() instanceof MainActivity)
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(optographLocalGridAdapter.isOnEditMode() ? R.drawable.cancel : R.drawable.logo_small_dark);
+        Log.d("myTag"," updateHomeButton: isCurrentUser? "+isCurrentUser);
         if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
             binding.homeBtn.setVisibility(View.GONE);
             binding.overflowBtn.setVisibility(View.GONE);
@@ -374,6 +386,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.overlayEdit.getLayoutParams();
 //        params.width = 200; params.leftMargin = 100;
         View view = binding.optographFeed.getChildAt(1);
+        if (view==null) return;
         params.topMargin = view.getTop()+binding.toolbarLayout.getHeight();
         binding.overlayEdit.requestLayout();
     }
@@ -383,6 +396,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         binding.tabMessage.setText(message);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.tabMessage.getLayoutParams();
         View view = binding.optographFeed.getChildAt(1);
+        if (view==null) return;
         params.topMargin = view.getTop()+binding.toolbarLayout.getHeight()+view.getHeight();
         binding.tabMessage.requestLayout();
     }
