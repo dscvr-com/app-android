@@ -1,5 +1,7 @@
 package com.iam360.iam360.util;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
@@ -20,7 +22,7 @@ public class RFC3339DateFormatter {
                                                         .withLocale(Locale.US)
                                                         .withChronology(ISOChronology.getInstance());
     private static final DateTimeFormatter rfc3339Formatter2 = DateTimeFormat
-                                                        .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ssZ")
+                                                        .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSSSSSZ")
 //                                                        .withZone(DateTimeZone.getDefault())
                                                         .withZone(DateTimeZone.UTC)
                                                         .withLocale(Locale.US)
@@ -29,18 +31,42 @@ public class RFC3339DateFormatter {
 
     public static DateTime fromRFC3339String(String string) {
         DateTime dateTime = null;
+        DateTimeFormatter formatter = getFormatter(string);
         try {
-             dateTime = rfc3339Formatter1.parseDateTime(string);
+             dateTime = formatter.parseDateTime(string);
         } catch (IllegalArgumentException ex1) {
-            try {
-                dateTime = rfc3339Formatter2.parseDateTime(string);
-            } catch (IllegalArgumentException ex2) {
-                ex1.printStackTrace();
-                ex2.printStackTrace();
-            }
+//            try {
+//                dateTime = rfc3339Formatter2.parseDateTime(string);
+//                Log.d("myTag"," timeAgo: try2 dateTime: "+dateTime.toString());
+//            } catch (IllegalArgumentException ex2) {
+//                Log.d("myTag"," timeAgo: catch2 "+ex2.getMessage());
+//                ex1.printStackTrace();
+//                ex2.printStackTrace();
+//            }
         }
 
         return dateTime;
+    }
+
+    private static DateTimeFormatter getFormatter(String dateString) {
+        DateTimeFormatter formatter = rfc3339Formatter1;
+
+        String s = "";
+        dateString.lastIndexOf(".");
+        for (int i=0;i<(dateString.length()-(dateString.lastIndexOf(".")+2));i++) {
+            s+="S";
+        }
+//        Log.d("myTag"," timeAgo: dateString: "+dateString+" lastIndex: "+dateString.lastIndexOf(".")+
+//                " length: "+dateString.length()+" numberOfDecimal: "+(dateString.length()-(dateString.lastIndexOf(".")+2))+
+//                " s: "+s);
+        formatter = DateTimeFormat
+                .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss."+s+"Z")
+//              .withZone(DateTimeZone.getDefault())
+                .withZone(DateTimeZone.UTC)
+                .withLocale(Locale.US)
+                .withChronology(ISOChronology.getInstance());
+        
+        return formatter;
     }
 
     public static String toRFC3339String(DateTime dateTime) {

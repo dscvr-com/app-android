@@ -61,7 +61,9 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -1604,6 +1606,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         return optograph;
+    }
+
+    public static String getTimeNow() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'");
+        return format.format(new Date());
     }
 
     public static class LocalViewHolder extends RecyclerView.ViewHolder {
