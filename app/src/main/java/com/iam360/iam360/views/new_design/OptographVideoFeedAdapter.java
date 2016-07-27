@@ -233,7 +233,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         ArrayList<Optograph> optographList = new ArrayList<Optograph>();
 
         for(int i = 0; i < count; i++) {
-            optographList.add(optographs.get((position+1) % optoListCount));
+            optographList.add(optographs.get((position) % optoListCount));
             position++;
         }
 
