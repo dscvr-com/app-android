@@ -1490,8 +1490,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
         if (optograph.is_local()) {
             optograph = checkToDB(optograph);
-            optograph.setPerson(person);
+            if (optograph != null) optograph.setPerson(person);
         }
+
         Log.d("myTag"," opto null? "+(optograph==null));
         if (optograph==null) {
             return;
