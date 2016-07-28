@@ -378,6 +378,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             binding.homeBtn.setVisibility(View.VISIBLE);
         }
         enableScroll(!optographLocalGridAdapter.isOnEditMode());
+        Log.d("myTag"," notif: updateHomeButton message: "+optographLocalGridAdapter.getMessage());
         setMessage(optographLocalGridAdapter.getMessage()==null?"":optographLocalGridAdapter.getMessage());
     }
 
@@ -396,6 +397,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         binding.tabMessage.setText(message);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.tabMessage.getLayoutParams();
         View view = binding.optographFeed.getChildAt(1);
+        Log.d("myTag"," notif: setMessage isView null? "+(view==null));
         if (view==null) return;
         params.topMargin = view.getTop()+binding.toolbarLayout.getHeight()+view.getHeight();
         binding.tabMessage.requestLayout();
@@ -469,7 +471,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     protected void initializeFeed() {
         //try to add filter for deleted optographs
         optographLocalGridAdapter.setPerson(person);
-        Log.d("myTag",TAG+" inside initializeFeed equal? "+(person.getId().equals(cache.getString(Cache.USER_ID))));
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -484,9 +485,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(optographLocalGridAdapter::addItem);
         }
-        if (optographLocalGridAdapter.getItemCount()-2==0) {
-            optographLocalGridAdapter.setMessage("You have no image.");
-        } else optographLocalGridAdapter.setMessage("");
+        Log.d("myTag"," notif: initializeFeed onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+" item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
+        if (optographLocalGridAdapter.getItemCount()-2==0 && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
+            optographLocalGridAdapter.setMessage(getResources().getString(R.string.profile_no_image));
+        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) optographLocalGridAdapter.setMessage("");
     }
 
     protected void loadMore() {
@@ -517,8 +519,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
-        if (optographLocalGridAdapter.getItemCount()-2==0) {
-            optographLocalGridAdapter.setMessage("You have no image.");
-        } else optographLocalGridAdapter.setMessage("");
+        Log.d("myTag"," notif: refresh onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+" item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
+        if (optographLocalGridAdapter.getItemCount()-2==0  && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
+            optographLocalGridAdapter.setMessage(getResources().getString(R.string.profile_no_image));
+        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) optographLocalGridAdapter.setMessage("");
     }
 }

@@ -106,6 +106,9 @@
     <string name="profile_notif_star_text">liked your photo.</string>
     <string name="profile_notif_follow_text">started following you.</string>
     <string name="profile_add_desc">Add description...</string>
+    <string name="profile_no_image">No images.</string>
+    <string name="profile_no_notif">You have no notification.</string>
+    <string name="profile_no_follower">You have no follower.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
