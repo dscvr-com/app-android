@@ -1,7 +1,11 @@
 package com.iam360.iam360.util;
 
+import android.content.Context;
+import android.util.Log;
+
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -26,32 +30,38 @@ public class TimeUtils {
         if (period.getYears() >= 1) {
             periodFormatterBuilder
                     .appendYears()
-                    .appendSuffix(" year", " years");
+//                    .appendSuffix(" year", " years");
+                    .appendSuffix("y", "y");
         } else if (period.getMonths() >= 1) {
             periodFormatterBuilder
                     .appendMonths()
-                    .appendSuffix(" month", " months");
+//                    .appendSuffix(" month", " months");
+                    .appendSuffix("mo", "mo");
         } else if (period.getWeeks() >= 1) {
             periodFormatterBuilder
                     .appendWeeks()
-                    .appendSuffix(" week", " weeks");
+//                    .appendSuffix(" week", " weeks");
+                    .appendSuffix("w", "w");
         } else if (period.getDays() >= 1) {
             periodFormatterBuilder
                     .appendDays()
-                    .appendSuffix(" day", " days");
+//                    .appendSuffix(" day", " days");
+                    .appendSuffix("d", "d");
         } else if (period.getHours() >= 1) {
             periodFormatterBuilder
                     .appendHours()
-                    .appendSuffix(" hour", " hours");
+//                    .appendSuffix(" hour", " hours");
+                    .appendSuffix("h", "h");
         } else if (period.getMinutes() >= 1) {
             periodFormatterBuilder
                     .appendMinutes()
-                    .appendSuffix(" minute", " minutes");
+//                    .appendSuffix(" minute", " minutes");
+                    .appendSuffix("m", "m");
         } else {
             throw new RuntimeException("Unexpected creation time!");
         }
 
-        periodFormatterBuilder.appendLiteral(" ago");
+//        periodFormatterBuilder.appendLiteral(" ago");
         PeriodFormatter formatter = periodFormatterBuilder.toFormatter();
 
         return formatter.print(period);

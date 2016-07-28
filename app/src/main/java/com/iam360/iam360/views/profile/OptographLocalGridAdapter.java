@@ -61,7 +61,9 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -149,8 +151,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
 
-        Log.d("myTag"," notif: isCurrentUser? "+isCurrentUser);
-        if (onTab==ON_NOTIFICATION) setNotifications();
+        Log.d("myTag"," notif: isCurrentUser? "+isCurrentUser+" notif? "+isTab(ON_NOTIFICATION));
+        if (isTab(ON_NOTIFICATION)) setNotifications();
     }
 
     @Override
@@ -417,7 +419,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     }
 
-                    Log.d("myTag"," notif: position: "+position+" opto null? "+(notif.getActivity_resource_star().getOptograph()==null));
+                    Log.d("myTag"," notif: position: "+position+" opto null? "+(notif.getActivity_resource_star().getOptograph()==null)+" id: "+notif.getActivity_resource_star().getOptograph().getId());
 
                     if (notif.getDeleted_at()!=null) return;
 
@@ -513,7 +515,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void setRead(Notification notif) {
-        Log.d("myTag"," notif: id: "+notif.getId());
         apiConsumer.setNotificationToRead(notif.getId(), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -573,6 +574,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void setMessage(String message) {
+        Log.d("myTag"," notif: called setMessage. "+message);
         this.message = message;
         updateMenuOptions();
     }
@@ -635,12 +637,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            followers.add(0, null);
 //                            followers.add(1, null);
                             notifyDataSetChanged();
-                            message = "You have no follower.";
-                            updateMenuOptions();
+//                            message = context.getResources().getString(R.string.profile_no_follower);
+//                            updateMenuOptions();
 //                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
                         if (getItemCount()-2==0)
-                            setMessage("You have no follower.");
+                            setMessage(context.getResources().getString(R.string.profile_no_follower));
                         else setMessage("");
                     }
 
@@ -662,12 +664,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 onTab = ON_IMAGE;
                 setTab(mHolder);
                 notifyDataSetChanged();
-                setMessage(getItemCount()-2==0?"You have no image.":"");
+                setMessage(getItemCount()-2==0?context.getResources().getString(R.string.profile_no_image):"");
             }
         });
     }
 
     private void setNotifications() {
+        Log.d("myTag"," notif: called setNotification");
         notifications = new ArrayList<Notification>();
         notifications.add(0,null);
         notifications.add(1,null);
@@ -678,16 +681,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
                 Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
                 if (response.isSuccess() && response.body() != null) {
-                    notifications = response.body();
+                    List<Notification> notifs = response.body();
+                    notifications = new ArrayList<Notification>();
                     notifications.add(0, null);
                     notifications.add(1,null);
+                    for (Notification not : notifs) {
+                        if (not.getDeleted_at()==null) notifications.add(not);
+                    }
                     notifyDataSetChanged();
                 } else {
                     notifyDataSetChanged();
 //                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
                 }
                 if (getItemCount()-2==0)
-                    setMessage("You have no notification.");
+                    setMessage(context.getResources().getString(R.string.profile_no_notif));
                 else setMessage("");
             }
 
@@ -1605,6 +1612,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         return optograph;
+    }
+
+    public static String getTimeNow() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'");
+        return format.format(new Date());
     }
 
     public static class LocalViewHolder extends RecyclerView.ViewHolder {
