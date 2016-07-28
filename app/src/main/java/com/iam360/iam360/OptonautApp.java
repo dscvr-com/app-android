@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -29,6 +31,9 @@ public class OptonautApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
         Toro.init(this);
+
+        ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(this);
+        ImageLoader.getInstance().init(config.build());
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

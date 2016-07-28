@@ -442,6 +442,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
 
     public void saveToSQLiteFeeds(Optograph opto) {
+
+        Timber.d("saveToSQLiteFeeds");
         if(opto.getId() == null) return;
         AsyncTask.execute(new Runnable() {
             @Override
@@ -449,6 +451,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                 res.moveToFirst();
                 if (res.getCount() > 0) {
+                    Timber.d("saveToSQLiteFeeds > 0");
                     String id = DBHelper.OPTOGRAPH_ID;
                     String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
                     if(opto.getText() !=null && !opto.getText().equals("")){
@@ -480,6 +483,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         mydb.updateTableColumn(tb,id, opto.getId(), "optograph_type", opto.getOptograph_type());
                     }
                 }else{
+                    Timber.d("saveToSQLiteFeeds <= 0");
                     mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
                             opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
                             opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,

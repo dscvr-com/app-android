@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.iam360.iam360.R;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.GeneralUtils;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
     private static final int ITEM_WIDTH= Constants.getInstance().getDisplayMetrics().widthPixels;
     private ArrayList<String> mDataset;
     private Context context;
+    private ImageLoader imageLoader;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
@@ -53,6 +55,8 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
     public ImagePickerAdapter(Context context, ArrayList<String> myDataset) {
         mDataset = myDataset;
         this.context = context;
+
+        imageLoader = ImageLoader.getInstance();
     }
 
     @Override
@@ -65,19 +69,12 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final String path = mDataset.get(position);
+        final String path = "file://" + mDataset.get(position);
 
-//        holder.image.setImageURI(Uri.parse(path));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / 3);
+        holder.itemView.setLayoutParams(params);
 
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ITEM_WIDTH, 400); //ITEM_WIDTH / OptographGridFragment.NUM_COLUMNS); // (width, height)
-//        holder.itemView.setLayoutParams(params);
-
-        Picasso.with(holder.image.getContext())
-                .load(new File(path))
-//                .placeholder(R.drawable.placeholder)
-                .resize(ITEM_WIDTH, ITEM_WIDTH/3)//(ITEM_WIDTH,550)
-                .centerCrop()
-                .into(holder.image);
+        imageLoader.displayImage(path, holder.image);
 
         holder.text.setText(path);
         holder.itemView.setOnClickListener(new View.OnClickListener() {

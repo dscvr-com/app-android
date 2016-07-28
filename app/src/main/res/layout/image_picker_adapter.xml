@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_margin="@dimen/snackbar_elevation"
+    android:padding="@dimen/snackbar_elevation"
     tools:context=".views.new_design.ImagePickerAdapter">
 
     <View
@@ -13,10 +14,10 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop">
-    </ImageView>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="1dp"
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/text"
