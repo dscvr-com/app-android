@@ -16,6 +16,8 @@ import com.iam360.iam360.R;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 public class ImagePicker extends AppCompatActivity {
 
     private final int MIN_WIDTH = 5000;
@@ -55,9 +57,11 @@ public class ImagePicker extends AppCompatActivity {
                 MediaStore.Images.ImageColumns.MIME_TYPE,
                 MediaStore.Images.ImageColumns.WIDTH,
                 MediaStore.Images.ImageColumns.HEIGHT,
-                MediaStore.Images.ImageColumns.SIZE };
+                MediaStore.Images.ImageColumns.SIZE,
+                MediaStore.Images.ImageColumns.DATE_TAKEN };
+
         Cursor cursor = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                columns, null, null, null);
+                columns, null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
 
         if (cursor.moveToFirst()) {
             do {
@@ -67,9 +71,13 @@ public class ImagePicker extends AppCompatActivity {
                 final String width = cursor.getString(cursor.getColumnIndex(columns[4]));
 //                final String height = cursor.getString(cursor.getColumnIndex(columns[5]));
 //                final String size = cursor.getString(cursor.getColumnIndex(columns[6]));
+//                final String date = cursor.getString(cursor.getColumnIndex(columns[7]));
 //                Timber.d("PATH : " + title + ":" + data + ":" + mimeType + ":" + width + ":" + height + ":" + size);
 
-                if(width != null && Integer.parseInt(width) > MIN_WIDTH) imagePathList.add(data);
+                if(width != null && Integer.parseInt(width) > MIN_WIDTH) {
+                    imagePathList.add(data);
+//                    Timber.d("360IMAGES " + date);
+                }
 
             } while (cursor.moveToNext());
         }

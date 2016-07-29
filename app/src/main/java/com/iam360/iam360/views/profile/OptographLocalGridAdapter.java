@@ -622,7 +622,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            } else {
 //                                Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
 //                            }
-//                            return null;1
+//                            return null;
 //                        })
 //                        .subscribe(OptographLocalGridAdapter.this::addItem);
                 apiConsumer.getFollowersCall(new Callback<List<Follower>>() {
@@ -1508,7 +1508,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Log.d("myTag"," setMessage: isLocal? "+optograph.is_local());
         if (optograph.is_local()) {
             optograph = checkToDB(optograph);
-            optograph.setPerson(person);
+            if (optograph != null) optograph.setPerson(person);
         }
         Log.d("myTag"," setMessage: opto null? "+(optograph==null));
         if (optograph==null) {

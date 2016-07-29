@@ -149,7 +149,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".views.SettingsActivity" />
-        <activity android:name=".views.new_design.ImagePicker" />
+        <activity android:name=".views.new_design.ImagePicker"
+            android:screenOrientation="portrait" />
 
         <!-- change to true to debug mixpanel -->
         <meta-data

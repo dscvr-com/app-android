@@ -53,6 +53,7 @@ import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.views.WebViewActivity;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -211,13 +212,17 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //            previewImage.setImageURI(imageUri);
             postLaterButton.setVisibility(View.GONE);
 
-            Picasso.with(previewImage.getContext())
-                    .load(new File(imagePath))
-                    .placeholder(R.drawable.placeholder)
-                    .resize(ITEM_WIDTH, 400)
-                    .centerInside()
-//                    .centerCrop()
-                    .into(previewImage);
+            Timber.d("Image path : " + imagePath);
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.displayImage(imagePath, previewImage);
+
+//            Picasso.with(previewImage.getContext())
+//                    .load(new File(imagePath))
+//                    .placeholder(R.drawable.placeholder)
+//                    .resize(ITEM_WIDTH, 400)
+//                    .centerInside()
+////                    .centerCrop()
+//                    .into(previewImage);
 
             createDefaultOptograph(optographGlobal);
         }
