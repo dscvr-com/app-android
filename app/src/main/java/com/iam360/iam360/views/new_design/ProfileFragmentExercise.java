@@ -131,6 +131,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 View view = binding.optographFeed.getChildAt(1);
+                if (view==null)return;
                 yPos += dy;
                 float top = view.getY();
 //                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
@@ -393,11 +394,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void setMessage(String message) {
-        binding.tabMessage.setVisibility(message.isEmpty()?View.GONE:View.VISIBLE);
+        binding.tabMessage.setVisibility((message.isEmpty() || optographLocalGridAdapter.getItemCount()-2==0)?View.GONE:View.VISIBLE);
         binding.tabMessage.setText(message);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.tabMessage.getLayoutParams();
         View view = binding.optographFeed.getChildAt(1);
-        Log.d("myTag"," notif: setMessage isView null? "+(view==null));
+        Log.d("myTag"," setMessage: setMessage isView null? "+(view==null));
         if (view==null) return;
         params.topMargin = view.getTop()+binding.toolbarLayout.getHeight()+view.getHeight();
         binding.tabMessage.requestLayout();
@@ -474,6 +475,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnCompleted(() -> updateMessage())
+                .doOnEach(e->Log.d("myTag"," setMessage: opto null? "+(e==null)))
                 .onErrorReturn(throwable -> {
                     if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
@@ -483,12 +486,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             LocalOptographManager.getOptographs()
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() -> updateMessage())
                     .subscribe(optographLocalGridAdapter::addItem);
         }
-        Log.d("myTag"," notif: initializeFeed onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+" item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
-        if (optographLocalGridAdapter.getItemCount()-2==0 && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
-            optographLocalGridAdapter.setMessage(getResources().getString(R.string.profile_no_image));
-        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) optographLocalGridAdapter.setMessage("");
     }
 
     protected void loadMore() {
@@ -507,6 +507,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         apiConsumer.getOptographsFromPerson(person.getId(), 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnCompleted(() -> updateMessage())
                 .onErrorReturn(throwable -> {
                     if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
@@ -516,12 +517,21 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             LocalOptographManager.getOptographs()
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() -> updateMessage())
                     .subscribe(optographLocalGridAdapter::addItem);
         }
+    }
 
-        Log.d("myTag"," notif: refresh onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+" item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
+    private void updateMessage() {
+        Log.d("myTag"," setMessage: onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+
+                " item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
+        Log.d("myTag"," setMessage: count: "+optographLocalGridAdapter.getItemCount());
         if (optographLocalGridAdapter.getItemCount()-2==0  && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
             optographLocalGridAdapter.setMessage(getResources().getString(R.string.profile_no_image));
-        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) optographLocalGridAdapter.setMessage("");
+            updateHomeButton();
+        } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
+            optographLocalGridAdapter.setMessage("");
+            updateHomeButton();
+        }
     }
 }

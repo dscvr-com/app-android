@@ -622,7 +622,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            } else {
 //                                Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
 //                            }
-//                            return null;
+//                            return null;1
 //                        })
 //                        .subscribe(OptographLocalGridAdapter.this::addItem);
                 apiConsumer.getFollowersCall(new Callback<List<Follower>>() {
@@ -641,13 +641,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                            updateMenuOptions();
 //                            Toast.makeText(context, "You have no Follower.", Toast.LENGTH_LONG).show();
                         }
-                        if (getItemCount()-2==0)
+                        if (getItemCount()-2==0 && isTab(ON_FOLLOWER))
                             setMessage(context.getResources().getString(R.string.profile_no_follower));
-                        else setMessage("");
+                        else if (isTab(ON_FOLLOWER)) setMessage("");
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
+                        followers = new ArrayList<Follower>();
                         followers.add(0, null);
                         followers.add(1, null);
                         notifyDataSetChanged();
@@ -663,7 +664,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (!isCurrentUser) return;
                 onTab = ON_IMAGE;
                 setTab(mHolder);
+                if (context instanceof MainActivity) ((MainActivity) context).refresh();
                 notifyDataSetChanged();
+                Log.d("myTag"," setMessage: itemcount: "+getItemCount()+" MainActivity? "+(context instanceof MainActivity));
                 setMessage(getItemCount()-2==0?context.getResources().getString(R.string.profile_no_image):"");
             }
         });
@@ -693,9 +696,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     notifyDataSetChanged();
 //                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
                 }
-                if (getItemCount()-2==0)
+                if (getItemCount()-2==0 && isTab(ON_NOTIFICATION))
                     setMessage(context.getResources().getString(R.string.profile_no_notif));
-                else setMessage("");
+                else if (isTab(ON_NOTIFICATION)) setMessage("");
             }
 
             @Override
@@ -1495,15 +1498,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
         DateTime created_at = optograph.getCreated_atDateTime();
 
-        Log.d("myTag"," delete: optoId: "+optograph.getId());
-        // skip if optograph is already in list
-        Log.d("myTag"," delete: contains? "+optographs.contains(optograph)+" isLocal? "+
-                optograph.is_local()+" uploaded? "+mydb.checkIfAllImagesUploaded(optograph.getId()));
-        if (optographs.contains(optograph)) Log.d("myTag"," delete: contained isLocal? "+optographs.get(optographs.indexOf(optograph)).is_local()+" removedIndex: "+optographs.indexOf(optograph)+" deletedAt: "+optograph.getDeleted_at());
-//        if (optographs.contains(optograph) && optographs.get(optographs.indexOf(optograph)).is_local() && optograph.is_local() && mydb.checkIfAllImagesUploaded(optograph.getId())) {
-//            notifyItemRemoved(optographs.indexOf(optograph));
-//            return;
-//        } else
         if (optographs.contains(optograph)) {
             return;
         }
@@ -1511,11 +1505,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
+        Log.d("myTag"," setMessage: isLocal? "+optograph.is_local());
         if (optograph.is_local()) {
             optograph = checkToDB(optograph);
             optograph.setPerson(person);
         }
-        Log.d("myTag"," opto null? "+(optograph==null));
+        Log.d("myTag"," setMessage: opto null? "+(optograph==null));
         if (optograph==null) {
             return;
         }
@@ -1569,12 +1564,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
-        Log.d("myTag"," delete: checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+" delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+        Log.d("myTag"," setMessage: checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+
+                " delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT))+" onserver? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0));
         if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
 //            deleteOptographFromPhone(optograph.getId());
             return null;
         }
-
 
         if (mydb.checkIfAllImagesUploaded(optograph.getId())) return null;
         optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
