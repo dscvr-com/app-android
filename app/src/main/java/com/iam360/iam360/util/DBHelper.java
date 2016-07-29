@@ -99,9 +99,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "create table " +LOCATION_TABLE_NAME+
                         " (id text primary key not null, created_at text not null," +
-                        "updated_at text not null,deleted_at text not null," +
+                        "updated_at text,deleted_at text," +
                         "latitude text not null, longitude text not null," +
-                        "text text not null,"+
+                        "text text,"+
                         "country text not null, country_short text not null," +
                         "place text not null, region text not null," +
                         "poi text not null )"

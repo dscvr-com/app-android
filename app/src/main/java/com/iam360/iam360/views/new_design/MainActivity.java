@@ -16,12 +16,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.iam360.iam360.R;
 import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.Optograph;
@@ -53,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        if(!Cache.cacheInitialized){
+            cache = Cache.getInstance(this);
+        }
         cache = Cache.open();
         initializeComponents();
 

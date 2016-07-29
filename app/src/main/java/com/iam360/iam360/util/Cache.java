@@ -23,6 +23,7 @@ public class Cache {
     private final SharedPreferences user;
     private final Context context;
 
+    public static boolean cacheInitialized = false;
     public static final String GCM_TOKEN = "GCM_TOKEN";
     public static final String USER_TOKEN = "USER_TOKEN";
     public static final String USER_ID = "USER_ID";
@@ -60,6 +61,7 @@ public class Cache {
     public static Cache getInstance(Context context, String name) {
         if (instance == null)
             instance = new Cache(context.getApplicationContext());
+        cacheInitialized = true;
         instance.openCache = instance.app;
         return instance;
     }
