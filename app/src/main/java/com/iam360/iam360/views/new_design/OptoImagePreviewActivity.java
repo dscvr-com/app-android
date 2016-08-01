@@ -564,14 +564,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res == null || res.getCount() == 0) return;
         res.moveToFirst();
-        String stringRes = "" + DBHelper.OPTOGRAPH_ID + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_PUBLISHED + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) +
-                "\n" + DBHelper.OPTOGRAPH_CREATED_AT + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_ON_SERVER + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) +
-                "\n" + DBHelper.OPTOGRAPH_TEXT + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_STITCHER_VERSION + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
-//        descBox.setText(stringRes);
-        Log.d("myTag", "" + stringRes);
     }
 
     private void uploadPlaceHolder(Optograph opto) {
@@ -596,17 +588,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                         // ignore
                     }
                 }
-            }
-            Log.d("myTag", "before: ");
-            int ctr = 0;
-            for (boolean i : opto.getLeftFace().getStatus()) {
-                Log.d("myTag", "left " + ctr + ": " + i);
-                ctr += 1;
-            }
-            int ctr2 = 0;
-            for (boolean i : opto.getRightFace().getStatus()) {
-                Log.d("myTag", "right " + ctr2 + ": " + i);
-                ctr2 += 1;
             }
         }
 
@@ -724,9 +705,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         protected Void doInBackground(String... params) {
             for (String s : params) {
                 String[] s3 = s.split("/");
-                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
                 String face = s3[s3.length - 1];
-                Log.d("myTag", " face: " + face);
 
                 uploadImage(optographGlobal, s, face);
             }

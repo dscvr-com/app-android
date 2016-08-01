@@ -623,7 +623,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 if (response.isSuccess()) {
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
-                    Log.d("myTag", " delete: time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) +" id: "+optograph.getId() + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());

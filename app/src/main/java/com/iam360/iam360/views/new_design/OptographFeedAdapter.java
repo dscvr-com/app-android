@@ -181,14 +181,9 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             uploadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("myTag", "isFbShare? " + optograph.isPostFacebook() + " isTwitShare? " + optograph.isPostTwitter()+" optoId: "+optograph.getId());
                     if (cache.getString(Cache.USER_TOKEN).equals("")) {
                         Snackbar.make(v,"Must login to upload.",Snackbar.LENGTH_SHORT);
                     } else {
-                        Log.d("myTag","upload bfore  optoId: "+optograph.getId()+" optograhPersonId: " +
-                                optograph.getPerson().getId()+" dataUpload? "+optograph.is_data_uploaded()+
-                                " placeHolderUpload? "+optograph.is_place_holder_uploaded()+" isFBShare? "+
-                                optograph.isPostFacebook()+" isTwitShare? "+optograph.isPostTwitter());
                         apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
                         upload_progress.setVisibility(View.VISIBLE);
                         uploadButton.setVisibility(View.GONE);
@@ -199,10 +194,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                         optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
                         optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
                         optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);*/
-                        Log.d("myTag", "upload after  optoId: " + optograph.getId() + " optograhPersonId: " +
-                                optograph.getPerson().getId() + " dataUpload? " + optograph.is_data_uploaded() +
-                                " placeHolderUpload? " + optograph.is_place_holder_uploaded() + " isFBShare? " +
-                                optograph.isPostFacebook() + " isTwitShare? " + optograph.isPostTwitter());
                         optoUpload = optograph;
                         if (!optograph.is_data_uploaded()) {
                             Log.d("myTag", "upload the data first.");
@@ -512,7 +503,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-//                        Log.d("myTag"," onResponse body: "+response.body());
                 Log.d("myTag", " onResponse message: " + response.message());
                 Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
@@ -544,14 +534,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res==null || res.getCount()==0) return;
         res.moveToFirst();
-        String stringRes = ""+ DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
-                "\n"+ DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
-                "\n"+ DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
-//        descBox.setText(stringRes);
-        Log.d("myTag", "" + stringRes);
     }
 
     private void uploadPlaceHolder(Optograph opto) {
@@ -575,17 +557,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 }
             }
         }
-        Log.d("myTag","before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag","left "+ctr+": "+i);
-            ctr+=1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag","right "+ctr2+": "+i);
-            ctr2+=1;
-        }
 
         new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
     }
@@ -600,9 +571,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         protected Void doInBackground(String... params) {
             for (String s : params) {
                 String[] s3 = s.split("/");
-                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
                 String face = s3[s3.length - 1];
-                Log.d("myTag", " face: " + face);
 
                 uploadPlaceHolderImage(optoUpload, s, face);
             }
@@ -693,17 +662,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 }
             }
         }
-        Log.d("myTag","before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag","left "+ctr+": "+i);
-            ctr+=1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag","right "+ctr2+": "+i);
-            ctr2+=1;
-        }
 
         new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
     }
@@ -720,11 +678,8 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             for (List<String> sL : params) {
                 for (String s:sL) {
                     String[] s3 = s.split("/");
-                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
                     int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
                     String face = s.contains("right") ? "r" : "l";
-                    Log.d("myTag", " face: " + face);
 
                     if (face.equals("l") && optoUpload.getLeftFace().getStatus()[side]) {
                         //pass
@@ -745,19 +700,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             Cursor res = mydb.getData(optoUpload.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             if (res==null || res.getCount()==0) return;
             res.moveToFirst();
-            String stringRes = ""+ DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
-                    "\n"+ DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
-                    "\n"+ DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
-                    "\n"+ DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
-                    "\n"+ DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
-                    "\n"+ DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
-                    "\n"+ DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
-                    "\n"+ DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
-                    "\n"+ DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
-                    "\n"+ DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
-                    "\n"+ DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
-                    "\n"+ DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
-            Log.d("myTag", "" + stringRes);
             /*if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
                 mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
                 mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
@@ -810,17 +752,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 else opto.getRightFace().setStatusByIndex(side,response.isSuccess());
                 updateFace(opto,face,side,response.isSuccess()?1:0);
 
-                Log.d("myTag","after: ");
-                int ctr = 0;
-                for (boolean i : opto.getLeftFace().getStatus()) {
-                    Log.d("myTag","left "+ctr+": "+i);
-                    ctr+=1;
-                }
-                int ctr2 = 0;
-                for (boolean i : opto.getRightFace().getStatus()) {
-                    Log.d("myTag","right "+ctr2+": "+i);
-                    ctr2+=1;
-                }
                 flag = response.isSuccess()?1:0;
             }
 
@@ -878,7 +809,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
-        Log.d("myTag","opto null? "+(optograph==null)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) optograph = checkToDB(optograph);
         if (optograph==null) {
             return;
@@ -990,7 +920,6 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
     }
 
     private void deleteOptographFromPhone(String id) {
-        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
 
         if (dir.exists()) {
@@ -1000,16 +929,13 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 if (file.isDirectory()) {
                     for (File file1: file.listFiles()) {
                         boolean result = file1.delete();
-                        Log.d("myTag", "getName: " + file1.getName() + " getPath: " + file1.getPath()+" delete: "+result);
                     }
                     boolean result = file.delete();
-                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath()+" delete: "+result);
                 } else {
                     // ignore
                 }
             }
             boolean result = dir.delete();
-            Log.d("myTag", "getName: " + dir.getName() + " getPath: " + dir.getPath()+" delete: "+result);
         }
     }
 

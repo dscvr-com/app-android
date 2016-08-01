@@ -266,7 +266,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                     Optograph optograph = optographs.get(position);
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
-                    Log.d("myTag", " time: " + RFC3339DateFormatter.toRFC3339String(DateTime.now()) + " text: " + optograph.getText() + " delAt: " + optograph.getDeleted_at());
                     optographs.remove(position);
                     notifyDataSetChanged();
                     Toast.makeText(context,"Delete successful.",Toast.LENGTH_SHORT).show();
@@ -356,13 +355,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res==null || res.getCount()==0) return;
         res.moveToFirst();
-        String stringRes = ""+ DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
-                "\n"+ DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
-                "\n"+ DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
-        Log.d("myTag", "" + stringRes);
     }
 
     private void uploadPlaceHolder(int position) {
@@ -404,9 +396,7 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 String[] s1 = s.split("^");
                 mPosition = Integer.valueOf(s1[1]);
                 String[] s3 = s1[0].split("/");
-                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
                 String face = s3[s3.length - 1];
-                Log.d("myTag", " face: " + face);
 
                 uploadPlaceHolderImage(mPosition, s1[0], face);
             }
@@ -630,17 +620,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 }
             }
         }
-        Log.d("myTag","before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag","left "+ctr+": "+i);
-            ctr+=1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag","right "+ctr2+": "+i);
-            ctr2+=1;
-        }
 
         new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
     }
@@ -666,11 +645,8 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                         continue;
                     }
                     String[] s3 = s.split("/");
-                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
                     int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
                     String face = s.contains("right") ? "r" : "l";
-                    Log.d("myTag", " face: " + face);
 
                     if (face.equals("l") && optograph.getLeftFace().getStatus()[side]) {
                         //pass
@@ -691,19 +667,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
             Cursor res = mydb.getData(optograph.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             if (res==null || res.getCount()==0) return;
             res.moveToFirst();
-            String stringRes = ""+ DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
-                    "\n"+ DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
-                    "\n"+ DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
-                    "\n"+ DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
-                    "\n"+ DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
-                    "\n"+ DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
-                    "\n"+ DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
-                    "\n"+ DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
-                    "\n"+ DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
-                    "\n"+ DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
-                    "\n"+ DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
-                    "\n"+ DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
-            Log.d("myTag", "" + stringRes);
             /*if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
                 mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
                 mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
@@ -756,17 +719,6 @@ public class OptographGridAdapter extends RecyclerView.Adapter<OptographGridAdap
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
                 updateFace(opto, face, side, response.isSuccess() ? 1 : 0);
 
-                Log.d("myTag", "after: ");
-                int ctr = 0;
-                for (boolean i : opto.getLeftFace().getStatus()) {
-                    Log.d("myTag", "left " + ctr + ": " + i);
-                    ctr += 1;
-                }
-                int ctr2 = 0;
-                for (boolean i : opto.getRightFace().getStatus()) {
-                    Log.d("myTag", "right " + ctr2 + ": " + i);
-                    ctr2 += 1;
-                }
                 flag = response.isSuccess() ? 1 : 0;
             }
 

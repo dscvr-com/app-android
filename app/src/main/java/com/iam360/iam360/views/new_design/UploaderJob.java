@@ -129,17 +129,6 @@ public class UploaderJob extends Job {
                 }
             }
         }
-        Log.d("myTag", "before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag", "left " + ctr + ": " + i);
-            ctr += 1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag", "right " + ctr2 + ": " + i);
-            ctr2 += 1;
-        }
 
         new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, filePathList);
     }
@@ -157,11 +146,8 @@ public class UploaderJob extends Job {
             for (List<String> sL : params) {
                 for (String s : sL) {
                     String[] s3 = s.split("/");
-                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
                     int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
                     String face = s.contains("right") ? "r" : "l";
-                    Log.d("myTag", " face: " + face);
 
                     uploadFaceImage(optograph, s, face, side);
                 }
@@ -172,25 +158,10 @@ public class UploaderJob extends Job {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.d("myTag", "onPostExecute");
 
             Cursor res = mydb.getData(id.toString(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             res.moveToFirst();
             if (res.getCount() == 0) return;
-            String stringRes = "" + DBHelper.FACES_LEFT_ZERO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO)) +
-                    "\n" + DBHelper.FACES_LEFT_ONE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE)) +
-                    "\n" + DBHelper.FACES_LEFT_TWO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO)) +
-                    "\n" + DBHelper.FACES_LEFT_THREE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE)) +
-                    "\n" + DBHelper.FACES_LEFT_FOUR + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR)) +
-                    "\n" + DBHelper.FACES_LEFT_FIVE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE)) +
-                    "\n" + DBHelper.FACES_RIGHT_ZERO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO)) +
-                    "\n" + DBHelper.FACES_RIGHT_ONE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE)) +
-                    "\n" + DBHelper.FACES_RIGHT_TWO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO)) +
-                    "\n" + DBHelper.FACES_RIGHT_THREE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE)) +
-                    "\n" + DBHelper.FACES_RIGHT_FOUR + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR)) +
-                    "\n" + DBHelper.FACES_RIGHT_FIVE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
-            Log.d("myTag", "" + stringRes);
-            Log.d("myTag", "checkIfAllImagesUploaded " + mydb.checkIfAllImagesUploaded(id.toString()));
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(id.toString())) {
                 mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
@@ -245,17 +216,6 @@ public class UploaderJob extends Job {
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
                 updateFace(opto, face, side, response.isSuccess() ? 1 : 0);
 
-                Log.d("myTag", "after: ");
-                int ctr = 0;
-                for (boolean i : opto.getLeftFace().getStatus()) {
-                    Log.d("myTag", "left " + ctr + ": " + i);
-                    ctr += 1;
-                }
-                int ctr2 = 0;
-                for (boolean i : opto.getRightFace().getStatus()) {
-                    Log.d("myTag", "right " + ctr2 + ": " + i);
-                    ctr2 += 1;
-                }
             }
 
             @Override
@@ -275,7 +235,6 @@ public class UploaderJob extends Job {
     }
 
     private void updateFace(Optograph opto, String face, int side, int value) {
-        Log.d("myTag", "updateFace");
 
         String column = "faces_";
         if (face.equals("l")) column += "left_";
