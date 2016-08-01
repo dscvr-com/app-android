@@ -34,6 +34,8 @@ import com.iam360.iam360.views.profile.SigninFBFragment;
 import java.io.IOException;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
@@ -280,8 +282,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("myTag"," delete: onActResult MainActivity");
-        Log.d("myTag"," delete: code equal? "+(requestCode==OptographLocalGridAdapter.DELETE_IMAGE)
-                +" result ok? "+(resultCode==RESULT_OK)+" data null? "+(data==null));
+        Log.d("myTag", " delete: code equal? " + (requestCode == OptographLocalGridAdapter.DELETE_IMAGE)
+                + " result ok? " + (resultCode == RESULT_OK) + " data null? " + (data == null));
         if (requestCode == OptographLocalGridAdapter.PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
             for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
@@ -327,6 +329,15 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         Log.w("MainActivity", "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        Timber.d("WORKAROUND_FOR_BUG_19917_VALUE");
+        // https://code.google.com/p/android/issues/detail?id=19917
+        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+        super.onSaveInstanceState(outState);
     }
 
     public void refresh() {
