@@ -222,17 +222,11 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
     }
 
     private void updateOptograph(Optograph opto) {
-        Log.d("myTag", "update optograph");
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-                Log.d("myTag", " onResponse body: " + response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
-                    Log.d("myTag", "response errorBody: " + response.errorBody());
                     Snackbar.make(getView(), "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -242,7 +236,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
             @Override
             public void onFailure(Throwable t) {
                 uploadProgress.setVisibility(View.INVISIBLE);
-                Log.d("myTag", t.getMessage());
                 Snackbar.make(getView(), "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
@@ -311,7 +304,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId());
 
                 cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
                 cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
@@ -324,12 +316,12 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
 
             @Override
             public void onCancel() {
-                Log.d("myTag", "oncancel login on fb.");
+
             }
 
             @Override
             public void onError(FacebookException error) {
-                Log.d("myTag", "onError login on fb.");
+
             }
         });
     }
@@ -369,7 +361,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d("myTag","resultCode "+Activity.RESULT_OK+" = "+resultCode+"? requestCode: "+requestCode);
         if (resultCode == Activity.RESULT_OK && requestCode==100) {
             String verifier = data.getExtras().getString("oauth_verifier");
             Thread thread = new Thread(new Runnable() {
@@ -385,9 +376,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                         cache.save(Cache.USER_TWITTER_SECRET, accessToken.getTokenSecret());
                         cache.save(Cache.USER_TWITTER_LOGGED_IN, true);
 
-                        Log.d("myTag", " screenName: " + accessToken.getScreenName() + " userId: " + accessToken.getUserId() + " " + accessToken.getTokenSecret());
-
-                        Log.d("myTag", "Hello " + username);
                         isTwitterShare = true;
                         cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
                         optographGlobal.setPostTwitter(isTwitterShare);
@@ -446,18 +434,9 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res == null || res.getCount() == 0) return;
         res.moveToFirst();
-        String stringRes = "" + DBHelper.OPTOGRAPH_ID + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_PUBLISHED + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) +
-                "\n" + DBHelper.OPTOGRAPH_CREATED_AT + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_ON_SERVER + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) +
-                "\n" + DBHelper.OPTOGRAPH_TEXT + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)) +
-                "\n" + DBHelper.OPTOGRAPH_IS_STITCHER_VERSION + " " + res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
-//        descBox.setText(stringRes);
-        Log.d("myTag", "" + stringRes);
     }
 
     private void uploadPlaceHolder(Optograph opto) {
-        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
         String holder = "";
@@ -471,7 +450,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                     File file = files[i];
                     if (file.isDirectory() && file.getName().equals("preview")) {
                         for (String s : file.list()) {
-                            Log.d("myTag", " placeholder path to upload.");
                             holder = file.getPath() + "/" + s;
                             break;
                         }
@@ -479,17 +457,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                         // ignore
                     }
                 }
-            }
-            Log.d("myTag", "before: ");
-            int ctr = 0;
-            for (boolean i : opto.getLeftFace().getStatus()) {
-                Log.d("myTag", "left " + ctr + ": " + i);
-                ctr += 1;
-            }
-            int ctr2 = 0;
-            for (boolean i : opto.getRightFace().getStatus()) {
-                Log.d("myTag", "right " + ctr2 + ": " + i);
-                ctr2 += 1;
             }
         }
 
@@ -514,14 +481,10 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                     if(UPLOAD_IMAGE_MODE) {
                         createDefaultOptograph(optographGlobal);
                         if (userToken != null && !userToken.isEmpty()) {
-                            Log.d("myTag", " Upload");
                             uploadOptonautData(optographGlobal);
-                            Log.d("myTag", "done upload");
                             updateOptograph(optographGlobal);
-                            Log.d("myTag", "done update");
                             ((MainActivityRedesign) getActivity()).backToFeed();
                         } else {
-                            Log.d("myTag", " must login to upload data");
                         }
                     } else
                         updateOptograph(optographGlobal);
@@ -557,7 +520,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                     return;
                 }
                 loginFacebook();
-                Log.d("myTag","fbShareClicked.");
                 break;
             case R.id.twitter_share:
                 if (userToken == null || userToken.equals("")) {
@@ -598,9 +560,7 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         protected Void doInBackground(String... params) {
             for (String s : params) {
                 String[] s3 = s.split("/");
-                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
                 String face = s3[s3.length - 1];
-                Log.d("myTag", " face: " + face);
 
                 uploadImage(optographGlobal, s, face);
             }
@@ -623,7 +583,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
 //        String[] s2 = filePath.split("/");
 //        String fileName = s2[s2.length - 1];
 
-        Log.d("myTag","filePath: "+filePath+" fileName: "+fileName);
 
         Bitmap bm = null;
 
@@ -642,16 +601,10 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                 .addFormDataPart("asset", fileName, fbody)
                 .addFormDataPart("key", "placeholder") //fileName.replace(".jpg", ""))
                 .build();
-        Log.d("myTag", "asset: " + fileName + " key: " + fileName.replace(".jpg", ""));
 
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, (UPLOAD_IMAGE_MODE ? optoTypeTheta : optoType360), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", "onResponse uploadPlaceHolderImage isSuccess? " + response.isSuccess());
-                Log.d("myTag", "onResponse message: " + response.message());
-                Log.d("myTag", "onResponse body: " + response.body());
-                Log.d("myTag", "onResponse raw: " + response.raw());
-
                 flag = response.isSuccess() ? 1 : 0;
                 optographGlobal.setIs_place_holder_uploaded(true);
                 doneUpload = true;
@@ -662,7 +615,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
             @Override
             public void onFailure(Throwable t) {
                 Snackbar.make(uploadButton, "Failed to upload. Check internet connection.",Snackbar.LENGTH_SHORT).show();
-                Log.d("myTag", "onFailure uploadImage: " + t.getMessage() + " ");
                 t.printStackTrace();
                 flag = 0;
             }
@@ -689,7 +641,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
     }
 
     private void initializeShareButtons() {
-        Log.d("myTag", "initializeShare fb: " + cache.getBoolean(Cache.POST_OPTO_TO_FB, false) + " twitter: " + cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
         if (cache.getBoolean(Cache.POST_OPTO_TO_FB, false)) {
             fbShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
         } else fbShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));
@@ -723,7 +674,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
     }
 
     private void deleteOptographFromPhone(String id) {
-        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
 
         if (dir.exists()) {
@@ -733,21 +683,15 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                 if (file.isDirectory()) {
                     for (File file1 : file.listFiles()) {
                         boolean result = file1.delete();
-                        Log.d("myTag", "getName: " + file1.getName() + " getPath: " + file1.getPath() + " delete: " + result);
                     }
                     boolean result = file.delete();
-                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath() + " delete: " + result);
-                    /*for (String s : file.list()) {
-//                        Log.d("myTag", "list of file: " + s);
-                        (new File(file.getPath()+"/"+s)).delete();
-                    }*/
+
 //                    optographs.add(new Optograph(file.getName()));
                 } else {
                     // ignore
                 }
             }
             boolean result = dir.delete();
-            Log.d("myTag", "getName: " + dir.getName() + " getPath: " + dir.getPath() + " delete: " + result);
         }
     }
 
@@ -797,7 +741,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
 
     private void getLocalImage(Optograph opto) {
         cache.save(Cache.UPLOAD_ON_GOING, true);
-        Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
         List<String> filePathList = new ArrayList<>();
@@ -807,7 +750,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory() && !file.getName().contains("preview")) {
-                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
                     for (String s : file.list()) {
                         filePathList.add(file.getPath() + "/" + s);
                     }
@@ -815,17 +757,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                     // ignore
                 }
             }
-        }
-        Log.d("myTag", "before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag", "left " + ctr + ": " + i);
-            ctr += 1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag", "right " + ctr2 + ": " + i);
-            ctr2 += 1;
         }
 
         new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, filePathList);
@@ -843,11 +774,8 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
             for (List<String> sL : params) {
                 for (String s : sL) {
                     String[] s3 = s.split("/");
-                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
                     int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
                     String face = s.contains("right") ? "r" : "l";
-                    Log.d("myTag", " face: " + face);
 
                     uploadFaceImage(optographGlobal, s, face, side);
                 }
@@ -861,19 +789,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
             Cursor res = mydb.getData(optographGlobal.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             res.moveToFirst();
             if (res.getCount() == 0) return;
-            String stringRes = "" + DBHelper.FACES_LEFT_ZERO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO)) +
-                    "\n" + DBHelper.FACES_LEFT_ONE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE)) +
-                    "\n" + DBHelper.FACES_LEFT_TWO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO)) +
-                    "\n" + DBHelper.FACES_LEFT_THREE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE)) +
-                    "\n" + DBHelper.FACES_LEFT_FOUR + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR)) +
-                    "\n" + DBHelper.FACES_LEFT_FIVE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE)) +
-                    "\n" + DBHelper.FACES_RIGHT_ZERO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO)) +
-                    "\n" + DBHelper.FACES_RIGHT_ONE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE)) +
-                    "\n" + DBHelper.FACES_RIGHT_TWO + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO)) +
-                    "\n" + DBHelper.FACES_RIGHT_THREE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE)) +
-                    "\n" + DBHelper.FACES_RIGHT_FOUR + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR)) +
-                    "\n" + DBHelper.FACES_RIGHT_FIVE + " " + res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
-            Log.d("myTag", "" + stringRes);
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(optographId)) {
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
@@ -891,11 +806,9 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         String fileName = s2[s2.length - 1];
 
         if (face.equals("l") && opto.getLeftFace().getStatus()[side]) {
-            Log.d("myTag"," already uploaded: "+face+side);
             return true;
         }
         else if (opto.getRightFace().getStatus()[side]) {
-            Log.d("myTag"," already uploaded: "+face+side);
             return true;
         }
 
@@ -916,36 +829,19 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
                 .addFormDataPart("asset", face + fileName, fbody)
                 .addFormDataPart("key", face + side)
                 .build();
-        Log.d("myTag", "asset: " + face + fileName + " key: " + face + fileName.replace(".jpg", ""));
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, (UPLOAD_IMAGE_MODE ? optoTypeTheta : optoType360), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", "onResponse uploadImage isSuccess? " + response.isSuccess());
-                Log.d("myTag", "onResponse message: " + response.message());
-                Log.d("myTag", "onResponse body: " + response.body());
-                Log.d("myTag", "onResponse raw: " + response.raw());
                 if (face.equals("l"))
                     opto.getLeftFace().setStatusByIndex(side, response.isSuccess());
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
                 updateFace(opto, face, side, response.isSuccess() ? 1 : 0);
 
-                Log.d("myTag", "after: ");
-                int ctr = 0;
-                for (boolean i : opto.getLeftFace().getStatus()) {
-                    Log.d("myTag", "left " + ctr + ": " + i);
-                    ctr += 1;
-                }
-                int ctr2 = 0;
-                for (boolean i : opto.getRightFace().getStatus()) {
-                    Log.d("myTag", "right " + ctr2 + ": " + i);
-                    ctr2 += 1;
-                }
                 flag = response.isSuccess() ? 1 : 0;
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
                 if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side, false);
                 else opto.getRightFace().setStatusByIndex(side, false);
                 flag = 0;
@@ -1007,7 +903,6 @@ public class OptoImagePreviewFragmentBkp extends Fragment implements View.OnClic
         if (userToken != null && !userToken.isEmpty()) {
             uploadOptonautData(optographGlobal);
         } else {
-            Log.d("myTag", " must login to upload data");
         }
     }
 

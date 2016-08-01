@@ -305,7 +305,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     getActivity().invalidateOptionsMenu();
                     updateHomeButton();
                 } else if (getActivity() instanceof ProfileActivity) {
-                    Log.d("myTag","ProfileActivity? "+(getActivity() instanceof ProfileActivity));
                     ((ProfileActivity)getActivity()).onBackPressed();
                 } else if (getActivity() instanceof MainActivity)
                     ((MainActivity) getActivity()).onBackPressed();

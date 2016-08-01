@@ -189,7 +189,6 @@ public class MainActivityRedesign extends AppCompatActivity {
         if (fragmentList != null && !fromFragment) {
                 for (Fragment fragment : fragmentList) {
                     if (fragment instanceof SigninFBFragment) {
-                        Log.d("myTag", "instanceof SigninFB");
                         super.onBackPressed();
                         return;
                     }
@@ -198,7 +197,6 @@ public class MainActivityRedesign extends AppCompatActivity {
         if (fragmentList != null && !fromFragment) {
             for (Fragment fragment : fragmentList) {
                 if (fragment instanceof OptoImagePreviewFragment) {
-                    Log.d("myTag", "instanceof PreviewFrag");
                     ((OptoImagePreviewFragment)fragment).onBackPressed();
                     return;
                 }

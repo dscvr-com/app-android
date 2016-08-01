@@ -261,7 +261,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("myTag", "MainActivity onBackPressed. Profile?" + (viewPager.getCurrentItem() == PROFILE_MODE));
         if (viewPager.getCurrentItem() != FEED_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
@@ -281,9 +280,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("myTag"," delete: onActResult MainActivity");
-        Log.d("myTag", " delete: code equal? " + (requestCode == OptographLocalGridAdapter.DELETE_IMAGE)
-                + " result ok? " + (resultCode == RESULT_OK) + " data null? " + (data == null));
         if (requestCode == OptographLocalGridAdapter.PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
             for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
@@ -304,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
                 if (frag instanceof ProfileFragmentExercise) {
                     String id = data.getStringExtra("id");
                     boolean local = data.getBooleanExtra("local",false);
-                    Log.d("myTag"," delete: id: "+id+" local? "+local);
                     ((ProfileFragmentExercise) frag).refreshAfterDelete(id,local);
                 }
             }

@@ -151,7 +151,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
 
-        Log.d("myTag"," notif: isCurrentUser? "+isCurrentUser+" notif? "+isTab(ON_NOTIFICATION));
         if (isTab(ON_NOTIFICATION)) setNotifications();
     }
 
@@ -231,8 +230,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (mHolder2.getBinding().getOptograph() != null) {
 
                     }
-
-                    Log.d("myTag"," delete: isUploading? "+optograph.isIs_uploading());
 
                     if (optograph.is_local()) count += 1;
 
@@ -403,8 +400,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         } else {
             Notification notif = notifications.get(position);
-            Log.d("myTag"," notif: notif null? "+(notif==null)+" position: "+position);
-            if (notif!=null) Log.d("myTag"," notif: type: "+notif.getType()+" isRead? "+notif.isIs_read());
 
             if (notif == null && position == 0) {
                 HeaderOneViewHolder mHolder = (HeaderOneViewHolder) holder;
@@ -418,8 +413,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (mHolder2.getBinding().getNotification()!=null) {
 
                     }
-
-                    Log.d("myTag"," notif: position: "+position+" opto null? "+(notif.getActivity_resource_star().getOptograph()==null)+" id: "+notif.getActivity_resource_star().getOptograph().getId());
 
                     if (notif.getDeleted_at()!=null) return;
 
@@ -481,7 +474,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 notif.setIs_read(true);
                                 setRead(notif);
                             }
-                            Log.d("myTag"," notif: personcause notif: "+notif.getActivity_resource_follow().getCausing_person().getId());
                             startProfile(notif.getActivity_resource_follow().getCausing_person());
                         }
                     });
@@ -574,7 +566,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void setMessage(String message) {
-        Log.d("myTag"," notif: called setMessage. "+message);
         this.message = message;
         updateMenuOptions();
     }
@@ -673,7 +664,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void setNotifications() {
-        Log.d("myTag"," notif: called setNotification");
         notifications = new ArrayList<Notification>();
         notifications.add(0,null);
         notifications.add(1,null);
@@ -682,7 +672,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         apiConsumer.getNotifications(new Callback<List<Notification>>() {
             @Override
             public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
-                Log.d("myTag"," notif: isSuccess? "+response.isSuccess()+" body null? "+(response.body()==null));
                 if (response.isSuccess() && response.body() != null) {
                     List<Notification> notifs = response.body();
                     notifications = new ArrayList<Notification>();
@@ -1073,13 +1062,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
         if (res==null || res.getCount()==0) return;
         res.moveToFirst();
-        String stringRes = ""+ DBHelper.OPTOGRAPH_ID+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_ID))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_PUBLISHED+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED))+
-                "\n"+ DBHelper.OPTOGRAPH_CREATED_AT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_ON_SERVER+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER))+
-                "\n"+ DBHelper.OPTOGRAPH_TEXT+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT))+
-                "\n"+ DBHelper.OPTOGRAPH_IS_STITCHER_VERSION+" "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION));
-        Log.d("myTag", "" + stringRes);
     }
 
     private void uploadPlaceHolder(int position) {
@@ -1121,9 +1103,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 String[] s1 = s.split("^");
                 mPosition = Integer.valueOf(s1[1]);
                 String[] s3 = s1[0].split("/");
-                Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
                 String face = s3[s3.length - 1];
-                Log.d("myTag", " face: " + face);
 
                 uploadPlaceHolderImage(mPosition, s1[0], face);
             }
@@ -1247,17 +1227,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             }
         }
-        Log.d("myTag", "before: ");
-        int ctr = 0;
-        for (boolean i : opto.getLeftFace().getStatus()) {
-            Log.d("myTag","left "+ctr+": "+i);
-            ctr+=1;
-        }
-        int ctr2 = 0;
-        for (boolean i : opto.getRightFace().getStatus()) {
-            Log.d("myTag","right "+ctr2+": "+i);
-            ctr2+=1;
-        }
 
         new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
     }
@@ -1283,11 +1252,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         continue;
                     }
                     String[] s3 = s.split("/");
-                    Log.d("myTag", "onNext s: " + s + " s3 length: " + s3.length + " (s2[s2.length - 1]): " + (s3[s3.length - 1]));
-                    Log.d("myTag", " split: " + (s3[s3.length - 1].split("\\."))[0]);
                     int side = Integer.valueOf((s3[s3.length - 1].split("\\."))[0]);
                     String face = s.contains("right") ? "r" : "l";
-                    Log.d("myTag", " face: " + face);
 
                     if (face.equals("l") && optograph.getLeftFace().getStatus()[side]) {
                         //pass
@@ -1308,19 +1274,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             Cursor res = mydb.getData(optograph.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
             if (res==null || res.getCount()==0) return;
             res.moveToFirst();
-            String stringRes = ""+ DBHelper.FACES_LEFT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ZERO))+
-                    "\n"+ DBHelper.FACES_LEFT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_ONE))+
-                    "\n"+ DBHelper.FACES_LEFT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_TWO))+
-                    "\n"+ DBHelper.FACES_LEFT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_THREE))+
-                    "\n"+ DBHelper.FACES_LEFT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FOUR))+
-                    "\n"+ DBHelper.FACES_LEFT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_LEFT_FIVE))+
-                    "\n"+ DBHelper.FACES_RIGHT_ZERO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))+
-                    "\n"+ DBHelper.FACES_RIGHT_ONE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_ONE))+
-                    "\n"+ DBHelper.FACES_RIGHT_TWO+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_TWO))+
-                    "\n"+ DBHelper.FACES_RIGHT_THREE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_THREE))+
-                    "\n"+ DBHelper.FACES_RIGHT_FOUR+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))+
-                    "\n"+ DBHelper.FACES_RIGHT_FIVE+" "+res.getString(res.getColumnIndex(DBHelper.FACES_RIGHT_FIVE));
-            Log.d("myTag", "" + stringRes);
             /*if (mydb.checkIfAllImagesUploaded(optoUpload.getId())) {
                 mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optoUpload.getId());
                 mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optoUpload.getId());
@@ -1382,17 +1335,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
                 updateFace(opto, face, side, response.isSuccess() ? 1 : 0);
 
-                Log.d("myTag", "after: ");
-                int ctr = 0;
-                for (boolean i : opto.getLeftFace().getStatus()) {
-                    Log.d("myTag", "left " + ctr + ": " + i);
-                    ctr += 1;
-                }
-                int ctr2 = 0;
-                for (boolean i : opto.getRightFace().getStatus()) {
-                    Log.d("myTag", "right " + ctr2 + ": " + i);
-                    ctr2 += 1;
-                }
                 flag = response.isSuccess() ? 1 : 0;
             }
 
@@ -1514,8 +1456,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph==null) {
             return;
         }
-
-        Log.d("myTag"," delete: opto isLocal? "+optograph.is_local()+" deleted: "+optograph.getDeleted_at());
 
         if (optograph.getDeleted_at()!=null && !optograph.getDeleted_at().isEmpty()) return;
 

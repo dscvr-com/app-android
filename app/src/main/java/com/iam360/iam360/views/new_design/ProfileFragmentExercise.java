@@ -329,7 +329,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         super.onResume();
         BusProvider.getInstance().register(this);
 
-        Log.d("myTag"," delete: PFE onResume person null? "+(person==null)+" isNotif? "+(optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)));
         if(person == null) setPerson();
         else refresh();
 
@@ -352,7 +351,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void updateHomeButton() {
 //        if (getActivity() instanceof MainActivity)
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(optographLocalGridAdapter.isOnEditMode() ? R.drawable.cancel : R.drawable.logo_small_dark);
-        Log.d("myTag"," updateHomeButton: isCurrentUser? "+isCurrentUser);
         if (isCurrentUser && optographLocalGridAdapter.isOnEditMode()) {
             binding.homeBtn.setVisibility(View.GONE);
             binding.overflowBtn.setVisibility(View.GONE);
@@ -379,7 +377,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             binding.homeBtn.setVisibility(View.VISIBLE);
         }
         enableScroll(!optographLocalGridAdapter.isOnEditMode());
-        Log.d("myTag"," notif: updateHomeButton message: "+optographLocalGridAdapter.getMessage());
         setMessage(optographLocalGridAdapter.getMessage()==null?"":optographLocalGridAdapter.getMessage());
     }
 
@@ -394,11 +391,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void setMessage(String message) {
-        binding.tabMessage.setVisibility((message.isEmpty() || optographLocalGridAdapter.getItemCount()-2==0)?View.GONE:View.VISIBLE);
+        binding.tabMessage.setVisibility((message.isEmpty() || optographLocalGridAdapter.getItemCount()-2>0)?View.GONE:View.VISIBLE);
         binding.tabMessage.setText(message);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.tabMessage.getLayoutParams();
         View view = binding.optographFeed.getChildAt(1);
-        Log.d("myTag"," setMessage: setMessage isView null? "+(view==null));
         if (view==null) return;
         params.topMargin = view.getTop()+binding.toolbarLayout.getHeight()+view.getHeight();
         binding.tabMessage.requestLayout();
@@ -458,7 +454,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     optographLocalGridAdapter.setEditMode(isEditMode);
                     getActivity().invalidateOptionsMenu();
                 } else if (getActivity() instanceof ProfileActivity) {
-                    Log.d("myTag", "ProfileActivity? " + (getActivity() instanceof ProfileActivity));
                     ((ProfileActivity)getActivity()).onBackPressed();
                 } else if (getActivity() instanceof MainActivity)
                     ((MainActivity) getActivity()).onBackPressed();
@@ -476,7 +471,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> updateMessage())
-                .doOnEach(e->Log.d("myTag"," setMessage: opto null? "+(e==null)))
                 .onErrorReturn(throwable -> {
                     if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
