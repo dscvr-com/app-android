@@ -23,6 +23,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.ViewHolder> {
 
     private static final int ITEM_WIDTH= Constants.getInstance().getDisplayMetrics().widthPixels;
@@ -69,17 +71,18 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final String path = "file://" + mDataset.get(position);
+        final String path = mDataset.get(position);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / 3);
         holder.itemView.setLayoutParams(params);
 
-        imageLoader.displayImage(path, holder.image);
+        imageLoader.displayImage("file://" + path, holder.image);
 
         holder.text.setText(path);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Timber.d("Image path : " + path);
                 Intent intent = new Intent(context, OptoImagePreviewActivity.class);
                 intent.putExtra("id", UUID.randomUUID().toString());
                 intent.putExtra("path", path);

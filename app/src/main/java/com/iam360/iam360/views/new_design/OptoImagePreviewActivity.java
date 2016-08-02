@@ -214,7 +214,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
             Timber.d("Image path : " + imagePath);
             ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.displayImage(imagePath, previewImage);
+            imageLoader.displayImage("file://" + imagePath, previewImage);
 
 //            Picasso.with(previewImage.getContext())
 //                    .load(new File(imagePath))
@@ -573,6 +573,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         if(UPLOAD_IMAGE_MODE) {
             dir = new File(imagePath);
             holder = dir.getAbsolutePath();
+            Timber.d("Image path : UPLOAD_IMAGE_MODE");
         } else {
             if (dir.exists()) {// remove the not notation here
                 File[] files = dir.listFiles();
@@ -590,6 +591,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
             }
         }
+        Timber.d("Image path : " + dir + "\nAbosulte image path : " + holder + "\nOriginal Image path : " + imagePath);
 
         new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
     }
@@ -605,8 +607,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 ////                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
 //                } else if (doneUpload) {
 //                    apiConsumer = new ApiConsumer(userToken);
-//                    blackCircle.setVisibility(View.VISIBLE);
-//                    uploadProgress.setVisibility(View.VISIBLE);
+                    blackCircle.setVisibility(View.VISIBLE);
+                    uploadProgress.setVisibility(View.VISIBLE);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 1);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
@@ -618,11 +620,12 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                             if(!optographGlobal.is_data_uploaded()) uploadOptonautData(optographGlobal);
                             else uploadPlaceHolder(optographGlobal);
                         }
-                    } else
+                    } else {
                         updateOptograph(optographGlobal);
+                        finish();
+                    }
 //                }
 
-                finish();
                 break;
             case R.id.post_later_group:
                 userToken = cache.getString(Cache.USER_TOKEN);
@@ -715,10 +718,10 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-//            postLaterProgress.setVisibility(View.GONE);
-//            uploadProgress.setVisibility(View.GONE);
-//            blackCircle.setVisibility(View.GONE);
-//            doneUpload = true;
+            postLaterProgress.setVisibility(View.GONE);
+            uploadProgress.setVisibility(View.GONE);
+            blackCircle.setVisibility(View.GONE);
+            doneUpload = true;
         }
     }
 
