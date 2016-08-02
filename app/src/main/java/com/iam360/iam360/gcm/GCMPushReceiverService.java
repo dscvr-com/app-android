@@ -35,6 +35,26 @@ import timber.log.Timber;
 /**
  * Created by Joven on 7/11/2016.
  */
+
+
+/*
+{status=200,
+data_type=person,
+data={"person_followed_count":"2",
+"person_invite_activation_at":null,
+"person_followers_count":"0",
+"person_display_name":"sandra",
+"person_text":"",
+"person_invite_activation_activated":"f",
+"person_optographs_count":"0",
+"person_invite_activation_id":null,
+"person_avatar_asset_id":"b53d6412-28b0-4209-9f3b-d44a4be1f1f6",
+"person_user_name":"sandra",
+"person_id":"34d68d96-0d32-4d54-8c8f-a7754bde5762",
+"person_created_at":"2016-07-25T13:41:10.495429Z"},
+title=DSCVR, message=sandra followed you on DSCVR., collapse_key=updated_state}
+ */
+
 public class GCMPushReceiverService extends GcmListenerService {
 
     private boolean isAppRunning = false;
