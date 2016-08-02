@@ -625,8 +625,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             followers.add(1, null);
                             notifyDataSetChanged();
                         } else {
-//                            followers.add(0, null);
-//                            followers.add(1, null);
                             notifyDataSetChanged();
 //                            message = context.getResources().getString(R.string.profile_no_follower);
 //                            updateMenuOptions();
@@ -639,11 +637,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     @Override
                     public void onFailure(Throwable t) {
-                        followers = new ArrayList<Follower>();
-                        followers.add(0, null);
-                        followers.add(1, null);
                         notifyDataSetChanged();
-                        setMessage("Network Problem.");
+                        setMessage(context.getResources().getString(R.string.profile_net_prob));
 //                        Toast.makeText(context, "Network Problem", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -693,10 +688,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onFailure(Throwable t) {
                 Log.d("myTag"," notif: onFailure message."+t.getMessage());
-                notifications.add(0,null);
-                notifications.add(1,null);
                 notifyDataSetChanged();
-                setMessage("Network Problem.");
+                setMessage(context.getResources().getString(R.string.profile_net_prob));
 //                        Toast.makeText(context,"Network Problem",Toast.LENGTH_SHORT).show();
             }
         });
@@ -1385,11 +1378,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public int getItemViewType(int position) {
         if (position==0) return VIEW_HEADER;
         if (position==1) return SECOND_HEADER;
-        if (onTab==ON_IMAGE) return get(position).is_local()?VIEW_LOCAL:VIEW_SERVER;
-        else if (onTab==ON_FOLLOWER) return VIEW_FOLLOWER;
-        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_STAR_TYPE)) return VIEW_NOTIFICATION_STAR;
-        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_FOLLOW_TYPE)) return VIEW_NOTIFICATION_FOLLOW;
-        else if (onTab == ON_NOTIFICATION && getNotif(position).getType().equals(NOTIF_COMMENT_TYPE)) return VIEW_NOTIFICATION_COMMENT;
+        if (isTab(ON_IMAGE)) return get(position).is_local()?VIEW_LOCAL:VIEW_SERVER;
+        else if (isTab(ON_FOLLOWER)) return VIEW_FOLLOWER;
+        else if (isTab(ON_NOTIFICATION) && getNotif(position).getType().equals(NOTIF_STAR_TYPE)) return VIEW_NOTIFICATION_STAR;
+        else if (isTab(ON_NOTIFICATION) && getNotif(position).getType().equals(NOTIF_FOLLOW_TYPE)) return VIEW_NOTIFICATION_FOLLOW;
+        else if (isTab(ON_NOTIFICATION) && getNotif(position).getType().equals(NOTIF_COMMENT_TYPE)) return VIEW_NOTIFICATION_COMMENT;
         else return VIEW_NOTIFICATION_VIEWS;
     }
 

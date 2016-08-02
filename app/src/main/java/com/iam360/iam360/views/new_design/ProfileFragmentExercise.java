@@ -1,5 +1,6 @@
 package com.iam360.iam360.views.new_design;
 
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,7 +23,6 @@ import com.iam360.iam360.ProfileExerciseBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.bus.BusProvider;
 import com.iam360.iam360.bus.PersonReceivedEvent;
-import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.network.PersonManager;
@@ -214,7 +214,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 
 //        getActivity().invalidateOptionsMenu();
-        Log.d("myTag"," notif: initializeProfileFeed isCurrentUser? "+isCurrentUser);
         if (isCurrentUser) {
             optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(), OptographLocalGridAdapter.ON_NOTIFICATION);
         } else optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(), OptographLocalGridAdapter.ON_IMAGE);
@@ -290,9 +289,49 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
         } else if (args.containsKey("id")) {
-            PersonManager.loadPerson(args.getString("id"));
+            if (!myGetData(args.getString("id"))) {
+                PersonManager.loadPerson(args.getString("id"));
+            }
         } else {
             throw new RuntimeException();
+        }
+    }
+
+    private boolean myGetData(String id) {
+        Person person1 = new Person();
+        Cursor res = mydb.getData(id,DBHelper.PERSON_TABLE_NAME,"id");
+
+        if (res==null || res.getCount()==0) return false;
+        res.moveToFirst();
+        person1.setId(res.getString(res.getColumnIndex("id")));
+        person1.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+        person1.setDeleted_at(res.getString(res.getColumnIndex("deleted_at")));
+        person1.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
+        person1.setUser_name(res.getString(res.getColumnIndex("user_name")));
+        person1.setEmail(res.getString(res.getColumnIndex("email")));
+        person1.setText(res.getString(res.getColumnIndex("text")));
+        person1.setElite_status(res.getString(res.getColumnIndex("elite_status")).equalsIgnoreCase("true"));
+        person1.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
+        person1.setOptographs_count(res.getInt(res.getColumnIndex("optographs_count")));
+        person1.setFollowers_count(res.getInt(res.getColumnIndex("followers_count")));
+        person1.setFollowed_count(res.getInt(res.getColumnIndex("followed_count")));
+        person1.setIs_followed(res.getString(res.getColumnIndex("is_followed")).equalsIgnoreCase("true"));
+        person1.setFacebook_user_id(res.getString(res.getColumnIndex("facebook_user_id")));
+        person1.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
+        person1.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
+        person1.setTwitter_secret(res.getString(res.getColumnIndex("twitter_secret")));
+
+        person = person1;
+        return true;
+    }
+
+    private void insertPerson(Person person) {
+        Cursor res = mydb.getData(person.getId(),DBHelper.PERSON_TABLE_NAME,"id");
+
+        if (res==null || res.getCount()==0) {
+            mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
         }
     }
 
@@ -319,6 +358,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         person = personReceivedEvent.getPerson();
 
         if (person != null) {
+            insertPerson(person);
             binding.executePendingBindings();
             initializeProfileFeed();
         }
@@ -465,14 +505,17 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     protected void initializeFeed() {
+
         //try to add filter for deleted optographs
         optographLocalGridAdapter.setPerson(person);
         apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnCompleted(() -> updateMessage())
+                .doOnCompleted(() -> updateMessage(null))
                 .onErrorReturn(throwable -> {
-                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    getFragmentManager().executePendingTransactions();
+//                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    updateMessage(getResources().getString(R.string.profile_net_prob));
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -480,7 +523,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             LocalOptographManager.getOptographs()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> updateMessage())
+                    .doOnCompleted(() -> updateMessage(null))
                     .subscribe(optographLocalGridAdapter::addItem);
         }
     }
@@ -490,7 +533,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
-                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    getFragmentManager().executePendingTransactions();
+//                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -501,9 +545,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         apiConsumer.getOptographsFromPerson(person.getId(), 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnCompleted(() -> updateMessage())
+                .doOnCompleted(() -> updateMessage(null))
                 .onErrorReturn(throwable -> {
-                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    getFragmentManager().executePendingTransactions();
+//                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                    updateMessage(getResources().getString(R.string.profile_net_prob));
                     return null;
                 })
                 .subscribe(optographLocalGridAdapter::addItem);
@@ -511,17 +557,17 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if(person.getId().equals(cache.getString(Cache.USER_ID))) {
             LocalOptographManager.getOptographs()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> updateMessage())
+                    .doOnCompleted(() -> updateMessage(null))
                     .subscribe(optographLocalGridAdapter::addItem);
         }
     }
 
-    private void updateMessage() {
+    private void updateMessage(String message) {
         Log.d("myTag"," setMessage: onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+
                 " item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
         Log.d("myTag"," setMessage: count: "+optographLocalGridAdapter.getItemCount());
         if (optographLocalGridAdapter.getItemCount()-2==0  && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
-            optographLocalGridAdapter.setMessage(getResources().getString(R.string.profile_no_image));
+            optographLocalGridAdapter.setMessage((message==null)?getResources().getString(R.string.profile_no_image):message);
             updateHomeButton();
         } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
             optographLocalGridAdapter.setMessage("");
