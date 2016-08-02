@@ -211,12 +211,14 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                                 .observeOn(AndroidSchedulers.mainThread())
 //                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                                 .onErrorReturn(throwable -> {
+                                    throwable.printStackTrace();
                                     if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                                     return null;
                                 })
                                 .subscribe(optographFeedAdapter::addItem);
                     })
                     .onErrorReturn(throwable -> {
+                        throwable.printStackTrace();
                         if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                         return null;
                     })
@@ -539,7 +541,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     }
 
     public void disableDrag() {
-        optographFeedAdapter.disableDraggingPage(firstVisible);
+        if(optographFeedAdapter != null)
+            optographFeedAdapter.disableDraggingPage(firstVisible);
     }
 
     @Subscribe
