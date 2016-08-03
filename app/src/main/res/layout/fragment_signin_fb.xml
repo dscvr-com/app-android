@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/optonautMain"
-    tools:context=".views.profile.SigninFBFragment">
+    tools:context=".views.fragment.SigninFBFragment">
 
     <ProgressBar
         android:id="@+id/progress_bar"

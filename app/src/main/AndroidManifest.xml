@@ -42,7 +42,7 @@
         android:required="true" />
 
     <application
-        android:name=".OptonautApp"
+        android:name=".DscvrApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -50,7 +50,7 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".views.new_design.SplashActivity"
+            android:name=".views.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -60,7 +60,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.new_design.MainActivity"
+            android:name=".views.activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -117,39 +117,32 @@
             </intent-filter>
         </service>
         <activity
-            android:name=".views.profile.SignInActivity"
-            android:label="@string/app_name" />
-        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".views.record.OptoImagePreviewActivity"
+            android:name=".views.activity.OptographDetailsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.OptographDetailsActivity"
+            android:name=".views.activity.RecorderActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.RecorderActivity"
+            android:name=".views.activity.OptoImagePreviewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.OptoImagePreviewActivity"
+            android:name=".views.activity.MailingListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.MailingListActivity"
+            android:name=".views.activity.SharingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.new_design.SharingActivity"
+            android:name=".views.activity.SigninFBActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.profile.SigninFBActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".views.SearchActivity"
+            android:name=".views.activity.SearchActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".views.SettingsActivity" />
-        <activity android:name=".views.new_design.ImagePicker"
+        <activity android:name=".views.activity.ImagePickerActivity"
             android:screenOrientation="portrait" />
 
         <!-- change to true to debug mixpanel -->
@@ -166,21 +159,21 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".views.WebViewActivity"
+            android:name=".views.activity.WebViewActivity"
             android:label="Twitter Login" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <activity android:name=".views.new_design.ProfileActivity" />
+        <activity android:name=".views.activity.ProfileActivity" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider221219334902804"
             android:exported="true" />
 
-        <activity android:name=".views.new_design.CreateUsernameActivity"></activity>
+        <activity android:name=".views.activity.CreateUsernameActivity"></activity>
     </application>
 
 </manifest>

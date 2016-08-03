@@ -19,9 +19,9 @@ import com.iam360.iam360.model.Location;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.util.Cache;
-import com.iam360.iam360.views.new_design.OptographDetailsActivity;
-import com.iam360.iam360.views.new_design.ProfileActivity;
-import com.iam360.iam360.views.new_design.SplashActivity;
+import com.iam360.iam360.views.activity.OptographDetailsActivity;
+import com.iam360.iam360.views.activity.ProfileActivity;
+import com.iam360.iam360.views.activity.SplashActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
