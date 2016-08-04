@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.iam360.iam360.BR;
@@ -238,7 +239,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     GeneralUtils utils = new GeneralUtils();
                     utils.setFont(context, mHolder2.getBinding().uploadLocalBtn, Typeface.NORMAL);
 //                    mHolder2.getBinding().uploadLocal.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
-//                    mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
+                    mHolder2.getBinding().uploadLocalBtn.setVisibility(optograph.is_local() ? View.VISIBLE : View.GONE);
+                    mHolder2.getBinding().uploadProgressLocal.setVisibility(optograph.is_local() ? View.GONE : View.GONE);
                     mHolder2.getBinding().uploadLocalBtn.setText(optograph.isIs_uploading()?context.getString(R.string.profile_uploading):context.getString(R.string.profile_upload));
 
                     mHolder2.getBinding().optograph2dviewLocal.getLayoutParams().height = (ITEM_WIDTH) / 5;
@@ -269,18 +271,19 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             } else {
                                 optograph.setIs_uploading(true);
                                 apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
-//                                mHolder2.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
+                                mHolder2.getBinding().uploadProgressLocal.setVisibility(View.VISIBLE);
 //                                mHolder2.getBinding().uploadLocal.setVisibility(View.GONE);
-                                mHolder2.getBinding().uploadLocalBtn.setText(context.getString(R.string.profile_uploading));
+                                mHolder2.getBinding().uploadLocalBtn.setVisibility(View.GONE);
+//                                mHolder2.getBinding().uploadLocalBtn.setText(context.getString(R.string.profile_uploading));
                                 if (!optograph.is_data_uploaded()) {
                                     Log.d("myTag", "upload the data first. position: " + position);
-                                    uploadOptonautData(position);
+                                    uploadOptonautData(position, mHolder2.getBinding().uploadProgressLocal);
                                 } else if (!optograph.is_place_holder_uploaded()) {
                                     Log.d("myTag", "upload the placeholder first. position: " + position);
-                                    uploadPlaceHolder(position);
+                                    uploadPlaceHolder(position, mHolder2.getBinding().uploadProgressLocal);
                                 } else {
                                     Log.d("myTag", "upload the 12 images position: " + position);
-                                    updateOptograph(position);
+                                    updateOptograph(position, mHolder2.getBinding().uploadProgressLocal);
 //                            getLocalImage(optograph);
                                 }
                             }
@@ -1022,7 +1025,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    private void uploadOptonautData(int position) {
+    private void uploadOptonautData(int position, ProgressBar progressBar) {
         Optograph optograph = optographs.get(position);
         OptoData data = new OptoData(optograph.getId(), optograph.getStitcher_version(), optograph.getCreated_atRFC3339(),optograph.getOptograph_type(), Constants.PLATFORM+" "+Build.VERSION.RELEASE, Build.MODEL,Build.MANUFACTURER);
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
@@ -1042,7 +1045,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     return;
                 }
                 // do things for success
-                uploadPlaceHolder(position);
+                uploadPlaceHolder(position, progressBar);
             }
 
             @Override
@@ -1059,7 +1062,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         res.moveToFirst();
     }
 
-    private void uploadPlaceHolder(int position) {
+    private void uploadPlaceHolder(int position, ProgressBar progressBar) {
         Optograph opto = optographs.get(position);
         Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
@@ -1082,11 +1085,21 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         }
 
-        new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+        UploadPlaceHolder uploadPlaceHolderTask = new UploadPlaceHolder();
+        uploadPlaceHolderTask.setProgressBar(progressBar);
+        uploadPlaceHolderTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
+
+//        new UploadPlaceHolder().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, holder);
     }
 
     class UploadPlaceHolder extends AsyncTask<String,Void,Void> {
         int mPosition = 0;
+        ProgressBar progressBar;
+
+        public void setProgressBar(ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -1108,7 +1121,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            updateOptograph(mPosition);
+            updateOptograph(mPosition, progressBar);
         }
     }
 
@@ -1167,7 +1180,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         return (flag == 1);
     }
 
-    private void updateOptograph(int position) {
+    private void updateOptograph(int position, ProgressBar progressBar) {
         Optograph opto = optographs.get(position);
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
@@ -1185,7 +1198,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     notifyItemChanged(position);
                     return;
                 }
-                getLocalImage(position);
+                getLocalImage(position, progressBar);
             }
 
             @Override
@@ -1198,7 +1211,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         });
     }
 
-    private void getLocalImage(int position) {
+    private void getLocalImage(int position, ProgressBar progressBar) {
         Optograph opto = optographs.get(position);
         cache.save(Cache.UPLOAD_ON_GOING, true);
         Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
@@ -1223,20 +1236,31 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         }
 
-        new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
+        UploadCubeImages uploadCubeImagesTask = new UploadCubeImages();
+        uploadCubeImagesTask.setProgressBar(progressBar);
+        uploadCubeImagesTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, filePathList);
+//        new UploadCubeImages().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,filePathList);
     }
 
     // try using AbstractQueuedSynchronizer
-    class UploadCubeImages extends AsyncTask<List<String>,Void,Void> {
+    class UploadCubeImages extends AsyncTask<List<String>,Integer,Void> {
         int mPosition = 0;
         Optograph optograph;
+        ProgressBar progressBar;
+
+        public void setProgressBar(ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressBar.setProgress(5);
         }
 
         @Override
         protected Void doInBackground(List<String>... params) {
+            int faceCount = 1;
             for (List<String> sL : params) {
                 int ctr = 0;
                 for (String s:sL) {
@@ -1257,10 +1281,21 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     } else if (!cache.getString(Cache.USER_TOKEN).equals("")) {
                         if (apiConsumer==null) apiConsumer = new ApiConsumer(cache.getString(Cache.USER_TOKEN));
                         uploadImage(mPosition, s, face, side);
+                        int percentage = (int)(((double)faceCount++ / 12) * 100);
+                        optograph.setUploadPercentage(percentage);
+                        publishProgress(percentage);
                     }
                 }
             }
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            if(progressBar != null) {
+                progressBar.setProgress(values[0]);
+            }
         }
 
         @Override
