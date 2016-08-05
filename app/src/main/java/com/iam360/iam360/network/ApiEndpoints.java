@@ -13,7 +13,7 @@ import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.model.SignUpReturn;
-import com.iam360.iam360.views.new_design.SharingFragment;
+import com.iam360.iam360.views.fragment.SharingFragment;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;

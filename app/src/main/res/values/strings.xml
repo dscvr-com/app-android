@@ -109,6 +109,7 @@
     <string name="profile_no_image">No images.</string>
     <string name="profile_no_notif">You have no notification.</string>
     <string name="profile_no_follower">You have no follower.</string>
+    <string name="profile_net_prob">Network Problem!</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

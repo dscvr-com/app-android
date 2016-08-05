@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/snackbar_elevation"
     android:padding="@dimen/snackbar_elevation"
-    tools:context=".views.new_design.ImagePickerAdapter">
+    tools:context=".viewmodels.ImagePickerAdapter">
 
     <View
         android:layout_width="wrap_content"

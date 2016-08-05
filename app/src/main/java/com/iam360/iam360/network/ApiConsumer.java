@@ -17,7 +17,7 @@ import com.iam360.iam360.model.SignInData;
 import com.iam360.iam360.model.SignUpReturn;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.RFC3339DateFormatter;
-import com.iam360.iam360.views.new_design.SharingFragment;
+import com.iam360.iam360.views.fragment.SharingFragment;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;

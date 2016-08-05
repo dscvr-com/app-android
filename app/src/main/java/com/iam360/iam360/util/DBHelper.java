@@ -58,7 +58,7 @@ public class DBHelper extends SQLiteOpenHelper {
             FACES_RIGHT_FOUR,FACES_RIGHT_FIVE};
 
     public DBHelper(Context context) {
-        super(context,DATABASE_NAME,null,1);
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table " +OPTO_TABLE_NAME_FEEDS+
                         " (optograph_id text primary key not null, optograph_text text not null," +
                         "optograph_person_id text not null,optograph_location_id text not null," +
-                        "optograph_created_at text not null,optograph_deleted_at text not null," +
+                        "optograph_created_at text not null,optograph_deleted_at text," +
                         "optograph_is_starred text not null, optograph_stars_count integer not null," +
                         "optograph_is_published text not null, optograph_is_private text not null," +
                         "optograph_is_stitcher_version text not null, optograph_is_in_feed text not null," +
@@ -242,7 +242,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getAllFeedsData() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery( "select * from "+OPTO_TABLE_NAME_FEEDS, null );
+        return db.rawQuery( "select * from " + OPTO_TABLE_NAME_FEEDS + " where " + OPTOGRAPH_DELETED_AT + " = \'\'", null );
     }
 
     public boolean updateFace(String id,String column,int value) {
@@ -257,7 +257,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        db.update(OPTO_TABLE_NAME,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
+        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
+        db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
         return  true;
     }
 
@@ -265,7 +266,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        db.update(OPTO_TABLE_NAME,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {id});
+        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[] {id});
+        db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {id});
         return  true;
     }
 
