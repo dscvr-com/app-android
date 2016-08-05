@@ -42,34 +42,32 @@
         android:required="true" />
 
     <application
-        android:name=".OptonautApp"
+        android:name=".DscvrApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".views.new_design.SplashActivity"
+            android:name=".views.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.new_design.MainActivity"
+            android:name=".views.activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="callback"
                     android:scheme="com.optonaut.optonaut" />
@@ -82,13 +80,10 @@
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="com.google.intent.category.CARDBOARD" />
             </intent-filter>
         </activity>
-        <!--
-           GCM Receiver
-       -->
+        <!-- GCM Receiver -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -99,57 +94,63 @@
             </intent-filter>
         </receiver>
 
-        <!--
-            GCM Receiver Service
-        -->
+        <!-- GCM Receiver Service -->
         <service android:name=".gcm.GCMPushReceiverService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
 
-        <!--
-            GCM Registration Intent Service
-        -->
+        <!-- GCM Registration Intent Service -->
         <service android:name=".gcm.GCMRegistrationIntentService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
         </service>
-        <activity
-            android:name=".views.profile.SignInActivity"
-            android:label="@string/app_name" />
+
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <activity
-            android:name=".views.record.OptoImagePreviewActivity"
+            android:name=".views.activity.OptographDetailsActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.new_design.OptographDetailsActivity"
+            android:name=".views.activity.RecorderActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.new_design.RecorderActivity"
+            android:name=".views.activity.OptoImagePreviewActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.new_design.OptoImagePreviewActivity"
+            android:name=".views.activity.MailingListActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.new_design.MailingListActivity"
+            android:name=".views.activity.SharingActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.new_design.SharingActivity"
+            android:name=".views.activity.SigninFBActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name=".views.profile.SigninFBActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".views.SearchActivity"
+            android:name=".views.activity.SearchActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".views.SettingsActivity" />
-        <activity android:name=".views.new_design.ImagePicker"
+
+        <activity android:name=".views.activity.ImagePickerActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".views.activity.WebViewActivity"
+            android:label="Twitter Login"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".views.activity.ProfileActivity"
             android:screenOrientation="portrait" />
 
         <!-- change to true to debug mixpanel -->
@@ -165,22 +166,16 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity
-            android:name=".views.WebViewActivity"
-            android:label="Twitter Login" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
-
-        <activity android:name=".views.new_design.ProfileActivity" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider221219334902804"
             android:exported="true" />
 
-        <activity android:name=".views.new_design.CreateUsernameActivity"></activity>
+        <activity android:name=".views.activity.CreateUsernameActivity"></activity>
     </application>
 
 </manifest>

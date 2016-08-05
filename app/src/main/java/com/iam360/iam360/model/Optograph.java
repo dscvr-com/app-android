@@ -88,6 +88,7 @@ public class Optograph implements Parcelable {
     private boolean is_published;
     private String optograph_type;
     private boolean is_uploading;
+    private int upload_percentage;
 
     // default value for parsing from JSON
     private boolean is_local = false;
@@ -125,6 +126,7 @@ public class Optograph implements Parcelable {
         is_published = false;
         optograph_type = "";
         is_uploading = false;
+        upload_percentage = 0;
     }
 
     public Optograph(Parcel source) {
@@ -160,6 +162,7 @@ public class Optograph implements Parcelable {
         this.is_published = source.readByte()!=0;
         this.optograph_type = source.readString();
         this.is_uploading = source.readByte()!=0;
+        this.upload_percentage = source.readInt();
     }
 
     public String getId() {
@@ -419,6 +422,10 @@ public class Optograph implements Parcelable {
         this.is_local = is_local;
     }
 
+    public int getUploadPercentage() { return upload_percentage; }
+
+    public void setUploadPercentage(int uploadPercentage) { this.upload_percentage = uploadPercentage; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -479,6 +486,8 @@ public class Optograph implements Parcelable {
         dest.writeByte((byte)(this.is_published?1:0));
         dest.writeString(this.optograph_type);
         dest.writeByte((byte) (this.is_uploading ? 1 : 0));
+        dest.writeInt(this.upload_percentage);
+
     }
 
     public static final Parcelable.Creator<Optograph> CREATOR =

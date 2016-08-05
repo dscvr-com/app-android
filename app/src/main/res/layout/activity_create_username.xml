@@ -6,7 +6,7 @@
     android:background="@drawable/bg_light"
     android:orientation="vertical"
     android:padding="21dp"
-    tools:context="com.iam360.iam360.views.new_design.CreateUsernameActivity">
+    tools:context=".views.activity.CreateUsernameActivity">
 
     <ImageView
         android:id="@+id/logo"

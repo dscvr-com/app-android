@@ -85,7 +85,7 @@
         android:textSize="16sp"
         android:text="No Results Found"/>
 
-    <com.iam360.iam360.views.SnappyRecyclerView
+    <com.iam360.iam360.viewmodels.SnappyRecyclerView
         android:id="@+id/person_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
