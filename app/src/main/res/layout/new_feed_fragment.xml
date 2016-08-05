@@ -43,8 +43,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
-                    android:background="@drawable/logo_arrow_small_dark"
-                    android:layout_centerHorizontal="true" />
+                    android:src="@drawable/logo_mini_icn"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/transparentOverlay"/>
 
                 <RelativeLayout
                     android:id="@+id/navigation_buttons"
@@ -59,8 +60,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toLeftOf="@+id/record_group"
-                        android:layout_alignParentLeft="true"
-                        android:paddingLeft="10dp">
+                        android:paddingEnd="@dimen/navigation_icon_size">
                         <ImageButton
                             android:id="@+id/theta_btn"
                             android:layout_width="wrap_content"
@@ -99,14 +99,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:gravity="end">
+                        android:paddingStart="@dimen/navigation_icon_size">
 
                         <ImageButton
                             android:id="@+id/settings_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
-                            android:layout_alignParentEnd="true"
                             android:background="@drawable/settings"/>
 
                         <TextView
@@ -165,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_below="@id/settings_title"
-                        android:background="@drawable/logo_settings"
+                        android:background="@drawable/logo_horizontal_settings"
                         android:layout_centerHorizontal="true"/>
 
                     <TextView

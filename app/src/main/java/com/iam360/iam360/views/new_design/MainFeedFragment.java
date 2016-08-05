@@ -462,7 +462,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         } else {
             binding.numberLocalImage.setText(String.valueOf(optographs.size()));
 //            binding.numberLocalImage.setVisibility(View.VISIBLE);//uncmment if the number of un-uploaded images is needed
-            binding.numberImage.setVisibility(View.VISIBLE);
+//            binding.numberImage.setVisibility(View.VISIBLE);// uncomment if this is gonna use
         }
     }
 

@@ -6,6 +6,6 @@
         android:id="@+id/action_back"
         android:title="Back"
         app:showAsAction="always"
-        android:icon="@drawable/logo_small_dark"/>
+        android:icon="@drawable/logo_mini_icn"/>
 
 </menu>

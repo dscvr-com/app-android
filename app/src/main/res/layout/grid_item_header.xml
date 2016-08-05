@@ -25,10 +25,10 @@
             android:layout_height="wrap_content">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="104dp"
-                android:layout_height="104dp"
+                android:layout_width="106dp"
+                android:layout_height="106dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="7dp"
                 android:background="@drawable/profile_avatar_background"
                 android:clickable="true"
                 android:padding="2dp"

@@ -258,7 +258,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     private void setHeart(boolean liked, int count) {
 
-        binding.heartLabel.setText(String.valueOf(count));
+//        binding.heartLabel.setText(String.valueOf(count));
+        binding.heartLabel.setText("");
         if(liked) {
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
             binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
@@ -431,7 +432,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         else
             binding.optograph2dview.setSensorMode(CombinedMotionManager.STILL_MODE);
 
-        binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_active_icn_copy:R.drawable.gyro_inactive_icn_copy);
+        binding.gyroButton.setBackgroundResource(gyro?R.drawable.gyro_small_active_icn:R.drawable.gyro_small_inactive);
         binding.littlePlanetButton.setBackgroundResource(lilPlanet ? R.drawable.little_planet_active_icn_copy : R.drawable.little_planet_inactive_icn_copy);
     }
 

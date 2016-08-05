@@ -76,7 +76,7 @@ public class GCMPushReceiverService extends GcmListenerService {
 
     private void sendNotification(String message, String title, String type, String json) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.mipmap.ic_launcher2);
+        builder.setSmallIcon(R.drawable.logo_mini_icn);
         Intent intent;
         String avatarId;
         String userId;

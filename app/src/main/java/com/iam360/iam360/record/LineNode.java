@@ -45,7 +45,8 @@ public class LineNode {
     private int mvpMatrixHandle;
 
 //    private float colorRed[] = {0.9372f, 0.2823f, 0.2117f, 1.0f };
-    private float colorRed[] = {0.996f, 0.812f, 0.365f, 1.0f };// colorYellow 0.996, 0.812, 0.365
+//    private float colorRed[] = {0.996f, 0.812f, 0.365f, 1.0f };// colorYellow 0.996, 0.812, 0.365
+    private float colorRed[] = {1f, 0.459f, 0f, 1.0f };// colorOrange 1, 0.459, 0
     private float colorWhite[] = {1.0f, 1.0f, 1.0f, 1.0f };
     private float color[] = colorWhite;
 

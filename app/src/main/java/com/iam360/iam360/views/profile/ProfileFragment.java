@@ -108,7 +108,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" ");
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(getActivity() instanceof ProfileActivity?R.drawable.back_arrow:R.drawable.logo_small_dark);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(getActivity() instanceof ProfileActivity?R.drawable.back_arrow:R.drawable.logo_mini_icn);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (person != null) {
@@ -231,7 +231,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateHomeButton() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode ? R.drawable.cancel : R.drawable.logo_small_dark);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(isEditMode ? R.drawable.cancel : R.drawable.logo_mini_icn);
     }
 
     @Override
