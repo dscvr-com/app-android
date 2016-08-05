@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
                     case FEED_MODE:
-                        adapterViewPager.mainFeedFragment.disableDrag();
+//                        adapterViewPager.mainFeedFragment.disableDrag();
                         break;
                     case PROFILE_MODE:
                         break;

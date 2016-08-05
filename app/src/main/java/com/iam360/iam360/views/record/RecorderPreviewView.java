@@ -91,7 +91,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         this.decoderHandler = new Handler(decoderThread.getLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.w(TAG, "Message tag: " + msg.what);
+//                Log.w(TAG, "Message tag: " + msg.what);
                 if(msg.what == START_DECODER) {
                     createDecoderSurface();
                     // So I have no idea what we wait for. So we just wait.
@@ -135,11 +135,11 @@ public class RecorderPreviewView extends AutoFitTextureView {
             if(dataListener != null) {
                 if(surface.awaitNewImage()) {
                     surface.drawImage(false);
-                    Timber.d("Fetch frame success");
+//                    Timber.d("Fetch frame success");
                     dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mHeight, surface.colorFormat);
                 }
             } else {
-                Timber.e("Fetch frame failed");
+//                Timber.e("Fetch frame failed");
                 Thread.sleep(10, 0);
             }
         } catch (RuntimeException e) {
@@ -203,7 +203,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         // Todo - open camera
         CameraManager manager = (CameraManager)getContext().getSystemService(Context.CAMERA_SERVICE);
         try {
-            Log.d(TAG, "tryAcquire");
+//            Log.d(TAG, "tryAcquire");
             if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }

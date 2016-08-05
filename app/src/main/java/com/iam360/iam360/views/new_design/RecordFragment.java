@@ -2,8 +2,6 @@ package com.iam360.iam360.views.new_design;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.ImageFormat;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
@@ -11,6 +9,7 @@ import android.hardware.camera2.CameraManager;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,28 +19,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.iam360.iam360.OptonautApp;
 import com.iam360.iam360.R;
 import com.iam360.iam360.record.Edge;
 import com.iam360.iam360.record.GlobalState;
 import com.iam360.iam360.record.LineNode;
-import com.iam360.iam360.record.RecordPreview;
 import com.iam360.iam360.record.Recorder;
 import com.iam360.iam360.record.RecorderOverlayView;
 import com.iam360.iam360.record.SelectionPoint;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.util.CameraUtils;
-import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.Maths;
 import com.iam360.iam360.util.Vector3;
 import com.iam360.iam360.views.dialogs.CancelRecordingDialog;
 import com.iam360.iam360.views.record.RecorderPreviewView;
+
+import org.joda.time.Period;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import timber.log.Timber;
 
@@ -73,22 +73,65 @@ public class RecordFragment extends Fragment {
 
     private CancelRecordingDialog cancelRecordingDialog;
 
+
+//    private float[] getCustomRotationMatrixMotor(){
+//
+//        return float[];
+//    }
+
+
+    private float currentDegree = (float) 0.03;
+
+    private long lastElapsedTime = SystemClock.elapsedRealtimeNanos();
+    private double currentTheta = 0.0;
+    private double currentPhi = 0.0;
+    private boolean isRecording = false;
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
-            if (Recorder.isFinished()) {
+            //Log.d("MARK","isRecording = "+isRecording);
+            if (Recorder.isFinished() || !isRecording) {
                 // sync hack
                 return;
             }
+
             assert colorFormat == Bitmap.Config.ARGB_8888;
 
+                float[] baseCorrection = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
+                long mediaTime = SystemClock.elapsedRealtimeNanos();
+                long timeDiff = mediaTime - lastElapsedTime;
+                Period elapsedPeriod = new Period(timeDiff);
+                double degreeIncr = (elapsedPeriod.getSeconds()) * 0.0165001;
+                currentDegree -= degreeIncr;
+                currentPhi = Math.toRadians(currentDegree);
+                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
+                    isRecording = false;
+                    if(currentTheta == 0) {
+                        currentTheta = -0.718;
+                    } else if(currentTheta < 0) {
+                        currentTheta = 0.718;
+                    } else if(currentTheta > 0) {
+                        currentTheta = 0;
+                    }
+                    currentDegree = 0;
+                }
+
+                float[] coreMotionMatrix = Maths.buildRotationMatrix(new float[]{currentDegree, 0, 1, 0});
+
+//                Log.d("previewListener","mediaTime = "+mediaTime+"   -   lastElapsedTime = "+lastElapsedTime+"    :  "+elapsedPeriod.getSeconds());
+//                Log.d("previewListener","degreeIncr = "+degreeIncr);
+//                Log.d("previewListener","currentDegree = "+currentDegree);
+//                Log.d("previewListener","currentPhi = "+currentPhi);
+//                Log.d("previewListener","currentTheta = "+currentTheta);
+//                Log.d("previewListener","coreMotionMatrix1 = "+Arrays.toString(coreMotionMatrix));
+
             // build extrinsics
-            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+//            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
-
-            Log.w(TAG, "Pushing data: " + width + "x" + height);
+//            Log.d("MARK","previewListener coreMotionMatrix2  = "+ Arrays.toString(coreMotionMatrix));
+//            Log.w(TAG, "Pushing data: " + width + "x" + height);
             assert width * height * 4 == data.length;
-
+//          Log.d("MARK","data = "+data+"  f == "+new String(data)+"    width = "+ width+" height = "+ height+" extrinsicsData = "+ Arrays.toString(extrinsicsData));
             Recorder.push(data, width, height, extrinsicsData);
 
             // progress bar
@@ -176,6 +219,10 @@ public class RecordFragment extends Fragment {
 
         }
     };
+//
+//    private byte[] getRotationMatrix(Float currentPhi, Float thetaValue){
+//        return
+//    }
 
     private void queueFinishRecording() {
         // see: http://stackoverflow.com/a/11125271/1176596
@@ -243,6 +290,7 @@ public class RecordFragment extends Fragment {
         camera.setPreviewCallback(previewCallback);
 */
         Recorder.setIdle(false);
+        isRecording = true;
     }
 
     private void setupSelectionPoints() {
@@ -307,8 +355,5 @@ public class RecordFragment extends Fragment {
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
-
-
     }
-
 }

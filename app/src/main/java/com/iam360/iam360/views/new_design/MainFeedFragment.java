@@ -36,8 +36,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -200,28 +198,28 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     protected void initializeFeed(boolean fromList) {
         Cursor curs = mydb.getAllFeedsData();
         Log.d("MARK","initializeFeed curs.getCount() = "+curs.getCount());
-        if (curs.getCount() > 0) {
-            cur2Json(curs,5)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() ->{
-//                        mydb.deleteAllTable(DBHelper.OPTO_TABLE_NAME_FEEDS);
-                        apiConsumer.getOptographs(5)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-//                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-                                .onErrorReturn(throwable -> {
-                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                                    return null;
-                                })
-                                .subscribe(optographFeedAdapter::addItem);
-                    })
-                    .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                        return null;
-                    })
-                    .subscribe(optographFeedAdapter::addItem);
-        }else{
+//        if (curs.getCount() > 0) {
+//            cur2Json(curs,5)
+//                    .subscribeOn(Schedulers.newThread())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .doOnCompleted(() ->{
+////                        mydb.deleteAllTable(DBHelper.OPTO_TABLE_NAME_FEEDS);
+//                        apiConsumer.getOptographs(5)
+//                                .subscribeOn(Schedulers.newThread())
+//                                .observeOn(AndroidSchedulers.mainThread())
+////                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+//                                .onErrorReturn(throwable -> {
+//                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                                    return null;
+//                                })
+//                                .subscribe(optographFeedAdapter::addItem);
+//                    })
+//                    .onErrorReturn(throwable -> {
+//                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                        return null;
+//                    })
+//                    .subscribe(optographFeedAdapter::addItem);
+//        }else{
             ProgressDialog progress = new ProgressDialog(getActivity());
             progress.setTitle("Fetching...");
 //            progress.setMessage("Wait while loading...");
@@ -236,7 +234,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
-        }
+//        }
 
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -491,28 +489,28 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if(apiConsumer == null) return;
         Cursor curs = mydb.getAllFeedsData();
         Log.d("MARK","refresh cursCount - "+curs.getCount());
-        if (curs.getCount() > 0) {
-            cur2Json(curs,5)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() ->{
-//                        MixpanelHelper.trackViewViewer2D(getActivity())
-                        apiConsumer.getOptographs(5)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-//                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
-                                .onErrorReturn(throwable -> {
-                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                                    return null;
-                                })
-                                .subscribe(optographFeedAdapter::addItem);
-                    })
-                    .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                        return null;
-                    })
-                    .subscribe(optographFeedAdapter::addItem);
-        }else{
+//        if (curs.getCount() > 0) {
+//            cur2Json(curs,5)
+//                    .subscribeOn(Schedulers.newThread())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .doOnCompleted(() ->{
+////                        MixpanelHelper.trackViewViewer2D(getActivity())
+//                        apiConsumer.getOptographs(5)
+//                                .subscribeOn(Schedulers.newThread())
+//                                .observeOn(AndroidSchedulers.mainThread())
+////                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+//                                .onErrorReturn(throwable -> {
+//                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                                    return null;
+//                                })
+//                                .subscribe(optographFeedAdapter::addItem);
+//                    })
+//                    .onErrorReturn(throwable -> {
+//                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                        return null;
+//                    })
+//                    .subscribe(optographFeedAdapter::addItem);
+//        }else{
             apiConsumer.getOptographs(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -522,7 +520,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
-        }
+//        }
 
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
