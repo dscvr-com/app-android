@@ -269,6 +269,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         String columnName = cursor.getColumnName(i);
                         rowObject.put(columnName,
                                 cursor.getString(i));
+                        Timber.d("CURSOR : " + columnName + " " + cursor.getString(i));
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
                     }
@@ -736,6 +737,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         Timber.d("receiveFinishedImage");
         binding.recordProgress.setVisibility(View.GONE);
         binding.cameraBtn.setEnabled(true);
+    }
+
+    public void refreshAfterDelete(String id,boolean isLocal) {
+        optographFeedAdapter.refreshAfterDelete(id, isLocal);
     }
 
 }

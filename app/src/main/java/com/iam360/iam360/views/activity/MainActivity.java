@@ -299,6 +299,10 @@ public class MainActivity extends AppCompatActivity {
                     String id = data.getStringExtra("id");
                     boolean local = data.getBooleanExtra("local",false);
                     ((ProfileFragmentExercise) frag).refreshAfterDelete(id,local);
+                } else if (frag instanceof MainFeedFragment) {
+                    String id = data.getStringExtra("id");
+                    boolean local = data.getBooleanExtra("local",false);
+                    ((MainFeedFragment) frag).refreshAfterDelete(id,local);
                 }
             }
         }
