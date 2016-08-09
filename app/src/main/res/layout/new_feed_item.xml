@@ -68,8 +68,6 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="@drawable/placeholder"
-                    android:scaleType="fitStart"
-                    android:adjustViewBounds="true"
                     app:optograph_preview="@{optograph}"/>
 
                 <ImageView
