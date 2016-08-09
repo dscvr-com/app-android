@@ -5,9 +5,7 @@
     <data class=".OptographDetailsBinding">
 
         <import type="com.iam360.iam360.model.Optograph" />
-
         <import type="com.iam360.iam360.model.Person" />
-
         <import type="com.iam360.iam360.model.Location" />
 
         <variable
@@ -74,6 +72,13 @@
                 android:id="@+id/gyro_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/gyro_small_inactive" />
+
+            <ImageButton
+                android:id="@+id/export_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:background="@drawable/gyro_small_inactive" />
 
 

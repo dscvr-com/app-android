@@ -1,5 +1,6 @@
 package com.iam360.iam360.views.activity;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -37,6 +40,7 @@ import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.util.GeneralUtils;
+import com.iam360.iam360.util.ImageUrlBuilder;
 import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.sensors.GestureDetectors;
@@ -169,6 +173,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.arrowMenu.setOnClickListener(this);
         binding.littlePlanetButton.setOnClickListener(this);
         binding.gyroButton.setOnClickListener(this);
+        binding.exportButton.setOnClickListener(this);
         binding.vrButton.setOnClickListener(this);
         binding.heartContainer.setOnClickListener(this);
         binding.heartLabel.setOnClickListener(this);
@@ -586,6 +591,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             case R.id.delete_button:
                 deleteImageItemDialog(optograph);
                 break;
+            case R.id.export_button:
+                exportImageDialog(optograph);
+                break;
             default:
                 break;
         }
@@ -627,10 +635,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());
-                    intent.putExtra("local",false);
+                    intent.putExtra("local", false);
                     setResult(RESULT_OK, intent);
                     finish();
-                } else Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -662,7 +671,45 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 }
             }
             boolean result = dir.delete();
-            Log.d("myTag", "delete: getName: " + dir.getName() + " getPath: " + dir.getPath()+" delete: "+result);
+            Log.d("myTag", "delete: getName: " + dir.getName() + " getPath: " + dir.getPath() + " delete: " + result);
         }
     }
+
+    private void exportImageDialog(Optograph optograph) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.profile_export_message)
+                .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
+                    exportImage(optograph);
+                }).setNegativeButton(getResources().getString(R.string.cancel_label), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.create().show();
+    }
+
+    private void exportImage(Optograph optograph) {
+        String DIR_NAME = getResources().getString(R.string.app_name);
+        String filename = optograph.getId() + ".jpg";
+        String downloadUrlOfImage = ImageUrlBuilder.buildERUrl(optograph.getId());
+        File direct = new File(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath() + "/" + DIR_NAME + "/");
+
+        if (!direct.exists()) {
+            direct.mkdir();
+        }
+
+        DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri downloadUri = Uri.parse(downloadUrlOfImage);
+        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false)
+                .setTitle(filename)
+                .setMimeType("image/jpeg")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,
+                        File.separator + DIR_NAME + File.separator + filename);
+
+        dm.enqueue(request);
+    }
+
 }
