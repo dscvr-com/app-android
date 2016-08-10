@@ -79,51 +79,52 @@ public class RecordFragment extends Fragment {
     // Map globalIds of the edge's selection points : LineNode
     private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
 
-    private CancelRecordingDialog cancelRecordingDialog;
-
-
-//    private float[] getCustomRotationMatrixMotor(){
-//
-//        return float[];
-//    }
-
-
     private float currentDegree = (float) 0.03;
 
     private long lastElapsedTime = SystemClock.elapsedRealtimeNanos();
     private double currentTheta = 0.0;
     private double currentPhi = 0.0;
     private boolean isRecording = false;
+
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
-            //Log.d("MARK","isRecording = "+isRecording);
             if (Recorder.isFinished() || !isRecording) {
                 // sync hack
                 return;
             }
+            Log.d("MARK","Recorder.isdle = "+Recorder.isIdle());
+            Log.d("MARK","((RecorderActivity) getActivity()).useBLE == "+((RecorderActivity) getActivity()).useBLE);
+            Log.d("MARK","Recorder.isFinished = "+Recorder.isFinished());
+            Log.d("MARK","isRecording = "+isRecording);
+
             assert colorFormat == Bitmap.Config.ARGB_8888;
+            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+//            if(((RecorderActivity) getActivity()).useBLE){
+//                float[] baseCorrection = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
+//                long mediaTime = SystemClock.elapsedRealtimeNanos();
+//                long timeDiff = mediaTime - lastElapsedTime;
+//                Period elapsedPeriod = new Period(timeDiff);
+//                double degreeIncr = (elapsedPeriod.getSeconds()) * 0.165001;
+//                currentDegree -= degreeIncr;
+//                currentPhi = Math.toRadians(currentDegree);
+//                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
+//                    isRecording = false;
+//                    if(currentTheta == 0) {
+//                        currentTheta = -0.718;
+//                    } else if(currentTheta < 0) {
+//                        currentTheta = 0.718;
+//                    } else if(currentTheta > 0) {
+//                        currentTheta = 0;
+//                    }
+//                    currentDegree = 0;
+//                }
+//                float[] coreMotionMatrix = Maths.buildRotationMatrix(new float[]{currentDegree, 0, 1, 0});
+//
+//
+//                float[] rotationMatrix = new float[16];
+//                Matrix.multiplyMM(rotationMatrix, 0, baseCorrection, 0, coreMotionMatrix, 0);
 
-                float[] baseCorrection = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
-                long mediaTime = SystemClock.elapsedRealtimeNanos();
-                long timeDiff = mediaTime - lastElapsedTime;
-                Period elapsedPeriod = new Period(timeDiff);
-                double degreeIncr = (elapsedPeriod.getSeconds()) * 0.0165001;
-                currentDegree -= degreeIncr;
-                currentPhi = Math.toRadians(currentDegree);
-                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
-                    isRecording = false;
-                    if(currentTheta == 0) {
-                        currentTheta = -0.718;
-                    } else if(currentTheta < 0) {
-                        currentTheta = 0.718;
-                    } else if(currentTheta > 0) {
-                        currentTheta = 0;
-                    }
-                    currentDegree = 0;
-                }
-
-                float[] coreMotionMatrix = Maths.buildRotationMatrix(new float[]{currentDegree, 0, 1, 0});
 
 //                Log.d("previewListener","mediaTime = "+mediaTime+"   -   lastElapsedTime = "+lastElapsedTime+"    :  "+elapsedPeriod.getSeconds());
 //                Log.d("previewListener","degreeIncr = "+degreeIncr);
@@ -131,11 +132,9 @@ public class RecordFragment extends Fragment {
 //                Log.d("previewListener","currentPhi = "+currentPhi);
 //                Log.d("previewListener","currentTheta = "+currentTheta);
 //                Log.d("previewListener","coreMotionMatrix1 = "+Arrays.toString(coreMotionMatrix));
+//            }
 
-            // build extrinsics
-//            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
-
             Log.w(TAG, "Pushing data: " + width + "x" + height);
             assert width * height * 4 == data.length;
 
@@ -209,14 +208,18 @@ public class RecordFragment extends Fragment {
         public void cameraOpened(CameraDevice device) {
             CameraManager cameraManager = (CameraManager)getActivity().getSystemService(Context.CAMERA_SERVICE);
             try {
-                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
-                // initialize recorder
-                SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
-                Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
+//                Log.d("MARK","Recorder.isInitialized = "+Recorder.isInitialized);
+//                if(!Recorder.isInitialized){
+                    CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
+                    // initialize recorder
+                    SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+                    float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
+                    Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
-                setupSelectionPoints();
+                    setupSelectionPoints();
+//                }
             } catch (CameraAccessException e) {
+                Log.d("MARK","CameraAccessException e"+e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -229,7 +232,6 @@ public class RecordFragment extends Fragment {
 
     private void queueFinishRecording() {
         // see: http://stackoverflow.com/a/11125271/1176596
-
         // Get a handler that can be used to post to the main thread
         Handler mainHandler = new Handler(getActivity().getMainLooper());
         mainHandler.post(this::finishRecording);
@@ -260,8 +262,6 @@ public class RecordFragment extends Fragment {
         super.onResume();
         CoreMotionListener.register();
         recordPreview.onResume();
-
-
     }
 
     @Override

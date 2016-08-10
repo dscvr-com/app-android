@@ -45,13 +45,13 @@ public class RecorderActivity extends AppCompatActivity {
     private Cache cache;
 
     private static final int REQUEST_ENABLE_BT = 1;
+    private static final int REQUEST_BLE_LIST = 1000;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mLEScanner;
     private BluetoothGatt mBluetoothGatt;
     private BluetoothGattService mBluetoothService;
     private ScanSettings mScanSettings;
     private List<ScanFilter> mScanFilters;
-//    private BluetoothGattCallback gattCallback;
     private BLECommands bleCommands;
 
     private UUID mServiceUIID;
@@ -60,34 +60,12 @@ public class RecorderActivity extends AppCompatActivity {
 
     private boolean m3ringFlag = true;
     private int motorRingType = 1;
+    public boolean useBLE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorder);
-
-
-        mServiceUIID = UUID.fromString(getString(R.string.btle_serviceuuidlong));
-        mResponesUIID = UUID.fromString(getString(R.string.btle_characteristic_response));
-        mNotifUUID = UUID.fromString(getString(R.string.btle_serviceuuid_notification));
-
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.error_btle_notsupport, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        // Initializes Bluetooth adapter.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            mScanSettings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .build();
-            mScanFilters = new ArrayList<ScanFilter>();
-        }
 
         cache = Cache.open();
         Bundle bundle = new Bundle();
@@ -106,12 +84,41 @@ public class RecorderActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.feed_placeholder, recorderOverlayFragment).commit();
 
-        endBT();
-        ScanFilter.Builder builder = new ScanFilter.Builder();
-        builder.setDeviceAddress("44:A6:E5:03:88:4F");
-        mScanFilters.add(builder.build());
-        beginBT();
+        Intent data = getIntent();
+        if(data != null && data.getStringExtra("DEVICE_NAME") != null && !data.getStringExtra("DEVICE_NAME").equals("")){
+            useBLE = true;
+            mServiceUIID = UUID.fromString(getString(R.string.btle_serviceuuidlong));
+            mResponesUIID = UUID.fromString(getString(R.string.btle_characteristic_response));
+            mNotifUUID = UUID.fromString(getString(R.string.btle_serviceuuid_notification));
 
+            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                Toast.makeText(this, R.string.error_btle_notsupport, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            // Initializes Bluetooth adapter.
+            final BluetoothManager bluetoothManager =
+                    (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+                mScanSettings = new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .build();
+                mScanFilters = new ArrayList<ScanFilter>();
+            }
+
+            String devName = data.getStringExtra("DEVICE_NAME");
+            String devAddrss = data.getStringExtra("DEVICE_ADDRESS");
+            endBT();
+            ScanFilter.Builder builder = new ScanFilter.Builder();
+            builder.setDeviceAddress(devAddrss);
+            mScanFilters.add(builder.build());
+            beginBT();
+        }else{
+//            useBLEDeviceDialog();
+        }
     }
 
     public void startRecording() {
@@ -168,14 +175,13 @@ public class RecorderActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
-//        super.onBackPressed();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // User chose not to enable Bluetooth.
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            finish();
+//            finish();
             return;
         }else {
             startLeScan();
@@ -219,10 +225,6 @@ public class RecorderActivity extends AppCompatActivity {
     public void connectToDevice(BluetoothDevice device) {
         if (mBluetoothGatt == null) {
             mBluetoothGatt = device.connectGatt(this, false, gattCallback);
-            Log.d("MARK","connectToDevice mBluetoothGatt = "+mBluetoothGatt);
-            Log.d("MARK","connectToDevice mBluetoothAdapter = "+mBluetoothAdapter);
-//            gattCallback = new GattCallBack(this, mBluetoothGatt, mBluetoothAdapter);
-
             stopLeScan();
         }
     }
@@ -282,7 +284,7 @@ public class RecorderActivity extends AppCompatActivity {
             Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
             switch (yPos) {
                 case "FFFFEE99":  //after ng open
-                    if (m3ringFlag) {
+                    if (m3ringFlag && motorRingType == 1) {
                         bleCommands.topRing();
                         motorRingType = 2;
                     }
@@ -312,8 +314,6 @@ public class RecorderActivity extends AppCompatActivity {
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                      int status) {
-            Log.d("MARK","onDescriptorRead gatt = "+gatt);
-            Log.d("MARK","onDescriptorRead characteristic = "+descriptor.getUuid());
         }
     };
 
@@ -349,5 +349,31 @@ public class RecorderActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mLEScanner.stopScan(mScanCallback);
         }
+    }
+
+    private void useBLEDeviceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to use a motor?");
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(
+                "YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent(RecorderActivity.this, BLEListActivity.class);
+                        startActivityForResult(intent,REQUEST_BLE_LIST);
+                        dialog.cancel();
+                        useBLE = true;
+                        finish();
+                    }
+                });
+        builder.setNegativeButton("NO",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                useBLE = false;
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert1 = builder.create();
+        alert1.show();
     }
 }

@@ -178,6 +178,9 @@
             android:exported="true" />
 
         <activity android:name=".views.activity.CreateUsernameActivity"></activity>
+
+        <activity android:name=".views.activity.BLEListActivity"></activity>
+
     </application>
 
 </manifest>

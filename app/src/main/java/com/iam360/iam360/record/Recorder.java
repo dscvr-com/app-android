@@ -1,6 +1,7 @@
 package com.iam360.iam360.record;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import timber.log.Timber;
 
@@ -13,7 +14,7 @@ public class Recorder {
         System.loadLibrary("ndkmodule");
     }
 
-    private static boolean isInitialized = false;
+    public static boolean isInitialized = false;
 
     private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode);
     public static native void push(byte[] data, int width, int height, double[] extrinsicsData);
@@ -37,6 +38,7 @@ public class Recorder {
     public static native boolean previewAvailable();
 
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode) {
+        Log.d("MARK", "isInitialized  = "+isInitialized);
         if (!isInitialized) {
             Timber.v("Initialized recorder");
 //            enableDebug(storagePath);
@@ -44,6 +46,7 @@ public class Recorder {
             initRecorder(storagePath, sensorWidth, sensorHeight, focalLength, mode);
             isInitialized = true;
         } else {
+            Log.d("MARK", "isInitialized3  = "+isInitialized);
             throw new RuntimeException("Recorder already initialized");
         }
     }

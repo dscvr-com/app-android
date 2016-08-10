@@ -49,6 +49,9 @@ public class Cache {
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 
+    public static final String BLE_DEVICE_ADDRESS = "BLE_DEVICE_ADDRESS";
+    public static final String BLE_DEVICE_NAME = "BLE_DEVICE_NAME";
+
     //<ID,<face,6faces(boolean)>>
     public Map<String,Map<String,List<Boolean>>> upload = new HashMap<>();
 
