@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.joda.time.DateTime;
+
 /**
  * Created by Mariel on 4/18/2016.
  */
@@ -250,6 +252,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.rawQuery( "select * from " + OPTO_TABLE_NAME_FEEDS + " where " + OPTOGRAPH_DELETED_AT + " = \'\'", null );
     }
 
+    public Cursor getFeedsData(int limit) {
+        return getFeedsData(limit, getNow());
+    }
+
+    public Cursor getFeedsData(int limit, String older_than) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + OPTO_TABLE_NAME_FEEDS
+                + " WHERE " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\'"
+                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
+                + " LIMIT " + limit;
+        return db.rawQuery( query, null );
+    }
+
     public boolean updateFace(String id,String column,int value) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -333,7 +348,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void deleteAllTable(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from "+ tableName);
+        db.execSQL("delete from " + tableName);
     }
 
 
@@ -345,7 +360,11 @@ public class DBHelper extends SQLiteOpenHelper {
 //        Log.d("MARK","updateTableColumn contentValues="+contentValues);
 //        Log.d("MARK","updateTableColumn primaryColumn="+primaryColumn);
 //        Log.d("MARK","updateTableColumn primaryColumnValue="+primaryColumnValue);
-        db.update(tableName,contentValues,primaryColumn+" =  ? ",new String[] {String.valueOf(primaryColumnValue)});
+        db.update(tableName, contentValues, primaryColumn + " =  ? ", new String[]{String.valueOf(primaryColumnValue)});
         return  true;
+    }
+
+    private String getNow() {
+        return RFC3339DateFormatter.toRFC3339String(DateTime.now());
     }
 }

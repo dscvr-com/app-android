@@ -12,6 +12,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -45,6 +47,7 @@ import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
 import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.views.VRModeActivity;
+import com.iam360.iam360.views.dialogs.NetworkProblemDialog;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -344,6 +347,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.menuLayout.setVisibility(View.INVISIBLE);
             binding.menuLayout1.setVisibility(View.INVISIBLE);
             binding.deleteButton.setVisibility(View.INVISIBLE);
+            binding.descriptionBar.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
             getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
@@ -353,6 +357,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             if(isCurrentUser) binding.deleteButton.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);// change to VISIBLE if settings is needed here
             binding.menuLayout1.setVisibility(View.VISIBLE);// change to VISIBLE if settings is needed here
+            binding.descriptionBar.setVisibility(View.VISIBLE);
             isFullScreenMode = false;
         }
     }
@@ -698,18 +703,44 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             direct.mkdir();
         }
 
-        DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri downloadUri = Uri.parse(downloadUrlOfImage);
-        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
-                .setAllowedOverRoaming(false)
-                .setTitle(filename)
-                .setMimeType("image/jpeg")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,
-                        File.separator + DIR_NAME + File.separator + filename);
+        if(isOnline()) {
+            DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            Uri downloadUri = Uri.parse(downloadUrlOfImage);
+            DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
+                    .setAllowedOverRoaming(false)
+                    .setTitle(filename)
+                    .setMimeType("image/jpeg")
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,
+                            File.separator + DIR_NAME + File.separator + filename);
 
-        dm.enqueue(request);
+            dm.enqueue(request);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getResources().getString(R.string.dialog_network_retry));
+            builder.setCancelable(true);
+
+            builder.setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            alert = builder.create();
+            alert.show();
+        }
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.iam360.iam360.R;
 
+import timber.log.Timber;
+
 /**
  * @author Nilan Marktanner
  * @date 2016-01-26
@@ -62,6 +64,7 @@ public class ExpandableTextView extends TextView {
     }
 
     private CharSequence getTrimmedText(CharSequence text) {
+
         if (originalText != null && originalText.length() > trimLength) {
             return new SpannableStringBuilder(originalText, 0, trimLength + 1).append(ELLIPSIS);
         } else {
