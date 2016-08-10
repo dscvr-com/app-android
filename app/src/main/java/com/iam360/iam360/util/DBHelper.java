@@ -240,6 +240,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.rawQuery( "select * from "+table+" where "+column+"=\'"+id+"\'", null );
     }
 
+    public Cursor getUserOptoList(String id, String table) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery( "select * from "+table+" where "+OPTOGRAPH_PERSON_ID+"=\'"+id+"\' and "+OPTOGRAPH_DELETED_AT+" =\'\'", null );
+    }
+
     public Cursor getAllFeedsData() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery( "select * from " + OPTO_TABLE_NAME_FEEDS + " where " + OPTOGRAPH_DELETED_AT + " = \'\'", null );
