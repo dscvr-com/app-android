@@ -393,17 +393,21 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     public void addItem(Optograph optograph) {
+        Timber.d("addItem 1");
         if (optograph == null) {
             return;
         }
+        Timber.d("addItem 2 " + optograph.getPerson().getUser_name());
 //        Log.d("MARK","addItem = "+optograph);
         saveToSQLiteFeeds(optograph);
         DateTime created_at = optograph.getCreated_atDateTime();
 
+        Timber.d("addItem 3");
         // skip if optograph is already in list
         if (optographs.contains(optograph)) {
             return;
         }
+        Timber.d("addItem 4");
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
@@ -412,6 +416,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             notifyItemInserted(optographs.size() - 1);
             return;
         }
+        Timber.d("addItem 5");
 
         // if optograph is oldest, simply append to list
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
@@ -420,6 +425,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             notifyDataSetChanged();
             return;
         }
+        Timber.d("addItem 6");
 
         // find correct position of optograph
         // TODO: allow for "breaks" between new optograph and others...
@@ -431,6 +437,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 return;
             }
         }
+        Timber.d("addItem 7");
     }
 
     public void saveToSQLite(Optograph opto) {
@@ -450,9 +457,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
         Timber.d("saveToSQLiteFeeds");
         if(opto.getId() == null) return;
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
+//        AsyncTask.execute(new Runnable() {
+//            @Override
+//            public void run() {
                 Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                 res.moveToFirst();
                 if (res.getCount() > 0) {
@@ -598,8 +605,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         }
                     }
                 }
-            }
-        });
+//            }
+//        });
     }
 
     public Optograph get(int position) {
