@@ -597,6 +597,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         mHolder.getBinding().notificationTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isOnEditMode()) return;
                 onTab = ON_NOTIFICATION;
                 setTab(mHolder);
                 setNotifications();
@@ -605,6 +606,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         mHolder.getBinding().followerTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isOnEditMode()) return;
                 onTab = ON_FOLLOWER;
                 setTab(mHolder);
                 followers = new ArrayList<Follower>();
@@ -655,7 +657,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         mHolder.getBinding().imageTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isCurrentUser) return;
+                if (!isCurrentUser || isOnEditMode()) return;
                 onTab = ON_IMAGE;
                 setTab(mHolder);
                 if (context instanceof MainActivity) ((MainActivity) context).refresh();
@@ -787,6 +789,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.d("myTag", "needSave onTextChanged Desc " + s.toString());
+                updateMenuOptions();
             }
 
             @Override

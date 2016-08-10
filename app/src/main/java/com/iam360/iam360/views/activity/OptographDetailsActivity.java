@@ -266,8 +266,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     private void setHeart(boolean liked, int count) {
 
-//        binding.heartLabel.setText(String.valueOf(count));
-        binding.heartLabel.setText("");
+        binding.heartLabel.setText(String.valueOf(count));
+//        binding.heartLabel.setText("");
         if(liked) {
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
             binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);

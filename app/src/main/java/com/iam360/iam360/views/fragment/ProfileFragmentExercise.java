@@ -1,9 +1,11 @@
 package com.iam360.iam360.views.fragment;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import com.facebook.login.LoginManager;
@@ -143,6 +147,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (optographLocalGridAdapter.isOnEditMode()) enableScroll(false);
                 View view = binding.optographFeed.getChildAt(1);
                 if (view==null)return;
                 yPos += dy;
@@ -253,11 +258,37 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 break;
             case R.id.save_btn:
                 isEditMode = false;
+
+                Rect r = new Rect();
+                binding.getRoot().getWindowVisibleDisplayFrame(r);
+                int screenHeight = binding.getRoot().getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
+                }
                 optographLocalGridAdapter.saveUpdate();
                 updateHomeButton();
                 break;
             case R.id.cancel_btn:
                 isEditMode = false;
+
+                Rect r1 = new Rect();
+                binding.getRoot().getWindowVisibleDisplayFrame(r1);
+                int screenHeight1 = binding.getRoot().getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight1 = screenHeight1 - r1.bottom;
+
+                if (keypadHeight1 > screenHeight1 * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    InputMethodManager imm1 = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm1.hideSoftInputFromWindow(binding.getRoot().getWindowToken(), 0);
+                }
                 optographLocalGridAdapter.setEditMode(isEditMode);
                 binding.cancelBtn.setVisibility(View.VISIBLE);
                 binding.homeBtn.setVisibility(View.GONE);
