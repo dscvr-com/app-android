@@ -48,7 +48,7 @@ public class ApiConsumer {
 //    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
-    public static final int PROFILE_GRID_LIMIT = 16;
+    public static final int PROFILE_GRID_LIMIT = 12;
 
     OkHttpClient client;
 

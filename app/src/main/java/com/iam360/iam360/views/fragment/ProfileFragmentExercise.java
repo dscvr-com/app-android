@@ -210,7 +210,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void refreshAfterDelete(String id,boolean isLocal) {
-        optographLocalGridAdapter.refreshAfterDelete(id,isLocal);
+        optographLocalGridAdapter.refreshAfterDelete(id, isLocal);
     }
 
     private void initializeProfileFeed() {
@@ -430,11 +430,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             binding.homeBtn.setVisibility(View.VISIBLE);
         }
         enableScroll(!optographLocalGridAdapter.isOnEditMode());
-        setMessage(optographLocalGridAdapter.getMessage()==null?"":optographLocalGridAdapter.getMessage());
+        setMessage(optographLocalGridAdapter.getMessage() == null ? "" : optographLocalGridAdapter.getMessage());
     }
 
     private void enableScroll(boolean enabled) {
-        binding.overlayEdit.setVisibility(enabled?View.GONE:View.VISIBLE);
+        binding.overlayEdit.setVisibility(enabled ? View.GONE : View.VISIBLE);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) binding.overlayEdit.getLayoutParams();
 //        params.width = 200; params.leftMargin = 100;
         View view = binding.optographFeed.getChildAt(1);
@@ -519,82 +519,140 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     public void initializeFeed() {
         optographLocalGridAdapter.setPerson(person);
-        Cursor cursor = mydb.getUserOptoList(person.getId(),DBHelper.OPTO_TABLE_NAME);
-        if (!isCurrentUser) {
-            cursor = mydb.getUserOptoList(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS);
-        }
-        cursor.moveToFirst();
-        if (cursor.getCount()!=0) {
-            cur2Json(cursor,ApiConsumer.PROFILE_GRID_LIMIT)
+        Cursor cursor = null;
+        if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
+        else mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            if (cursor.getCount() != 0) {
+                cur2Json(cursor)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnCompleted(() -> {
+                            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnCompleted(() -> updateMessage(null))
+                                    .onErrorReturn(throwable -> {
+                                        updateMessage(getResources().getString(R.string.profile_net_prob));
+                                        return null;
+                                    })
+                                    .subscribe(optographLocalGridAdapter::addItem);
+                        })
+                        .onErrorReturn(throwable -> {
+                            Log.d("myTag", " Error: message: " + throwable.getMessage());
+                            if (!networkProblemDialog.isAdded())
+                                networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                            return null;
+                        })
+                        .subscribe(optographLocalGridAdapter::addItem);
+            }
+        } else {
+            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> {
-                        apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnCompleted(() -> updateMessage(null))
-                                .onErrorReturn(throwable -> {
-                                    updateMessage(getResources().getString(R.string.profile_net_prob));
-                                    return null;
-                                })
-                                .subscribe(optographLocalGridAdapter::addItem);
-                    })
+                    .doOnCompleted(() -> updateMessage(null))
                     .onErrorReturn(throwable -> {
-                        Log.d("myTag"," Error: message: "+throwable.getMessage());
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        updateMessage(getResources().getString(R.string.profile_net_prob));
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
-        //try to add filter for deleted optographs
-        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
-            LocalOptographManager.getOptographs()
+            //try to add filter for deleted optographs
+            if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+                LocalOptographManager.getOptographs()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnCompleted(() -> updateMessage(null))
+                        .subscribe(optographLocalGridAdapter::addItem);
+            }
+
+    }
+
+    public void loadMore() {
+
+        Cursor cursor = null;
+        if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
+        else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
+
+        if(cursor != null) {
+            cursor.moveToFirst();
+            if (cursor.getCount() != 0) {
+                cur2Json(cursor)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnCompleted(() -> {
+                            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .onErrorReturn(throwable -> {
+                                        return null;
+                                    })
+                                    .subscribe(optographLocalGridAdapter::addItem);
+                        })
+                        .onErrorReturn(throwable -> {
+                            Log.d("myTag", " Error: message: " + throwable.getMessage());
+                            if (!networkProblemDialog.isAdded())
+                                networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                            return null;
+                        })
+                        .subscribe(optographLocalGridAdapter::addItem);
+            }
+        } else {
+            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> updateMessage(null))
+                    .onErrorReturn(throwable -> {
+                        return null;
+                    })
                     .subscribe(optographLocalGridAdapter::addItem);
         }
     }
 
-    public void loadMore() {
-        apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(throwable -> {
-//                    getFragmentManager().executePendingTransactions();
-//                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                    return null;
-                })
-                .subscribe(optographLocalGridAdapter::addItem);
-    }
-
     public void refresh() {
 
-        Cursor cursor = mydb.getUserOptoList(person.getId(),DBHelper.OPTO_TABLE_NAME);
-        if (!isCurrentUser) {
-            cursor = mydb.getUserOptoList(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS);
-        }
-        cursor.moveToFirst();
-        if (cursor.getCount()!=0) {
-            cur2Json(cursor,ApiConsumer.PROFILE_GRID_LIMIT)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> {
-                        apiConsumer.getOptographsFromPerson(person.getId(), 10)
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnCompleted(() -> updateMessage(null))
-                                .onErrorReturn(throwable -> {
+        Cursor cursor = null;
+        if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
+        else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
+
+        if(cursor != null) {
+            cursor.moveToFirst();
+            if (cursor.getCount() != 0) {
+                cur2Json(cursor)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnCompleted(() -> {
+                            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnCompleted(() -> updateMessage(null))
+                                    .onErrorReturn(throwable -> {
 //                    getFragmentManager().executePendingTransactions();
 //                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                                    updateMessage(getResources().getString(R.string.profile_net_prob));
-                                    return null;
-                                })
-                                .subscribe(optographLocalGridAdapter::addItem);
-                    })
+                                        updateMessage(getResources().getString(R.string.profile_net_prob));
+                                        return null;
+                                    })
+                                    .subscribe(optographLocalGridAdapter::addItem);
+                        })
+                        .onErrorReturn(throwable -> {
+                            Log.d("myTag", " Error: message: " + throwable.getMessage());
+                            if (!networkProblemDialog.isAdded())
+                                networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                            return null;
+                        })
+                        .subscribe(optographLocalGridAdapter::addItem);
+            }
+        } else {
+            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnCompleted(() -> updateMessage(null))
                     .onErrorReturn(throwable -> {
-                        Log.d("myTag"," Error: message: "+throwable.getMessage());
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+//                    getFragmentManager().executePendingTransactions();
+//                    if(!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        updateMessage(getResources().getString(R.string.profile_net_prob));
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
@@ -621,13 +679,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
     }
 
-    public Observable<Optograph> cur2Json(Cursor cursor, int limit) {
+    public Observable<Optograph> cur2Json(Cursor cursor) {
         List<Optograph> optographs = new LinkedList<>();
         cursor.moveToFirst();
-        if(limit > cursor.getCount()){
-            limit = cursor.getCount();
-        }
-        for(int a=0; a < limit; a++){
+        for(int a=0; a < cursor.getCount(); a++){
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
             for (int i = 0; i < totalColumn; i++) {

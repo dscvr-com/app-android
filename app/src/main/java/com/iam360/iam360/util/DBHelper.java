@@ -9,6 +9,8 @@ import android.util.Log;
 
 import org.joda.time.DateTime;
 
+import timber.log.Timber;
+
 /**
  * Created by Mariel on 4/18/2016.
  */
@@ -242,9 +244,22 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.rawQuery( "select * from "+table+" where "+column+"=\'"+id+"\'", null );
     }
 
-    public Cursor getUserOptoList(String id, String table) {
+//    public Cursor getUserOptoList(String id, String table) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        return db.rawQuery( "select * from " + table + " where " + OPTOGRAPH_PERSON_ID + " = \' " + id + " \' and " + OPTOGRAPH_DELETED_AT + " = \'\' ", null );
+//    }
+
+    public Cursor getUserOptographs(String id, String table, int limit) {
+        return getUserOptographs(id, table, limit, getNow());
+    }
+
+    public Cursor getUserOptographs(String id, String table, int limit, String older_than) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery( "select * from "+table+" where "+OPTOGRAPH_PERSON_ID+"=\'"+id+"\' and "+OPTOGRAPH_DELETED_AT+" =\'\'", null );
+        String query = "SELECT * FROM " + table
+                + " WHERE " + OPTOGRAPH_PERSON_ID + " = \'" + id + "\' AND " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
+                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
+                + " LIMIT " + limit;
+        return db.rawQuery( query, null );
     }
 
     public Cursor getAllFeedsData() {
