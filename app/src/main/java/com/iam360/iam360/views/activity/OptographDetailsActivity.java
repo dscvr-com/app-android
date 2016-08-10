@@ -344,6 +344,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.menuLayout.setVisibility(View.INVISIBLE);
             binding.menuLayout1.setVisibility(View.INVISIBLE);
             binding.deleteButton.setVisibility(View.INVISIBLE);
+            binding.descriptionBar.setVisibility(View.INVISIBLE);
             isFullScreenMode = true;
         } else {
             getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
@@ -353,6 +354,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             if(isCurrentUser) binding.deleteButton.setVisibility(View.VISIBLE);
             binding.menuLayout.setVisibility(View.INVISIBLE);// change to VISIBLE if settings is needed here
             binding.menuLayout1.setVisibility(View.VISIBLE);// change to VISIBLE if settings is needed here
+            binding.descriptionBar.setVisibility(View.VISIBLE);
             isFullScreenMode = false;
         }
     }

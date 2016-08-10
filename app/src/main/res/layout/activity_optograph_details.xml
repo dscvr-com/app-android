@@ -321,21 +321,38 @@
                 </RelativeLayout>
             </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/delete_button"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/description_bar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@id/profile_bar"
-                android:layout_alignParentEnd="true"
-                android:background="@color/transparentOverlay"
-                android:padding="@dimen/fab_elevation"
-                android:layout_marginBottom="@dimen/appbar_elevation"
-                android:src="@drawable/delete_icn" />
+                android:layout_margin="10dp">
+
+                <com.iam360.iam360.views.ExpandableTextView
+                    android:id="@+id/description_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toLeftOf="@+id/delete_button"
+                    android:textColor="@color/bright"
+                    app:trimLength="45"
+                    android:text="@{optograph.text}"/>
+
+                <ImageButton
+                    android:id="@+id/delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/transparentOverlay"
+                    android:padding="@dimen/fab_elevation"
+                    android:src="@drawable/delete_icn" />
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/description_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -347,25 +364,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="0dp"
-                android:layout_toLeftOf="@+id/description_label"
                 android:textColor="@color/bright"
                 android:visibility="gone"/>
-
-            <com.iam360.iam360.views.ExpandableTextView
-                android:id="@+id/description_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:maxWidth="288dp"
-                android:text="@{optograph.text}"
-                android:textColor="@color/bright"
-                app:trimLength="32" />
 
             <TextView
                 android:id="@+id/feed_upload_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/description_label"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -380,7 +385,6 @@
                 style="@android:style/Widget.ProgressBar.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/description_label"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
