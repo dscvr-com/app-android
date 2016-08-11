@@ -269,10 +269,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.heartLabel.setText(String.valueOf(count));
 //        binding.heartLabel.setText("");
         if(liked) {
-            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 1);
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, true);
             binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
         } else {
-            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, 0);
+            mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, false);
             binding.heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.like_icn, 0);
         }
 
@@ -509,8 +509,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                                     Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                                     res.moveToFirst();
                                     if (res.getCount() > 0) {
-                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(true));
-                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", true);
+                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
                                     }
                                 }
                             }
@@ -534,8 +534,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                                     Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                                     res.moveToFirst();
                                     if (res.getCount() > 0) {
-                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", String.valueOf(false));
-                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", String.valueOf(optograph.getStars_count()));
+                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", false);
+                                        mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
                                     }
                                 }
                             }

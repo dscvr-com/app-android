@@ -151,9 +151,9 @@ public class UploaderJob extends Job {
             if (res.getCount() == 0) return;
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(id.toString())) {
-                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
+                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_ON_SERVER, true);
             } else {
-                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
+                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, false);
             }
         }
     }

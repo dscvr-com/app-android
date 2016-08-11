@@ -312,6 +312,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         cache.save(Cache.USER_TOKEN, "");
                         cache.save(Cache.GATE_CODE, "");
 
+                        // delete all database content
+                        mydb.deleteAllTable();
+
                         return true;
                     }
                 });

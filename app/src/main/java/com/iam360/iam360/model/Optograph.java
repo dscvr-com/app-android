@@ -66,7 +66,7 @@ public class Optograph implements Parcelable {
     private String stitcher_version;
     private String text;
     private int views_count;
-    private boolean is_staff_picked;
+    private boolean is_staff_pick;
     private String share_alias;
     private boolean is_private;
     private String preview_asset_id;
@@ -102,7 +102,7 @@ public class Optograph implements Parcelable {
         stitcher_version = "0.7.0";
         text = "";
         views_count = 0;
-        is_staff_picked = false;
+        is_staff_pick = false;
         share_alias = "";
         is_private = false;
         preview_asset_id = "";
@@ -137,7 +137,7 @@ public class Optograph implements Parcelable {
         this.stitcher_version = source.readString();
         this.text = source.readString();
         this.views_count = source.readInt();
-        this.is_staff_picked = source.readByte() != 0 ;
+        this.is_staff_pick = source.readByte() != 0 ;
         this.share_alias = source.readString();
         this.is_private = source.readByte() != 0 ;
         this.preview_asset_id = source.readString();
@@ -323,11 +323,11 @@ public class Optograph implements Parcelable {
     }
 
     public boolean is_staff_picked() {
-        return is_staff_picked;
+        return is_staff_pick;
     }
 
     public void setIs_staff_picked(boolean is_staff_picked) {
-        this.is_staff_picked = is_staff_picked;
+        this.is_staff_pick = is_staff_picked;
     }
 
     public String getShare_alias() {
@@ -461,7 +461,7 @@ public class Optograph implements Parcelable {
         dest.writeString(this.stitcher_version);
         dest.writeString(this.text);
         dest.writeInt(this.views_count);
-        dest.writeByte((byte) (this.is_staff_picked ? 1 : 0));
+        dest.writeByte((byte) (this.is_staff_pick ? 1 : 0));
         dest.writeString(this.share_alias);
         dest.writeByte((byte) (this.is_private ? 1 : 0));
         dest.writeString(this.preview_asset_id);

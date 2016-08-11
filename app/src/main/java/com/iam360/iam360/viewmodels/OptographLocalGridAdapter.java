@@ -354,8 +354,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                             Cursor res = mydb.getData(mHolder2.getBinding().getFollower().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                             res.moveToFirst();
                                             if (res.getCount() > 0) {
-                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "is_followed", String.valueOf(false));
-                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "followers_count", String.valueOf(mHolder2.getBinding().getFollower().getFollowers_count()));
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "is_followed", false);
+                                                mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder2.getBinding().getFollower().getId(), "followers_count", mHolder2.getBinding().getFollower().getFollowers_count());
                                             }
                                         }
 
@@ -380,8 +380,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                 Cursor res = mydb.getData(optograph.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                                 res.moveToFirst();
                                                 if (res.getCount() > 0) {
-                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "is_followed", String.valueOf(true));
-                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "followers_count", String.valueOf(optograph.getPerson().getFollowers_count()));
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "is_followed", true);
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
                                                 }
                                             }
                                             notifyItemChanged(position);
@@ -834,8 +834,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                 res.moveToFirst();
                                 if (res.getCount() > 0) {
-                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(false));
-                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", false);
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", mHolder1.getBinding().getPerson().getFollowers_count());
                                 }
                             }
                         }
@@ -858,8 +858,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 Cursor res = mydb.getData(mHolder1.getBinding().getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                 res.moveToFirst();
                                 if (res.getCount() > 0) {
-                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", String.valueOf(true));
-                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", String.valueOf(mHolder1.getBinding().getPerson().getFollowers_count()));
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "is_followed", true);
+                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id", mHolder1.getBinding().getPerson().getId(), "followers_count", mHolder1.getBinding().getPerson().getFollowers_count());
                                 }
                             }
                         }
@@ -1160,7 +1160,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 flag = response.isSuccess() ? 1 : 0;
                 opto.setIs_place_holder_uploaded(response.isSuccess());
-                mydb.updateColumnOptograph(opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, flag);
+                mydb.updateColumnOptograph(opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, response.isSuccess());
                 opto.setIs_place_holder_uploaded(response.isSuccess());
                 Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                 opto.setIs_uploading(false);
@@ -1317,7 +1317,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             optograph.setIs_uploading(false);
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(optograph.getId())) {
-                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, 1);
+                mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_ON_SERVER, true);
                 optograph.setIs_on_server(true);
                 optographs.remove(optograph);
                 notifyItemRemoved(mPosition);
@@ -1527,10 +1527,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (res.getCount()!=0) return;
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
         mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
-                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
-                opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
-                opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
-                opto.is_data_uploaded()?1:0,opto.getOptograph_type(),"Optograph");
+                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
+                opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(),
+                opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
+                opto.is_data_uploaded(),opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),"Optograph");
     }
 
     public Optograph checkToDB(Optograph optograph) {

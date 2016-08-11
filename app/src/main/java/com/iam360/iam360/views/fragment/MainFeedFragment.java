@@ -265,62 +265,81 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         for(int a=0; a < cursor.getCount(); a++){
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
-            for (int i = 0; i < totalColumn; i++) {
-                if (cursor.getColumnName(i) != null) {
+//            for (int i = 0; i < totalColumn; i++) {
+//                if (cursor.getColumnName(i) != null) {
+                    Optograph opto = null;
+                    String personId = null;
                     try {
-                        String columnName = cursor.getColumnName(i);
-                        rowObject.put(columnName,
-                                cursor.getString(i));
-                        Timber.d("CURSOR : " + columnName + " " + cursor.getString(i));
+//                        String columnName = cursor.getColumnName(i);
+//                        rowObject.put(columnName,
+//                                cursor.getString(i));
+                        opto = new Optograph(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_ID)));
+                        opto.setCreated_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
+                        opto.setIs_starred(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STARRED)) == 1 ? true : false);
+                        opto.setDeleted_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+                        opto.setStitcher_version(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
+                        opto.setText(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+                        opto.setViews_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+                        opto.setIs_staff_picked(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STAFF_PICK)) == 1 ? true : false);
+                        opto.setShare_alias(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHARE_ALIAS)));
+                        opto.setIs_private(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PRIVATE)) == 1 ? true : false);
+                        opto.setIs_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) == 1 ? true : false);
+                        opto.setOptograph_type(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
+                        opto.setStars_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+                        personId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_PERSON_ID));
+//                        opto.setComments_count(data.optograph_comments_count);
+//                        opto.setHashtag_string(data.optograph_hashtag_string);
+//                        opto.setLeft_texture_asset_id(data.optograph_left_texture_asset_id);
+//                        opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
+                        opto.setIs_local(false);
+
+                        Timber.d("CURSOR : " + opto.is_staff_picked());
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
                     }
-                }
-            }
+//                }
+//            }
 //            resultSet.put(rowObject);
 
-            String json = rowObject.toString();
-            Log.d("MARK","List<Optograph> opto = "+json);
-            Gson gson = new Gson();
-            Optographs data = gson.fromJson(json, Optographs.class);
+//            String json = rowObject.toString();
+//            Log.d("MARK","List<Optograph> opto = "+json);
+//            Gson gson = new Gson();
+//            Optographs data = gson.fromJson(json, Optographs.class);
 
-            Optograph opto = new Optograph(data.optograph_id);
 
             Person person = new Person();
-            if(data.optograph_person_id !=null && !data.optograph_person_id.equals("")){
-                Cursor res = mydb.getData(data.optograph_person_id, DBHelper.PERSON_TABLE_NAME,"id");
+            if(personId !=null && !personId.equals("")){
+                Cursor res = mydb.getData(personId, DBHelper.PERSON_TABLE_NAME,"id");
                 res.moveToFirst();
                 if (res.getCount()!= 0) {
                     person.setId(res.getString(res.getColumnIndex("id")));
                     person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                    person.setDeleted_at(res.getString(res.getColumnIndex("deleted_at")));
                     person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
-//                        Log.d("MARK","cur2Json user_name = "+res.getString(res.getColumnIndex("user_name")));
                     person.setUser_name(res.getString(res.getColumnIndex("user_name")));
-                    person.setText(res.getString(res.getColumnIndex("text")));
+                    person.setText(res.getString(res.getColumnIndex("email")));
+                    person.setEmail(res.getString(res.getColumnIndex("text")));
+                    person.setElite_status(res.getInt(res.getColumnIndex("elite_status")) == 1 ? true : false);
                     person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
+                    person.setOptographs_count(res.getInt(res.getColumnIndex("optographs_count")));
+                    person.setFollowers_count(res.getInt(res.getColumnIndex("followers_count")));
+                    person.setFollowed_count(res.getInt(res.getColumnIndex("followed_count")));
+                    person.setIs_followed(res.getInt(res.getColumnIndex("is_followed")) == 1 ? true : false);
+                    person.setFacebook_user_id(res.getString(res.getColumnIndex("facebook_user_id")));
+                    person.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
+                    person.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
+                    person.setTwitter_secret(res.getString(res.getColumnIndex("twitter_secret")));
+
                 }
             }
 //                if(!person.is_followed()){
 //                    continue;
 //                }
             opto.setPerson(person);
-            opto.setCreated_at(data.optograph_created_at);
-            opto.setIs_starred(data.optograph_is_starred);
-            opto.setDeleted_at(data.optograph_deleted_at);
-            opto.setStitcher_version(data.optograph_stitcher_version);
-            opto.setText(data.optograph_text);
-            opto.setViews_count(data.optograph_views_count);
-            opto.setIs_staff_picked(data.optograph_is_staff_pick);
-            opto.setShare_alias(data.optograph_share_alias);
-            opto.setIs_private(data.optograph_is_private);
-            opto.setIs_published(data.optograph_is_published);
-            opto.setLeft_texture_asset_id(data.optograph_left_texture_asset_id);
-            opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
-            opto.setIs_local(false);
 
             Location location = new Location();
-            if(data.optograph_location_id !=null && !data.optograph_location_id.equals("")){
-                Cursor res = mydb.getData(data.optograph_location_id, DBHelper.LOCATION_TABLE_NAME,"id");
+            if(opto != null && opto.getLocation().getId() !=null && !opto.getLocation().getId().equals("")){
+                Cursor res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME,"id");
                 res.moveToFirst();
                 if (res.getCount()!= 0) {
                     location.setId(res.getString(res.getColumnIndex("id")));
@@ -336,12 +355,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 }
             }
             opto.setLocation(location);
-
-            opto.setOptograph_type(data.optograph_type);
-            opto.setStars_count(data.optograph_stars_count);
-            opto.setComments_count(data.optograph_comments_count);
-            opto.setHashtag_string(data.optograph_hashtag_string);
-
             optographs.add(opto);
 //                Log.d("MARK","cur2Json opto = "+opto.toString());
 

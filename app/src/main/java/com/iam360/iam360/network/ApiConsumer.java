@@ -101,15 +101,14 @@ public class ApiConsumer {
                             .build();
                 }
 
-//                Request request = chain.request();
-
                 Timber.v(newRequest.headers().toString());
                 Timber.v(newRequest.toString());
 
                 // TODO this code causes two api calls on the server side. find other way to print response
-//                com.squareup.okhttp.Response response = chain.proceed(request);
-//                Timber.v(response.headers().toString());
-//                Timber.v(response.toString());
+                Request request = chain.request();
+                com.squareup.okhttp.Response response = chain.proceed(request);
+                Timber.v(response.headers().toString());
+                Timber.v(response.toString());
 
                 return chain.proceed(newRequest);
             }
