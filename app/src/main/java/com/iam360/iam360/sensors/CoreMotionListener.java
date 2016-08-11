@@ -37,6 +37,11 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         float[] baseCorrection = Maths.buildRotationMatrix(new float[]{90, 1, 0, 0});
         //[1.0, 0.0, 0.0, 0.0, 0.0, -4.371139E-8, 1.0, 0.0, 0.0, -1.0, -4.371139E-8, 0.0, 0.0, 0.0, 0.0, 1.0]
         Log.d("MARK","baseCorrection  = "+ Arrays.toString(baseCorrection));
+
+        float[] baseCorrection2 = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
+        Log.d("MARK","baseCorrection2  = "+ Arrays.toString(baseCorrection2));
+
+
         String sensorVendor = "";
         String sensorName = "";
 

@@ -1,8 +1,11 @@
 package com.iam360.iam360.sensors;
 
 import android.graphics.Point;
+import android.util.Log;
 
 import com.iam360.iam360.util.Maths;
+
+import java.util.Arrays;
 
 /**
  * @author Nilan Marktanner
@@ -94,6 +97,7 @@ public class TouchEventListener extends RotationMatrixProvider {
 
     @Override
     public float[] getRotationMatrix() {
+        Log.d("MARK","getRotationMatrix TouchEvent");
         if (!isTouching) {
             // Update from motion and damping
             phiDamp *= dampFactor;
@@ -115,9 +119,14 @@ public class TouchEventListener extends RotationMatrixProvider {
 
         // clamp theta for border effect
         theta = Math.max(minTheta, Math.min(theta, maxTheta));
+        Log.d("MARK","theta = "+theta);
+        Log.d("MARK","phi = "+phi);
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
+        Log.d("MARK","rotationX = "+ Arrays.toString(rotationX));
+        Log.d("MARK","rotationY = "+ Arrays.toString(rotationY));
+        Log.d("MARK","Maths.buildRotationMatrix(rotationY, rotationX) = "+ Maths.buildRotationMatrix(rotationY, rotationX));
 
         return Maths.buildRotationMatrix(rotationY, rotationX);
     }

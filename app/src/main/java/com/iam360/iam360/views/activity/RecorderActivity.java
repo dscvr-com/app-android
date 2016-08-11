@@ -61,6 +61,7 @@ public class RecorderActivity extends AppCompatActivity {
     private boolean m3ringFlag = true;
     private int motorRingType = 1;
     public boolean useBLE = false;
+    public boolean dataHasCome = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +85,8 @@ public class RecorderActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.feed_placeholder, recorderOverlayFragment).commit();
 
-        Intent data = getIntent();
-        if(data != null && data.getStringExtra("DEVICE_NAME") != null && !data.getStringExtra("DEVICE_NAME").equals("")){
+//        Intent data = getIntent();
+//        if(data != null && data.getStringExtra("DEVICE_NAME") != null && !data.getStringExtra("DEVICE_NAME").equals("")){
             useBLE = true;
             mServiceUIID = UUID.fromString(getString(R.string.btle_serviceuuidlong));
             mResponesUIID = UUID.fromString(getString(R.string.btle_characteristic_response));
@@ -109,22 +110,25 @@ public class RecorderActivity extends AppCompatActivity {
                 mScanFilters = new ArrayList<ScanFilter>();
             }
 
-            String devName = data.getStringExtra("DEVICE_NAME");
-            String devAddrss = data.getStringExtra("DEVICE_ADDRESS");
+//            String devName = data.getStringExtra("DEVICE_NAME");
+//            String devAddrss = data.getStringExtra("DEVICE_ADDRESS");
+            String devAddrss = "44:A6:E5:03:88:4F";
             endBT();
             ScanFilter.Builder builder = new ScanFilter.Builder();
             builder.setDeviceAddress(devAddrss);
             mScanFilters.add(builder.build());
             beginBT();
-        }else{
+//        }else{
 //            useBLEDeviceDialog();
-        }
+//        }
     }
 
     public void startRecording() {
         recordFragment.startRecording();
         bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
+        Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
         bleCommands.rotateRight();
+        motorRingType = 2; //top ring
     }
 
     public void cancelRecording() {
@@ -277,39 +281,64 @@ public class RecorderActivity extends AppCompatActivity {
 //                    mResponseData.setText(new String(bytesToHex(characteristic.getValue())));
                 }
             });
+            //motorRing type = (0:stop, 1:1st ring rotate, 2:toTop 2nd, 3:3rd ring rotate, 4:toBot, 5:toBot, 6:last)
             byte[] responseValue = characteristic.getValue();
             char[] charArr = bleCommands.bytesToHex(responseValue);
             String yPos = String.valueOf(""+charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
             Log.d("MARK","yPos  == "+yPos);
+            Log.d("MARK","motorRingType  == "+motorRingType);
             Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
-            switch (yPos) {
-                case "FFFFEE99":  //after ng open
-                    if (m3ringFlag && motorRingType == 1) {
-                        bleCommands.topRing();
-                        motorRingType = 2;
-                    }
-                    break;
-                case "FFFFE890":  //after ng move top
-                    if (m3ringFlag) {
-                        if (motorRingType == 2) {
-                            bleCommands.rotateRight();
-                            motorRingType = 3;
-                        } else {
-                            bleCommands.bottomRing(); //after ng 2nd ring
-                        }
-                    }
-                    break;
-                case "FFFFF4A2":  //after ng move to bottom
-                    if (m3ringFlag) {
-                        if (motorRingType == 3) {
-                            bleCommands.rotateRight();
-                            motorRingType = 4;
-                        } else {
-                            bleCommands.topRing(); //after ng 3rd ring
-                        }
-                    }
-                    break;
+            if(motorRingType == 2) {
+                Log.d("MARK2","motorRingType = "+System.currentTimeMillis() / 1000.0);
+                dataHasCome = false;
+                bleCommands.topRing();
+                motorRingType = 3;
+            }else if(motorRingType == 3){
+                dataHasCome = true;
+                bleCommands.rotateRight();
+                motorRingType = 4;
+            }else if(motorRingType == 4){
+                dataHasCome = false;
+                bleCommands.bottomRing();
+                motorRingType = 5;
+            }else if(motorRingType == 5){
+                dataHasCome = true;
+                bleCommands.rotateRight();
+                motorRingType = 6;
+            }else if(motorRingType == 6){
+                dataHasCome = false;
+                bleCommands.topRing();
+                motorRingType = 0;
             }
+
+//            switch (yPos) {
+//                case "FFFFEE99":  //after ng open
+//                    if (m3ringFlag && motorRingType == 1) {
+//                        bleCommands.topRing();
+//                        motorRingType = 2;
+//                    }
+//                    break;
+//                case "FFFFE890":  //after ng move top
+//                    if (m3ringFlag) {
+//                        if (motorRingType == 2) {
+//                            bleCommands.rotateRight();
+//                            motorRingType = 3;
+//                        } else {
+//                            bleCommands.bottomRing(); //after ng 2nd ring
+//                        }
+//                    }
+//                    break;
+//                case "FFFFF4A2":  //after ng move to bottom
+//                    if (m3ringFlag) {
+//                        if (motorRingType == 3) {
+//                            bleCommands.rotateRight();
+//                            motorRingType = 4;
+//                        } else {
+//                            bleCommands.topRing(); //after ng 3rd ring
+//                        }
+//                    }
+//                    break;
+//            }
         }
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,

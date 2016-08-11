@@ -9,7 +9,6 @@ import android.hardware.camera2.CameraManager;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,12 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import com.iam360.iam360.DscvrApp;
 import com.iam360.iam360.R;
@@ -34,6 +27,7 @@ import com.iam360.iam360.record.Recorder;
 import com.iam360.iam360.record.RecorderOverlayView;
 import com.iam360.iam360.record.SelectionPoint;
 import com.iam360.iam360.sensors.CoreMotionListener;
+import com.iam360.iam360.sensors.CustomRotationMatrixSource;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Maths;
 import com.iam360.iam360.util.Vector3;
@@ -42,9 +36,6 @@ import com.iam360.iam360.views.record.CancelRecorderJob;
 import com.iam360.iam360.views.record.FinishRecorderJob;
 import com.iam360.iam360.views.record.RecorderPreviewView;
 
-import org.joda.time.Period;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,61 +72,82 @@ public class RecordFragment extends Fragment {
 
     private float currentDegree = (float) 0.03;
 
-    private long lastElapsedTime = SystemClock.elapsedRealtimeNanos();
-    private double currentTheta = 0.0;
-    private double currentPhi = 0.0;
+    private long lastElapsedTime = System.currentTimeMillis();
+    private float currentTheta = (float) 0.0;
+    private float currentPhi = (float) 0.0;
     private boolean isRecording = false;
+    CustomRotationMatrixSource customRotationMatrixSource;
 
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
-            if (Recorder.isFinished() || !isRecording) {
+            if (Recorder.isFinished()) {
                 // sync hack
                 return;
             }
-            Log.d("MARK","Recorder.isdle = "+Recorder.isIdle());
-            Log.d("MARK","((RecorderActivity) getActivity()).useBLE == "+((RecorderActivity) getActivity()).useBLE);
-            Log.d("MARK","Recorder.isFinished = "+Recorder.isFinished());
-            Log.d("MARK","isRecording = "+isRecording);
 
             assert colorFormat == Bitmap.Config.ARGB_8888;
-            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+//            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
 //            if(((RecorderActivity) getActivity()).useBLE){
-//                float[] baseCorrection = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
-//                long mediaTime = SystemClock.elapsedRealtimeNanos();
-//                long timeDiff = mediaTime - lastElapsedTime;
-//                Period elapsedPeriod = new Period(timeDiff);
-//                double degreeIncr = (elapsedPeriod.getSeconds()) * 0.165001;
-//                currentDegree -= degreeIncr;
-//                currentPhi = Math.toRadians(currentDegree);
-//                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
-//                    isRecording = false;
-//                    if(currentTheta == 0) {
-//                        currentTheta = -0.718;
-//                    } else if(currentTheta < 0) {
-//                        currentTheta = 0.718;
-//                    } else if(currentTheta > 0) {
-//                        currentTheta = 0;
-//                    }
-//                    currentDegree = 0;
-//                }
+                float[] baseCorrection = {1, 0, 0, 0,
+                        0, 0, 1, 0,
+                        0, -1, 0, 0,
+                        0, 0, 0, 1};
+                long mediaTime = System.currentTimeMillis();
+                long timeDiff = mediaTime - lastElapsedTime;
+                double elapsedSec = timeDiff / 1000.0;
+
+                int sessionRotateCount = 7200;
+                int sessionBuffCount = 100;
+                int PPS = 300;
+                int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
+
+                double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
+                double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+                Log.d("MARK","elapsedSec = "+elapsedSec);
+                Log.d("MARK","elapsedSec / 0.0001 = "+elapsedSec / 0.0001);
+
+
+                lastElapsedTime = System.currentTimeMillis();
+                if(isRecording){
+                    currentDegree -= degreeIncr;
+                }
+
+                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
+                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
+
+                if(((RecorderActivity) getActivity()).dataHasCome){
+                    isRecording = true;
+                }
+                Log.d("MARK","degreeIncr = "+degreeIncr);
+                if(currentDegree >= 360){
+                    Log.d("MARK2","currentDegree = "+System.currentTimeMillis() / 1000.0);
+                }
+                currentPhi = (float) Math.toRadians(currentDegree);
+                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
+                    isRecording = false;
+                    if(currentTheta == 0) {
+                        currentTheta = (float) -0.718;
+                    } else if(currentTheta < 0) {
+                        currentTheta = (float) 0.718;
+                    } else if(currentTheta > 0) {
+                        currentTheta = 0;
+                    }
+                    currentDegree = 0;
+                }
+                Log.d("MARK","currentDegree = "+currentDegree);
+
+                customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
+                float[] coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+
 //                float[] coreMotionMatrix = Maths.buildRotationMatrix(new float[]{currentDegree, 0, 1, 0});
-//
-//
+
 //                float[] rotationMatrix = new float[16];
 //                Matrix.multiplyMM(rotationMatrix, 0, baseCorrection, 0, coreMotionMatrix, 0);
 
-
-//                Log.d("previewListener","mediaTime = "+mediaTime+"   -   lastElapsedTime = "+lastElapsedTime+"    :  "+elapsedPeriod.getSeconds());
-//                Log.d("previewListener","degreeIncr = "+degreeIncr);
-//                Log.d("previewListener","currentDegree = "+currentDegree);
-//                Log.d("previewListener","currentPhi = "+currentPhi);
-//                Log.d("previewListener","currentTheta = "+currentTheta);
-//                Log.d("previewListener","coreMotionMatrix1 = "+Arrays.toString(coreMotionMatrix));
 //            }
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
-            Log.w(TAG, "Pushing data: " + width + "x" + height);
             assert width * height * 4 == data.length;
 
             Recorder.push(data, width, height, extrinsicsData);
