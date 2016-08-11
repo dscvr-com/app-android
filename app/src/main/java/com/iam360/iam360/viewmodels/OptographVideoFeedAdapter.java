@@ -440,6 +440,18 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         Timber.d("addItem 7");
     }
 
+    public void saveToSQLite(Optograph opto) {
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()!=0) return;
+        String loc = opto.getLocation()==null?"":opto.getLocation().getId();
+        mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
+                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred()?1:0,opto.getStars_count(),opto.is_published()?1:0,
+                opto.is_private()?1:0,opto.getStitcher_version(),1,opto.is_on_server()?1:0,"",opto.isShould_be_published()?1:0,
+                opto.is_place_holder_uploaded()?1:0,opto.isPostFacebook()?1:0,opto.isPostTwitter()?1:0,opto.isPostInstagram()?1:0,
+                opto.is_data_uploaded()?1:0,opto.getOptograph_type(), "");
+    }
+
     public void saveToSQLiteFeeds(Optograph opto) {
 
         Timber.d("saveToSQLiteFeeds");

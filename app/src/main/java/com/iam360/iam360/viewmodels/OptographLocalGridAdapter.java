@@ -733,6 +733,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             mHolder1.getBinding().getPerson().setText(mHolder1.getBinding().personDescEdit.getText().toString());
             mHolder1.getBinding().getPerson().setUser_name(mHolder1.getBinding().personNameEdit.getText().toString());
             PersonManager.updatePerson(mHolder1.getBinding().personNameEdit.getText().toString(), mHolder1.getBinding().personDescEdit.getText().toString(), mHolder1.getBinding().personNameEdit.getText().toString());
+            mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME,"id",person.getId(),"text",mHolder1.getBinding().personDescEdit.getText().toString());
             needSave=false;
         }
 
