@@ -82,35 +82,28 @@ public class RecordFragment extends Fragment {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
             if (Recorder.isFinished()) {
-                // sync hack
-                return;
+                return;// sync hack
             }
-
             assert colorFormat == Bitmap.Config.ARGB_8888;
 //            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
 //            if(((RecorderActivity) getActivity()).useBLE){
-                float[] baseCorrection = {1, 0, 0, 0,
-                        0, 0, 1, 0,
-                        0, -1, 0, 0,
-                        0, 0, 0, 1};
+
                 long mediaTime = System.currentTimeMillis();
                 long timeDiff = mediaTime - lastElapsedTime;
                 double elapsedSec = timeDiff / 1000.0;
 
                 int sessionRotateCount = 7200;
-                int sessionBuffCount = 100;
+                int sessionBuffCount = 200;
                 int PPS = 300;
                 int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
 
                 double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
                 double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
-                Log.d("MARK","elapsedSec = "+elapsedSec);
-                Log.d("MARK","elapsedSec / 0.0001 = "+elapsedSec / 0.0001);
 
 
                 lastElapsedTime = System.currentTimeMillis();
                 if(isRecording){
-                    currentDegree -= degreeIncr;
+                    currentDegree += degreeIncr;
                 }
 
                 float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
@@ -120,16 +113,17 @@ public class RecordFragment extends Fragment {
                     isRecording = true;
                 }
                 Log.d("MARK","degreeIncr = "+degreeIncr);
-                if(currentDegree >= 360){
-                    Log.d("MARK2","currentDegree = "+System.currentTimeMillis() / 1000.0);
-                }
+
                 currentPhi = (float) Math.toRadians(currentDegree);
-                if (currentPhi < ((-2.0 * Math.PI) - 0.01)) {
+                Log.d("MARK","currentPhi = "+currentPhi);
+                Log.d("MARK","currentPhi2 = "+((-2.0 * Math.PI) - 0.01));
+
+                if (currentPhi > ( 2 * Math.PI) -0.001) {
                     isRecording = false;
                     if(currentTheta == 0) {
-                        currentTheta = (float) -0.718;
+                        currentTheta = (float) -0.785;
                     } else if(currentTheta < 0) {
-                        currentTheta = (float) 0.718;
+                        currentTheta = (float) 0.785;
                     } else if(currentTheta > 0) {
                         currentTheta = 0;
                     }
@@ -139,11 +133,6 @@ public class RecordFragment extends Fragment {
 
                 customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
                 float[] coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
-
-//                float[] coreMotionMatrix = Maths.buildRotationMatrix(new float[]{currentDegree, 0, 1, 0});
-
-//                float[] rotationMatrix = new float[16];
-//                Matrix.multiplyMM(rotationMatrix, 0, baseCorrection, 0, coreMotionMatrix, 0);
 
 //            }
 
@@ -195,6 +184,7 @@ public class RecordFragment extends Fragment {
 
             // shading of recorded nodes
             if (Recorder.hasStarted()) {
+                Log.d("MARK","");
                 SelectionPoint currentKeyframe = Recorder.lastKeyframe();
 
                 if (lastKeyframe == null) {
