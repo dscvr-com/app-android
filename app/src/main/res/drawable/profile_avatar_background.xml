@@ -7,5 +7,5 @@
         android:bottomLeftRadius="3dp"
         android:topLeftRadius="3dp"
         android:topRightRadius="3dp"/>
-    <stroke android:width="2dp" android:color="@color/optonautMain_2"/>
+    <stroke android:width="3dp" android:color="@color/optonautMain_2"/>
 </shape>

@@ -37,6 +37,7 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
     @Bind(R.id.reach_us_text) TextView reachUsText;
     @Bind(R.id.secret_code_text) EditText codeText;
     @Bind(R.id.email_text) TextView emailText;
+    @Bind(R.id.app_email_text) TextView appemailText;
 
     private Cache cache;
     private Api2Consumer api2Consumer;
@@ -66,6 +67,7 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
         utils.setFont(getContext(), reachUsText);
         utils.setFont(getContext(), emailText);
         utils.setFont(getContext(), codeText);
+        utils.setFont(getContext(), appemailText, Typeface.BOLD);
 
         emailText.setText(cache.getString(Cache.USER_EMAIL));
 

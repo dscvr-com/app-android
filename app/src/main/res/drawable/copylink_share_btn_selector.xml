@@ -3,13 +3,13 @@
     <item
         android:state_pressed="true"
         android:state_enabled="true"
-        android:drawable="@drawable/copylink_share_dark_pressed_btn" />
+        android:drawable="@drawable/copy_link_share_btn_pressed" />
     <item
         android:state_focused="true"
         android:state_enabled="true"
-        android:drawable="@drawable/copylink_share_dark_pressed_btn" />
+        android:drawable="@drawable/copy_link_share_btn_pressed" />
     <item
         android:state_enabled="true"
-        android:drawable="@drawable/copylink_share_dark_btn" />
+        android:drawable="@drawable/copy_link_share_btn" />
 
 </selector>

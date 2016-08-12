@@ -52,7 +52,8 @@ public class Sphere {
             "precision mediump float;" +
             "void main() {" +
 //            "  gl_FragColor = vec4(0.9372, 0.2823, 0.2117, 1.0);" +
-            "  gl_FragColor = vec4(0.996, 0.812, 0.365, 1.0);" +//yellow
+//            "  gl_FragColor = vec4(0.996, 0.812, 0.365, 1.0);" +//yellow
+            "  gl_FragColor = vec4(1, 0.459, 0, 1.0);" +//orange
             "}";
     // EF4836
 

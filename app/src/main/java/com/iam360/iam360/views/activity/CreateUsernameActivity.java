@@ -67,7 +67,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
         utils.setFont(this, symbol, Typeface.BOLD);
         utils.setFont(this, headerText);
         utils.setFont(this, userNameCheck, Typeface.ITALIC);
-        utils.setFont(this, createBtn);
+        utils.setFont(this, createBtn,Typeface.BOLD);
 
 //        userName.setText(cache.getString(Cache.USER_NAME));
         userName.addTextChangedListener(this);
@@ -104,7 +104,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
             userNameCheck.setText("");
             createBtn.setTextColor(getResources().getColor(R.color.text_dark));
             createBtn.setEnabled(false);
-            createBtn.setBackgroundResource(R.drawable.gray_btn);
+            createBtn.setBackgroundResource(R.drawable.orange_btn);
         }
     }
 

@@ -67,7 +67,7 @@
 
     <!-- Record Overlay -->
     <string name="record_instruction_press">Press button below\r\nto start recording</string>
-    <string name="record_instruction_follow">Follow the yellow dot</string>
+    <string name="record_instruction_follow">Follow the orange dot</string>
 
     <!-- Preferences -->
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
@@ -98,6 +98,7 @@
     <string name="profile_login_first">Please login first.</string>
     <string name="profile_login_again">Login failed. Please try to login again.</string>
     <string name="profile_delete_message">Are you sure you want to delete this 360 image?</string>
+    <string name="profile_export_message">Are you sure you want to export this 360 image?</string>
     <string name="profile_upload">UPLOAD</string>
     <string name="profile_uploading">UPLOADING...</string>
     <string name="profile_header_image">DSCVR Images</string>
@@ -144,16 +145,17 @@
     <string name="settings_motor">MOTOR</string>
 
     <!-- Mailing List Invite -->
-    <string name="mailing_type_invite">Type Super Secret Code</string>
-    <string name="mailing_get_invite">Request Super Secret Code</string>
+    <string name="mailing_type_invite">Super Secret Code:</string>
+    <string name="mailing_get_invite">Get a Super Secret Code:</string>
     <string name="mailing_or">or</string>
     <string name="mailing_go">GO</string>
-    <string name="mailing_send">REQUEST</string>
+    <string name="mailing_send">SEND</string>
     <string name="mailing_email">E-mail</string>
-    <string name="mailing_reach_us">Reach us at TEAM@DSCVR.COM</string>
+    <string name="mailing_reach_us">Reach us at</string>
+    <string name="mailing_app_email">TEAM@DSCVR.COM</string>
 
     <!-- Create User Name -->
-    <string name="create_username_text">Create your username :</string>
+    <string name="create_username_text">Create your username:</string>
     <string name="create_username_hint">Username</string>
     <string name="create_username_symbol">\@</string>
     <string name="create_username_taken">Username is taken</string>

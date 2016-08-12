@@ -20,10 +20,10 @@
         android:title=""
         android:orientation="horizontal">
 
+        <!--android:src="@mipmap/ic_logo_head"-->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_logo_head"
             android:layout_centerInParent="true"/>
 
     </RelativeLayout>

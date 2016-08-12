@@ -359,7 +359,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     private void updateHeartLabel(Optograph optograph, OptographVideoHolder holder) {
-        holder.getBinding().heartLabel.setText(String.valueOf(optograph.getStars_count()));
+//        holder.getBinding().heartLabel.setText(String.valueOf(optograph.getStars_count()));
+        holder.getBinding().heartLabel.setText("");
         if(optograph.is_starred()) {
             holder.getBinding().heartLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.liked_icn, 0);
         } else {

@@ -44,12 +44,12 @@
                 android:visibility="gone"
                 android:textColor="@color/bright"/>
 
+            <!--android:drawableLeft="@mipmap/ic_logo_head"-->
             <TextView
                 android:id="@+id/header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
-                android:drawableLeft="@mipmap/ic_logo_head"
                 android:drawablePadding="7dp"
                 android:textSize="24dp"
                 android:layout_centerVertical="true"
@@ -103,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/bright"
-                android:drawableLeft="@drawable/logo_arrow_small_dark"
+                android:drawableLeft="@drawable/logo_mini_icn"
                 android:drawablePadding="7dp"
                 android:textSize="24dp"
                 android:layout_centerVertical="true"
@@ -361,12 +361,12 @@
             android:visibility="invisible">
         </View>
 
+        <!--android:background="@mipmap/arrow_img"-->
         <View
             android:id="@+id/arrow"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:background="@mipmap/arrow_img"
             android:visibility="visible">
         </View>
 

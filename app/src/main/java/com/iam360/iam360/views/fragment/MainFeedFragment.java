@@ -113,11 +113,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
         binding.a3dButton.setOnClickListener(this);
         binding.gyroButton.setOnClickListener(this);
+        binding.settingsGyro.setOnClickListener(this);
         binding.littlePlanetButton.setOnClickListener(this);
+        binding.settingsLittlePlanet.setOnClickListener(this);
         binding.oneRingButton.setOnClickListener(this);
+        binding.settingsOneRing.setOnClickListener(this);
         binding.threeRingButton.setOnClickListener(this);
+        binding.settingsThreeRing.setOnClickListener(this);
         binding.manualButton.setOnClickListener(this);
+        binding.settingsManual.setOnClickListener(this);
         binding.motorButton.setOnClickListener(this);
+        binding.settingsMotor.setOnClickListener(this);
 //        Settings end
 
         binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -464,7 +470,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         } else {
             binding.numberLocalImage.setText(String.valueOf(optographs.size()));
 //            binding.numberLocalImage.setVisibility(View.VISIBLE);//uncmment if the number of un-uploaded images is needed
-            binding.numberImage.setVisibility(View.VISIBLE);
+//            binding.numberImage.setVisibility(View.VISIBLE);// uncomment if this is gonna use
         }
     }
 
@@ -608,32 +614,38 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 cache.save(Cache.VR_3D_ENABLE,!cache.getBoolean(Cache.VR_3D_ENABLE,false));
                 binding.a3dButton.setBackgroundResource(cache.getBoolean(Cache.VR_3D_ENABLE, false) ? R.drawable.a3dvr_active_icn : R.drawable.a3dvr_inactive_icn);
                 break;
+            case R.id.settings_gyro:
             case R.id.gyro_button:
                 gyroValidation();
                 instatiateFeedDisplayButton();
                 break;
+            case R.id.settings_little_planet:
             case R.id.little_planet_button:
                 littlePlanetValidation();
                 instatiateFeedDisplayButton();
                 break;
+            case R.id.settings_one_ring:
             case R.id.one_ring_button:
                 if (cache.getInt(Cache.CAMERA_MODE) != Constants.ONE_RING_MODE) {
                     cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
                     activeOneRing();
                 }
                 break;
+            case R.id.settings_three_ring:
             case R.id.three_ring_button:
                 if (cache.getInt(Cache.CAMERA_MODE) != Constants.THREE_RING_MODE) {
                     cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
                     activeThreeRing();
                 }
                 break;
+            case R.id.settings_manual:
             case R.id.manual_button:
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!= Constants.MANUAL_MODE) {
                     cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
                     activeManualType();
                 }
                 break;
+            case R.id.settings_motor:
             case R.id.motor_button:
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE) != Constants.MOTOR_MODE) {
                     cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MOTOR_MODE);

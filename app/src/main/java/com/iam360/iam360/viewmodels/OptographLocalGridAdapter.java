@@ -102,6 +102,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public static final String NOTIF_COMMENT_TYPE = "comment";
     public static final String NOTIF_VIEWS_TYPE = "view";
 
+    private String tab_text_active_color = "#ff7602";
+    private String tab_text_inactive_color = "#ffffff";
+
     List<Optograph> optographs;
     List<Follower> followers;
     List<Notification> notifications;
@@ -542,25 +545,25 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     private void setTab(HeaderSecondViewHolder mHolder) {
         if (onTab==ON_IMAGE) {
-            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor(tab_text_active_color));
             mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
-            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().followerSelector.setVisibility(View.INVISIBLE);
-            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().notificationSelector.setVisibility(View.INVISIBLE);
         } else if (onTab == ON_FOLLOWER) {
-            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
-            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor(tab_text_active_color));
             mHolder.getBinding().followerSelector.setVisibility(View.VISIBLE);
-            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().notificationSelector.setVisibility(View.INVISIBLE);
         } else {
-            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
-            mHolder.getBinding().followerText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().followerText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().followerSelector.setVisibility(View.INVISIBLE);
-            mHolder.getBinding().notificationText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().notificationText.setTextColor(Color.parseColor(tab_text_active_color));
             mHolder.getBinding().notificationSelector.setVisibility(View.VISIBLE);
         }
     }
@@ -582,12 +585,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (!isCurrentUser && onTab == ON_IMAGE) {
             mHolder.getBinding().followerTab.setVisibility(View.GONE);
             mHolder.getBinding().notificationTab.setVisibility(View.GONE);
-            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffffff"));
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor(tab_text_inactive_color));
             mHolder.getBinding().imageSelector.setVisibility(View.INVISIBLE);
         } else if (onTab == ON_IMAGE){
             mHolder.getBinding().followerTab.setVisibility(View.VISIBLE);
             mHolder.getBinding().notificationTab.setVisibility(View.VISIBLE);
-            mHolder.getBinding().imageText.setTextColor(Color.parseColor("#ffbc00"));
+            mHolder.getBinding().imageText.setTextColor(Color.parseColor(tab_text_active_color));
             mHolder.getBinding().imageSelector.setVisibility(View.VISIBLE);
         }
 

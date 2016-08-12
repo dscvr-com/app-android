@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/optonautMain"
+    android:background="@drawable/bg_light"
     android:orientation="vertical"
     android:padding="21dp"
     tools:context=".views.activity.CreateUsernameActivity">
@@ -13,9 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="54dp"
         android:layout_marginBottom="67dp"
-        android:background="@drawable/logo_mailing_dark" />
+        android:background="@drawable/logo_supercode" />
 
     <TextView
         android:id="@+id/header_text"
@@ -25,7 +25,7 @@
         android:text="@string/create_username_text"
         android:textSize="19sp"
         android:textStyle="bold"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/text_dark" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,13 +41,13 @@
             android:textSize="30sp"
             android:textStyle="bold"
             android:text="@string/create_username_symbol"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/text_dark" />
 
         <EditText
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/edittext_dark"
+            android:background="@drawable/mailing_edittext"
             android:hint="@string/create_username_hint"
             android:paddingLeft="10dp"
             android:maxLength="12"
@@ -65,15 +65,16 @@
         android:layout_marginBottom="15dp"
         android:textSize="15sp"
         android:textStyle="italic"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/text_dark" />
 
     <Button
         android:id="@+id/create_btn"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/gray_btn"
+        android:background="@drawable/orange_btn"
         android:textSize="19sp"
         android:enabled="false"
+        android:textColor="@color/text_dark"
         android:text="@string/create_username_create" />
 
 </LinearLayout>

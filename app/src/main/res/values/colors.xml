@@ -16,14 +16,15 @@
     <!-- Feeds -->
     <color name="feed_bar">#CC595959</color>
     <color name="feed_bar_new">#44595959</color>
-    <color name="feed_text_yellow">#ffbc00</color>
+    <!--<color name="feed_text_yellow">#ffbc00</color>-->
+    <color name="feed_text_yellow">#ff7602</color>
     <color name="feed_text_white">#ffffff</color>
     <color name="sharing">#FFFFFF</color>
 
     <!-- New IAM360 Colors -->
     <color name="optonautMain">#343434</color>
     <color name="optonautMain_1">#8e8e8d</color>
-    <color name="optonautMain_2">#ffbc00</color>
+    <color name="optonautMain_2">#ff7602</color>
     <color name="optonautMain_3">#99353535</color>
 
     <color name="transparentOverlay">#00777777</color>
@@ -48,16 +49,16 @@
     <!-- Settings -->
     <color name="settings_bg">#ffffff</color>
     <color name="settings_text">#818181</color>
-    <color name="text_active">#fecf5c</color>
-    <color name="text_inactive">#a5a5a5</color>
+    <color name="text_active">#ffff7703</color>
+    <color name="text_inactive">#ff979797</color>
 
     <!-- Profile -->
     <color name="profile_columns_bg">#e1e1e1</color>
     <color name="profile_columns_text">#818181</color>
     <color name="profile_bg">#f7f7f7</color>
-    <color name="profile_btn">#ffbc00</color>
+    <color name="profile_btn">#ffff6f02</color>
     <color name="profile_btn_text">#ffffff</color>
-    <color name="profile_text">#353535</color>
+    <color name="profile_text">#343434</color>
     <color name="profile_grid_bar">#000000</color>
     <color name="profile_notif_not_read">#ffededed</color>
     <color name="profile_line_separator">#eaeaea</color>
@@ -73,19 +74,19 @@
     <color name="preview_save_bg">#3E3D3D</color>
 
     <!-- Camera -->
-    <color name="camera_circle">#fecf5d</color>
+    <color name="camera_circle">#ffff7602</color>
     <color name="sample">#ffffff</color>
 
     <!-- Text Colors -->
-    <color name="text_dark">#3E3D3D</color>
+    <color name="text_dark">#343434</color>
     <color name="text_light">#A5A5A5</color>
-    <color name="text_yellow">#FECF5C</color>
+    <color name="text_yellow">#ffff9747</color>
     <color name="text_bright">#f7f7f7</color>
     <color name="text_search">#FF585858</color>
     <!--<color name="text_search">#FF555555</color>-->
 
     <!-- Button Colors -->
-    <color name="btn_yellow">#ffbc00</color>
+    <color name="btn_yellow">#ffff8c02</color>
     <color name="btn_gray">#9D9A91</color>
     <color name="btn_dark_gray">#676767</color>
     <color name="mailing_edittext">#CACACA</color>
