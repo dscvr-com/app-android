@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,13 @@ public class AutoCompleteSearchAdapter extends RecyclerView.Adapter<AutoComplete
     public void setObjects(List<Person> data) {
         mData = data;
         notifyDataSetChanged();
+    }
+
+    public void removeLastItems() {
+        int items = mData.size();
+        Log.d("myTag"," search: "+items);
+        mData = new ArrayList<>();
+        notifyItemRangeRemoved(0,items);
     }
 
     public void addItem(Person person) {

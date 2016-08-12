@@ -165,6 +165,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
            @Override
            public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
                if (response.isSuccess() && response.body()!=null) {
+                   mAdapter.removeLastItems();
                    mAdapter.setObjects(response.body());
                } else {
                    mAdapter.setObjects(new ArrayList<>());
