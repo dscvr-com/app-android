@@ -26,6 +26,7 @@ import com.iam360.iam360.model.Person;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
+import com.iam360.iam360.util.MyViewPager;
 import com.iam360.iam360.viewmodels.OptographLocalGridAdapter;
 import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.views.fragment.MainFeedFragment;
@@ -44,12 +45,13 @@ public class MainActivity extends AppCompatActivity {
     public static final int FEED_MODE = 1;
     public static final int PROFILE_MODE = 2;
     private MyPagerAdapter adapterViewPager;
-    private ViewPager viewPager;
+    private MyViewPager viewPager;
 
     private Cache cache;
 
     private int currentMode = 0;
     private int savePosition = 0;
+    private boolean settingsPageOpen = false;
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
@@ -89,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        viewPager = (ViewPager) findViewById(R.id.vpPager);
+        viewPager = (MyViewPager) findViewById(R.id.vpPager);
+        viewPager.setPageEnable(true);
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
         viewPager.setCurrentItem(FEED_MODE, false);
@@ -100,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
                 switch (position) {
                     case FEED_MODE:
                         adapterViewPager.mainFeedFragment.disableDrag();
@@ -164,7 +166,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void dragSharePage() {
         viewPager.setCurrentItem(SHARING_MODE, true);
+    }
 
+    public void dragSettingPage(boolean isOpen) {
+        settingsPageOpen = isOpen;
+        viewPager.setPageEnable(!settingsPageOpen);
     }
 
     public void startImagePreview(UUID id, String imagePath) {
