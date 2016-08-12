@@ -518,18 +518,21 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                                 mydb.updateTableColumn(tb, id, person.getId(), "text", person.getText());
                             if (person.getAvatar_asset_id() != null && !person.getAvatar_asset_id().equals(""))
                                 mydb.updateTableColumn(tb, id, person.getId(), "avatar_asset_id", person.getAvatar_asset_id());
-                            mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", String.valueOf(person.getOptographs_count()));
-                            mydb.updateTableColumn(tb, id, person.getId(), "followers_count", String.valueOf(person.getFollowers_count()));
-                            mydb.updateTableColumn(tb, id, person.getId(), "followed_count", String.valueOf(person.getFollowed_count()));
-                            mydb.updateTableColumn(tb, id, person.getId(), "is_followed", String.valueOf(person.is_followed()));
+
+                            mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", person.getOptographs_count());
+                            mydb.updateTableColumn(tb, id, person.getId(), "followers_count", person.getFollowers_count());
+                            mydb.updateTableColumn(tb, id, person.getId(), "followed_count", person.getFollowed_count());
+                            mydb.updateTableColumn(tb, id, person.getId(), "is_followed", person.is_followed());
+
                             if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", String.valueOf(person.getFacebook_user_id()));
+                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", person.getFacebook_user_id());
                             if (person.getFacebook_token() != null && !person.getFacebook_token().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", String.valueOf(person.getFacebook_token()));
+                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", person.getFacebook_token());
                             if (person.getTwitter_token() != null && !person.getTwitter_token().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", String.valueOf(person.getTwitter_token()));
+                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", person.getTwitter_token());
                             if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", String.valueOf(person.getTwitter_secret()));
+                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", person.getTwitter_secret());
+
                         } else {
                             mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
                                     person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),

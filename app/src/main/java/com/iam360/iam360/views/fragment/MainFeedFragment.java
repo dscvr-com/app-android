@@ -293,7 +293,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 //                        opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
                         opto.setIs_local(false);
 
-                        Timber.d("CURSOR : " + opto.is_staff_picked());
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
                     }
@@ -329,7 +328,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     person.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
                     person.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
                     person.setTwitter_secret(res.getString(res.getColumnIndex("twitter_secret")));
-
                 }
             }
 //                if(!person.is_followed()){
