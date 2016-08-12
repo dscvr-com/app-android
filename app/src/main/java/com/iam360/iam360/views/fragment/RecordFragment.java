@@ -107,7 +107,7 @@ public class RecordFragment extends Fragment {
                 }
 
                 float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
-                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
+//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
 
                 if(((RecorderActivity) getActivity()).dataHasCome){
                     isRecording = true;
@@ -211,7 +211,6 @@ public class RecordFragment extends Fragment {
             CameraManager cameraManager = (CameraManager)getActivity().getSystemService(Context.CAMERA_SERVICE);
             try {
 //                Log.d("MARK","Recorder.isInitialized = "+Recorder.isInitialized);
-//                if(!Recorder.isInitialized){
                     CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
                     // initialize recorder
                     SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
@@ -219,7 +218,6 @@ public class RecordFragment extends Fragment {
                     Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
                     setupSelectionPoints();
-//                }
             } catch (CameraAccessException e) {
                 Log.d("MARK","CameraAccessException e"+e.getMessage());
                 e.printStackTrace();
@@ -228,7 +226,6 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void cameraClosed(CameraDevice device) {
-
         }
     };
 
