@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
     public static final int PROFILE_MODE = 2;
+    public static final int REQUEST_BLE_LIST = 1000;
     private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
 
@@ -305,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
                     ((MainFeedFragment) frag).refreshAfterDelete(id,local);
                 }
             }
+        }else if(requestCode == REQUEST_BLE_LIST && resultCode == RESULT_OK){
+
         }
     }
 

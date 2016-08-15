@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,14 +50,19 @@ public class BLEListActivity extends AppCompatActivity {
     private ListView mListView;
 
     private Cache cache;
-    private CheckBox defChkbox;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_list);
 
-        defChkbox = (CheckBox) findViewById(R.id.defMotor);
+        Button exitBtn = (Button) findViewById(R.id.exit_button);
+        exitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         cache = Cache.open();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -190,25 +195,19 @@ public class BLEListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
                 if (device == null) return;
-//                Log.d("MARK","BluetoothDevice device = device.getUuids() "+device.getUuids());
-//                Log.d("MARK","BluetoothDevice device = device.getAddress() "+device.getAddress());
 
                 if (mScanning) {
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     mScanning = false;
                 }
 
-                Intent intent = new Intent(BLEListActivity.this, RecorderActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra("DEVICE_NAME", device.getName());
                 intent.putExtra("DEVICE_ADDRESS", device.getAddress());
-                if(defChkbox.isChecked()){
-                    cache.save(Cache.BLE_DEVICE_ADDRESS, device.getAddress());
-                    cache.save(Cache.BLE_DEVICE_NAME, device.getName());
-                }else{
-                    cache.save(Cache.BLE_DEVICE_ADDRESS, "");
-                    cache.save(Cache.BLE_DEVICE_NAME, "");
-                }
-                startActivity(intent);
+                cache.save(Cache.BLE_DEVICE_ADDRESS, device.getAddress());
+                cache.save(Cache.BLE_DEVICE_NAME, device.getName());
+
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
@@ -340,10 +339,5 @@ public class BLEListActivity extends AppCompatActivity {
     static class ViewHolder {
         TextView deviceName;
         TextView deviceAddress;
-    }
-
-    @Override
-    public void onBackPressed() {
-        return;
     }
 }

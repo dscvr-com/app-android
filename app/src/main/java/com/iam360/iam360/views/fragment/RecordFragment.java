@@ -28,6 +28,7 @@ import com.iam360.iam360.record.RecorderOverlayView;
 import com.iam360.iam360.record.SelectionPoint;
 import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.sensors.CustomRotationMatrixSource;
+import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Maths;
 import com.iam360.iam360.util.Vector3;
@@ -85,9 +86,8 @@ public class RecordFragment extends Fragment {
                 return;// sync hack
             }
             assert colorFormat == Bitmap.Config.ARGB_8888;
-//            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
-//            if(((RecorderActivity) getActivity()).useBLE){
-
+            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+            if(((RecorderActivity) getActivity()).cache.getBoolean(Cache.MOTOR_ON)){
                 long mediaTime = System.currentTimeMillis();
                 long timeDiff = mediaTime - lastElapsedTime;
                 double elapsedSec = timeDiff / 1000.0;
@@ -132,9 +132,9 @@ public class RecordFragment extends Fragment {
                 Log.d("MARK","currentDegree = "+currentDegree);
 
                 customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
-                float[] coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+                coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
 
-//            }
+            }
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
             assert width * height * 4 == data.length;
@@ -184,9 +184,7 @@ public class RecordFragment extends Fragment {
 
             // shading of recorded nodes
             if (Recorder.hasStarted()) {
-                Log.d("MARK","");
                 SelectionPoint currentKeyframe = Recorder.lastKeyframe();
-
                 if (lastKeyframe == null) {
                     lastKeyframe = currentKeyframe;
                 } else if (currentKeyframe.getGlobalId() != lastKeyframe.getGlobalId()) {

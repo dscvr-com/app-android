@@ -38,10 +38,6 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         //[1.0, 0.0, 0.0, 0.0, 0.0, -4.371139E-8, 1.0, 0.0, 0.0, -1.0, -4.371139E-8, 0.0, 0.0, 0.0, 0.0, 1.0]
         Log.d("MARK","baseCorrection  = "+ Arrays.toString(baseCorrection));
 
-        float[] baseCorrection2 = Maths.buildRotationMatrix(new float[]{0, 1, 0, 0});
-        Log.d("MARK","baseCorrection2  = "+ Arrays.toString(baseCorrection2));
-
-
         String sensorVendor = "";
         String sensorName = "";
 
@@ -116,7 +112,6 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
              * SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X, SensorManager.AXIS_MINUS_Y, outR) doesn't seem to work
              */
 
-//            Log.d("MARK","onSensorChanged values  = "+ Arrays.toString(event.values));
             // flip y axis
             float[] newValues = new float[event.values.length];
             newValues[0] = event.values[0];  // x
@@ -128,13 +123,11 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             // Convert the rotation-vector to a 4x4 matrix.
             float[] temp = new float[16];
             SensorManager.getRotationMatrixFromVector(temp, newValues);
-//            Log.d("MARK","onSensorChanged temp  = "+ Arrays.toString(temp));
 
             // apply correction so we refer to the coordinate system of the phone when holding it "upright",
             // screen to the user and perpendicular to the ground plane
             rotationMatrix = new float[16];
             Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, temp, 0);
-//            Log.d("MARK","onSensorChanged rotationMatrix  = "+ Arrays.toString(rotationMatrix));
         }
     }
 

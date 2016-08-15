@@ -42,7 +42,7 @@ public class RecorderActivity extends AppCompatActivity {
 
     private RecordFragment recordFragment;
     private RecorderOverlayFragment recorderOverlayFragment;
-    private Cache cache;
+    public Cache cache;
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_BLE_LIST = 1000;
@@ -85,8 +85,7 @@ public class RecorderActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.feed_placeholder, recorderOverlayFragment).commit();
 
-//        Intent data = getIntent();
-//        if(data != null && data.getStringExtra("DEVICE_NAME") != null && !data.getStringExtra("DEVICE_NAME").equals("")){
+        if(cache.getBoolean(Cache.MOTOR_ON)){
             useBLE = true;
             mServiceUIID = UUID.fromString(getString(R.string.btle_serviceuuidlong));
             mResponesUIID = UUID.fromString(getString(R.string.btle_characteristic_response));
@@ -98,8 +97,7 @@ public class RecorderActivity extends AppCompatActivity {
             }
 
             // Initializes Bluetooth adapter.
-            final BluetoothManager bluetoothManager =
-                    (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -113,22 +111,25 @@ public class RecorderActivity extends AppCompatActivity {
 //            String devName = data.getStringExtra("DEVICE_NAME");
 //            String devAddrss = data.getStringExtra("DEVICE_ADDRESS");
             String devAddrss = "44:A6:E5:03:88:4F";
+            if(cache.getString(Cache.BLE_DEVICE_ADDRESS).equals("")){
+                devAddrss = Cache.BLE_DEVICE_ADDRESS;
+            }
             endBT();
             ScanFilter.Builder builder = new ScanFilter.Builder();
             builder.setDeviceAddress(devAddrss);
             mScanFilters.add(builder.build());
             beginBT();
-//        }else{
-//            useBLEDeviceDialog();
-//        }
+        }
     }
 
     public void startRecording() {
         recordFragment.startRecording();
-        bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
-        Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
-        bleCommands.rotateRight();
-        motorRingType = 2; //top ring
+        if(cache.getBoolean(Cache.MOTOR_ON)){
+            bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
+            Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
+            bleCommands.rotateRight();
+            motorRingType = 2; //top ring
+        }
     }
 
     public void cancelRecording() {
@@ -188,7 +189,9 @@ public class RecorderActivity extends AppCompatActivity {
 //            finish();
             return;
         }else {
-            startLeScan();
+            if(cache.getBoolean(Cache.MOTOR_ON)) {
+                startLeScan();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -196,14 +199,18 @@ public class RecorderActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-            stopLeScan();
+        if(cache.getBoolean(Cache.MOTOR_ON)) {
+            if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+                stopLeScan();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
-        endBT();
+        if(cache.getBoolean(Cache.MOTOR_ON)) {
+            endBT();
+        }
         super.onDestroy();
     }
 
@@ -310,40 +317,10 @@ public class RecorderActivity extends AppCompatActivity {
                 bleCommands.topRing();
                 motorRingType = 0;
             }
-
-//            switch (yPos) {
-//                case "FFFFEE99":  //after ng open
-//                    if (m3ringFlag && motorRingType == 1) {
-//                        bleCommands.topRing();
-//                        motorRingType = 2;
-//                    }
-//                    break;
-//                case "FFFFE890":  //after ng move top
-//                    if (m3ringFlag) {
-//                        if (motorRingType == 2) {
-//                            bleCommands.rotateRight();
-//                            motorRingType = 3;
-//                        } else {
-//                            bleCommands.bottomRing(); //after ng 2nd ring
-//                        }
-//                    }
-//                    break;
-//                case "FFFFF4A2":  //after ng move to bottom
-//                    if (m3ringFlag) {
-//                        if (motorRingType == 3) {
-//                            bleCommands.rotateRight();
-//                            motorRingType = 4;
-//                        } else {
-//                            bleCommands.topRing(); //after ng 3rd ring
-//                        }
-//                    }
-//                    break;
-//            }
         }
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                     int status) {
-        }
+                                     int status) {}
     };
 
     private void beginBT() {
@@ -378,31 +355,5 @@ public class RecorderActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mLEScanner.stopScan(mScanCallback);
         }
-    }
-
-    private void useBLEDeviceDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Do you want to use a motor?");
-        builder.setCancelable(true);
-
-        builder.setPositiveButton(
-                "YES",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(RecorderActivity.this, BLEListActivity.class);
-                        startActivityForResult(intent,REQUEST_BLE_LIST);
-                        dialog.cancel();
-                        useBLE = true;
-                        finish();
-                    }
-                });
-        builder.setNegativeButton("NO",new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                useBLE = false;
-                dialog.cancel();
-            }
-        });
-        AlertDialog alert1 = builder.create();
-        alert1.show();
     }
 }

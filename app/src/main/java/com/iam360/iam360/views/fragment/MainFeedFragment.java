@@ -30,6 +30,7 @@ import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.DBHelper;
 import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.viewmodels.LocalOptographManager;
+import com.iam360.iam360.views.activity.BLEListActivity;
 import com.iam360.iam360.views.activity.ImagePickerActivity;
 import com.iam360.iam360.views.activity.MainActivity;
 import com.iam360.iam360.views.activity.RecorderActivity;
@@ -72,6 +73,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private DBHelper mydb;
 
     private int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_BLE_LIST = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,10 +122,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.settingsOneRing.setOnClickListener(this);
         binding.threeRingButton.setOnClickListener(this);
         binding.settingsThreeRing.setOnClickListener(this);
-        binding.manualButton.setOnClickListener(this);
-        binding.settingsManual.setOnClickListener(this);
-        binding.motorButton.setOnClickListener(this);
-        binding.settingsMotor.setOnClickListener(this);
+        binding.motorOffButton.setOnClickListener(this);
+        binding.settingsMotorOff.setOnClickListener(this);
+        binding.motorOnButton.setOnClickListener(this);
+        binding.settingsMotorOn.setOnClickListener(this);
 //        Settings end
 
         binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -638,15 +640,15 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     activeThreeRing();
                 }
                 break;
-            case R.id.settings_manual:
-            case R.id.manual_button:
+            case R.id.motor_off_button:
+            case R.id.settings_motor_off:
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE)!= Constants.MANUAL_MODE) {
                     cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MANUAL_MODE);
                     activeManualType();
                 }
                 break;
-            case R.id.settings_motor:
-            case R.id.motor_button:
+            case R.id.settings_motor_on:
+            case R.id.motor_on_button:
                 if (cache.getInt(Cache.CAMERA_CAPTURE_TYPE) != Constants.MOTOR_MODE) {
                     cache.save(Cache.CAMERA_CAPTURE_TYPE, Constants.MOTOR_MODE);
                     activeMotorType();
@@ -731,17 +733,26 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     }
 
     private void activeManualType() {
-        binding.manualButton.setBackgroundResource(R.drawable.manual_active_icn);
-        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_active));
-        binding.motorButton.setBackgroundResource(R.drawable.motor_inactive_icn);
-        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.motorOffButton.setBackgroundResource(R.drawable.motor_off_active_icn);
+        binding.settingsMotorOff.setTextColor(getResources().getColor(R.color.text_active));
+        binding.motorOnButton.setBackgroundResource(R.drawable.motor_on_inactive_icn);
+        binding.settingsMotorOn.setTextColor(getResources().getColor(R.color.text_inactive));
+        cache.save(Cache.MOTOR_ON, false);
+        cache.save(Cache.BLE_DEVICE_ADDRESS, "");
+        cache.save(Cache.BLE_DEVICE_NAME, "");
     }
 
     private void activeMotorType() {
-        binding.motorButton.setBackgroundResource(R.drawable.motor_active_icn);
-        binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
-        binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
-        binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
+        binding.motorOnButton.setBackgroundResource(R.drawable.motor_on_active);
+        binding.settingsMotorOn.setTextColor(getResources().getColor(R.color.text_active));
+        binding.motorOffButton.setBackgroundResource(R.drawable.motor_off_inactive_icn);
+        binding.settingsMotorOff.setTextColor(getResources().getColor(R.color.text_inactive));
+        cache.save(Cache.MOTOR_ON, true);
+        if(cache.getString(Cache.BLE_DEVICE_ADDRESS).equals("")){
+            Intent intent = new Intent(getActivity(), BLEListActivity.class);
+            startActivityForResult(intent,REQUEST_BLE_LIST);
+        }
+
     } // Settings end
 
     @Subscribe
