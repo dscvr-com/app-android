@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -90,9 +91,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         searchValue = newText;
                     } else if (s.toString().isEmpty()) {
                         newText = "";
+                        searchValue = newText;
                     }
                 } else {
                     newText = "";
+                    searchValue = newText;
                     clearSearch.setVisibility(View.GONE);
                     noResultText.setVisibility(View.GONE);
                     searchProgressVisibility(View.GONE);
@@ -164,10 +167,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
        apiConsumer.getSearchResult(search,new Callback<List<Person>>() {
            @Override
            public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
-               if (response.isSuccess() && response.body()!=null) {
+//               Log.d("myTag"," search: onResponse "+search+" searchValue: "+searchValue);
+               if (response.isSuccess() && response.body()!=null && search.equals(searchValue)) {
                    mAdapter.removeLastItems();
                    mAdapter.setObjects(response.body());
-               } else {
+               } else if (search.equals(searchValue)) {
+                   mAdapter.removeLastItems();
                    mAdapter.setObjects(new ArrayList<>());
                }
                checkItem();
@@ -175,7 +180,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
            @Override
            public void onFailure(Throwable t) {
-               mAdapter.setObjects(new ArrayList<>());
+//               Log.d("myTag"," search: onFailure "+search+" searchValue: "+searchValue);
+               if (search.equals(searchValue)) {
+                   mAdapter.removeLastItems();
+                   mAdapter.setObjects(new ArrayList<>());
+               }
                checkItem();
                if (networkProblemDialog.isAdded() || t.getMessage().contains("iterable must not be null")) return;
                 networkProblemDialog.show(getSupportFragmentManager(), "networkProblemDialog");
