@@ -2,6 +2,7 @@ package com.iam360.iam360.views.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
@@ -30,6 +31,7 @@ import com.iam360.iam360.sensors.CoreMotionListener;
 import com.iam360.iam360.sensors.CustomRotationMatrixSource;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
+import com.iam360.iam360.util.DeviceName;
 import com.iam360.iam360.util.Maths;
 import com.iam360.iam360.util.Vector3;
 import com.iam360.iam360.views.activity.RecorderActivity;
@@ -78,6 +80,7 @@ public class RecordFragment extends Fragment {
     private float currentPhi = (float) 0.0;
     private boolean isRecording = false;
     CustomRotationMatrixSource customRotationMatrixSource;
+//    private Camera.Parameters camParam;
 
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
@@ -106,24 +109,25 @@ public class RecordFragment extends Fragment {
                     currentDegree += degreeIncr;
                 }
 
-                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
+//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
 //                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
 
                 if(((RecorderActivity) getActivity()).dataHasCome){
                     isRecording = true;
                 }
                 Log.d("MARK","degreeIncr = "+degreeIncr);
+//                float thetaH = (float) Math.toRadians(camParam.getHorizontalViewAngle());
+//                Log.d("MARK","thetaH t = "+Float.toString(thetaH));
+
 
                 currentPhi = (float) Math.toRadians(currentDegree);
-                Log.d("MARK","currentPhi = "+currentPhi);
-                Log.d("MARK","currentPhi2 = "+((-2.0 * Math.PI) - 0.01));
 
                 if (currentPhi > ( 2 * Math.PI) -0.001) {
                     isRecording = false;
                     if(currentTheta == 0) {
-                        currentTheta = (float) -0.785;
+                        currentTheta = (-DeviceName.getCurrentThetaValue());
                     } else if(currentTheta < 0) {
-                        currentTheta = (float) 0.785;
+                        currentTheta = DeviceName.getCurrentThetaValue();
                     } else if(currentTheta > 0) {
                         currentTheta = 0;
                     }
@@ -208,14 +212,14 @@ public class RecordFragment extends Fragment {
         public void cameraOpened(CameraDevice device) {
             CameraManager cameraManager = (CameraManager)getActivity().getSystemService(Context.CAMERA_SERVICE);
             try {
-//                Log.d("MARK","Recorder.isInitialized = "+Recorder.isInitialized);
-                    CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
-                    // initialize recorder
-                    SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                    float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
-                    Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
+                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
+                // initialize recorder
+                SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+                float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
+                Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
-                    setupSelectionPoints();
+                setupSelectionPoints();
+
             } catch (CameraAccessException e) {
                 Log.d("MARK","CameraAccessException e"+e.getMessage());
                 e.printStackTrace();

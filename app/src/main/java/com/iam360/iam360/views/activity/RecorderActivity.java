@@ -74,10 +74,10 @@ public class RecorderActivity extends AppCompatActivity {
         recordFragment = new RecordFragment();
         recordFragment.setArguments(bundle);
 
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("mode", Constants.MODE_CENTER);
+//      Bundle bundle = new Bundle();
+//      bundle.putInt("mode", Constants.MODE_CENTER);
         recorderOverlayFragment = new RecorderOverlayFragment();
-//        recordFragment.setArguments(bundle);
+//      recordFragment.setArguments(bundle);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.feed_placeholder, recordFragment).commit();

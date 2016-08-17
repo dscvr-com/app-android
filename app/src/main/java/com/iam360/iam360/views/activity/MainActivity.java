@@ -24,10 +24,10 @@ import com.iam360.iam360.gcm.GCMRegistrationIntentService;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.model.Person;
 import com.iam360.iam360.sensors.CoreMotionListener;
+import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.viewmodels.OptographLocalGridAdapter;
-import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.views.fragment.MainFeedFragment;
 import com.iam360.iam360.views.fragment.ProfileFragmentExercise;
 import com.iam360.iam360.views.fragment.ProfileRootFragment;
@@ -143,6 +143,43 @@ public class MainActivity extends AppCompatActivity {
 //        new GeneralUtils().setStatusBarTranslucent(this, true);
 //        setStatusBarTranslucent(true);
 //        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
+
+//        Camera c = null;
+//        try {
+//            c = Camera.open(); // attempt to get a Camera instance
+//
+//            Camera.Parameters p = c.getParameters();
+//            float focLength = p.getFocalLength();
+//            Log.d("MARK","focLength = "+Float.toString(focLength));
+//            Log.d("MARK","c.getParameters().getHorizontalViewAngle() = "+Float.toString((float) Math.toRadians(c.getParameters().getHorizontalViewAngle())));
+//
+////            a = 2*atan(L/2d);
+////            int zoom = p.getZoomRatios().get(p.getZoom()).intValue();
+////            Size sz = new Size(720, 1280);
+////            Log.d("MARK","sz.width = "+sz.getWidth()+"   sz.height = "+sz.getHeight());
+////
+////            double aspect = (double) sz.getWidth() / (double) sz.getHeight();
+////            Log.d("MARK","aspect = "+aspect);
+////
+////            float thetaV = (float) Math.toRadians(p.getVerticalViewAngle());
+////            Log.d("MARK","thetaV = "+thetaV);
+////
+//////            float thetaH = (float) (2d * Math.atan(aspect * Math.tan(thetaV / 2)));
+////            float thetaH = (float) Math.toRadians(p.getHorizontalViewAngle());
+////            Log.d("MARK","thetaH = "+thetaH);
+////
+////            thetaV = (float) (2d * Math.atan(100d * Math.tan(thetaV / 2d) / zoom));
+////            Log.d("MARK","thetaV2 = "+thetaV);
+////
+////            thetaH = (float) (2d * Math.atan(100d * Math.tan(thetaH / 2d) / zoom));
+////            Log.d("MARK","thetaH2 = "+thetaH);
+////            Log.d("MARK","c.getParameters().getHorizontalViewAngle() = "+Float.toString((float) Math.toRadians(c.getParameters().getHorizontalViewAngle())));
+//        }
+//        catch (Exception e){
+//            Log.d("MARK","Camera error = "+e.getMessage());
+//            // Camera is not available (in use or does not exist)
+//        }
+
 
     }
 

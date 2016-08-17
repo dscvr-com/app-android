@@ -220,7 +220,6 @@ public class RecorderPreviewView extends AutoFitTextureView {
                 manager.openCamera(cameraId, stateCallback, null);
                 break;
             }
-
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
