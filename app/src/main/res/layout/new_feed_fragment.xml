@@ -145,7 +145,7 @@
                     android:layout_height="match_parent"
                     android:layout_above="@+id/bar_transparent"
                     android:paddingBottom="10dp"
-                    android:paddingLeft="72dp"
+                    android:paddingLeft="70dp"
                     android:background="@color/settings_bg" >
 
                     <TextView

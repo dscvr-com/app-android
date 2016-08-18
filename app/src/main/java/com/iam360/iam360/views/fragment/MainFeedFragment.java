@@ -141,6 +141,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         if (previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.settings_bg));
                         binding.profileBtn.setVisibility(View.GONE);
                         binding.searchButton.setVisibility(View.GONE);
+                        ((MainActivity)getActivity()).dragSettingPage(true);
                         break;
                     case COLLAPSED:
                     case ANCHORED:
@@ -149,6 +150,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         binding.profileBtn.setVisibility(View.VISIBLE);
                         binding.searchButton.setVisibility(View.VISIBLE);
                         binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
+                        ((MainActivity)getActivity()).dragSettingPage(false);
                         break;
                     case DRAGGING:
                         if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -528,7 +530,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
                 break;
             case R.id.settings_btn:
-//                ((MainActivity) getActivity()).startSettings();
+                ((MainActivity) getActivity()).dragSettingPage(true);
                 binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.header_logo:

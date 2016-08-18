@@ -446,7 +446,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(), "");
     }
 
-
     public void saveToSQLiteFeeds(Optograph opto) {
 
         Timber.d("saveToSQLiteFeeds");
