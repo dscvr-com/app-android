@@ -573,6 +573,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         return false;
     }
 
+    public int getOnTab() {
+        return onTab;
+    }
+
     public void setMessage(String message) {
         this.message = message;
         updateMenuOptions();
@@ -1470,30 +1474,38 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addItem(Optograph optograph) {
+        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
+
         if (optograph == null || onTab!=ON_IMAGE) {
             return;
         }
+        Log.d("Caching", "addItem 1");
 
         DateTime created_at = optograph.getCreated_atDateTime();
 
         if (optographs.contains(optograph)) {
             return;
         }
+        Log.d("Caching", "addItem 2");
 
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
             saveToSQLite(optograph);
         }
-        Log.d("myTag"," setMessage: isLocal? "+optograph.is_local());
+        Log.d("Caching", "addItem 3");
+
         if (optograph.is_local()) {
             optograph = checkToDB(optograph);
             if (optograph != null) optograph.setPerson(person);
         }
-        Log.d("myTag"," setMessage: opto null? "+(optograph==null));
+
         if (optograph==null) {
             return;
         }
+        Log.d("Caching", "addItem 4");
 
         if (optograph.getDeleted_at()!=null && !optograph.getDeleted_at().isEmpty()) return;
+
+        Log.d("Caching", "addItem notifyItemInserted " + optograph.toString());
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty() || optographs.size()==2) {
@@ -1528,7 +1540,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
         mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
-                opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(),
+                opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
                 opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
                 opto.is_data_uploaded(),opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),"Optograph");
     }

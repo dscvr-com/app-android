@@ -263,16 +263,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         cursor.moveToFirst();
 
         for(int a=0; a < cursor.getCount(); a++){
-            int totalColumn = cursor.getColumnCount();
-            JSONObject rowObject = new JSONObject();
-//            for (int i = 0; i < totalColumn; i++) {
-//                if (cursor.getColumnName(i) != null) {
                     Optograph opto = null;
                     String personId = null;
                     try {
-//                        String columnName = cursor.getColumnName(i);
-//                        rowObject.put(columnName,
-//                                cursor.getString(i));
                         opto = new Optograph(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_ID)));
                         opto.setCreated_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
                         opto.setIs_starred(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STARRED)) == 1 ? true : false);
@@ -286,25 +279,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                         opto.setIs_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) == 1 ? true : false);
                         opto.setOptograph_type(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
                         opto.setStars_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+                        opto.setShould_be_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 ? true : false);
+                        opto.setIs_local(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_LOCAL)) == 1 ? true : false);
                         personId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_PERSON_ID));
-//                        opto.setComments_count(data.optograph_comments_count);
-//                        opto.setHashtag_string(data.optograph_hashtag_string);
-//                        opto.setLeft_texture_asset_id(data.optograph_left_texture_asset_id);
-//                        opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
-                        opto.setIs_local(false);
 
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
                     }
-//                }
-//            }
-//            resultSet.put(rowObject);
-
-//            String json = rowObject.toString();
-//            Log.d("MARK","List<Optograph> opto = "+json);
-//            Gson gson = new Gson();
-//            Optographs data = gson.fromJson(json, Optographs.class);
-
 
             Person person = new Person();
             if(personId !=null && !personId.equals("")){
@@ -354,87 +335,11 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             }
             opto.setLocation(location);
             optographs.add(opto);
-//                Log.d("MARK","cur2Json opto = "+opto.toString());
 
             cursor.moveToNext();
         }
 
         cursor.close();
-
-
-//        List<Optograph> optographs = new LinkedList<>();
-//        for(int i=0; i < resultSet.length(); i++){
-//            try {
-//                String json = resultSet.get(i).toString();
-//                Log.d("MARK","List<Optograph> opto = "+json);
-//                Gson gson = new Gson();
-//                Optographs data = gson.fromJson(json, Optographs.class);
-//
-//                Optograph opto = new Optograph(data.optograph_id);
-//
-//                Person person = new Person();
-//                if(data.optograph_person_id !=null && !data.optograph_person_id.equals("")){
-//                    Cursor res = mydb.getData(data.optograph_person_id, DBHelper.PERSON_TABLE_NAME,"id");
-//                    res.moveToFirst();
-//                    if (res.getCount()!= 0) {
-//                        person.setId(res.getString(res.getColumnIndex("id")));
-//                        person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
-//                        person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
-////                        Log.d("MARK","cur2Json user_name = "+res.getString(res.getColumnIndex("user_name")));
-//                        person.setUser_name(res.getString(res.getColumnIndex("user_name")));
-//                        person.setText(res.getString(res.getColumnIndex("text")));
-//                        person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
-//                    }
-//                }
-////                if(!person.is_followed()){
-////                    continue;
-////                }
-//                opto.setPerson(person);
-//                opto.setCreated_at(data.optograph_created_at);
-//                opto.setIs_starred(data.optograph_is_starred);
-//                opto.setDeleted_at(data.optograph_deleted_at);
-//                opto.setStitcher_version(data.optograph_stitcher_version);
-//                opto.setText(data.optograph_text);
-//                opto.setViews_count(data.optograph_views_count);
-//                opto.setIs_staff_picked(data.optograph_is_staff_pick);
-//                opto.setShare_alias(data.optograph_share_alias);
-//                opto.setIs_private(data.optograph_is_private);
-//                opto.setIs_published(data.optograph_is_published);
-//                opto.setLeft_texture_asset_id(data.optograph_left_texture_asset_id);
-//                opto.setRight_texture_asset_id(data.optograph_right_texture_asset_id);
-//                opto.setIs_local(false);
-//
-//                Location location = new Location();
-//                if(data.optograph_location_id !=null && !data.optograph_location_id.equals("")){
-//                    Cursor res = mydb.getData(data.optograph_location_id, DBHelper.LOCATION_TABLE_NAME,"id");
-//                    res.moveToFirst();
-//                    if (res.getCount()!= 0) {
-//                        location.setId(res.getString(res.getColumnIndex("id")));
-//                        location.setCreated_at(res.getString(res.getColumnIndex("created_at")));
-//                        location.setText(res.getString(res.getColumnIndex("text")));
-//                        location.setCountry(res.getString(res.getColumnIndex("id")));
-//                        location.setCountry_short(res.getString(res.getColumnIndex("country")));
-//                        location.setPlace(res.getString(res.getColumnIndex("place")));
-//                        location.setRegion(res.getString(res.getColumnIndex("region")));
-//                        location.setPoi(Boolean.parseBoolean(res.getString(res.getColumnIndex("poi"))));
-//                        location.setLatitude(res.getString(res.getColumnIndex("latitude")));
-//                        location.setLongitude(res.getString(res.getColumnIndex("longitude")));
-//                    }
-//                }
-//                opto.setLocation(location);
-//
-//                opto.setOptograph_type(data.optograph_type);
-//                opto.setStars_count(data.optograph_stars_count);
-//                opto.setComments_count(data.optograph_comments_count);
-//                opto.setHashtag_string(data.optograph_hashtag_string);
-//
-//                optographs.add(opto);
-////                Log.d("MARK","cur2Json opto = "+opto.toString());
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        Log.d("MARK","cur2Json optographs.size = "+optographs.size());
         return Observable.from(optographs);
     }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.util.CameraUtils;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -28,7 +29,10 @@ public class LocalOptographManager {
                 if (file.isDirectory()) {
                     if (file.listFiles().length==3) {
                         // create new optograph
-                        optographs.add(new Optograph(file.getName()));
+                        Optograph optograph = new Optograph(file.getName());
+                        optograph.setIs_local(true);
+                        optograph.setShould_be_published(true);
+                        optographs.add(optograph);
                     }
                 } else {
                     // ignore

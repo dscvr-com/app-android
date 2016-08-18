@@ -113,7 +113,7 @@ public class Optograph implements Parcelable {
         stars_count = 0;
         is_starred = false;
         hashtag_string = "";
-        is_local = true;
+        is_local = false;
         rightFace = new FaceStatus();
         leftFace = new FaceStatus();
         should_be_published = true;

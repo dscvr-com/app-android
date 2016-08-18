@@ -511,7 +511,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, false, false, false, false,
+                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, false, false, false,
                 false, false, "", opto.getOptograph_type(),"Optograph");
     }
 
@@ -608,6 +608,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     blackCircle.setVisibility(View.VISIBLE);
                     uploadProgress.setVisibility(View.VISIBLE);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, true);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, true);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
                     optographGlobal.setText(descBox.getText().toString());
@@ -632,6 +633,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 ////                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
 //                } else if (doneUpload) {
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, false);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, true);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, optographGlobal.isPostFacebook());
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, optographGlobal.isPostTwitter());

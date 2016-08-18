@@ -37,6 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String OPTOGRAPH_IS_ON_SERVER = "optograph_is_on_server";
     public static final String OPTOGRAPH_UPDATED_AT = "optograph_updated_at";
     public static final String OPTOGRAPH_SHOULD_BE_PUBLISHED = "optograph_should_be_published";
+    public static final String OPTOGRAPH_IS_LOCAL = "optograph_is_local";
     public static final String OPTOGRAPH_IS_DATA_UPLOADED = "optograph_is_data_uploaded";
     public static final String OPTOGRAPH_IS_PLACEHOLDER_UPLOADED = "optograph_is_place_holder_uploaded";
     public static final String OPTOGRAPH_POST_FACEBOOK = "post_facebook";
@@ -81,6 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
                         "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
                         "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
+                        "optograph_is_local boolean not null, " +
                         "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
                         "optograph_share_alias text not null, optograph_type text not null )"
 
@@ -97,6 +99,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
                         "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
                         "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
+                        "optograph_is_local boolean not null, " +
                         "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
                         "optograph_share_alias text not null, optograph_type text not null )"
 
@@ -147,7 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean insertOptograph(String id, String text, String pId, String lId, String cAt, String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri, String stitchVer, boolean isFeed,
-                                   boolean onServer, String uAt, boolean shouldPublished, boolean isPHUploaded, boolean postFB,
+                                   boolean onServer, String uAt, boolean shouldPublished, boolean isLocal, boolean isPHUploaded, boolean postFB,
                                    boolean postTwit, boolean postInsta, boolean isDataUploaded, boolean isStaffPick, String shareAlias, String type, String tableName) {
         if(tableName == null || tableName.equals("")){
             tableName = OPTO_TABLE_NAME;
@@ -170,6 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_STAFF_PICK, isStaffPick);
         contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
         contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED,shouldPublished);
+        contentValues.put(OPTOGRAPH_IS_LOCAL, isLocal);
         contentValues.put(OPTOGRAPH_IS_DATA_UPLOADED,isDataUploaded);
         contentValues.put(OPTOGRAPH_IS_PLACEHOLDER_UPLOADED,isPHUploaded);
         contentValues.put(OPTOGRAPH_POST_FACEBOOK,postFB);
@@ -183,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues1.put(FACES_LEFT_ZERO,0);
         contentValues1.put(FACES_LEFT_ONE,0);
         contentValues1.put(FACES_LEFT_TWO,0);
-        contentValues1.put(FACES_LEFT_THREE,0);
+        contentValues1.put(FACES_LEFT_THREE,0);https://www.google.com.ph/search?q=anthony+davis&source=lnms&tbm=isch&sa=X&ved=0ahUKEwit8IPG1bvOAhVJipQKHWfDC-YQ_AUICCgB&biw=1280&bih=676#tbm=isch&q=anthony+davis+unibrow&imgrc=3Hquu6Kkf_uunM%3A
         contentValues1.put(FACES_LEFT_FOUR,0);
         contentValues1.put(FACES_LEFT_FIVE,0);
         contentValues1.put(FACES_RIGHT_ZERO,0);
@@ -324,7 +328,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri,String stitchVer,boolean isFeed,
-                                   boolean onServer,String uAt,String shouldPublished, boolean isStaffPick, String shareAlias, String type, String tableName) {
+                                   boolean onServer,String uAt,String shouldPublished, boolean isLocal, boolean isStaffPick, String shareAlias, String type, String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         if(id != null) contentValues.put(OPTOGRAPH_ID, id);
@@ -344,6 +348,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_IN_FEED, isFeed);
         contentValues.put(OPTOGRAPH_IS_ON_SERVER, onServer);
         contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED, shouldPublished);
+        contentValues.put(OPTOGRAPH_IS_LOCAL, isLocal);
         contentValues.put(OPTOGRAPH_IS_STAFF_PICK, isStaffPick);
 
         if(tableName == null) tableName = OPTO_TABLE_NAME;

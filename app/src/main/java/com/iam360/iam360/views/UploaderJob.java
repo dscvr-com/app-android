@@ -57,7 +57,7 @@ public class UploaderJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
-        Timber.d("UPLOADER JOB");
+        Timber.d("Uploader Job.");
         mydb = new DBHelper(getApplicationContext());
 
         // upload images only if tagged for upload
@@ -152,8 +152,10 @@ public class UploaderJob extends Job {
             cache.save(Cache.UPLOAD_ON_GOING, false);
             if (mydb.checkIfAllImagesUploaded(id.toString())) {
                 mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_ON_SERVER, true);
+                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_LOCAL, false);
             } else {
                 mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, false);
+                mydb.updateColumnOptograph(id.toString(), DBHelper.OPTOGRAPH_IS_LOCAL, true);
             }
         }
     }

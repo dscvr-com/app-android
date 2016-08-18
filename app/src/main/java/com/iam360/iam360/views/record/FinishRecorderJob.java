@@ -1,6 +1,7 @@
 package com.iam360.iam360.views.record;
 
 import android.graphics.Bitmap;
+import android.os.Environment;
 
 import com.iam360.iam360.DscvrApp;
 import com.iam360.iam360.record.Alignment;

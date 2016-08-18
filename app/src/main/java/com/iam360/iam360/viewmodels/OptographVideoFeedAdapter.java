@@ -441,7 +441,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
         mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
-                opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(),
+                opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
                 opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
                 opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(), "");
     }
@@ -476,6 +476,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, opto.is_data_uploaded());
 
                     mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, opto.isShould_be_published());
+                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_LOCAL, opto.is_local());
                     mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, opto.is_place_holder_uploaded());
                     mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_FACEBOOK, opto.isPostFacebook());
                     mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_TWITTER, opto.isPostTwitter());
@@ -489,7 +490,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                     Timber.d("saveToSQLiteFeeds <= 0 " + opto.is_staff_picked() );
                     mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
                             opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
-                            opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(),
+                            opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
                             opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
                             opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(), DBHelper.OPTO_TABLE_NAME_FEEDS);
                 }
