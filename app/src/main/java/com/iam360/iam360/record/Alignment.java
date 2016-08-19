@@ -9,5 +9,7 @@ public class Alignment {
 
     public static native void align(String path, String sharedPath, String storagePath);
 
+    public static native void alignEQ(String path, String sharedPath, String storagePath);
+
     public static native void clear(String path, String sharedPath);
 }

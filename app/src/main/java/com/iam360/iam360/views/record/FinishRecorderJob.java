@@ -1,6 +1,13 @@
 package com.iam360.iam360.views.record;
 
+import android.app.WallpaperManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
+import android.media.Image;
+import android.media.MediaMetadata;
+import android.util.Log;
 
 import com.iam360.iam360.DscvrApp;
 import com.iam360.iam360.record.Alignment;
@@ -9,6 +16,8 @@ import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import com.iam360.iam360.bus.BusProvider;
@@ -71,11 +80,30 @@ public class FinishRecorderJob extends Job {
             bitmaps[i].recycle();
         }
 
+//        Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+//        CameraUtils.saveBitmapToLocation(eqmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + ".jpg");
+
         bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
         for (int i = 0; i < bitmaps.length; ++i) {
             CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/right/" + i + ".jpg");
             bitmaps[i].recycle();
         }
+
+//        ExifInterface exif = null;
+//        try {
+//            String filepath = CameraUtils.PERSISTENT_STORAGE_PATH + id + ".jpg";
+//            File file = new File(filepath);
+//            Log.e("myTag"," inside try");
+//            exif = new ExifInterface(file.getCanonicalPath());
+//            Log.e("myTag", " after declaration model: " + exif.getAttribute(ExifInterface.TAG_MODEL) + " make: " + exif.getAttribute(ExifInterface.TAG_MAKE));
+//            exif.setAttribute(ExifInterface.TAG_MODEL, "RICOH THETA S");
+//            exif.setAttribute(ExifInterface.TAG_MAKE, "RICOH");
+//            Log.e("myTag", " after setting of attributes");
+//            exif.saveAttributes();
+//            Log.e("myTag"," success saving of attributes model: "+exif.getAttribute(ExifInterface.TAG_MODEL)+" make: "+exif.getAttribute(ExifInterface.TAG_MAKE));
+//        } catch (IOException e) {
+//            Log.e("myTag"," ERROR adding of attributes message: "+e.getMessage());
+//        }
 
         Timber.v("FinishRecorderJob finished");
         Stitcher.clear(CameraUtils.CACHE_PATH + "preview/", CameraUtils.CACHE_PATH + "shared/");

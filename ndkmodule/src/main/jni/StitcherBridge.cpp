@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <android/log.h>
 
 #include "online-stitcher/src/stitcher/stitcher.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
@@ -11,6 +12,7 @@ using namespace optonaut;
 
 extern "C" {
     jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobject Java_com_iam360_iam360_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
     void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
 
@@ -42,6 +44,19 @@ std::vector<Mat> getResult(const std::string& path, const std::string& sharedPat
     sphere.release();
 
     return getCubeFaces(blurred);
+}
+
+Mat getEQResult(const std::string& path, const std::string& sharedPath)
+{
+    CheckpointStore store(path, sharedPath);
+    Stitcher stitcher(store);
+    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+    Mat blurred;
+    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
+    panoBlur.Black(sphere, blurred);
+    sphere.release();
+
+    return blurred;
 }
 
 jobject matToBitmap(JNIEnv *env, const Mat& mat)
@@ -90,6 +105,16 @@ jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobje
     }
 
     return bitmaps;
+}
+
+jobject Java_com_iam360_iam360_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+{
+    const char *cPath = env->GetStringUTFChars(path, NULL);
+    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
+
+    auto result = getEQResult(cPath, cSharedPath);
+
+    return matToBitmap(env, result);
 }
 
 void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
