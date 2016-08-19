@@ -70,7 +70,7 @@ public class UploaderJob extends Job {
      * @return true if for upload, false if for postlater
      */
     private boolean checkIfForUpload() {
-        Cursor res = mydb.getData(id.toString(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(id.toString(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
 
         res.moveToFirst();
         if (res.getCount() == 0) return false;

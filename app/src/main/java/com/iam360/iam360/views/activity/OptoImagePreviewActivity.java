@@ -512,7 +512,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
                 opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, false, false, false,
-                false, false, "", opto.getOptograph_type(),"Optograph");
+                false, false, "", opto.getOptograph_type());
     }
 
     private void uploadOptonautData(Optograph optograph) {
@@ -560,7 +560,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             }
         });
 
-        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         if (res == null || res.getCount() == 0) return;
         res.moveToFirst();
     }
@@ -841,7 +841,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void deleteOptographFromDB() {
-        mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID, optographGlobal.getId());
+        mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optographGlobal.getId());
         mydb.deleteEntry(DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID, optographGlobal.getId());
     }
 

@@ -376,8 +376,8 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                             Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                             res.moveToFirst();
                             if (res.getCount() > 0) {
-                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", true);
-                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", true);
+                                mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
                             }
                             NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
@@ -534,7 +534,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
             }
         });
 
-        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         if (res==null || res.getCount()==0) return;
         res.moveToFirst();
     }
@@ -862,7 +862,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
     }
 
     public void saveToSQLite(Optograph opto) {
-        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount()!=0) return;
         String loc = opto.getLocation()==null?"":opto.getLocation().getId();
@@ -870,11 +870,11 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
                 opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
                 opto.is_private(), opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
                 opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
-                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),"Optograph");
+                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
     }
 
     public Optograph checkToDB(Optograph optograph) {
-        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount()==0) {
 //            deleteOptographFromPhone(optograph.getId());

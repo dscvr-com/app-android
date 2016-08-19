@@ -17,7 +17,7 @@ import timber.log.Timber;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "OptoData.db";
-    public static final String OPTO_TABLE_NAME = "Optograph";
+//    public static final String OPTO_TABLE_NAME = "Optograph";
     public static final String OPTO_TABLE_NAME_FEEDS = "Optograph_Feeds";
     public static final String PERSON_TABLE_NAME = "Person";
     public static final String LOCATION_TABLE_NAME = "Location";
@@ -71,22 +71,22 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
-        db.execSQL(
-                "create table " + OPTO_TABLE_NAME +
-                        " (optograph_id text primary key not null, optograph_text text not null," +
-                        "optograph_person_id text not null,optograph_location_id text not null," +
-                        "optograph_created_at text not null,optograph_deleted_at text not null," +
-                        "optograph_is_starred boolean not null, optograph_stars_count integer not null," +
-                        "optograph_is_published boolean not null, optograph_is_private boolean not null," +
-                        "optograph_is_stitcher_version text not null, optograph_is_in_feed boolean not null," +
-                        "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
-                        "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
-                        "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
-                        "optograph_is_local boolean not null, " +
-                        "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
-                        "optograph_share_alias text not null, optograph_type text not null )"
-
-        );
+//        db.execSQL(
+//                "create table " + OPTO_TABLE_NAME +
+//                        " (optograph_id text primary key not null, optograph_text text not null," +
+//                        "optograph_person_id text not null,optograph_location_id text not null," +
+//                        "optograph_created_at text not null,optograph_deleted_at text not null," +
+//                        "optograph_is_starred boolean not null, optograph_stars_count integer not null," +
+//                        "optograph_is_published boolean not null, optograph_is_private boolean not null," +
+//                        "optograph_is_stitcher_version text not null, optograph_is_in_feed boolean not null," +
+//                        "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
+//                        "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
+//                        "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
+//                        "optograph_is_local boolean not null, " +
+//                        "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
+//                        "optograph_share_alias text not null, optograph_type text not null )"
+//
+//        );
 
         db.execSQL(
                 "create table " + OPTO_TABLE_NAME_FEEDS +
@@ -142,7 +142,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Auto-generated method stub
-        db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME);
+//        db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME_FEEDS);
         db.execSQL("DROP TABLE IF EXISTS " + FACES_TABLE_NAME);
         onCreate(db);
@@ -151,10 +151,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertOptograph(String id, String text, String pId, String lId, String cAt, String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri, String stitchVer, boolean isFeed,
                                    boolean onServer, String uAt, boolean shouldPublished, boolean isLocal, boolean isPHUploaded, boolean postFB,
-                                   boolean postTwit, boolean postInsta, boolean isDataUploaded, boolean isStaffPick, String shareAlias, String type, String tableName) {
-        if(tableName == null || tableName.equals("")){
-            tableName = OPTO_TABLE_NAME;
-        }
+                                   boolean postTwit, boolean postInsta, boolean isDataUploaded, boolean isStaffPick, String shareAlias, String type) {
+//        if(tableName == null || tableName.equals("")){
+//            tableName = OPTO_TABLE_NAME;
+//        }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -181,7 +181,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_POST_INSTAGRAM,postInsta);
         contentValues.put(OPTOGRAPH_TYPE,type);
         contentValues.put(OPTOGRAPH_SHARE_ALIAS, shareAlias);
-        db.insert(tableName, null, contentValues);
+        db.insert(OPTO_TABLE_NAME_FEEDS, null, contentValues);
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put(FACES_ID,id);
         contentValues1.put(FACES_LEFT_ZERO,0);
@@ -303,7 +303,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
+//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
         db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
         return  true;
     }
@@ -312,7 +312,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
+//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
         db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
         return  true;
     }
@@ -321,14 +321,14 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(column,value);
-        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[] {id});
+//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[] {id});
         db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {id});
         return  true;
     }
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri,String stitchVer,boolean isFeed,
-                                   boolean onServer,String uAt,String shouldPublished, boolean isLocal, boolean isStaffPick, String shareAlias, String type, String tableName) {
+                                   boolean onServer,String uAt,String shouldPublished, boolean isLocal, boolean isStaffPick, String shareAlias, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         if(id != null) contentValues.put(OPTOGRAPH_ID, id);
@@ -351,8 +351,8 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_LOCAL, isLocal);
         contentValues.put(OPTOGRAPH_IS_STAFF_PICK, isStaffPick);
 
-        if(tableName == null) tableName = OPTO_TABLE_NAME;
-        db.update(tableName, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
+//        if(tableName == null) tableName = OPTO_TABLE_NAME;
+        db.update(OPTO_TABLE_NAME_FEEDS, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
         return true;
     }
 
@@ -380,14 +380,14 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public boolean checkIfShouldBePublished(String id) {
-        Cursor res = getData(id, DBHelper.OPTO_TABLE_NAME, DBHelper.OPTOGRAPH_ID);
+        Cursor res = getData(id, DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         return (res.getCount()==0 || (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1
                 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")));
     }
 
     public void deleteAllTable() {
-        deleteTable(OPTO_TABLE_NAME);
+//        deleteTable(OPTO_TABLE_NAME);
         deleteTable(OPTO_TABLE_NAME_FEEDS);
         deleteTable(PERSON_TABLE_NAME);
         deleteTable(LOCATION_TABLE_NAME);
