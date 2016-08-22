@@ -1,6 +1,10 @@
 package com.iam360.iam360.views.record;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
+import android.os.Build;
+import android.util.Log;
 
 import com.iam360.iam360.DscvrApp;
 import com.iam360.iam360.record.Alignment;
@@ -9,6 +13,8 @@ import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import com.iam360.iam360.bus.BusProvider;
@@ -70,6 +76,9 @@ public class FinishRecorderJob extends Job {
             CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/left/" + i + ".jpg");
             bitmaps[i].recycle();
         }
+
+        Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+        CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "_1.jpg");
 
         bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
         for (int i = 0; i < bitmaps.length; ++i) {

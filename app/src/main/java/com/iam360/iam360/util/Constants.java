@@ -27,6 +27,10 @@ public class Constants {
     public static final float MINIMUM_AXIS_LENGTH = 4.0f;
 	public static final float VFOV = 95.0f;
 
+    //Image Metadata
+    public static final String CAMERA_MODEL = "RICOH THETA S";
+    public static final String CAMERA_MAKE = "RICOH";
+
     // Modes of the ring
     public static int MODE_ALL = 0; // Full sphere
     public static int MODE_CENTER = 1; // Only center ring

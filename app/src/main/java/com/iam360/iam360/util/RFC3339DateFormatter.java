@@ -51,6 +51,8 @@ public class RFC3339DateFormatter {
     private static DateTimeFormatter getFormatter(String dateString) {
         DateTimeFormatter formatter = rfc3339Formatter1;
 
+        if(dateString == null) return formatter;
+
         String s = "";
         dateString.lastIndexOf(".");
         for (int i=0;i<(dateString.length()-(dateString.lastIndexOf(".")+2));i++) {

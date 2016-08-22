@@ -13,5 +13,7 @@ public class Stitcher {
 
     public static native Bitmap[] getResult(String path, String sharedPath);
 
+    public static native Bitmap getEQResult(String path, String sharedPath);
+
     public static native void clear(String path, String sharedPath);
 }
