@@ -800,7 +800,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             @Override
             public void afterTextChanged(Editable s) {
-                mHolder1.getBinding().getPerson().setText(s.toString());
+                if(mHolder1.getBinding().getPerson() != null)
+                    mHolder1.getBinding().getPerson().setText(s.toString());
 //                personDesc = s.toString();
                 Log.d("myTag", "needSave afterTextChanged personDesc "+personDesc);
             }
@@ -1476,11 +1477,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addItem(Optograph optograph) {
-        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
+        Log.d("Caching", "addItem " + optograph);
 
         if (optograph == null || onTab!=ON_IMAGE) {
             return;
         }
+        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
         Log.d("Caching", "addItem 1");
 
         DateTime created_at = optograph.getCreated_atDateTime();

@@ -238,7 +238,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         setAdapter();
         updateHomeButton();
 
-//        initializeFeed();
+        initializeFeed();
     }
 
     @Override
@@ -332,6 +332,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     private void setPerson() {
+
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
