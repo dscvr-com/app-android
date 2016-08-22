@@ -125,7 +125,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             @Override
             public int getSpanSize(int position) {
                 int pos = optographLocalGridAdapter.getItemViewType(position);
-                if (pos==OptographLocalGridAdapter.VIEW_SERVER)
+                if (pos == OptographLocalGridAdapter.VIEW_SERVER)
                     return 1;
                 return OptographLocalGridAdapter.COLUMNS;
             }
@@ -238,7 +238,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         setAdapter();
         updateHomeButton();
 
-        initializeFeed();
+//        initializeFeed();
     }
 
     @Override
@@ -311,6 +311,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         cache.save(Cache.USER_ID, "");
                         cache.save(Cache.USER_TOKEN, "");
                         cache.save(Cache.GATE_CODE, "");
+
+                        // delete all database content
+                        mydb.deleteAllTable();
 
                         return true;
                     }
@@ -417,7 +420,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         else refresh();
 
         if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) {
-            optographLocalGridAdapter.notifyItemRangeChanged(2,optographLocalGridAdapter.getItemCount()-2);
+            optographLocalGridAdapter.notifyItemRangeChanged(2, optographLocalGridAdapter.getItemCount() - 2);
         }
     }
 
@@ -549,12 +552,14 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void initializeFeed() {
+        Log.d("Caching", "initializeFeed");
         optographLocalGridAdapter.setPerson(person);
         Cursor cursor = null;
         if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
         else mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
 
         if (cursor != null) {
+            Log.d("Caching", "initializeFeed cursor not null");
             cursor.moveToFirst();
 
             if (cursor.getCount() != 0) {
@@ -581,6 +586,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .subscribe(optographLocalGridAdapter::addItem);
             }
         } else {
+            Log.d("Caching", "initializeFeed cursor null");
             apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -593,12 +599,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 
             //try to add filter for deleted optographs
-            if(person.getId().equals(cache.getString(Cache.USER_ID))) {
-                LocalOptographManager.getOptographs()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnCompleted(() -> updateMessage(null))
-                        .subscribe(optographLocalGridAdapter::addItem);
-            }
+//            if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+//                LocalOptographManager.getOptographs()
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .doOnCompleted(() -> updateMessage(null))
+//                        .subscribe(optographLocalGridAdapter::addItem);
+//            }
 
     }
 
@@ -643,12 +649,14 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void refresh() {
+        Log.d("Caching", "refresh");
 
         Cursor cursor = null;
         if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
         else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
 
         if(cursor != null) {
+            Log.d("Caching", "cursor not null");
             cursor.moveToFirst();
             if (cursor.getCount() != 0) {
                 cur2Json(cursor)
@@ -676,6 +684,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .subscribe(optographLocalGridAdapter::addItem);
             }
         } else {
+            Log.d("Caching", "cursor null");
             apiConsumer.getOptographsFromPerson(person.getId(), 10)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -689,12 +698,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     .subscribe(optographLocalGridAdapter::addItem);
         }
 
-        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
-            LocalOptographManager.getOptographs()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> updateMessage(null))
-                    .subscribe(optographLocalGridAdapter::addItem);
-        }
+//        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
+//            LocalOptographManager.getOptographs()
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .doOnCompleted(() -> updateMessage(null))
+//                    .subscribe(optographLocalGridAdapter::addItem);
+//        }
     }
 
     private void updateMessage(String message) {
@@ -710,6 +719,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
     }
 
+    /**
     public Observable<Optograph> cur2Json(Cursor cursor) {
         List<Optograph> optographs = new LinkedList<>();
         cursor.moveToFirst();
@@ -790,6 +800,100 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             opto.setComments_count(data.optograph_comments_count);
             opto.setHashtag_string(data.optograph_hashtag_string);
 
+            optographs.add(opto);
+
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return Observable.from(optographs);
+    }
+     **/
+
+
+
+    public Observable<Optograph> cur2Json(Cursor cursor) {
+
+        Log.d("Caching", "cur2Json");
+//        JSONArray resultSet = new JSONArray();
+        List<Optograph> optographs = new LinkedList<>();
+        cursor.moveToFirst();
+
+        for(int a=0; a < cursor.getCount(); a++){
+            Optograph opto = null;
+            String personId = null;
+            try {
+                opto = new Optograph(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_ID)));
+                opto.setCreated_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
+                opto.setIs_starred(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STARRED)) == 1 ? true : false);
+                opto.setDeleted_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+                opto.setStitcher_version(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
+                opto.setText(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+                opto.setViews_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+                opto.setIs_staff_picked(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STAFF_PICK)) == 1 ? true : false);
+                opto.setShare_alias(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHARE_ALIAS)));
+                opto.setIs_private(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PRIVATE)) == 1 ? true : false);
+                opto.setIs_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) == 1 ? true : false);
+                opto.setOptograph_type(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
+                opto.setStars_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+                opto.setShould_be_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 ? true : false);
+                opto.setIs_local(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_LOCAL)) == 1 ? true : false);
+                personId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_PERSON_ID));
+
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+            }
+
+            Person person = new Person();
+            if(personId !=null && !personId.equals("")){
+                Cursor res = mydb.getData(personId, DBHelper.PERSON_TABLE_NAME,"id");
+                res.moveToFirst();
+                if (res.getCount()!= 0) {
+                    person.setId(res.getString(res.getColumnIndex("id")));
+                    person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                    person.setDeleted_at(res.getString(res.getColumnIndex("deleted_at")));
+                    person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
+                    person.setUser_name(res.getString(res.getColumnIndex("user_name")));
+                    person.setText(res.getString(res.getColumnIndex("email")));
+                    person.setEmail(res.getString(res.getColumnIndex("text")));
+                    person.setElite_status(res.getInt(res.getColumnIndex("elite_status")) == 1 ? true : false);
+                    person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
+                    person.setOptographs_count(res.getInt(res.getColumnIndex("optographs_count")));
+                    person.setFollowers_count(res.getInt(res.getColumnIndex("followers_count")));
+                    person.setFollowed_count(res.getInt(res.getColumnIndex("followed_count")));
+                    person.setIs_followed(res.getInt(res.getColumnIndex("is_followed")) == 1 ? true : false);
+                    person.setFacebook_user_id(res.getString(res.getColumnIndex("facebook_user_id")));
+                    person.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
+                    person.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
+                    person.setTwitter_secret(res.getString(res.getColumnIndex("twitter_secret")));
+                }
+            }
+//                if(!person.is_followed()){
+//                    continue;
+//                }
+            opto.setPerson(person);
+
+            Location location = new Location();
+            if(opto != null && opto.getLocation().getId() !=null && !opto.getLocation().getId().equals("")){
+                Cursor res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME,"id");
+                res.moveToFirst();
+                if (res.getCount()!= 0) {
+                    location.setId(res.getString(res.getColumnIndex("id")));
+                    location.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                    location.setText(res.getString(res.getColumnIndex("text")));
+                    location.setCountry(res.getString(res.getColumnIndex("id")));
+                    location.setCountry_short(res.getString(res.getColumnIndex("country")));
+                    location.setPlace(res.getString(res.getColumnIndex("place")));
+                    location.setRegion(res.getString(res.getColumnIndex("region")));
+                    location.setPoi(Boolean.parseBoolean(res.getString(res.getColumnIndex("poi"))));
+                    location.setLatitude(res.getString(res.getColumnIndex("latitude")));
+                    location.setLongitude(res.getString(res.getColumnIndex("longitude")));
+                }
+            }
+            opto.setLocation(location);
+
+            Log.d("Caching", "Opto " + opto.is_local() + " " + opto.isShould_be_published());
             optographs.add(opto);
 
             cursor.moveToNext();

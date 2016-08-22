@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.Build;
 import android.util.Log;
+import android.os.Environment;
 
 import com.iam360.iam360.DscvrApp;
 import com.iam360.iam360.record.Alignment;

@@ -48,7 +48,7 @@ public class ApiConsumer {
 //    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQyYmVhNmI3LWQxYzktNDEyMi04YTJmLTlkMDFmNTAzZjY2ZCJ9._sVJmnCvSyDeoxoSaD4EkEGisyblUvkb1PufUz__uOY";
 
     private static final int DEFAULT_LIMIT = 5;
-    public static final int PROFILE_GRID_LIMIT = 12;
+    public static final int PROFILE_GRID_LIMIT = 44;
 
     OkHttpClient client;
 
@@ -101,12 +101,11 @@ public class ApiConsumer {
                             .build();
                 }
 
-//                Request request = chain.request();
-
                 Timber.v(newRequest.headers().toString());
                 Timber.v(newRequest.toString());
 
                 // TODO this code causes two api calls on the server side. find other way to print response
+//                Request request = chain.request();
 //                com.squareup.okhttp.Response response = chain.proceed(request);
 //                Timber.v(response.headers().toString());
 //                Timber.v(response.toString());

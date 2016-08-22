@@ -179,8 +179,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         isTwitterShare = cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
         optographGlobal.setPostFacebook(isFBShare);
         optographGlobal.setPostTwitter(isTwitterShare);
-        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
-        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
+        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare);
+        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare);
 
 //        initializeToolbar();
         initializeShareButtons();
@@ -406,7 +406,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 isFBShare = true;
                 cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
                 optographGlobal.setPostFacebook(isFBShare);
-                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, 1);
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, true);
                 PersonManager.updatePerson();
                 initializeShareButtons();
             }
@@ -504,14 +504,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             isTwitterShare = true;
             cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
             optographGlobal.setPostTwitter(isTwitterShare);
-            mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, 1);
+            mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, true);
             initializeShareButtons();
         }
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), 0, 0, 0, 0, opto.getStitcher_version(), 1, 0, "", 1, 0, 0, 0, 0,0,opto.getOptograph_type(),"Optograph");
+                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, false, false, false,
+                false, false, "", opto.getOptograph_type(),"Optograph");
     }
 
     private void uploadOptonautData(Optograph optograph) {
@@ -543,7 +544,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     return;
                 }
                 optographGlobal.setIs_data_uploaded(true);
-                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, 1);
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, true);
                 // do things for success
                 optographGlobal.setIs_published(true);
                 uploadPlaceHolder(optographGlobal);
@@ -606,7 +607,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                    apiConsumer = new ApiConsumer(userToken);
                     blackCircle.setVisibility(View.VISIBLE);
                     uploadProgress.setVisibility(View.VISIBLE);
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 1);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, true);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, true);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_PERSON_ID, cache.getString(Cache.USER_ID));
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
                     optographGlobal.setText(descBox.getText().toString());
@@ -630,10 +632,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                    //TODO login page
 ////                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
 //                } else if (doneUpload) {
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, false);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, true);
                     mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_TEXT, descBox.getText().toString());
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, optographGlobal.isPostFacebook() ? 1 : 0);
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, optographGlobal.isPostTwitter() ? 1 : 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, optographGlobal.isPostFacebook());
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, optographGlobal.isPostTwitter());
                     finish();
 //                }
                 break;
@@ -654,7 +657,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
                     optographGlobal.setPostFacebook(isFBShare);
                     initializeShareButtons();
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare ? 1 : 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare);
                     PersonManager.updatePerson();
                     return;
                 }
@@ -671,7 +674,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
                     optographGlobal.setPostTwitter(isTwitterShare);
                     initializeShareButtons();
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare ? 1 : 0);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare);
                     PersonManager.updatePerson();
                     return;
                 }
@@ -761,7 +764,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 flag = response.isSuccess() ? 1 : 0;
                 optographGlobal.setIs_place_holder_uploaded(true);
                 doneUpload = true;
-                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, 1);
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, true);
 
                 // update texts of theta
                 if (UPLOAD_IMAGE_MODE) updateOptograph(optographGlobal);
