@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.util.SizeF;
@@ -73,6 +74,37 @@ public class CameraUtils {
             parent.mkdirs();
             out = new FileOutputStream(filename);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void saveBitmapToLocationEQ(Bitmap bitmap, String filename) {
+        FileOutputStream out = null;
+        try {
+            File file = new File(filename);
+            File parent = file.getParentFile();
+            parent.mkdirs();
+            out = new FileOutputStream(filename);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(file.getCanonicalPath());
+                exif.setAttribute(ExifInterface.TAG_MODEL, Constants.CAMERA_MODEL);
+                exif.setAttribute(ExifInterface.TAG_MAKE, Constants.CAMERA_MAKE);
+                exif.saveAttributes();
+            } catch (IOException e) {
+                Log.e("myTag"," ERROR adding of attributes message: "+e.getMessage());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

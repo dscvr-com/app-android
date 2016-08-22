@@ -1593,7 +1593,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     opto.is_private(),opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
                     opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
                     opto.is_data_uploaded(),opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
-
         }
         String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
         String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
