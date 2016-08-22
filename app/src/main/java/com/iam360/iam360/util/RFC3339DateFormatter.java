@@ -8,6 +8,7 @@ import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.security.spec.ECField;
 import java.util.Locale;
 
 /**
@@ -34,7 +35,7 @@ public class RFC3339DateFormatter {
         DateTimeFormatter formatter = getFormatter(string);
         try {
              dateTime = formatter.parseDateTime(string);
-        } catch (IllegalArgumentException ex1) {
+        } catch (Exception ex1) {
 //            try {
 //                dateTime = rfc3339Formatter2.parseDateTime(string);
 //                Log.d("myTag"," timeAgo: try2 dateTime: "+dateTime.toString());
@@ -51,21 +52,26 @@ public class RFC3339DateFormatter {
     private static DateTimeFormatter getFormatter(String dateString) {
         DateTimeFormatter formatter = rfc3339Formatter1;
 
+        if(dateString == null) return formatter;
         String s = "";
-        dateString.lastIndexOf(".");
-        for (int i=0;i<(dateString.length()-(dateString.lastIndexOf(".")+2));i++) {
-            s+="S";
-        }
+
+        try {
+            dateString.lastIndexOf(".");
+            for (int i = 0; i < (dateString.length() - (dateString.lastIndexOf(".") + 2)); i++) {
+                s += "S";
+            }
 //        Log.d("myTag"," timeAgo: dateString: "+dateString+" lastIndex: "+dateString.lastIndexOf(".")+
 //                " length: "+dateString.length()+" numberOfDecimal: "+(dateString.length()-(dateString.lastIndexOf(".")+2))+
 //                " s: "+s);
-        formatter = DateTimeFormat
-                .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss."+s+"Z")
+            formatter = DateTimeFormat
+                    .forPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss." + s + "Z")
 //              .withZone(DateTimeZone.getDefault())
-                .withZone(DateTimeZone.UTC)
-                .withLocale(Locale.US)
-                .withChronology(ISOChronology.getInstance());
-        
+                    .withZone(DateTimeZone.UTC)
+                    .withLocale(Locale.US)
+                    .withChronology(ISOChronology.getInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return formatter;
     }
 
