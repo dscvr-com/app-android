@@ -283,6 +283,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + OPTO_TABLE_NAME_FEEDS
                 + " WHERE " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\'"
+                + " AND NOT " + OPTOGRAPH_IS_LOCAL
                 + " AND ( (" + OPTOGRAPH_PERSON_ID +  " IN ( SELECT ID FROM " + PERSON_TABLE_NAME + " WHERE IS_FOLLOWED ) )"
                 + " OR " + OPTOGRAPH_IS_STAFF_PICK + " )"
                 + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "

@@ -555,9 +555,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void initializeFeed() {
         Log.d("Caching", "initializeFeed");
         optographLocalGridAdapter.setPerson(person);
-        Cursor cursor = null;
-        if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
-        else mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
+        Cursor cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
 
         if (cursor != null) {
             Log.d("Caching", "initializeFeed cursor not null");
@@ -611,9 +609,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     public void loadMore() {
 
-        Cursor cursor = null;
-        if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
-        else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
+        Cursor cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
 
         if(cursor != null) {
             cursor.moveToFirst();
