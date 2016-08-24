@@ -2,7 +2,6 @@ package com.iam360.iam360.views.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
@@ -39,6 +38,7 @@ import com.iam360.iam360.views.record.CancelRecorderJob;
 import com.iam360.iam360.views.record.FinishRecorderJob;
 import com.iam360.iam360.views.record.RecorderPreviewView;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,6 +134,8 @@ public class RecordFragment extends Fragment {
                     currentDegree = 0;
                 }
                 Log.d("MARK","currentDegree = "+currentDegree);
+                Log.d("MARK","currentTheta = "+currentTheta);
+
 
                 customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
                 coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
@@ -300,6 +302,7 @@ public class RecordFragment extends Fragment {
         List<SelectionPoint> points = new LinkedList<>();
         List<SelectionPoint> points2 = new LinkedList<>();
 
+        Log.d("MARK","setupSelectionPoints rawPoints.length = "+rawPoints.length);
         for (SelectionPoint p : rawPoints) {
             points.add(p);
             points2.add(p);
@@ -322,6 +325,7 @@ public class RecordFragment extends Fragment {
                 edgeLineNodeMap.put(edge, edgeNode);
                 edgeLineNodeGlobalIdMap.put(edge.getGlobalIds(), edgeNode);
                 recorderOverlayView.addChildNode(edgeNode);
+
             }
         }
     }
@@ -353,7 +357,10 @@ public class RecordFragment extends Fragment {
     private void updateBallPosition() {
         float[] vector = {0, 0, 0.9f, 0};
         float[] newPosition = new float[4];
+        Log.d("MARK4","Recorder.getBallPosition() = "+ Arrays.toString(Recorder.getBallPosition()));
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+        Log.d("MARK4","newPosition = "+ Arrays.toString(newPosition));
+
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);

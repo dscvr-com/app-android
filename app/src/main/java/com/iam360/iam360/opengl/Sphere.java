@@ -2,15 +2,18 @@ package com.iam360.iam360.opengl;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
+
+import com.iam360.iam360.util.Maths;
+import com.iam360.iam360.util.MyGLUtils;
+import com.iam360.iam360.util.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import com.iam360.iam360.util.Maths;
-import com.iam360.iam360.util.MyGLUtils;
 
 /**
  * @author Nilan Marktanner
@@ -67,15 +70,21 @@ public class Sphere {
     private int colorHandle;
     private float[] transform = new float[16];
 
+
+    public boolean isInitiliazed = false;
+    public final Vector3 center = new Vector3();
+    public float radius;
+
     /**
      * Sphere constructor.
      * @param depth integer representing the split of the sphere. Will be clamped to internal variable {@code MAXIMUM_ALLOWED_DEPTH}
      * @param radius The spheres radius.
      */
     public Sphere(final int depth, final float radius) {
+        this.radius = radius;
+
         // Clamp depth to the range 1 to MAXIMUM_ALLOWED_DEPTH;
         final int d = Math.max(1, Math.min(MAXIMUM_ALLOWED_DEPTH, depth));
-
 
         Matrix.setIdentityM(transform, 0);
 
@@ -94,6 +103,7 @@ public class Sphere {
             // Calculate position of the first vertex in this strip.
             altitude = Maths.NINETY_DEGREES;
             azimuth = stripNum * azimuthStepAngle;
+
 
             // Draw the rest of this strip.
             for (int vertexNum = 0; vertexNum < numVerticesPerStrip; vertexNum += 2) {
@@ -146,7 +156,8 @@ public class Sphere {
 
         float[] matrix = new float[16];
         Matrix.multiplyMM(matrix, 0, mvpMatrix, 0, transform, 0);
-
+        Log.d("MARK5","matrix = "+ Arrays.toString(matrix));
+        Log.d("MARK5","mvpMatrix = "+ Arrays.toString(mvpMatrix));
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
             // Pass the projection and view transformation to the shader
@@ -156,6 +167,9 @@ public class Sphere {
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
         GLES20.glDisableVertexAttribArray(positionHandle);
+
+        this.center.set(mvpMatrix[0], mvpMatrix[5], mvpMatrix[10]);
+
     }
 
     public void initializeProgram() {
@@ -175,6 +189,7 @@ public class Sphere {
 
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(program);
+
     }
 
     public float[] getTransform() {
@@ -183,5 +198,14 @@ public class Sphere {
 
     public void setTransform(float[] transform) {
         this.transform = transform;
+        this.center.set(transform[12], transform[13], transform[14]);
+    }
+
+    public void setInitiliazed(boolean initiliazed) {
+        isInitiliazed = initiliazed;
+    }
+
+    public boolean isInitiliazed(){
+        return isInitiliazed;
     }
 }

@@ -35,6 +35,7 @@ import com.iam360.iam360.model.LogInReturn;
 import com.iam360.iam360.model.Optograph;
 import com.iam360.iam360.network.ApiConsumer;
 import com.iam360.iam360.sensors.CombinedMotionManager;
+import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.CameraUtils;
 import com.iam360.iam360.util.Constants;
@@ -43,7 +44,6 @@ import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.util.ImageUrlBuilder;
 import com.iam360.iam360.util.NotificationSender;
 import com.iam360.iam360.util.RFC3339DateFormatter;
-import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.views.VRModeActivity;
 
 import org.joda.time.DateTime;
@@ -491,6 +491,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 break;
             case R.id.heart_container:
             case R.id.heart_label:
+                binding.optograph2dview.addMarker();
                 if(!cache.getString(Cache.USER_TOKEN).equals("")) {
                     if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
 
@@ -599,7 +600,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             default:
                 break;
         }
-
     }
 
     private void deleteImageItemDialog(Optograph optograph) {

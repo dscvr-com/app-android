@@ -8,12 +8,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.util.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-
-import com.iam360.iam360.model.Optograph;
-import com.iam360.iam360.util.ImageUrlBuilder;
 
 /**
  * @author Nilan Marktanner
@@ -181,6 +180,12 @@ public class Optograph2DCubeView extends GLSurfaceView {
         optograph2DCubeRenderer.setScaleFactor(mScaleFactor);
     }
 
+
+    public void addMarker() {
+        Log.d("MARK","2dBIEW addMarker");
+        optograph2DCubeRenderer.addMarker();
+    }
+
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -191,5 +196,4 @@ public class Optograph2DCubeView extends GLSurfaceView {
             return true;
         }
     }
-
 }
