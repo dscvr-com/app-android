@@ -177,6 +177,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         isFBShare = cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
         isTwitterShare = cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+        Log.d("myTag"," share: postToFB? "+isFBShare+" postToTwitter? "+isTwitterShare+"" +
+                " userFBLoggedIn? "+cache.getBoolean(Cache.POST_OPTO_TO_FB, false)+" userTwitterLoggedIn? "+
+                cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
         optographGlobal.setPostFacebook(isFBShare);
         optographGlobal.setPostTwitter(isTwitterShare);
         mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare);
@@ -274,15 +277,16 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Log.d("myTag", "update optograph");
         Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+        Log.d("myTag"," isFBShare? "+data.toString());
 
         Log.d("myTag", opto.getId() + " " + data.toString());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-                Log.d("myTag", " onResponse body: " + response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                Log.d("myTag", " updateOptoData: onResponse isSuccess: " + response.isSuccess());
+                Log.d("myTag", " updateOptoData: onResponse body: " + response.body());
+                Log.d("myTag", " updateOptoData: onResponse message: " + response.message());
+                Log.d("myTag", " updateOptoData: onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
                     blackCircle.setVisibility(View.GONE);
@@ -290,6 +294,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+                Log.d("myTag"," updateOptoData: uploadimagemode: "+UPLOAD_IMAGE_MODE);
                 if (!UPLOAD_IMAGE_MODE); // getLocalImage(opto);
                 else {
                     Snackbar.make(uploadButton, getString(R.string.image_uploaded), Snackbar.LENGTH_SHORT).show();
@@ -303,7 +308,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             public void onFailure(Throwable t) {
                 blackCircle.setVisibility(View.GONE);
                 uploadProgress.setVisibility(View.GONE);
-                Log.d("myTag", t.getMessage());
+                Log.d("myTag", " updateOptoData: onFailure "+t.getMessage());
                 Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
@@ -398,7 +403,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId());
+                Log.d("myTag", " share: success login on fb: " + loginResult.getAccessToken().getUserId());
 
                 cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
                 cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
@@ -446,7 +451,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     startActivityForResult(intent, WEBVIEW_REQUEST_CODE);
 //                    new UpdatePersonSocialData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     PersonManager.updatePerson();
+                    Log.d("myTag"," share: twitter try");
                 } catch (TwitterException e) {
+                    Log.d("myTag"," share: twitter catch message: "+e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -458,10 +465,18 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d("myTag","resultCode "+Activity.RESULT_OK+" = "+resultCode+"? requestCode: "+requestCode);
+        Log.d("myTag"," resultCode "+Activity.RESULT_OK+" = "+resultCode+"? requestCode: "+requestCode);
         if (resultCode == Activity.RESULT_OK && requestCode==100) {
             String verifier = data.getExtras().getString("oauth_verifier");
-            new TwitterLoggedIn().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, verifier);
+            if (verifier!=null) {
+                new TwitterLoggedIn().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, verifier);
+            } else {
+                cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                optographGlobal.setPostTwitter(isTwitterShare);
+                initializeShareButtons();
+                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare);
+                PersonManager.updatePerson();
+            }
         } else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
@@ -492,7 +507,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     Log.d("myTag", "Hello " + username);
                 } catch (Exception e) {
                     Log.e("Twitter Login Failed", " Error: " + e.toString());
-                    Snackbar.make(twitterShareButton, "Twitter Login Failed.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(twitterShareButton, "Twitter Login Failed.", Snackbar.LENGTH_SHORT).show();isTwitterShare = !cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+                    cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                    optographGlobal.setPostTwitter(isTwitterShare);
+                    initializeShareButtons();
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare);
                 }
             }
             return null;
@@ -649,6 +668,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 break;
             case R.id.fb_share:
                 userToken = cache.getString(Cache.USER_TOKEN);
+                Log.d("myTag"," fb share: userToken: "+userToken+" fbLogged? "+cache.getBoolean(Cache.USER_FB_LOGGED_IN, false));
                 if (userToken == null || userToken.equals("")) {
                     sharedNotLoginDialog();
                     return;
@@ -809,7 +829,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void initializeShareButtons() {
-        Log.d("myTag", "initializeShare fb: " + cache.getBoolean(Cache.POST_OPTO_TO_FB, false) + " twitter: " + cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
+        Log.d("myTag", "initializeShare: fb: " + cache.getBoolean(Cache.POST_OPTO_TO_FB, false) + " twitter: " + cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
         if (cache.getBoolean(Cache.POST_OPTO_TO_FB, false)) {
 //            fbShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
             fbShareButton.setBackgroundResource(R.drawable.facebook_share_active);
