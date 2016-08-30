@@ -2,7 +2,6 @@ package com.iam360.iam360.opengl;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.iam360.iam360.util.Maths;
 import com.iam360.iam360.util.MyGLUtils;
@@ -12,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -156,8 +154,8 @@ public class Sphere {
 
         float[] matrix = new float[16];
         Matrix.multiplyMM(matrix, 0, mvpMatrix, 0, transform, 0);
-        Log.d("MARK5","matrix = "+ Arrays.toString(matrix));
-        Log.d("MARK5","mvpMatrix = "+ Arrays.toString(mvpMatrix));
+//        Log.d("MARK5","matrix = "+ Arrays.toString(matrix));
+//        Log.d("MARK5","mvpMatrix = "+ Arrays.toString(mvpMatrix));
         for (int i = 0; i < this.totalNumOfStrips; ++i) {
             GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer.get(i));
             // Pass the projection and view transformation to the shader
