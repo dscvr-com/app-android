@@ -79,7 +79,6 @@ public class RecordFragment extends Fragment {
     private float currentTheta = (float) 0.0;
     private float currentPhi = (float) 0.0;
     private boolean isRecording = false;
-    CustomRotationMatrixSource customRotationMatrixSource;
 //    private Camera.Parameters camParam;
 
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
@@ -137,7 +136,7 @@ public class RecordFragment extends Fragment {
                 Log.d("MARK","currentTheta = "+currentTheta);
 
 
-                customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
+                CustomRotationMatrixSource customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
                 coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
 
             }
@@ -360,7 +359,6 @@ public class RecordFragment extends Fragment {
         Log.d("MARK4","Recorder.getBallPosition() = "+ Arrays.toString(Recorder.getBallPosition()));
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
         Log.d("MARK4","newPosition = "+ Arrays.toString(newPosition));
-
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);

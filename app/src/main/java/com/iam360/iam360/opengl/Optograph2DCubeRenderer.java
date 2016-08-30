@@ -7,6 +7,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.iam360.iam360.sensors.CombinedMotionManager;
+import com.iam360.iam360.sensors.TouchEventListener;
 import com.iam360.iam360.storytelling.MarkerNode;
 import com.iam360.iam360.util.Constants;
 
@@ -34,6 +35,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float DAMPING_FACTOR = 0.9f;
 
     private final float[] mvpMatrix = new float[16];
+    private final float[] mvpMatrix2 = new float[16];
+
     private final float[] projection = new float[16];
     private final float[] camera = new float[16];
     private float[] rotationMatrix = new float[16];
@@ -105,6 +108,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        TouchEventListener touchEventListener = combinedMotionManager.getTouchEventListener();
+
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
@@ -114,7 +119,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         if (optoType!=null && optoType.equals("optograph_1")) Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
         else Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
 
-        Log.d("MARK3","mvpMatrix = "+ Arrays.toString(mvpMatrix));
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
@@ -124,20 +128,15 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         Log.d("MARK3","invertMvp = "+ Arrays.toString(invertMvp));
 
-        setSpherePosition(invertMvp[12],invertMvp[13],invertMvp[14]);
+        setSpherePosition(touchEventListener.getPhi(),touchEventListener.getTheta(),invertMvp[14]);
 
         // Draw shape
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         cube.draw(mvpMatrix);
-
+        Log.d("MARK3","mvpMatrix = "+ Arrays.toString(mvpMatrix));
         sphere.draw(mvpMatrix);
-//        Log.d("MARK","sphere mvpMatrix = "+Arrays.toString(mvpMatrix));
-//        Log.d("MARK","spheres size() = "+spheres.size());
         for(int a=0; a< spheres.size(); a++){
-//            Log.d("MARK","spheres isInitiliazed() = "+ spheres.get(a).isInitiliazed());
             if(spheres.get(a).isInitiliazed()){
-//                Log.d("MARK","spheres transform "+ Arrays.toString(spheres.get(a).getTransform()));
-                Log.d("MARK2","overlapSpheres trufalse = "+overlapSpheres(sphere, spheres.get(a)));
                 spheres.get(a).draw(mvpMatrix);
             }
         }

@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.iam360.iam360.util.Maths;
 
-import java.util.Arrays;
-
 /**
  * @author Nilan Marktanner
  * @date 2015-12-26
@@ -115,9 +113,15 @@ public class TouchEventListener extends RotationMatrixProvider {
             phiDiff = 0;
             thetaDiff = 0;
         }
+        Log.d("MARK10","minTheta = "+minTheta);
+        Log.d("MARK10","maxTheta = "+maxTheta);
+
 
         // clamp theta for border effect
         theta = Math.max(minTheta, Math.min(theta, maxTheta));
+        Log.d("MARK10","theta = "+theta);
+        Log.d("MARK10","phi = "+phi);
+
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
