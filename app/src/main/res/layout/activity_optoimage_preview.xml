@@ -249,26 +249,53 @@
             android:paddingLeft="24dp"
             android:paddingTop="@dimen/fab_margin">
 
+            <RelativeLayout
+                android:id="@+id/fb_share_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
             <ImageButton
                 android:id="@+id/fb_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:background="@drawable/facebook_share_inactive" />
 
+                <ProgressBar
+                    android:id="@+id/fb_progress"
+                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/twitter_share_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="12dp">
             <ImageButton
                 android:id="@+id/twitter_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginBottom="12dp"
                 android:background="@drawable/twitter_share_inactive" />
+                <ProgressBar
+                    android:id="@+id/twitter_progress"
+                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"/>
+            </RelativeLayout>
 
             <ImageButton
                 android:id="@+id/insta_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/fb_share"
+                android:layout_below="@id/fb_share_layout"
                 android:layout_margin="5dp"
                 android:background="@drawable/instagram_share_inactive"
                 android:visibility="gone"/>
@@ -278,7 +305,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@+id/twitter_share"
+                android:layout_below="@+id/twitter_share_layout"
                 android:layout_margin="5dp"
                 android:background="@drawable/more_share_inactive"
                 android:visibility="gone"/>

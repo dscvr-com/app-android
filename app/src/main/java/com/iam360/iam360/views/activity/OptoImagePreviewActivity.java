@@ -103,7 +103,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.location_progress) ProgressBar locationProgress;
 
     @Bind(R.id.fb_share) ImageButton fbShareButton;
+    @Bind(R.id.fb_progress) ProgressBar fbShareProgress;
     @Bind(R.id.twitter_share) ImageButton twitterShareButton;
+    @Bind(R.id.twitter_progress) ProgressBar twitterShareProgress;
     @Bind(R.id.insta_share) ImageButton instaShareButton;
 
     private Optograph optographGlobal;
@@ -428,6 +430,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void loginTwitter() {
+        twitterShareProgress.setVisibility(View.VISIBLE);
+        twitterShareButton.setClickable(false);
         final ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setOAuthConsumerKey(TWITTER_CONSUMER_KEY);
         builder.setOAuthConsumerSecret(TWITTER_CONSUMER_SECRET);
@@ -464,19 +468,24 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d("myTag"," resultCode "+Activity.RESULT_OK+" = "+resultCode+"? requestCode: "+requestCode);
-        if (resultCode == Activity.RESULT_OK && requestCode==100) {
+        Log.d("myTag", " resultCode " + Activity.RESULT_OK + " = " + resultCode + "? requestCode: " + requestCode);
+        if (resultCode == Activity.RESULT_OK && requestCode == 100) {
             String verifier = data.getExtras().getString("oauth_verifier");
-            if (verifier!=null) {
+            if (verifier != null) {
                 new TwitterLoggedIn().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, verifier);
             } else {
                 cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
                 optographGlobal.setPostTwitter(isTwitterShare);
                 initializeShareButtons();
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, isTwitterShare);
+                twitterShareProgress.setVisibility(View.GONE);
+                twitterShareButton.setClickable(true);
                 PersonManager.updatePerson();
             }
-        } else {
+        } else if (requestCode == 100) {
+            twitterShareProgress.setVisibility(View.GONE);
+            twitterShareButton.setClickable(true);
+        }else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -523,6 +532,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
             optographGlobal.setPostTwitter(isTwitterShare);
             mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_TWITTER, true);
+            twitterShareProgress.setVisibility(View.GONE);
+            twitterShareButton.setClickable(true);
             initializeShareButtons();
         }
     }
