@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class ImagePickerActivity extends AppCompatActivity {
 
-    private final int MIN_WIDTH = 5000;
+    private final int MIN_WIDTH = 4000;
     private final int NUM_COLUMNS = 3;
 
     @Override

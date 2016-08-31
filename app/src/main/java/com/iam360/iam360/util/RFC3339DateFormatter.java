@@ -34,7 +34,7 @@ public class RFC3339DateFormatter {
         DateTimeFormatter formatter = getFormatter(string);
         try {
              dateTime = formatter.parseDateTime(string);
-        } catch (IllegalArgumentException ex1) {
+        } catch (Exception ex1) {
 //            try {
 //                dateTime = rfc3339Formatter2.parseDateTime(string);
 //                Log.d("myTag"," timeAgo: try2 dateTime: "+dateTime.toString());
