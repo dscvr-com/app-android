@@ -274,12 +274,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void updateOptograph(Optograph opto) {
-        Log.d("myTag", "update optograph");
+        Log.d("myTag", " upload: updateOptograph");
         Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
         OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
-        Log.d("myTag"," isFBShare? "+data.toString());
 
-        Log.d("myTag", opto.getId() + " " + data.toString());
+        Log.d("myTag", " upload: "+opto.getId() + " " + data.toString());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -288,13 +287,13 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 Log.d("myTag", " updateOptoData: onResponse message: " + response.message());
                 Log.d("myTag", " updateOptoData: onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
-                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Log.d("myTag", " upload: response errorBody: " + response.errorBody()+" message: "+response.message());
                     blackCircle.setVisibility(View.GONE);
                     uploadProgress.setVisibility(View.GONE);
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                Log.d("myTag"," updateOptoData: uploadimagemode: "+UPLOAD_IMAGE_MODE);
+                Log.d("myTag"," upload: updateOptoData: uploadimagemode: "+UPLOAD_IMAGE_MODE);
                 if (!UPLOAD_IMAGE_MODE); // getLocalImage(opto);
                 else {
                     Snackbar.make(uploadButton, getString(R.string.image_uploaded), Snackbar.LENGTH_SHORT).show();
@@ -308,7 +307,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
             public void onFailure(Throwable t) {
                 blackCircle.setVisibility(View.GONE);
                 uploadProgress.setVisibility(View.GONE);
-                Log.d("myTag", " updateOptoData: onFailure "+t.getMessage());
+                Log.d("myTag", " upload: updateOptoData: onFailure "+t.getMessage());
                 Snackbar.make(uploadButton, "No Internet Connection.", Snackbar.LENGTH_SHORT).show();
             }
         });
