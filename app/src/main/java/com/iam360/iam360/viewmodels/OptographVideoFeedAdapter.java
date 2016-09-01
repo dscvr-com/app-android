@@ -422,16 +422,16 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             return;
         }
 
-        Timber.d("FROMDB : INSERT " + optograph.getPerson().getUser_name() + " " + optograph.is_starred() + " " + optograph.getPerson().is_followed());
-
         saveToSQLiteFeeds(optograph);
         DateTime created_at = optograph.getCreated_atDateTime();
 
         // skip if optograph is already in list
         if (optographs.contains(optograph)) {
+            int i = optographs.indexOf(optograph);
+            optographs.set(i, optograph);
+            notifyItemChanged(optographs.indexOf(optograph));
             return;
         }
-        Timber.d("addItem 4");
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty()) {
@@ -440,7 +440,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             notifyItemInserted(optographs.size() - 1);
             return;
         }
-        Timber.d("addItem 5");
 
         // if optograph is oldest, simply append to list
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
@@ -449,7 +448,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             notifyDataSetChanged();
             return;
         }
-        Timber.d("addItem 6");
 
         // find correct position of optograph
         // TODO: allow for "breaks" between new optograph and others...
@@ -461,7 +459,6 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 return;
             }
         }
-        Timber.d("addItem 7");
     }
 
     public void saveToSQLite(Optograph opto) {
@@ -478,135 +475,131 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
     public void saveToSQLiteFeeds(Optograph opto) {
 
-        Timber.d("saveToSQLiteFeeds");
         if(opto.getId() == null) return;
-//        AsyncTask.execute(new Runnable() {
-//            @Override
-//            public void run() {
-                Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-                res.moveToFirst();
+
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount() > 0) {
+            String id = DBHelper.OPTOGRAPH_ID;
+            String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
+            if (opto.getText() != null && !opto.getText().equals("")) mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_TEXT, opto.getText());
+            if (opto.getCreated_at() != null && !opto.getCreated_at().equals(""))
+                mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_CREATED_AT, opto.getCreated_at());
+            if (opto.getDeleted_at() != null && !opto.getDeleted_at().equals(""))
+                mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_DELETED_AT, opto.getDeleted_at());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STARRED, opto.is_starred());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_STARS_COUNT, opto.getStars_count());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PUBLISHED, opto.is_published());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PRIVATE, opto.is_private());
+
+            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals(""))
+                mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STITCHER_VERSION, opto.getStitcher_version());
+            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals(""))
+                mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, opto.is_data_uploaded());
+
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, opto.isShould_be_published());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_LOCAL, opto.is_local());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, opto.is_place_holder_uploaded());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_FACEBOOK, opto.isPostFacebook());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_TWITTER, opto.isPostTwitter());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_INSTAGRAM, opto.isPostInstagram());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STAFF_PICK, opto.is_staff_picked());
+            mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHARE_ALIAS, opto.getShare_alias());
+            if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals(""))
+                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
+
+        } else {
+            Timber.d("saveToSQLiteFeeds <= 0 " + opto.is_staff_picked() );
+            mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
+                    opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
+                    opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
+                    opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
+                    opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
+        }
+        String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
+        String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
+
+        if (!per.equals("")) {
+            res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+            res.moveToFirst();
+            if (opto.getPerson().getId() != null) {
+                Person person = opto.getPerson();
                 if (res.getCount() > 0) {
-                    String id = DBHelper.OPTOGRAPH_ID;
-                    String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
-                    if (opto.getText() != null && !opto.getText().equals("")) mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_TEXT, opto.getText());
-                    if (opto.getCreated_at() != null && !opto.getCreated_at().equals(""))
-                        mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_CREATED_AT, opto.getCreated_at());
-                    if (opto.getDeleted_at() != null && !opto.getDeleted_at().equals(""))
-                        mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_DELETED_AT, opto.getDeleted_at());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STARRED, opto.is_starred());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_STARS_COUNT, opto.getStars_count());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PUBLISHED, opto.is_published());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PRIVATE, opto.is_private());
+                    String id = "id";
+                    String tb = DBHelper.PERSON_TABLE_NAME;
+                    if (person.getCreated_at() != null && !person.getCreated_at().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "created_at", person.getCreated_at());
+                    if (person.getDeleted_at() != null && !person.getDeleted_at().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "deleted_at", person.getDeleted_at());
+                    if (person.getDisplay_name() != null && !person.getDisplay_name().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "display_name", person.getDisplay_name());
+                    if (person.getUser_name() != null && !person.getUser_name().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "user_name", person.getUser_name());
+                    if (person.getEmail() != null && !person.getEmail().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "email", person.getEmail());
+                    if (person.getText() != null && !person.getText().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "text", person.getText());
+                    if (person.getAvatar_asset_id() != null && !person.getAvatar_asset_id().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "avatar_asset_id", person.getAvatar_asset_id());
 
-                    if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals(""))
-                        mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STITCHER_VERSION, opto.getStitcher_version());
-                    if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals(""))
-                        mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, opto.is_data_uploaded());
+                    mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", person.getOptographs_count());
+                    mydb.updateTableColumn(tb, id, person.getId(), "followers_count", person.getFollowers_count());
+                    mydb.updateTableColumn(tb, id, person.getId(), "followed_count", person.getFollowed_count());
+                    mydb.updateTableColumn(tb, id, person.getId(), "is_followed", person.is_followed());
 
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED, opto.isShould_be_published());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_LOCAL, opto.is_local());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, opto.is_place_holder_uploaded());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_FACEBOOK, opto.isPostFacebook());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_TWITTER, opto.isPostTwitter());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_POST_INSTAGRAM, opto.isPostInstagram());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_IS_STAFF_PICK, opto.is_staff_picked());
-                    mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHARE_ALIAS, opto.getShare_alias());
-                    if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals(""))
-                        mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
+                    if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", person.getFacebook_user_id());
+                    if (person.getFacebook_token() != null && !person.getFacebook_token().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", person.getFacebook_token());
+                    if (person.getTwitter_token() != null && !person.getTwitter_token().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", person.getTwitter_token());
+                    if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals(""))
+                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", person.getTwitter_secret());
 
                 } else {
-                    Timber.d("saveToSQLiteFeeds <= 0 " + opto.is_staff_picked() );
-                    mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
-                            opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
-                            opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
-                            opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
-                            opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
+                    mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+                            person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+                            person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
                 }
-                String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
-                String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
+            }
+        }
 
-                if (!per.equals("")) {
-                    res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
-                    res.moveToFirst();
-                    if (opto.getPerson().getId() != null) {
-                        Person person = opto.getPerson();
-                        if (res.getCount() > 0) {
-                            String id = "id";
-                            String tb = DBHelper.PERSON_TABLE_NAME;
-                            if (person.getCreated_at() != null && !person.getCreated_at().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "created_at", person.getCreated_at());
-                            if (person.getDeleted_at() != null && !person.getDeleted_at().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "deleted_at", person.getDeleted_at());
-                            if (person.getDisplay_name() != null && !person.getDisplay_name().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "display_name", person.getDisplay_name());
-                            if (person.getUser_name() != null && !person.getUser_name().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "user_name", person.getUser_name());
-                            if (person.getEmail() != null && !person.getEmail().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "email", person.getEmail());
-                            if (person.getText() != null && !person.getText().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "text", person.getText());
-                            if (person.getAvatar_asset_id() != null && !person.getAvatar_asset_id().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "avatar_asset_id", person.getAvatar_asset_id());
-
-                            mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", person.getOptographs_count());
-                            mydb.updateTableColumn(tb, id, person.getId(), "followers_count", person.getFollowers_count());
-                            mydb.updateTableColumn(tb, id, person.getId(), "followed_count", person.getFollowed_count());
-                            mydb.updateTableColumn(tb, id, person.getId(), "is_followed", person.is_followed());
-
-                            if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", person.getFacebook_user_id());
-                            if (person.getFacebook_token() != null && !person.getFacebook_token().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", person.getFacebook_token());
-                            if (person.getTwitter_token() != null && !person.getTwitter_token().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", person.getTwitter_token());
-                            if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals(""))
-                                mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", person.getTwitter_secret());
-
-                        } else {
-                            mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
-                                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
-                                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
-                        }
-                    }
+        if (!loc.equals("")) {
+            res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
+            res.moveToFirst();
+            if (opto.getLocation().getId() != null) {
+                Location locs = opto.getLocation();
+                if (res.getCount() > 0) {
+                    String id = "id";
+                    String tb = DBHelper.LOCATION_TABLE_NAME;
+                    if (locs.getCreated_at() != null && !locs.getCreated_at().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "created_at", locs.getCreated_at());
+                    if (locs.getUpdated_at() != null && !locs.getUpdated_at().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "updated_at", locs.getUpdated_at());
+                    if (locs.getDeleted_at() != null && !locs.getDeleted_at().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "deleted_at", locs.getDeleted_at());
+                    if (locs.getLatitude() != null && !locs.getLatitude().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "latitude", locs.getLatitude());
+                    if (locs.getLongitude() != null && !locs.getLongitude().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
+                    if (locs.getText() != null && !locs.getText().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
+                    if (locs.getCountry() != null && !locs.getCountry().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "country", locs.getCountry());
+                    if (locs.getCountry_short() != null && !locs.getCountry_short().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "country_short", locs.getCountry_short());
+                    if (locs.getPlace() != null && !locs.getPlace().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "place", locs.getPlace());
+                    if (locs.getRegion() != null && !locs.getRegion().equals(""))
+                        mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
+                    mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
+                } else {
+                    mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
+                            locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                 }
+            }
+        }
 
-                if (!loc.equals("")) {
-                    res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
-                    res.moveToFirst();
-                    if (opto.getLocation().getId() != null) {
-                        Location locs = opto.getLocation();
-                        if (res.getCount() > 0) {
-                            String id = "id";
-                            String tb = DBHelper.LOCATION_TABLE_NAME;
-                            if (locs.getCreated_at() != null && !locs.getCreated_at().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "created_at", locs.getCreated_at());
-                            if (locs.getUpdated_at() != null && !locs.getUpdated_at().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "updated_at", locs.getUpdated_at());
-                            if (locs.getDeleted_at() != null && !locs.getDeleted_at().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "deleted_at", locs.getDeleted_at());
-                            if (locs.getLatitude() != null && !locs.getLatitude().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "latitude", locs.getLatitude());
-                            if (locs.getLongitude() != null && !locs.getLongitude().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
-                            if (locs.getText() != null && !locs.getText().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
-                            if (locs.getCountry() != null && !locs.getCountry().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "country", locs.getCountry());
-                            if (locs.getCountry_short() != null && !locs.getCountry_short().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "country_short", locs.getCountry_short());
-                            if (locs.getPlace() != null && !locs.getPlace().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "place", locs.getPlace());
-                            if (locs.getRegion() != null && !locs.getRegion().equals(""))
-                                mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
-                            mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
-                        } else {
-                            mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
-                                    locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
-                        }
-                    }
-                }
-//            }
-//        });
     }
 
     public Optograph get(int position) {

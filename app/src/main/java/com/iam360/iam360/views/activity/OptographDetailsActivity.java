@@ -92,12 +92,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(optographList != null) {
             isMultipleOpto = true;
             optograph = optographList.get(0);
-            Timber.d("optographList1 " + (optograph == null ? true : false));
         } else {
             isMultipleOpto = false;
             optograph = getIntent().getExtras().getParcelable("opto");
             optographList = new ArrayList<>();
-            Timber.d("optographList2 " + (optograph == null ? true : false));
         }
 
         cache = Cache.open();
