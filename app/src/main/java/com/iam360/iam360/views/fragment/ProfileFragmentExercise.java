@@ -560,7 +560,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         if (cursor != null) {
             Log.d("Caching", "initializeFeed cursor not null");
             cursor.moveToFirst();
-
             if (cursor.getCount() != 0) {
                 cur2Json(cursor)
                         .subscribeOn(Schedulers.newThread())
@@ -583,8 +582,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                             return null;
                         })
                         .subscribe(optographLocalGridAdapter::addItem);
+                return;
             }
-        } else {
+        }
+//        else {
             Log.d("Caching", "initializeFeed cursor null");
             apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
@@ -595,7 +596,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
-        }
+//        }
 
             //try to add filter for deleted optographs
 //            if(person.getId().equals(cache.getString(Cache.USER_ID))) {
@@ -633,8 +634,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                             return null;
                         })
                         .subscribe(optographLocalGridAdapter::addItem);
+                return;
             }
-        } else {
+        }
+//        else {
             apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -642,7 +645,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
-        }
+//        }
     }
 
     public void refresh() {
@@ -653,8 +656,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
 
         if(cursor != null) {
-            Log.d("Caching", "cursor not null");
             cursor.moveToFirst();
+            Log.d("Caching", "cursor not null count: "+cursor.getCount());
             if (cursor.getCount() != 0) {
                 cur2Json(cursor)
                         .subscribeOn(Schedulers.newThread())
@@ -679,9 +682,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                             return null;
                         })
                         .subscribe(optographLocalGridAdapter::addItem);
+                return;
             }
-        } else {
-            Log.d("Caching", "cursor null");
+        }
+//        else {
+            Log.d("Caching", "cursor null or cursor item is zero");
             apiConsumer.getOptographsFromPerson(person.getId(), 10)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -693,7 +698,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
-        }
+//        }
 
 //        if(person.getId().equals(cache.getString(Cache.USER_ID))) {
 //            LocalOptographManager.getOptographs()
@@ -807,8 +812,6 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         return Observable.from(optographs);
     }
      **/
-
-
 
     public Observable<Optograph> cur2Json(Cursor cursor) {
 

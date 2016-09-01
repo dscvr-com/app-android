@@ -903,7 +903,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             if (opto!=null && opto.getId().equals(id) && opto.is_local()==isLocal) {
                 int position = optographs.indexOf(opto);
                 optographs.remove(opto);
-                notifyItemRemoved(position);
+//                notifyItemRemoved(position);
+                notifyItemRangeChanged(position,optographs.size());
                 return;
             }
         }
@@ -1044,6 +1045,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                Log.d("myTag"," upload: uploadOptoData onResponse success? "+response.isSuccess()+" errorBody: "+response.errorBody()+" message: "+response.message()+"\n"+data.toString());
                 if (!response.isSuccess()) {
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                     optograph.setIs_uploading(false);
@@ -1063,7 +1065,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", " onFailure: " + t.getMessage());
+                Log.d("myTag", " upload: onFailure: " + t.getMessage());
                 Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                 optograph.setIs_uploading(false);
                 notifyItemChanged(position);
@@ -1088,7 +1090,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 File file = files[i];
                 if (file.isDirectory() && file.getName().equals("preview")) {
                     for (String s : file.list()) {
-                        Log.d("myTag"," placeholder path to upload.");
+                        Log.d("myTag"," upload: placeholder path to upload.");
                         holder = file.getPath()+"/"+s+"^"+position;
                         break;
                     }
@@ -1176,7 +1178,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                Log.d("myTag", "upload: onFailure uploadImage: " + t.getMessage());
                 flag = 0;
                 Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                 opto.setIs_uploading(false);
@@ -1203,6 +1205,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                Log.d("myTag", " onResponse body: " + response.body());
 //                Log.d("myTag", " onResponse message: " + response.message());
 //                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                Log.d("myTag", " upload: onResponse updateOptograph isSuccess? " + response.isSuccess()+" errorBody: "+response.errorBody()+" message: "+response.message());
                 if (!response.isSuccess()) {
                     Log.d("myTag", "response errorBody: " + response.errorBody());
                     Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
@@ -1216,6 +1219,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             @Override
             public void onFailure(Throwable t) {
+                Log.d("myTag", " upload: onFailure updateOptograph "+t.getMessage());
                 Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show();
                 cache.save(Cache.UPLOAD_ON_GOING, false);
                 opto.setIs_uploading(false);
@@ -1238,7 +1242,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory() && !file.getName().contains("preview")) {
-                    Log.d("myTag", "getName: " + file.getName() + " getPath: " + file.getPath());
+                    Log.d("myTag", "upload: getLocalImage getName: " + file.getName() + " getPath: " + file.getPath());
 
                     for (String s : file.list()) {
                         filePathList.add(file.getPath()+"/"+s);
@@ -1365,7 +1369,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 .addFormDataPart("asset", face + fileName, fbody)
                 .addFormDataPart("key", face + side)
                 .build();
-        Log.d("myTag","asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
+        Log.d("myTag","uplaod: asset: "+face+fileName+" key: "+face+ fileName.replace(".jpg",""));
         apiConsumer.uploadOptoImage(opto.getId(), fbodyMain, optoType360, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
@@ -1373,6 +1377,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //                Log.d("myTag", "onResponse message: " + response.message());
 //                Log.d("myTag", "onResponse body: " + response.body());
 //                Log.d("myTag", "onResponse raw: " + response.raw());
+                Log.d("myTag", "upload: onResponse uploadOptoImage isSuccess? " + response.isSuccess()+" errorBody: "+response.errorBody()+" message: "+response.message());
                 if (face.equals("l"))
                     opto.getLeftFace().setStatusByIndex(side, response.isSuccess());
                 else opto.getRightFace().setStatusByIndex(side, response.isSuccess());
@@ -1383,7 +1388,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("myTag", "onFailure uploadImage: " + t.getMessage());
+                Log.d("myTag", " upload: onFailure uploadImage: " + t.getMessage());
                 if (face.equals("l")) opto.getLeftFace().setStatusByIndex(side, false);
                 else opto.getRightFace().setStatusByIndex(side, false);
 //                notifyItemRangeChanged(position,1);
@@ -1490,6 +1495,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optographs.contains(optograph)) {
             return;
         }
+
+        Log.d("myTag"," images: optographId: "+optograph.getId()+" local? "+optograph.is_local());
+
         Log.d("Caching", "addItem 2");
 
         saveToSQLiteFeeds(optograph);
