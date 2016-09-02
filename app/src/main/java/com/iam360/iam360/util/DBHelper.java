@@ -17,10 +17,11 @@ import timber.log.Timber;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "OptoData.db";
-//    public static final String OPTO_TABLE_NAME = "Optograph";
     public static final String OPTO_TABLE_NAME_FEEDS = "Optograph_Feeds";
     public static final String PERSON_TABLE_NAME = "Person";
     public static final String LOCATION_TABLE_NAME = "Location";
+    public static final String FACES_TABLE_NAME = "OptoCubeFaces";
+
     public static final String OPTOGRAPH_ID = "optograph_id";
     public static final String OPTOGRAPH_TEXT = "optograph_text";
     public static final String OPTOGRAPH_PERSON_ID = "optograph_person_id";
@@ -45,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String OPTOGRAPH_POST_INSTAGRAM = "post_instagram";
     public static final String OPTOGRAPH_TYPE = "optograph_type";
     public static final String OPTOGRAPH_SHARE_ALIAS = "optograph_share_alias";
-    public static final String FACES_TABLE_NAME = "OptoCubeFaces";
+
     public static final String FACES_ID = "faces_optograph_id";
     public static final String FACES_LEFT_ZERO = "faces_left_zero";
     public static final String FACES_LEFT_ONE = "faces_left_one";
@@ -60,33 +61,50 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String FACES_RIGHT_FOUR = "faces_right_four";
     public static final String FACES_RIGHT_FIVE = "faces_right_five";
 
+    public static final String PERSON_ID = "id";
+    public static final String PERSON_CREATED_AT = "created_at";
+    public static final String PERSON_DELETED_AT = "deleted_at";
+    public static final String PERSON_DISPLAY_NAME = "display_name";
+    public static final String PERSON_USERNAME = "user_name";
+    public static final String PERSON_EMAIL = "email";
+    public static final String PERSON_TEXT = "text";
+    public static final String PERSON_ELITE_STATUS = "elite_status";
+    public static final String PERSON_AVATAR_ASSET_ID = "avatar_asset_id";
+    public static final String PERSON_OPTOGRAPH_COUNT = "optographs_count";
+    public static final String PERSON_FOLLOWER_COUNT = "followers_count";
+    public static final String PERSON_FOLLOWED_COUNT = "followed_count";
+    public static final String PERSON_IS_FOLLOWED = "is_followed";
+    public static final String PERSON_FB_USER_ID = "facebook_user_id";
+    public static final String PERSON_FB_TOKEN = "facebook_token";
+    public static final String PERSON_TWITTER_TOKEN = "twitter_token";
+    public static final String PERSON_TWITTER_SECRET_TEXT = "twitter_secret";
+
+    public static final String LOCATION_ID = "id";
+    public static final String LOCATION_CREATED_AT = "created_at";
+    public static final String LOCATION_UPDATED_AT = "updated_at";
+    public static final String LOCATION_DELETED_AT = "deleted_at";
+    public static final String LOCATION_LATITUDE = "latitude";
+    public static final String LOCATION_LONGITUDE = "longitude";
+    public static final String LOCATION_TEXT = "text";
+    public static final String LOCATION_COUNTRY = "country";
+    public static final String LOCATION_COUNTRY_SHORT = "country_short";
+    public static final String LOCATION_PLACE = "place";
+    public static final String LOCATION_REGION = "region";
+    public static final String LOCATION_POI = "poi";
+
     String[] facesList = {FACES_LEFT_ZERO,FACES_LEFT_ONE,FACES_LEFT_TWO,FACES_LEFT_THREE,FACES_LEFT_FOUR,
             FACES_LEFT_FIVE,FACES_RIGHT_ZERO,FACES_RIGHT_ONE,FACES_RIGHT_TWO,FACES_RIGHT_THREE,
             FACES_RIGHT_FOUR,FACES_RIGHT_FIVE};
 
+    private Cache cache;
+
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
+        cache = Cache.open();
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // TODO Auto-generated method stub
-//        db.execSQL(
-//                "create table " + OPTO_TABLE_NAME +
-//                        " (optograph_id text primary key not null, optograph_text text not null," +
-//                        "optograph_person_id text not null,optograph_location_id text not null," +
-//                        "optograph_created_at text not null,optograph_deleted_at text not null," +
-//                        "optograph_is_starred boolean not null, optograph_stars_count integer not null," +
-//                        "optograph_is_published boolean not null, optograph_is_private boolean not null," +
-//                        "optograph_is_stitcher_version text not null, optograph_is_in_feed boolean not null," +
-//                        "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
-//                        "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
-//                        "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
-//                        "optograph_is_local boolean not null, " +
-//                        "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
-//                        "optograph_share_alias text not null, optograph_type text not null )"
-//
-//        );
 
         db.execSQL(
                 "create table " + OPTO_TABLE_NAME_FEEDS +
@@ -142,8 +160,9 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Auto-generated method stub
-//        db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME_FEEDS);
+        db.execSQL("DROP TABLE IF EXISTS " + PERSON_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + LOCATION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + FACES_TABLE_NAME);
         onCreate(db);
     }
@@ -152,9 +171,6 @@ public class DBHelper extends SQLiteOpenHelper {
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri, String stitchVer, boolean isFeed,
                                    boolean onServer, String uAt, boolean shouldPublished, boolean isLocal, boolean isPHUploaded, boolean postFB,
                                    boolean postTwit, boolean postInsta, boolean isDataUploaded, boolean isStaffPick, String shareAlias, String type) {
-//        if(tableName == null || tableName.equals("")){
-//            tableName = OPTO_TABLE_NAME;
-//        }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(OPTOGRAPH_ID, id);
@@ -187,7 +203,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues1.put(FACES_LEFT_ZERO,0);
         contentValues1.put(FACES_LEFT_ONE,0);
         contentValues1.put(FACES_LEFT_TWO,0);
-        contentValues1.put(FACES_LEFT_THREE,0);https://www.google.com.ph/search?q=anthony+davis&source=lnms&tbm=isch&sa=X&ved=0ahUKEwit8IPG1bvOAhVJipQKHWfDC-YQ_AUICCgB&biw=1280&bih=676#tbm=isch&q=anthony+davis+unibrow&imgrc=3Hquu6Kkf_uunM%3A
+        contentValues1.put(FACES_LEFT_THREE,0);
         contentValues1.put(FACES_LEFT_FOUR,0);
         contentValues1.put(FACES_LEFT_FIVE,0);
         contentValues1.put(FACES_RIGHT_ZERO,0);
@@ -249,13 +265,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getData(String id,String table,String column) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery( "select * from "+table+" where "+column+"=\'"+id+"\'", null );
+        return db.rawQuery("select * from " + table + " where " + column + "=\'" + id + "\'", null);
     }
-
-//    public Cursor getUserOptoList(String id, String table) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        return db.rawQuery( "select * from " + table + " where " + OPTOGRAPH_PERSON_ID + " = \' " + id + " \' and " + OPTOGRAPH_DELETED_AT + " = \'\' ", null );
-//    }
 
     public Cursor getUserOptographs(String id, String table, int limit) {
         return getUserOptographs(id, table, limit, getNow());
@@ -272,7 +283,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getAllFeedsData() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery( "select * from " + OPTO_TABLE_NAME_FEEDS + " where " + OPTOGRAPH_DELETED_AT + " = \'\'", null );
+        return db.rawQuery("select * from " + OPTO_TABLE_NAME_FEEDS + " where " + OPTOGRAPH_DELETED_AT + " = \'\'", null);
     }
 
     public Cursor getFeedsData(int limit) {
@@ -284,7 +295,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + OPTO_TABLE_NAME_FEEDS
                 + " WHERE " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\'"
                 + " AND NOT " + OPTOGRAPH_IS_LOCAL
-                + " AND ( (" + OPTOGRAPH_PERSON_ID +  " IN ( SELECT ID FROM " + PERSON_TABLE_NAME + " WHERE IS_FOLLOWED ) )"
+                + " AND ( (" + OPTOGRAPH_PERSON_ID +  " IN ( SELECT ID FROM " + PERSON_TABLE_NAME + " WHERE IS_FOLLOWED OR " + PERSON_ID + " = \'" + cache.getString(Cache.USER_ID) + "\') )"
                 + " OR " + OPTOGRAPH_IS_STAFF_PICK + " )"
                 + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
                 + " LIMIT " + limit;
@@ -300,31 +311,40 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean updateColumnOptograph(String id,String column, boolean value) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(column,value);
-//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
-        db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
-        return  true;
+    public void updateColumnOptograph(String id, String column, boolean value) {
+        updateTableColumn(OPTO_TABLE_NAME_FEEDS, OPTOGRAPH_ID, id, column, value);
     }
 
-    public boolean updateColumnOptograph(String id,String column, int value) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(column,value);
-//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[]{String.valueOf(id)});
-        db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {String.valueOf(id)});
-        return  true;
+    public void updateColumnOptograph(String id, String column, int value) {
+        updateTableColumn(OPTO_TABLE_NAME_FEEDS, OPTOGRAPH_ID, id, column, value);
     }
 
-    public boolean updateColumnOptograph(String id,String column, String value) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(column,value);
-//        db.update(OPTO_TABLE_NAME, contentValues, OPTOGRAPH_ID + " = ? ", new String[] {id});
-        db.update(OPTO_TABLE_NAME_FEEDS,contentValues,OPTOGRAPH_ID+" = ? ",new String[] {id});
-        return  true;
+    public void updateColumnOptograph(String id, String column, String value) {
+        updateTableColumn(OPTO_TABLE_NAME_FEEDS, OPTOGRAPH_ID, id, column, value);
+    }
+
+    public void updateColumnPerson(String id, String column, boolean value) {
+        updateTableColumn(PERSON_TABLE_NAME, PERSON_ID, id, column, value);
+    }
+
+    public void updateColumnPerson(String id, String column, int value) {
+        updateTableColumn(PERSON_TABLE_NAME, PERSON_ID, id, column, value);
+    }
+
+    public void updateColumnPerson(String id, String column, String value) {
+        updateTableColumn(PERSON_TABLE_NAME, PERSON_ID, id, column, value);
+    }
+
+    public void updateColumnLocation(String id, String column, boolean value) {
+        updateTableColumn(LOCATION_TABLE_NAME, LOCATION_ID, id, column, value);
+    }
+
+    public void updateColumnLocation(String id, String column, int value) {
+        updateTableColumn(LOCATION_TABLE_NAME, LOCATION_ID, id, column, value);
+    }
+
+    public void updateColumnLocation(String id, String column, String value) {
+        updateTableColumn(LOCATION_TABLE_NAME, LOCATION_ID, id, column, value);
     }
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
@@ -352,7 +372,6 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_LOCAL, isLocal);
         contentValues.put(OPTOGRAPH_IS_STAFF_PICK, isStaffPick);
 
-//        if(tableName == null) tableName = OPTO_TABLE_NAME;
         db.update(OPTO_TABLE_NAME_FEEDS, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
         return true;
     }
@@ -388,17 +407,16 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void deleteAllTable() {
-//        deleteTable(OPTO_TABLE_NAME);
         deleteTable(OPTO_TABLE_NAME_FEEDS);
         deleteTable(PERSON_TABLE_NAME);
         deleteTable(LOCATION_TABLE_NAME);
+        deleteTable(FACES_TABLE_NAME);
     }
 
     public void deleteTable(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + tableName);
     }
-
 
     public boolean updateTableColumn(String tableName,String primaryColumn, String primaryColumnValue,String column, String value) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -423,7 +441,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update(tableName, contentValues, primaryColumn + " =  ? ", new String[]{String.valueOf(primaryColumnValue)});
         return  true;
     }
-
 
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());

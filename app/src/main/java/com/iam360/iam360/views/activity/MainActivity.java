@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
                     case FEED_MODE:
-                        adapterViewPager.mainFeedFragment.refresh();
+                        adapterViewPager.mainFeedFragment.refresh(false);
                         break;
                     case PROFILE_MODE:
                         break;
@@ -313,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     @Override
     protected void onResume() {

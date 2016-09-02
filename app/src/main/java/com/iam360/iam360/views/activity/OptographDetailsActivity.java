@@ -92,12 +92,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(optographList != null) {
             isMultipleOpto = true;
             optograph = optographList.get(0);
-            Timber.d("optographList1 " + (optograph == null ? true : false));
         } else {
             isMultipleOpto = false;
             optograph = getIntent().getExtras().getParcelable("opto");
             optographList = new ArrayList<>();
-            Timber.d("optographList2 " + (optograph == null ? true : false));
         }
 
         cache = Cache.open();
@@ -285,11 +283,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             optograph.getPerson().setIs_followed(true);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() + 1);
             binding.follow.setImageResource(R.drawable.feed_following_icn);
+            NotificationSender.triggerSendNotification(optograph.getPerson(), "follow");
         } else {
             optograph.getPerson().setIs_followed(false);
             optograph.getPerson().setFollowers_count(optograph.getPerson().getFollowers_count() - 1);
             binding.follow.setImageResource(R.drawable.feed_follow_icn);
         }
+
+        mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "is_followed", optograph.getPerson().is_followed());
+        mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
     }
 
 //    http://stackoverflow.com/questions/20264268/how-to-get-height-and-width-of-navigation-bar-programmatically
@@ -505,7 +507,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                                 if (!response.isSuccess()) {
                                     setHeart(false, optograph.getStars_count() - 1);
                                 }else{
-                                    NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
+                                    if(!optograph.getId().equals(cache.getString(Cache.USER_ID)))
+                                        NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                                     Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
                                     res.moveToFirst();
                                     if (res.getCount() > 0) {
@@ -743,4 +746,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

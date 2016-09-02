@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -170,7 +171,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refresh();
+                refresh(true);
             }
         });
     }
@@ -202,6 +203,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if (GlobalState.shouldHardRefreshFeed) {
             initializeFeed(false);
         }
+
+        refresh();
 
     }
 
@@ -338,6 +341,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             opto.setLocation(location);
             optographs.add(opto);
 
+            Timber.d("FROMDB : " + opto.getPerson().getUser_name() + " " + opto.is_starred());
+
             cursor.moveToNext();
         }
 
@@ -438,6 +443,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     public void refresh() {
+        refresh(false);
+    }
+
+    public void refresh(boolean scrollToTop) {
         Timber.d("Refresh");
         if(apiConsumer == null) return;
         Cursor curs = mydb.getFeedsData(5);
@@ -447,9 +456,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
+                        if(scrollToTop) mLayoutManager.scrollToPosition(0);
                         apiConsumer.getOptographs(5)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
+                                .doOnCompleted(() -> {
+                                    if(scrollToTop) mLayoutManager.scrollToPosition(0);
+                                })
                                 .onErrorReturn(throwable -> {
                                     if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                                     return null;
@@ -466,8 +479,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
 //                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
+                    .doOnCompleted(() -> {
+                        if(scrollToTop) mLayoutManager.scrollToPosition(0);
+                    })
                     .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        if (!networkProblemDialog.isAdded())
+                            networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
