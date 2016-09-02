@@ -1062,7 +1062,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 }
                 optograph.setIs_data_uploaded(true);
                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, true);
-                Log.d("myTag"," Profile upload: success upload data id: "+optograph.getId()+" isDataUploaded? "+optograph.is_data_uploaded());
                 // do things for success
                 uploadPlaceHolder(position, progressBar);
             }
@@ -1127,7 +1126,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         @Override
         protected Void doInBackground(String... params) {
             for (String s : params) {
-                String[] s1 = s.split("^");
+                String[] s1 = s.split("\\^");
                 mPosition = Integer.valueOf(s1[1]);
                 String[] s3 = s1[0].split("/");
                 String face = s3[s3.length - 1];
@@ -1656,7 +1655,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_stitcher_version", opto.getStitcher_version());
             }
             if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_data_uploaded", String.valueOf(opto.is_data_uploaded()));
+                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_data_uploaded", opto.is_data_uploaded());
             }
             mydb.updateTableColumn(tb, id, opto.getId(), "optograph_should_be_published", String.valueOf(opto.isShould_be_published()));
             mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_place_holder_uploaded", String.valueOf(opto.is_place_holder_uploaded()));
