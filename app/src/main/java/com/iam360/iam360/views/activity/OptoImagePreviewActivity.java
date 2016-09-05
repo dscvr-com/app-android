@@ -554,11 +554,12 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         else if(optographType.equals(optoTypeTheta)) data  = new OptoData(optograph.getId(), "0.7.0", optograph.getCreated_atRFC3339(), optographType,Constants.PLATFORM+" "+Build.VERSION.RELEASE,Build.MODEL,Build.MANUFACTURER);
 
         Timber.d("OPTOGRAPHTYPE " + data.toString());
-        Log.d("myTag"," upload: "+data.toString());
+        Log.d("myTag"," Preview upload: "+data.toString());
 
         apiConsumer.uploadOptoData(data, new Callback<Optograph>() {
             @Override
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                Log.d("myTag"," Preview upload: uploadOptoData onResponse success? "+response.isSuccess()+" id: "+optograph.getId()+" errorBody: "+response.errorBody()+" message: "+response.message());
                 if (!response.isSuccess()) {
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     blackCircle.setVisibility(View.GONE);
@@ -573,10 +574,13 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     return;
                 }
                 optographGlobal.setIs_data_uploaded(true);
-                mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, true);
+                mydb.updateColumnOptograph(optographGlobal.getId(), DBHelper.OPTOGRAPH_IS_DATA_UPLOADED, true);
+                Cursor res = mydb.getData(optographGlobal.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+                res.moveToFirst();
+                Log.d("myTag"," Preview upload: success upload data id: "+optograph.getId()+" isDataUploaded? "+res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)));
                 // do things for success
                 optographGlobal.setIs_published(true);
-                uploadPlaceHolder(optographGlobal);
+//                uploadPlaceHolder(optographGlobal);
             }
 
             @Override
