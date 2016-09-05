@@ -227,7 +227,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 ////                    .centerCrop()
 //                    .into(previewImage);
 
-            createDefaultOptograph(optographGlobal);
+//            createDefaultOptograph(optographGlobal);
         }
 
         if (!UPLOAD_IMAGE_MODE) {
@@ -628,6 +628,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         switch (v.getId()) {
             case R.id.upload_button:
                 userToken = cache.getString(Cache.USER_TOKEN);
+                if(UPLOAD_IMAGE_MODE) createDefaultOptograph(optographGlobal);
 //                if ((userToken == null || userToken.equals(""))) {
 //                    Snackbar.make(v,context.getString(R.string.profile_login_first),Snackbar.LENGTH_SHORT).show();
 //                    //TODO login page

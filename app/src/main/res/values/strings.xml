@@ -57,6 +57,8 @@
     <string name="dialog_fb_title">Facebook</string>
     <string name="dialog_fb_text">Say something about this 360 photo</string>
     <string name="dialog_fb_success">360 photo posted successfully.</string>
+    <string name="dialog_tap_to_hide">Tap to hide</string>
+    <string name="dialog_loading_dscvr">Loading DSCVR..</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

@@ -2,20 +2,25 @@ package com.iam360.iam360.views.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ClipDrawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.google.gson.Gson;
 import com.iam360.iam360.R;
@@ -62,7 +67,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public static final String TAG = MainFeedFragment.class.getSimpleName();
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
 
-    NetworkProblemDialog networkProblemDialog;
+//    NetworkProblemDialog networkProblemDialog;
+private AlertDialog networkProblemAlert = null;
+
 
     private SensorManager sensorManager;
     private boolean inVRMode;
@@ -78,12 +85,25 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        networkProblemDialog = new NetworkProblemDialog();
         inVRMode = false;
         inVRPositionSince = null;
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mydb = new DBHelper(getContext());
         setHasOptionsMenu(true);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(getResources().getString(R.string.dialog_network_retry));
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        networkProblemAlert = builder.create();
     }
 
     @Override
@@ -98,6 +118,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.numberLocalImage.setOnClickListener(this);
         binding.numberImage.setOnClickListener(this);
         binding.searchButton.setOnClickListener(this);
+        binding.tapToHide.setOnClickListener(this);
+
+        Animation clockwiseRotateAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_clockwise);
+        binding.circleBig.startAnimation(clockwiseRotateAnimation);
+        Animation counterClockwiseRotateAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_counterclockwise);
+        binding.circleSmall.startAnimation(counterClockwiseRotateAnimation);
 
         PackageInfo pInfo = null;
         try {
@@ -222,29 +248,26 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .onErrorReturn(throwable -> {
                                     throwable.printStackTrace();
-                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                                    networkProblemAlert.show();
                                     return null;
                                 })
                                 .subscribe(optographFeedAdapter::addItem);
                     })
                     .onErrorReturn(throwable -> {
                         throwable.printStackTrace();
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        networkProblemAlert.show();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
         } else {
-            ProgressDialog progress = new ProgressDialog(getActivity());
-            progress.setTitle("Fetching...");
-//            progress.setMessage("Wait while loading...");
-            progress.show();
+            binding.loadingScreen.setVisibility(View.VISIBLE);
             apiConsumer.getOptographs(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> progress.dismiss() )
+                    .doOnCompleted(() -> binding.loadingScreen.setVisibility(View.GONE) )
                     .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                        progress.dismiss();
+                        binding.loadingScreen.setVisibility(View.GONE);
+                        networkProblemAlert.show();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
@@ -426,8 +449,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())
-                            networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        networkProblemAlert.show();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
@@ -451,6 +473,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if(apiConsumer == null) return;
         Cursor curs = mydb.getFeedsData(5);
         Log.d("MARK","refresh cursCount - "+curs.getCount());
+
+        if(!scrollToTop) binding.loadingScreen.setVisibility(View.VISIBLE);
+
         if (curs.getCount() > 0) {
             cur2Json(curs)
                     .subscribeOn(Schedulers.newThread())
@@ -462,15 +487,17 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .doOnCompleted(() -> {
                                     if(scrollToTop) mLayoutManager.scrollToPosition(0);
+                                    else binding.loadingScreen.setVisibility(View.GONE);
                                 })
                                 .onErrorReturn(throwable -> {
-                                    if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                                    if(!scrollToTop) binding.loadingScreen.setVisibility(View.GONE);
+                                    networkProblemAlert.show();
                                     return null;
                                 })
                                 .subscribe(optographFeedAdapter::addItem);
                     })
                     .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        networkProblemAlert.show();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
@@ -481,10 +508,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 //                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
                     .doOnCompleted(() -> {
                         if(scrollToTop) mLayoutManager.scrollToPosition(0);
+                        else binding.loadingScreen.setVisibility(View.GONE);
                     })
                     .onErrorReturn(throwable -> {
-                        if (!networkProblemDialog.isAdded())
-                            networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                        networkProblemAlert.show();
                         return null;
                     })
                     .subscribe(optographFeedAdapter::addItem);
@@ -517,6 +544,9 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.tap_to_hide:
+                binding.loadingScreen.setVisibility(View.GONE);
+                break;
             case R.id.number_image:
             case R.id.number_local_image:
             case R.id.profile_btn:
