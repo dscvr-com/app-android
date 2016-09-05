@@ -213,8 +213,6 @@ private AlertDialog networkProblemAlert = null;
         super.onResume();
         inVRMode = false;
 
-        Timber.d("ONRESUME");
-
         if(GlobalState.isAnyJobRunning) {
             binding.cameraBtn.setEnabled(false);
             binding.recordProgress.setVisibility(View.VISIBLE);
