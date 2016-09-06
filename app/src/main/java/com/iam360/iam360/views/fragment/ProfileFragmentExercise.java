@@ -610,6 +610,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     public void loadMore() {
 
+        Log.d("myTag"," LOADMORE:");
         Cursor cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT, optographLocalGridAdapter.getOldest().getCreated_at());
 
         if(cursor != null) {
@@ -649,7 +650,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void refresh() {
-        Log.d("Caching", "refresh");
+        Log.d("myTag", " refresh:");
 
         Cursor cursor = null;
         if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
+        Log.d("myTag", "MainActivity. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
         //Initializing our broadcast receiver
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             //When the broadcast received

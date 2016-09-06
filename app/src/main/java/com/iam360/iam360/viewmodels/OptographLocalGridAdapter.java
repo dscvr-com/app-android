@@ -62,6 +62,7 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -307,6 +308,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                     mHolder3.getBinding().setVariable(BR.optograph, optograph);
                     mHolder3.getBinding().executePendingBindings();
+//                    mHolder3.getBinding().date.setText(optograph.getId()+"\n"+RFC3339DateFormatter.toRFC3339String(optograph.getCreated_atDateTime()));
 
                     mHolder3.getBinding().optograph2dviewServer.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -904,8 +906,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             if (opto!=null && opto.getId().equals(id) && opto.is_local()==isLocal) {
                 int position = optographs.indexOf(opto);
                 optographs.remove(opto);
-//                notifyItemRemoved(position);
-                notifyItemRangeChanged(position,optographs.size());
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position,optographs.size()-position-1);
                 return;
             }
         }
@@ -1048,7 +1050,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             public void onResponse(Response<Optograph> response, Retrofit retrofit) {
                 Log.d("myTag"," Profile upload: uploadOptoData onResponse success? "+response.isSuccess()+" id: "+optograph.getId()+" errorBody: "+response.errorBody()+" message: "+response.message()+"\n"+data.toString());
                 if (!response.isSuccess()) {
-                    Toast.makeText(context, "Failed to upload. position "+position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Failed to upload.", Toast.LENGTH_SHORT).show();
                     optograph.setIs_uploading(false);
                     notifyItemChanged(position);
                     return;
@@ -1449,6 +1451,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public Optograph get(int position) {
+        Log.d("LocalAdapter"," get("+position+")");
         return optographs.get(position);
     }
 
