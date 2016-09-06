@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
                     case FEED_MODE:
-                        adapterViewPager.mainFeedFragment.refresh(false);
+//                        adapterViewPager.mainFeedFragment.refresh(false);
                         break;
                     case PROFILE_MODE:
                         break;
