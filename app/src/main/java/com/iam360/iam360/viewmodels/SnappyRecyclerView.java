@@ -57,7 +57,7 @@ public final class SnappyRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Timber.v("received touch event in SnappyRecyclerView");
+//        Timber.v("received touch event in SnappyRecyclerView");
         if (isScrollingEnabled) {
             try {
                 // We want the parent to handle all touch events--there's a lot going on there,
