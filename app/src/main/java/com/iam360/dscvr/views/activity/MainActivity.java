@@ -168,8 +168,9 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(SHARING_MODE, true);
     }
 
-    public void dragSettingPage(boolean isOpen) {
-        settingsPageOpen = isOpen;
+    public void dragSettingPage(boolean toOpen) {
+        Log.d("myTag"," settings: dragSettingPage isOpen? "+toOpen);
+        settingsPageOpen = toOpen;
         viewPager.setPageEnable(!settingsPageOpen);
     }
 
@@ -265,7 +266,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() != FEED_MODE) {
+        if (settingsPageOpen) {
+            adapterViewPager.mainFeedFragment.hideSettingPage();
+        } else if (viewPager.getCurrentItem() != FEED_MODE) {
             setPage(FEED_MODE);
         } else super.onBackPressed();
     }

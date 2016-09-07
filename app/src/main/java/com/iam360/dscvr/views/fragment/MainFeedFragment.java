@@ -162,6 +162,7 @@ private AlertDialog networkProblemAlert = null;
                         binding.profileBtn.setVisibility(View.GONE);
                         binding.searchButton.setVisibility(View.GONE);
                         ((MainActivity)getActivity()).dragSettingPage(true);
+                        binding.notifBadge.setVisibility(View.GONE);
                         break;
                     case COLLAPSED:
                     case ANCHORED:
@@ -171,6 +172,8 @@ private AlertDialog networkProblemAlert = null;
                         binding.searchButton.setVisibility(View.VISIBLE);
                         binding.barTransparent.setBackgroundColor(getResources().getColor(R.color.transparentOverlay));
                         ((MainActivity)getActivity()).dragSettingPage(false);
+                        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
+                        else binding.notifBadge.setVisibility(View.GONE);
                         break;
                     case DRAGGING:
                         if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -182,6 +185,7 @@ private AlertDialog networkProblemAlert = null;
                         }
                         binding.profileBtn.setVisibility(View.GONE);
                         binding.searchButton.setVisibility(View.GONE);
+                        binding.notifBadge.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -526,6 +530,11 @@ private AlertDialog networkProblemAlert = null;
     public void disableDrag() {
         if(optographFeedAdapter != null)
             optographFeedAdapter.disableDraggingPage(firstVisible);
+    }
+
+    public void hideSettingPage() {
+        ((MainActivity) getActivity()).dragSettingPage(false);
+        binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     @Subscribe
