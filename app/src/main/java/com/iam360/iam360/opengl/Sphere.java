@@ -165,9 +165,6 @@ public class Sphere {
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVerticesPerStrip);
         }
         GLES20.glDisableVertexAttribArray(positionHandle);
-
-        this.center.set(mvpMatrix[0], mvpMatrix[5], mvpMatrix[10]);
-
     }
 
     public void initializeProgram() {
@@ -196,7 +193,14 @@ public class Sphere {
 
     public void setTransform(float[] transform) {
         this.transform = transform;
-        this.center.set(transform[12], transform[13], transform[14]);
+    }
+
+    public void setCenter(float x, float y, float z){
+        this.center.set(x,y,z);
+    }
+
+    public Vector3 getCenter() {
+        return center;
     }
 
     public void setInitiliazed(boolean initiliazed) {
