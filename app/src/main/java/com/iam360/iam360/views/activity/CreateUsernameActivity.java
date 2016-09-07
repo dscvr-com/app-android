@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,6 +44,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
     private NetworkProblemDialog networkProblemDialog;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_username);
@@ -83,6 +85,8 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         // minimum username length is 4
         if(s.length() >= 5) {
+            userNameCheck.setText("");
+            userNameCheck.setTextColor(getResources().getColor(R.color.text_light));
             apiConsumer.getSearchUsername(s.toString(), new Callback<List<Person>>() {
                 @Override
                 public void onResponse(Response<List<Person>> response, Retrofit retrofit) {
@@ -101,7 +105,8 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
                 }
             });
         } else {
-            userNameCheck.setText("");
+            userNameCheck.setText(s.length()==0?"":getResources().getString(R.string.create_username_min_char));
+            userNameCheck.setTextColor(getResources().getColor(R.color.text_light));
             createBtn.setTextColor(getResources().getColor(R.color.text_dark));
             createBtn.setEnabled(false);
             createBtn.setBackgroundResource(R.drawable.orange_btn);
@@ -148,7 +153,7 @@ public class CreateUsernameActivity extends AppCompatActivity implements TextWat
 
                         @Override
                         public void onFailure(Throwable t) {
-                            showPrompt(getResources().getString(R.string.create_username_sucessful), false);
+                            showPrompt(getResources().getString(R.string.create_username_failed), false);
                             Timber.e("Failed to update person.");
                         }
                     });

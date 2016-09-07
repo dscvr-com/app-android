@@ -165,5 +165,6 @@
     <string name="create_username_create">CREATE USERNAME</string>
     <string name="create_username_sucessful">User successfully created.</string>
     <string name="create_username_failed">Error in creatting username. Please try again.</string>
+    <string name="create_username_min_char">Username must be 5-12 characters</string>
 
 </resources>
