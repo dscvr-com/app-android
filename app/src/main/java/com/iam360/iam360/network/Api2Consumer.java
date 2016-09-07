@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.iam360.iam360.model.Gateway;
 import com.iam360.iam360.model.NotificationTriggerData;
+import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.StoryFeed;
 import com.iam360.iam360.util.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,6 +18,7 @@ import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -40,6 +43,11 @@ public class Api2Consumer {
     private boolean flag = false;
     private boolean finish = false;
 
+    /**
+     *
+     * @param token
+     * @param type triggerNotif or any string for @BASE_URL2, empty string or null for @BASE_URL
+     */
     public Api2Consumer(String token, String type) {
 
         Timber.d("Api2Consumer");
@@ -80,7 +88,7 @@ public class Api2Consumer {
         });
 
         String bs_URL = BASE_URL;
-        if(type.equals("triggerNotif")){
+        if(type != null && (type.equals("triggerNotif") || !type.equals(""))){
             bs_URL = BASE_URL2;
         }
 
@@ -111,6 +119,11 @@ public class Api2Consumer {
 
     public void triggerNotif(NotificationTriggerData data, Callback<String> callback) {
         Call<String> call = service.triggerNotif(data);
+        call.enqueue(callback);
+    }
+
+    public void getStories(String personId, Callback<StoryFeed> callback) {
+        Call<StoryFeed> call = service.getStories(personId);
         call.enqueue(callback);
     }
 

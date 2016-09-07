@@ -28,11 +28,13 @@ import com.iam360.iam360.sensors.GestureDetectors;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.viewmodels.OptographLocalGridAdapter;
+import com.iam360.iam360.viewmodels.StoryFeedAdapter;
 import com.iam360.iam360.views.fragment.MainFeedFragment;
 import com.iam360.iam360.views.fragment.ProfileFragmentExercise;
 import com.iam360.iam360.views.fragment.ProfileRootFragment;
 import com.iam360.iam360.views.fragment.SharingFragment;
 import com.iam360.iam360.views.fragment.SigninFBFragment;
+import com.iam360.iam360.views.fragment.StoryFeedFragment;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
     public static final int PROFILE_MODE = 2;
+    public static final int STORY_MODE = 3;
     public static final int REQUEST_BLE_LIST = 1000;
     private MyPagerAdapter adapterViewPager;
     private ViewPager viewPager;
@@ -104,11 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
                     case FEED_MODE:
-//                        adapterViewPager.mainFeedFragment.disableDrag();
+                        adapterViewPager.mainFeedFragment.disableDrag();
                         break;
                     case PROFILE_MODE:
                         break;
                     case SHARING_MODE:
+                        break;
+                    case STORY_MODE:
                         break;
                 }
                 currentMode = position;
@@ -119,12 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
                     case FEED_MODE:
-                        adapterViewPager.mainFeedFragment.refresh();
+//                        adapterViewPager.mainFeedFragment.refresh();
                         break;
                     case PROFILE_MODE:
                         break;
                     case SHARING_MODE:
                         adapterViewPager.sharingFragment.updateOptograph();
+                        break;
+                    case STORY_MODE:
                         break;
                 }
             }
@@ -244,16 +251,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
-        private int NUM_ITEMS = 3;
+        private int NUM_ITEMS = 4;
         private SharingFragment sharingFragment;
         private MainFeedFragment mainFeedFragment;
         private ProfileRootFragment profileRootFragment;
+        private StoryFeedFragment storyFeedFragment;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
             profileRootFragment = new ProfileRootFragment();
             mainFeedFragment = new MainFeedFragment();
             sharingFragment = new SharingFragment();
+            storyFeedFragment = new StoryFeedFragment();
         }
 
         // Returns total number of pages
@@ -266,12 +275,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case SHARING_MODE:
                     return sharingFragment;
-                case 1:
+                case FEED_MODE:
                     return mainFeedFragment;
-                case 2:
+                case PROFILE_MODE:
                     return profileRootFragment;
+                case STORY_MODE:
+                    return storyFeedFragment;
                 default:
                     return null;
             }

@@ -91,4 +91,7 @@
     <color name="btn_dark_gray">#676767</color>
     <color name="mailing_edittext">#CACACA</color>
 
+    <!-- Story Telling Feeds -->
+    <color name="story_feeds_bg">#f7f7f7</color>
+
 </resources>
