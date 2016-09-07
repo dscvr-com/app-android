@@ -1,5 +1,6 @@
 package com.iam360.iam360.views.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,9 @@ import com.iam360.iam360.model.StoryFeed;
 import com.iam360.iam360.network.Api2Consumer;
 import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.viewmodels.StoryFeedAdapter;
+import com.iam360.iam360.views.activity.ImagePickerActivity;
 import com.iam360.iam360.views.activity.MainActivity;
+import com.iam360.iam360.views.activity.OptographDetailsActivity;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -152,6 +155,9 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                     ((MainActivity) getActivity()).onBackPressed();
                 break;
             case R.id.create_story_btn:
+                Intent intent = new Intent(getActivity(), ImagePickerActivity.class);
+                intent.putExtra(ImagePickerActivity.PICKER_MODE, ImagePickerActivity.CREATE_STORY_MODE);
+                startActivity(intent);
                 break;
             default:
                 break;

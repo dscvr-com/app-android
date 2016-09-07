@@ -2,6 +2,8 @@ package com.iam360.iam360.views.activity;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,36 +11,57 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.iam360.iam360.R;
+import com.iam360.iam360.util.GeneralUtils;
 import com.iam360.iam360.viewmodels.ImagePickerAdapter;
 
 import java.util.ArrayList;
 
 public class ImagePickerActivity extends AppCompatActivity {
 
-    private final int MIN_WIDTH = 5000;
-    private final int NUM_COLUMNS = 3;
+    public static final int MIN_WIDTH = 5000;
+    public static final int NUM_COLUMNS_OPTO = 3;
+    public static final int NUM_COLUMNS_STORY = 4;
+
+    public static final int UPLOAD_OPTO_MODE = 0;
+    public static final int CREATE_STORY_MODE = 1;
+    public static final int ADD_SCENE_MODE = 2;
+
+    public static final String PICKER_MODE = "mode";
+
+    private int MODE = UPLOAD_OPTO_MODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_picker);
 
+        MODE = getIntent().getExtras().getInt(PICKER_MODE);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        TextView title = (TextView) findViewById(R.id.title);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("360 Images");
+        getSupportActionBar().setTitle("");
+
+        if(MODE == UPLOAD_OPTO_MODE) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            toolbar.setBackgroundColor(getResources().getColor(R.color.optonautMain_2));
+            title.setText(getResources().getString(R.string.image_picker_your_images));
+            title.setTextColor(Color.WHITE);
+        }
+
+        new GeneralUtils().setFont(this, title, Typeface.BOLD);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, MODE == UPLOAD_OPTO_MODE ? NUM_COLUMNS_OPTO : NUM_COLUMNS_STORY);
         recyclerView.setLayoutManager(layoutManager);
 
-
-        ImagePickerAdapter adapter = new ImagePickerAdapter(this, listImages());
+        ImagePickerAdapter adapter = new ImagePickerAdapter(this, listImages(), MODE);
         recyclerView.setAdapter(adapter);
     }
 
