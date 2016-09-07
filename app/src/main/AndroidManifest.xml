@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iam360.iam360">
+    package="com.iam360.dscvr">
 
     <supports-screens
         android:largeScreens="true"

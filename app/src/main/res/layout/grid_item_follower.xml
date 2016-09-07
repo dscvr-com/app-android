@@ -4,7 +4,7 @@
 
     <data class=".GridFollowerBinding">
 
-        <import type="com.iam360.iam360.model.Follower" />
+        <import type="com.iam360.dscvr.model.Follower" />
 
         <variable
             name="follower"

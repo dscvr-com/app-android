@@ -4,7 +4,7 @@
 
     <data class=".ProfileBinding">
 
-        <import type="com.iam360.iam360.model.Person" />
+        <import type="com.iam360.dscvr.model.Person" />
 
         <variable
             name="person"

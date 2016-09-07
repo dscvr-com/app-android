@@ -11,9 +11,9 @@ using namespace optonaut;
 #define DEBUG_TAG "Stitcher.cpp"
 
 extern "C" {
-    jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
-    jobject Java_com_iam360_iam360_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
-    void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
 
 
@@ -87,7 +87,7 @@ jobject matToBitmap(JNIEnv *env, const Mat& mat)
 }
 
 
-jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -107,7 +107,7 @@ jobjectArray Java_com_iam360_iam360_record_Stitcher_getResult(JNIEnv *env, jobje
     return bitmaps;
 }
 
-jobject Java_com_iam360_iam360_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -117,7 +117,7 @@ jobject Java_com_iam360_iam360_record_Stitcher_getEQResult(JNIEnv *env, jobject 
     return matToBitmap(env, result);
 }
 
-void Java_com_iam360_iam360_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);

@@ -2,8 +2,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data class=".Optograph2DBinding">
-        <import type="com.iam360.iam360.model.Optograph" />
-        <import type="com.iam360.iam360.model.Person" />
+        <import type="com.iam360.dscvr.model.Optograph" />
+        <import type="com.iam360.dscvr.model.Person" />
         <variable
             name="optograph"
             type="Optograph" />
@@ -27,7 +27,7 @@
             tools:text="Title" />
 
 
-        <com.iam360.iam360.opengl.Optograph2DCubeView
+        <com.iam360.dscvr.opengl.Optograph2DCubeView
             android:id="@+id/GLSurface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

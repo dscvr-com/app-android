@@ -4,9 +4,9 @@
 
     <data class=".GridNotificationStarBinding">
 
-    <import type="com.iam360.iam360.model.Notification" />
-    <import type="com.iam360.iam360.model.Optograph" />
-    <import type="com.iam360.iam360.model.Person" />
+    <import type="com.iam360.dscvr.model.Notification" />
+    <import type="com.iam360.dscvr.model.Optograph" />
+    <import type="com.iam360.dscvr.model.Person" />
 
     <variable
     name="notification"

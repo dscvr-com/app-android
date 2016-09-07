@@ -4,8 +4,8 @@
 
     <data class=".GridNotificationFollowBinding">
 
-    <import type="com.iam360.iam360.model.Notification" />
-    <import type="com.iam360.iam360.model.Person" />
+    <import type="com.iam360.dscvr.model.Notification" />
+    <import type="com.iam360.dscvr.model.Person" />
 
     <variable
     name="notification"

@@ -33,7 +33,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
     defaultConfig {
-        applicationId "com.iam360.iam360"
+        applicationId "com.iam360.dscvr"
         minSdkVersion 19
         targetSdkVersion 22
         versionCode 20160819
@@ -54,11 +54,11 @@ android {
     }
     productFlavors {
         vanilla {
-            applicationId "com.iam360.iam360"
+            applicationId "com.iam360.dscvr"
         }
 
         vrmode {
-            applicationId "com.iam360.iam360.vrmode"
+            applicationId "com.iam360.dscvr.vrmode"
         }
     }
     compileOptions {

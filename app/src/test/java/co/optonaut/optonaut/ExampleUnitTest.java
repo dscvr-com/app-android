@@ -1,4 +1,4 @@
-package com.iam360.iam360;
+package com.iam360.dscvr;
 
 import org.junit.Test;
 

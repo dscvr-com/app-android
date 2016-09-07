@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".GridItemServerBinding">
-        <import type="com.iam360.iam360.model.Optograph"/>
+        <import type="com.iam360.dscvr.model.Optograph"/>
         <variable
             name="optograph"
             type="Optograph"/>
