@@ -28,14 +28,20 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class StoryFeedFragment extends Fragment implements View.OnClickListener {
-    protected Api2Consumer api2Consumer;
-    protected Cache cache;
-    protected StoryFeedBinding binding;
+    private Api2Consumer api2Consumer;
+    private Cache cache;
+    private StoryFeedBinding binding;
 
-    LinearLayoutManager storyLayoutManager;
-    LinearLayoutManager myStoryLayoutManager;
-    StoryFeedAdapter storyFeedAdapter;
-    StoryFeedAdapter myStoryFeedAdapter;
+    private LinearLayoutManager storyLayoutManager;
+    private LinearLayoutManager myStoryLayoutManager;
+    private StoryFeedAdapter storyFeedAdapter;
+    private StoryFeedAdapter myStoryFeedAdapter;
+
+    private int feedpage = 1;
+    private int feedsize = 5;
+    private int youpage = 1;
+    private int yousize = 5;
+
 
     public StoryFeedFragment() {
     }
@@ -92,7 +98,7 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
 
         // TODO remove hardcoded person ID, this is for testing with data
         String userId = "c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a"; // cache.getString(Cache.USER_ID)
-        api2Consumer.getStories(userId, new Callback<StoryFeed>() {
+        api2Consumer.getStories(userId, feedpage, feedsize, youpage, yousize, new Callback<StoryFeed>() {
             @Override
             public void onResponse(Response<StoryFeed> response, Retrofit retrofit) {
 

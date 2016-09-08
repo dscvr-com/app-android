@@ -18,6 +18,7 @@ import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import retrofit.http.Query;
 import rx.Observable;
 import timber.log.Timber;
 
@@ -122,8 +123,8 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
-    public void getStories(String personId, Callback<StoryFeed> callback) {
-        Call<StoryFeed> call = service.getStories(personId);
+    public void getStories(String personId,  int feedpage, int feedsize, int youpage, int yousize, Callback<StoryFeed> callback) {
+        Call<StoryFeed> call = service.getStories(personId, feedpage, feedsize, youpage, yousize);
         call.enqueue(callback);
     }
 

@@ -49,6 +49,7 @@
                 android:id="@+id/story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="130dp"
                 android:clipToPadding="false"/>
 
             <LinearLayout
@@ -89,6 +90,7 @@
                 android:id="@+id/my_story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="110dp"
                 android:layout_below="@+id/center_line"
                 android:clipToPadding="false"/>
 
