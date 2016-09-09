@@ -145,6 +145,7 @@
     <string name="settings_capture_type">CAPTURE TYPE</string>
     <string name="settings_manual">MANUAL</string>
     <string name="settings_motor">MOTOR</string>
+    <string name="settings_share_auto">AUTO SHARE IMAGE ON:</string>
 
     <!-- Mailing List Invite -->
     <string name="mailing_type_invite">Super Secret Code:</string>

@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
@@ -19,12 +21,19 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
+import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
@@ -35,6 +44,7 @@ import com.iam360.dscvr.views.activity.ImagePickerActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.activity.SearchActivity;
+import com.iam360.dscvr.views.activity.WebViewActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
@@ -42,6 +52,7 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +62,14 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * @author Nilan Marktanner
@@ -73,6 +92,25 @@ private AlertDialog networkProblemAlert = null;
     private DBHelper mydb;
 
     private int PICK_IMAGE_REQUEST = 1;
+    public final static int WEBVIEW_REQUEST_CODE = 100;
+
+    private String userToken = "";
+    private boolean isFBShare = false;
+    private boolean isTwitterShare = false;
+    private CallbackManager callbackManager;
+
+    // Twitter
+    private static Twitter twitter;
+    private static RequestToken requestToken;
+
+    /**
+     * Register your here app https://dev.twitter.com/apps/new and get your
+     * consumer key and secret
+     */
+    static String TWITTER_CONSUMER_KEY; // place your cosumer key here
+    static String TWITTER_CONSUMER_SECRET; // place your consumer secret here
+    static String CALLBACK_URL;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,9 +122,22 @@ private AlertDialog networkProblemAlert = null;
         mydb = new DBHelper(getContext());
         setHasOptionsMenu(true);
 
+        // fb initialization
+        FacebookSdk.sdkInitialize(getActivity());
+        callbackManager = CallbackManager.Factory.create();
+
+        // twitter
+        TWITTER_CONSUMER_KEY = getString(R.string.twitter_consumer_key);
+        TWITTER_CONSUMER_SECRET = getString(R.string.twitter_consumer_secret);
+        CALLBACK_URL = getString(R.string.twitter_callback_url);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(getResources().getString(R.string.dialog_network_retry));
         builder.setCancelable(true);
+
+        userToken = cache.getString(Cache.USER_TOKEN);
+        isFBShare = cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+        isTwitterShare = cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
 
         builder.setPositiveButton(
                 "OK",
@@ -144,6 +195,8 @@ private AlertDialog networkProblemAlert = null;
         binding.settingsManual.setOnClickListener(this);
         binding.motorButton.setOnClickListener(this);
         binding.settingsMotor.setOnClickListener(this);
+        binding.fbShare.setOnClickListener(this);
+        binding.twitterShare.setOnClickListener(this);
 //        Settings end
 
         binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -639,6 +692,36 @@ private AlertDialog networkProblemAlert = null;
                     activeMotorType();
                 }
                 break;
+            case R.id.fb_share:
+                userToken = cache.getString(Cache.USER_TOKEN);
+                Log.d("myTag"," fb share: userToken: "+userToken+" fbLogged? "+cache.getBoolean(Cache.USER_FB_LOGGED_IN, false));
+                if (userToken == null || userToken.equals("")) {
+                    sharedNotLoginDialog();
+                    return;
+                } else if (cache.getBoolean(Cache.USER_FB_LOGGED_IN, false)) {
+                    isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+                    cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                    initializeShareButtons();
+                    PersonManager.updatePerson();
+                    return;
+                }
+                loginFacebook();
+                Log.d("myTag", "fbShareClicked.");
+                break;
+            case R.id.twitter_share:
+                userToken = cache.getString(Cache.USER_TOKEN);
+                if (userToken == null || userToken.equals("")) {
+                    sharedNotLoginDialog();
+                    return;
+                } else if (cache.getBoolean(Cache.USER_TWITTER_LOGGED_IN, false)) {
+                    isTwitterShare = !cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+                    cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                    initializeShareButtons();
+                    PersonManager.updatePerson();
+                    return;
+                }
+                loginTwitter();
+                break;
         }
 
     }
@@ -660,6 +743,21 @@ private AlertDialog networkProblemAlert = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else Log.d("myTag", " resultCode " + Activity.RESULT_OK + " = " + resultCode + "? requestCode: " + requestCode);
+        if (resultCode == Activity.RESULT_OK && requestCode == 100) {
+            String verifier = data.getExtras().getString("oauth_verifier");
+            if (verifier != null) {
+                new TwitterLoggedIn().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, verifier);
+            } else {
+                cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                initializeShareButtons();
+                binding.twitterProgress.setVisibility(View.GONE);
+                binding.twitterShare.setClickable(true);
+                PersonManager.updatePerson();
+            }
+        } else if (requestCode == 100) {
+            binding.twitterProgress.setVisibility(View.GONE);
+            binding.twitterShare.setClickable(true);
         }
 
     }
@@ -729,7 +827,140 @@ private AlertDialog networkProblemAlert = null;
         binding.settingsMotor.setTextColor(getResources().getColor(R.color.text_active));
         binding.manualButton.setBackgroundResource(R.drawable.manual_inactive_icn);
         binding.settingsManual.setTextColor(getResources().getColor(R.color.text_inactive));
-    } // Settings end
+    }
+
+    private void initializeShareButtons() {
+        Log.d("myTag", "initializeShare: fb: " + cache.getBoolean(Cache.POST_OPTO_TO_FB, false) + " twitter: " + cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false));
+        if (cache.getBoolean(Cache.POST_OPTO_TO_FB, false)) {
+//            fbShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
+            binding.fbShare.setBackgroundResource(R.drawable.facebook_share_active);
+        } else /*fbShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));*/ binding.fbShare.setBackgroundResource(R.drawable.facebook_share_inactive);
+        if (cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false)) {
+//            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.debugView1));
+            binding.twitterShare.setBackgroundResource(R.drawable.twitter_share_active);
+        } else
+//            twitterShareButton.setBackgroundColor(getResources().getColor(R.color.timeAgoFontColor));
+            binding.twitterShare.setBackgroundResource(R.drawable.twitter_share_inactive);
+    }
+
+    private void sharedNotLoginDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.dialog_login_needed)
+                .setMessage(R.string.profile_login_first)
+                .setNegativeButton(getResources().getString(R.string.dialog_continue), (dialog, which) -> {
+                    dialog.dismiss();
+                });
+        builder.create().show();
+    }
+
+    private void loginFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("myTag", " share: success login on fb: " + loginResult.getAccessToken().getUserId());
+
+                cache.save(Cache.USER_FB_ID, loginResult.getAccessToken().getUserId());
+                cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
+                cache.save(Cache.USER_FB_LOGGED_IN, true);
+                isFBShare = true;
+                cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                PersonManager.updatePerson();
+                initializeShareButtons();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("myTag", "oncancel login on fb.");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("myTag", "onError login on fb.");
+            }
+        });
+    }
+
+    private void loginTwitter() {
+        binding.twitterProgress.setVisibility(View.VISIBLE);
+        binding.twitterShare.setClickable(false);
+        final ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setOAuthConsumerKey(TWITTER_CONSUMER_KEY);
+        builder.setOAuthConsumerSecret(TWITTER_CONSUMER_SECRET);
+
+        final Configuration configuration = builder.build();
+        final TwitterFactory factory = new TwitterFactory(configuration);
+        twitter = factory.getInstance();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    requestToken = twitter.getOAuthRequestToken(CALLBACK_URL);
+
+                    /**
+                     *  Loading twitter login page on webview for authorization
+                     *  Once authorized, results are received at onActivityResult
+                     *  */
+                    final Intent intent = new Intent(getActivity().getApplicationContext(), WebViewActivity.class);
+                    intent.putExtra(WebViewActivity.EXTRA_URL, requestToken.getAuthenticationURL());
+                    startActivityForResult(intent, WEBVIEW_REQUEST_CODE);
+//                    new UpdatePersonSocialData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    PersonManager.updatePerson();
+                    Log.d("myTag"," share: twitter try");
+                } catch (TwitterException e) {
+                    Log.d("myTag"," share: twitter catch message: "+e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+    }
+
+    class TwitterLoggedIn extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String verifier : params) {
+                try {
+                    AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
+
+                    long userID = accessToken.getUserId();
+                    final User user = twitter.showUser(userID);
+                    String username = user.getName();
+                    cache.save(Cache.USER_TWITTER_TOKEN, accessToken.getToken());
+                    cache.save(Cache.USER_TWITTER_SECRET, accessToken.getTokenSecret());
+                    cache.save(Cache.USER_TWITTER_LOGGED_IN, true);
+
+                    Log.d("myTag", " screenName: " + accessToken.getScreenName() + " userId: " + accessToken.getUserId() + " " + accessToken.getTokenSecret());
+
+                    Log.d("myTag", "Hello " + username);
+                } catch (Exception e) {
+                    Log.e("Twitter Login Failed", " Error: " + e.toString());
+                    Snackbar.make(binding.twitterShare, "Twitter Login Failed.", Snackbar.LENGTH_SHORT).show();isTwitterShare = !cache.getBoolean(Cache.POST_OPTO_TO_TWITTER, false);
+                    cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+                    initializeShareButtons();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            isTwitterShare = true;
+            cache.save(Cache.POST_OPTO_TO_TWITTER, isTwitterShare);
+            binding.twitterProgress.setVisibility(View.GONE);
+            binding.twitterShare.setClickable(true);
+            initializeShareButtons();
+        }
+    }
+
+    // Settings end
 
     @Subscribe
     public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {

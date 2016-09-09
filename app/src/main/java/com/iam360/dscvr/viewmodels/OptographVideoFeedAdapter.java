@@ -26,6 +26,7 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.NotificationSender;
+import com.iam360.dscvr.util.RFC3339DateFormatter;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.activity.OptographDetailsActivity;
 import com.iam360.dscvr.views.activity.ProfileActivity;
@@ -115,6 +116,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
             holder.getBinding().personLocationInformation.setOnClickListener(v -> startProfile(optograph.getPerson()));
             holder.getBinding().personAvatarAsset.setOnClickListener(v -> startProfile(optograph.getPerson()));
+//        holder.getBinding().dateAndId.setText(optograph.getId()+"\n"+ RFC3339DateFormatter.toRFC3339String(optograph.getCreated_atDateTime())+"\n"+optograph.getText());
 
             updateHeartLabel(optograph, holder);
             followPerson(optograph, optograph.getPerson().is_followed(), holder, true);

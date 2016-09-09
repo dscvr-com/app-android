@@ -458,7 +458,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_marginTop="5dp"
-                            android:visibility="invisible"
+                            android:visibility="gone"
                             android:layout_below="@+id/settings_capture_type">
 
                             <LinearLayout
@@ -536,6 +536,70 @@
                             </LinearLayout>
 
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/capture_type_layout"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="5dp"
+                                android:textColor="@color/text_dark"
+                                android:text="@string/settings_share_auto"
+                                android:textSize="14sp"
+                                app:font="@{`bold`}" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                            <RelativeLayout
+                                android:id="@+id/fb_share_layout"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp">
+                                <ImageButton
+                                    android:id="@+id/fb_share"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/facebook_share_inactive" />
+
+                                <ProgressBar
+                                    android:id="@+id/fb_progress"
+                                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:clickable="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:visibility="gone"/>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/twitter_share_layout"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginBottom="12dp">
+                                <ImageButton
+                                    android:id="@+id/twitter_share"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/twitter_share_inactive" />
+                                <ProgressBar
+                                    android:id="@+id/twitter_progress"
+                                    style="@android:style/Widget.ProgressBar.Small.Inverse"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:clickable="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:visibility="gone"/>
+                            </RelativeLayout>
+                            </LinearLayout>
+                            </LinearLayout>
 
                     </RelativeLayout>
 
