@@ -622,12 +622,14 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     }
 
     private void deleteOptograph(Optograph optograph) {
+        binding.overlayDelete.setVisibility(View.VISIBLE);
         if (optograph.is_local()) {
             deleteOptographFromPhone(optograph.getId());
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
 //            mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optograph.getId());
 //            mydb.deleteEntry(DBHelper.OPTO_TABLE_NAME,DBHelper.OPTOGRAPH_ID,optograph.getId());
+            binding.overlayDelete.setVisibility(View.GONE);
             Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent();
             intent.putExtra("id", optograph.getId());
@@ -639,6 +641,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         apiConsumer.deleteOptonaut(optograph.getId(), new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                binding.overlayDelete.setVisibility(View.GONE);
                 if (response.isSuccess()) {
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
@@ -654,6 +657,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
             @Override
             public void onFailure(Throwable t) {
+                binding.overlayDelete.setVisibility(View.GONE);
                 Log.d("myTag", "ERROR: delete optograph: " + t.getMessage());
                 Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
             }
