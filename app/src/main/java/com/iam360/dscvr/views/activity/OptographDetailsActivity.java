@@ -43,6 +43,7 @@ import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.GeneralUtils;
 import com.iam360.dscvr.util.ImageUrlBuilder;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
 import com.iam360.dscvr.sensors.GestureDetectors;
@@ -85,6 +86,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MixpanelHelper.trackViewOptographDetails(this);
 
         optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
 

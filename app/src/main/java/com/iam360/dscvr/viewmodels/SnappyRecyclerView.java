@@ -38,7 +38,7 @@ public final class SnappyRecyclerView extends RecyclerView {
             super.smoothScrollToPosition(((ISnappyLayoutManager) getLayoutManager())
                     .getPositionForVelocity(velocityX, velocityY));
 
-            MixpanelHelper.trackViewViewer2D(getContext());
+//            MixpanelHelper.trackViewViewer2D(getContext());
 
             return true;
         }

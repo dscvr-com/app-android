@@ -310,6 +310,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                                 mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", true);
                                 mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
                             }
+                            res.close();
                             if(!optograph.getId().equals(cache.getString(Cache.USER_ID)))
                                 NotificationSender.triggerSendNotification(optograph, "like", optograph.getId());
                         }
@@ -343,6 +344,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                                 mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_is_starred", false);
                                 mydb.updateTableColumn(DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID, optograph.getId(), "optograph_stars_count", optograph.getStars_count());
                             }
+                            res.close();
                         }
                     }
 
@@ -411,6 +413,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
         }
 
+        res.close();
+
     }
 
     @Override
@@ -472,6 +476,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                 opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
                 opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
                 opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
+        res.close();
     }
 
     public void saveToSQLiteFeeds(Optograph opto) {
@@ -601,6 +606,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             }
         }
 
+        res.close();
     }
 
     public Optograph get(int position) {

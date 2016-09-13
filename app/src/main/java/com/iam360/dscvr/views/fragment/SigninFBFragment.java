@@ -36,6 +36,7 @@ import com.iam360.dscvr.model.SignUpReturn;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.views.activity.CreateUsernameActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
@@ -65,6 +66,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     private boolean loggedIn = false;
 
     private Cache cache;
+    private Person person;
 
     public SigninFBFragment() {
     }
@@ -321,7 +323,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
         apiConsumer.getUser(new Callback<Person>() {
             @Override
             public void onResponse(Response<Person> response, Retrofit retrofit) {
-                Person person = response.body();
+                person = response.body();
                 cache.save(Cache.USER_EMAIL, person.getEmail());
                 cache.save(Cache.USER_NAME, person.getUser_name());
                 cache.save(Cache.ONBOARDING_VERSION, person.getOnboardingVersion());
@@ -358,7 +360,10 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     }
 
     private void startCreateUserPage() {
-
+        Timber.d("startCreateUserPage " + person);
+        if(person != null)
+            MixpanelHelper.identify(getActivity(), person);
+        
         if(getContext() instanceof MainActivity) {
             getActivity().finish();
             NotificationSender.sendGCMRegService(getContext());
