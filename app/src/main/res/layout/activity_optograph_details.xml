@@ -394,6 +394,21 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/overlay_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="@color/semiTransparentOverlay"
+            android:visibility="gone">
+
+            <ProgressBar
+                style="@android:style/Widget.ProgressBar.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
     </FrameLayout>
 
 </layout>
