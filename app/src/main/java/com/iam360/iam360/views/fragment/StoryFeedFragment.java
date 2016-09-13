@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.iam360.iam360.StoryFeedBinding;
 import com.iam360.iam360.model.StoryFeed;
 import com.iam360.iam360.network.Api2Consumer;
 import com.iam360.iam360.util.Cache;
+import com.iam360.iam360.viewmodels.InfiniteScrollListener;
 import com.iam360.iam360.viewmodels.StoryFeedAdapter;
 import com.iam360.iam360.views.activity.ImagePickerActivity;
 import com.iam360.iam360.views.activity.MainActivity;
@@ -37,9 +39,9 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     private StoryFeedAdapter storyFeedAdapter;
     private StoryFeedAdapter myStoryFeedAdapter;
 
-    private int feedpage = 1;
+    private int feedpage = 0;
     private int feedsize = 5;
-    private int youpage = 1;
+    private int youpage = 0;
     private int yousize = 5;
 
 
@@ -86,15 +88,48 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
         binding.homeBtn.setOnClickListener(this);
         binding.createStoryBtn.setOnClickListener(this);
 
+        binding.storyFeeds.addOnScrollListener(new InfiniteScrollListener(storyLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                loadMore(true, false);
+            }
+
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+            }
+
+        });
+
+        binding.myStoryFeeds.addOnScrollListener(new InfiniteScrollListener(myStoryLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                loadMore(false, true);
+            }
+
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+            }
+
+        });
+
     }
 
     @Override
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initializeFeed();
+        refreshFeed(true, true);
     }
 
-    public void initializeFeed() {
+    public void refreshFeed(boolean loadFeed, boolean loadYou) {
+
+        if(loadFeed) feedpage++;
+        if (loadYou) youpage++;
 
         // TODO remove hardcoded person ID, this is for testing with data
         String userId = "c0d5cb2b-7f8a-4de9-a5de-6f7c6cf1cf1a"; // cache.getString(Cache.USER_ID)
@@ -111,25 +146,31 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                 Timber.d("Feed Count : " + storyFeed.getFeed().size());
                 Timber.d("You Count : " + storyFeed.getYou().size());
 
-                Observable.from(storyFeed.getFeed())
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> { Timber.d("Count : " + storyFeedAdapter.getItemCount()); })
-                    .onErrorReturn(throwable -> {
-                        throwable.printStackTrace();
-                        return null;
-                    })
-                    .subscribe(storyFeedAdapter::addItem);
+                if(loadFeed) {
+                    Observable.from(storyFeed.getFeed())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnCompleted(() -> {
+                                Timber.d("Count : " + storyFeedAdapter.getItemCount());
+                            })
+                            .onErrorReturn(throwable -> {
+                                throwable.printStackTrace();
+                                return null;
+                            })
+                            .subscribe(storyFeedAdapter::addItem);
+                }
 
-                Observable.from(storyFeed.getYou())
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnCompleted(() -> { Timber.d("Count : " + myStoryFeedAdapter.getItemCount()); })
-                    .onErrorReturn(throwable -> {
-                        throwable.printStackTrace();
-                        return null;
-                    })
-                    .subscribe(myStoryFeedAdapter::addItem);
+                if(loadYou) {
+                    Observable.from(storyFeed.getYou())
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnCompleted(() -> { Timber.d("Count : " + myStoryFeedAdapter.getItemCount()); })
+                            .onErrorReturn(throwable -> {
+                                throwable.printStackTrace();
+                                return null;
+                            })
+                            .subscribe(myStoryFeedAdapter::addItem);
+                }
             }
 
             @Override
@@ -140,7 +181,11 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
 
     }
 
-    public void loadMore() {}
+    public void loadMore(boolean loadFeed, boolean loadYou) {
+        Timber.d("loadMore");
+        feedpage++;
+        refreshFeed(loadFeed, loadYou);
+    }
     public void refresh() {}
 
     @Override
