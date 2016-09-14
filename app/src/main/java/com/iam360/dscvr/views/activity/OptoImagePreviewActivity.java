@@ -582,7 +582,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 Log.d("myTag"," Preview upload: success upload data id: "+optograph.getId()+" isDataUploaded? "+res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)));
                 // do things for success
                 optographGlobal.setIs_published(true);
-//                uploadPlaceHolder(optographGlobal);
+                if(UPLOAD_IMAGE_MODE) uploadPlaceHolder(optographGlobal);
             }
 
             @Override

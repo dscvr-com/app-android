@@ -163,6 +163,7 @@ private AlertDialog networkProblemAlert = null;
         binding.numberImage.setOnClickListener(this);
         binding.searchButton.setOnClickListener(this);
         binding.tapToHide.setOnClickListener(this);
+        binding.loadingScreen.setOnClickListener(this);
 
         Animation clockwiseRotateAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_clockwise);
         binding.circleBig.startAnimation(clockwiseRotateAnimation);
@@ -598,6 +599,7 @@ private AlertDialog networkProblemAlert = null;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.loading_screen:
             case R.id.tap_to_hide:
                 binding.loadingScreen.setVisibility(View.GONE);
                 break;
