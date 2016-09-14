@@ -52,6 +52,7 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -232,6 +233,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         if (!UPLOAD_IMAGE_MODE) {
             optograph.setOptograph_type(cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)?optoType360_1:optoType360_3);
+            MixpanelHelper.trackCreateOptographPost(this);
         } else {
             optograph.setOptograph_type(optoTypeTheta);
         }

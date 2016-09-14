@@ -18,6 +18,7 @@ import com.iam360.dscvr.model.Gateway;
 import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.GeneralUtils;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 
@@ -140,6 +141,7 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
 
                     // gate open, start profile
                     if (useCodeResponse.getStatus().equals("ok")) {
+                        MixpanelHelper.trackEnterGatePass(getContext());
                         cache.save(Cache.GATE_CODE, codeText.getText().toString());
                         startProfile();
                     } else if (useCodeResponse.getPrompt().contains("You are already an Elite User!")) {
@@ -188,6 +190,8 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
 
                     showPrompt(requestCodeResponse.getPrompt());
                     Timber.d(requestCodeResponse.toString());
+
+                    MixpanelHelper.trackRequestGatePass(getContext());
                 }
 
                 @Override

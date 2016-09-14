@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.record.Alignment;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.views.UploaderJob;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
@@ -45,8 +46,9 @@ public class FinishRecorderJob extends Job {
         Recorder.finish();
         Timber.v("Sending event");
 
-//TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
+        MixpanelHelper.trackStitchingStart(getApplicationContext());
 
+//TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
         Bitmap previewBitmap = null;
         if(Recorder.previewAvailable()) {
             previewBitmap = Recorder.getPreviewImage();
@@ -80,6 +82,7 @@ public class FinishRecorderJob extends Job {
             bitmaps[i].recycle();
         }
 
+        MixpanelHelper.trackStitchingFinish(getApplicationContext());
         Timber.v("FinishRecorderJob finished");
         Stitcher.clear(CameraUtils.CACHE_PATH + "preview/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");

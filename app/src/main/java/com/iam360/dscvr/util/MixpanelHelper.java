@@ -8,10 +8,6 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import timber.log.Timber;
 
-/**
- * @author Nilan Marktanner
- * @date 2016-02-02
- */
 public class MixpanelHelper {
     public static final String MIXPANEL_TOKEN = "905eb49cf2c78af5ceb307939f02c092";//"a032e56b2c02dc758053f6f23173b5e3";
 
@@ -29,7 +25,7 @@ public class MixpanelHelper {
     private static final String VIEW_OPTOGRAPH_DETAILS = "View.OptographDetails";
     private static final String VIEW_VIEWER = "View.Viewer";
 
-    // MixpanelHelper.trackViewViewer2D(getContext());
+    // MixpanelHelper.trackAppLaunch(getContext());
 
     public static void track(Context context, String eventName) {
         Timber.d("Tracker : " + eventName);
@@ -50,57 +46,36 @@ public class MixpanelHelper {
         mixpanelAPI.getPeople().set("$created", person.getCreated_at());
         mixpanelAPI.getPeople().set("Followers", person.getFollowers_count());
         mixpanelAPI.getPeople().set("Followed", person.getFollowed_count());
-        mixpanelAPI.getPeople().set("EliteStatus", person.isElite_status());
-
+        mixpanelAPI.getPeople().set("EliteStatus", person.isElite_status() ? 1 : 0);
     }
 
     public static void trackAppLaunch(Context context) {
         track(context, LAUNCH_NOTIFICATION);
     }
 
-    public static void trackCameraCancelRecording(Context context) {
-        track(context, ACTION_CAMERA_CANCEL_RECORDING);
-    }
+    public static void trackCameraCancelRecording(Context context) { track(context, ACTION_CAMERA_CANCEL_RECORDING); }
 
-    public static void trackCameraFinishRecording(Context context) {
-        track(context, ACTION_CAMERA_FINISH_RECORDING);
-    }
+    public static void trackCameraFinishRecording(Context context) { track(context, ACTION_CAMERA_FINISH_RECORDING); }
 
-    public static void trackCameraStartRecording(Context context) {
-        track(context, ACTION_CAMERA_START_RECORDING);
-    }
+    public static void trackCameraStartRecording(Context context) { track(context, ACTION_CAMERA_START_RECORDING); }
 
-    public static void trackCreateOptographPost(Context context) {
-        track(context, ACTION_CREATE_OPTOGRAPH_POST);
-    }
+    public static void trackCreateOptographPost(Context context) { track(context, ACTION_CREATE_OPTOGRAPH_POST); }
 
-    public static void trackEnterGatePass(Context context) {
-        track(context, ACTION_ENTER_GATE_PASS);
-    }
+    public static void trackEnterGatePass(Context context) { track(context, ACTION_ENTER_GATE_PASS); }
 
-    public static void trackRequestGatePass(Context context) {
-        track(context, ACTION_REQUEST_GATE_PASS);
-    }
+    public static void trackRequestGatePass(Context context) { track(context, ACTION_REQUEST_GATE_PASS); }
 
-    public static void trackStitchingFinish(Context context) {
-        track(context, ACTION_STITCHING_FINISH);
-    }
+    public static void trackStitchingFinish(Context context) { track(context, ACTION_STITCHING_FINISH); }
 
-    public static void trackStitchingStart(Context context) {
-        track(context, ACTION_STITCHING_START);
-    }
+    public static void trackStitchingStart(Context context) { track(context, ACTION_STITCHING_START); }
 
     public static void trackViewCamera(Context context) {
         track(context, VIEW_CAMERA);
     }
 
-    public static void trackViewCardboardSelection(Context context) {
-        track(context, VIEW_CARDBOARD_SELECTION);
-    }
+    public static void trackViewCardboardSelection(Context context) { track(context, VIEW_CARDBOARD_SELECTION); }
 
-    public static void trackViewOptographDetails(Context context) {
-        track(context, VIEW_OPTOGRAPH_DETAILS);
-    }
+    public static void trackViewOptographDetails(Context context) { track(context, VIEW_OPTOGRAPH_DETAILS); }
 
     public static void trackViewViewer(Context context) {
         track(context, VIEW_VIEWER);

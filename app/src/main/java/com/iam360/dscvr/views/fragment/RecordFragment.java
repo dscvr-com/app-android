@@ -35,6 +35,7 @@ import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.sensors.CoreMotionListener;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Maths;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.Vector3;
 import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
@@ -197,6 +198,8 @@ public class RecordFragment extends Fragment {
         preview.addView(recordPreview);
         preview.addView(recorderOverlayView);
 
+        MixpanelHelper.trackViewCamera(getContext());
+
         return view;
     }
 
@@ -223,6 +226,8 @@ public class RecordFragment extends Fragment {
      */
     public void startRecording() {
         Timber.v("Starting recording...");
+
+        MixpanelHelper.trackCameraStartRecording(getContext());
 
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
         recordPreview.lockExposure();
@@ -271,6 +276,8 @@ public class RecordFragment extends Fragment {
     }
 
     public void finishRecording() {
+
+        MixpanelHelper.trackCameraFinishRecording(getContext());
         GlobalState.isAnyJobRunning = true;
         UUID id = UUID.randomUUID();
 
@@ -285,6 +292,8 @@ public class RecordFragment extends Fragment {
     }
 
     public void cancelRecording() {
+
+        MixpanelHelper.trackCameraCancelRecording(getContext());
         recordPreview.setPreviewListener(null);
         recordPreview.stopPreviewFeed();
 
