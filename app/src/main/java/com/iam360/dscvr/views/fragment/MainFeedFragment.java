@@ -632,12 +632,10 @@ private AlertDialog networkProblemAlert = null;
 
 
                 break;
+            case R.id.header_logo:
             case R.id.settings_btn:
                 ((MainActivity) getActivity()).dragSettingPage(true);
                 binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-                break;
-            case R.id.header_logo:
-//                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 break;
             case R.id.theta_btn:
                 Intent intent1;
