@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 //                        adapterViewPager.mainFeedFragment.refresh(false);
                         break;
                     case PROFILE_MODE:
+                        adapterViewPager.profileRootFragment.refresh();
                         break;
                     case SHARING_MODE:
                         adapterViewPager.sharingFragment.updateOptograph();

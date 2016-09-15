@@ -1544,7 +1544,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Log.d("myTag"," isLocal? "+optograph.is_local());
         if (optograph.is_local()) {
             int last = getLastPositionOfLocalImage();
-            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
+            Log.d("myTag"," isLocal? last value: "+last + " opto count : " + optographs.size());
+//            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
             if (last==0) {
                 optographs.add(2,optograph);
                 notifyItemInserted(2);

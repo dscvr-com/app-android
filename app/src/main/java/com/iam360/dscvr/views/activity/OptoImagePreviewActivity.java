@@ -804,7 +804,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, true);
 
                 // update texts of theta
-                if (UPLOAD_IMAGE_MODE) updateOptograph(optographGlobal);
+                if (UPLOAD_IMAGE_MODE) {
+                    updateOptograph(optographGlobal);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_ON_SERVER, true);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, false);
+                }
 
                 postLaterIcon.setVisibility(View.VISIBLE);
                 postLaterProgress.setVisibility(View.GONE);
