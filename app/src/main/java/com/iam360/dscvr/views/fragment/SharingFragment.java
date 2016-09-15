@@ -343,7 +343,8 @@ public class SharingFragment extends Fragment implements View.OnClickListener {
                         cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
                         cache.save(Cache.USER_FB_LOGGED_IN, true);
                         PersonManager.updatePerson();
-                        showInputDialog(getResources().getString(R.string.share_subject_web_viewer) + "\n" + text);
+                        showInputDialog(text);
+//                        showInputDialog(getResources().getString(R.string.share_subject_web_viewer) + "\n" + text);
                         NotificationSender.sendGCMRegService(getContext());
 
                     }
