@@ -44,7 +44,9 @@ import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
 import com.iam360.dscvr.model.FBSignInData;
+import com.iam360.dscvr.model.GeocodeDetails;
 import com.iam360.dscvr.model.GeocodeReverse;
+import com.iam360.dscvr.model.LocationToUpdate;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.OptoData;
 import com.iam360.dscvr.model.OptoDataUpdate;
@@ -70,6 +72,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -137,9 +140,13 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     private static Twitter twitter;
     private static RequestToken requestToken;
 
+    private GeocodeDetails chosenLocDetails;
     private GeocodeReverse chosenLoc;
     private List<GeocodeReverse> listOfLoc;
     private Context context;
+
+    private double longitude;
+    private double latitude;
 
     public final static int WEBVIEW_REQUEST_CODE = 100;
     public final static String optoType360 = "optograph";
@@ -259,6 +266,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         if (location==null) location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         if (location!=null) {
+            Log.d("myTag"," location: not null lat: "+location.getLatitude()+" long: "+location.getLongitude());
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
             getNearbyLocations(location.getLatitude(), location.getLongitude());
         } else {
             addLocText.setVisibility(View.VISIBLE);
@@ -284,10 +294,40 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         alert.show();
     }
 
+    public void insertLocation(String optoId) {
+        UUID id = UUID.randomUUID();
+        Log.d("myTag"," location: generatedId: "+String.valueOf(id));
+        mydb.insertLocation(String.valueOf(id),"","","",String.valueOf(latitude),String.valueOf(longitude),chosenLocDetails.getCountry(),
+                chosenLocDetails.getName(),chosenLocDetails.getCountry_short(),chosenLocDetails.getPlace(),chosenLocDetails.getRegion(),
+                chosenLocDetails.isPoi());
+        Cursor res = mydb.getData(optoId, DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()==0) {
+            Log.d("myTag"," location: opto "+optoId+" not existing.");
+            return;
+        }
+        mydb.updateColumnOptograph(optoId,DBHelper.OPTOGRAPH_LOCATION_ID,String.valueOf(id));
+        Log.d("myTag"," location: id from OPTOTABLE: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_LOCATION_ID)));
+        Cursor res1 = mydb.getData(String.valueOf(id), DBHelper.LOCATION_TABLE_NAME, DBHelper.LOCATION_ID);
+        res1.moveToFirst();
+        if (res1.getCount()==0) {
+            Log.d("myTag"," location: location "+String.valueOf(id)+" not existing.");
+            return;
+        }
+        Log.d("myTag"," location: location "+String.valueOf(id)+" is existing.");
+    }
+
     private void updateOptograph(Optograph opto) {
         Log.d("myTag", " upload: updateOptograph isFBShare? " + opto.isPostFacebook());
         Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
-        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+        LocationToUpdate loc = null;
+        if (chosenLocDetails!=null) {
+            loc = new LocationToUpdate(String.valueOf(latitude),String.valueOf(longitude),
+                    chosenLocDetails.getName(),chosenLocDetails.getCountry(),chosenLocDetails.getCountry_short(),
+                    chosenLocDetails.getPlace(),chosenLocDetails.getRegion(),chosenLocDetails.isPoi());
+            insertLocation(opto.getId());
+        }
+        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter(),loc);
 
         Log.d("myTag", " upload: "+opto.getId() + " " + data.toString());
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
@@ -359,15 +399,15 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void locationButtonState(Button view,GeocodeReverse loc) {
-        Log.d("myTag", "chosenLoc null? " + (chosenLoc == null) + " chosen==loc? " + (loc.equals(chosenLoc)));
+        Log.d("myTag", "location chosenLoc null? " + (chosenLoc == null) + " chosen==loc? " + (loc.equals(chosenLoc)));
         if (chosenLoc!=null && loc.equals(chosenLoc)) {
-            view.setBackgroundResource(R.drawable.location_button_unselected);
             chosenLoc = null;
+            chosenLocDetails = null;
         } else {
-            view.setBackgroundResource(R.drawable.location_button_selected);
             chosenLoc = loc;
+            getLocationDetails(chosenLoc.getPlace_id());
         }
-        Log.d("myTag","chosenLoc: "+chosenLoc.getName());
+        if(chosenLoc!=null)Log.d("myTag","location name: "+chosenLoc.getName());
         locationListView();
     }
 
@@ -383,7 +423,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         Button mLoc = (Button) itemView.findViewById(R.id.contact);
         ImageView mDelete = (ImageView) itemView.findViewById(R.id.contact_del);
 
-//        if (chosenLoc!=null && chosenLoc.equals(loc)) mLoc.setBackgroundResource(R.drawable.location_button_selected);
+        if (chosenLoc!=null && chosenLoc.equals(loc)) mLoc.setBackgroundResource(R.drawable.location_button_selected);
+        else mLoc.setBackgroundResource(R.drawable.location_button_unselected);
 
         mLoc.setText(loc.getName());
         view.addView(itemView);
@@ -406,6 +447,28 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                view.removeView(itemView);
 //            }
 //        });
+    }
+
+    public void getLocationDetails(String placeId) {
+        Log.d("myTag"," location: placeId: "+placeId);
+        apiConsumer.getLocationDetails(placeId, new Callback<GeocodeDetails>() {
+            @Override
+            public void onResponse(Response<GeocodeDetails> response, Retrofit retrofit) {
+                Log.d("myTag"," location: isSuccess? "+response.isSuccess()+" message: "+response.message());
+                if (!response.isSuccess()) return;
+                GeocodeDetails det = response.body();
+                Log.d("myTag"," location: cLoc null? "+(chosenLoc==null)+" det null? "+(det==null));
+                if (chosenLoc!=null && det!=null) Log.d("myTag"," location: det.getName: "+det.getName()+" chosenLoc.getName: "+chosenLoc.getName());
+                if (chosenLoc==null || det==null || !det.getName().equals(chosenLoc.getName())) return;
+                chosenLocDetails = det;
+                Log.d("myTag"," location: success setting the details location");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag"," ERROR: "+t.getMessage());
+            }
+        });
     }
 
     private void loginFacebook() {
@@ -641,6 +704,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.upload_button:
+                Log.d("myTag"," location: name: "+chosenLoc.getName());
+                Log.d("myTag"," location: name: "+chosenLocDetails.getName()+
+                        " country: "+chosenLocDetails.getCountry()+" short: "+chosenLocDetails.getCountry_short()+
+                        " place: "+chosenLocDetails.getPlace()+" region: "+chosenLocDetails.getRegion()+
+                        " poi: "+chosenLocDetails.isPoi());
                 userToken = cache.getString(Cache.USER_TOKEN);
                 if(UPLOAD_IMAGE_MODE) createDefaultOptograph(optographGlobal);
 //                if ((userToken == null || userToken.equals(""))) {
@@ -658,6 +726,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     optographGlobal.setText(descBox.getText().toString());
 ////                    getLocalImage(optograph);
 //
+                Log.d("myTag"," location: uploadImageMode: "+UPLOAD_IMAGE_MODE+" userToken: "+userToken+
+                        " isDataUploaded? "+optographGlobal.is_data_uploaded());
                     if(UPLOAD_IMAGE_MODE) {
                         if (userToken != null && !userToken.isEmpty()) {
                             if(!optographGlobal.is_data_uploaded()) uploadOptonautData(optographGlobal);
@@ -672,6 +742,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 break;
             case R.id.post_later_group:
                 userToken = cache.getString(Cache.USER_TOKEN);
+                if (chosenLocDetails!=null) {
+                    insertLocation(optographId);
+                }
 //                if ((userToken == null || userToken.equals("")) && doneUpload) {
 //                    //TODO login page
 ////                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
@@ -982,8 +1055,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         BusProvider.getInstance().register(this);
 
         // get current location
-//        instatiateLocation();//uncomment for location
-        locationProgress.setVisibility(View.GONE);//remove when location is active
+        instatiateLocation();//uncomment for location
+//        locationProgress.setVisibility(View.GONE);//remove when location is active
     }
 
     @Override

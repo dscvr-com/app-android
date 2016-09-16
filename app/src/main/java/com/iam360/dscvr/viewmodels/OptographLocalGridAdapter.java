@@ -1209,7 +1209,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     private void updateOptograph(int position, ProgressBar progressBar) {
         Optograph opto = optographs.get(position);
-        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter());
+        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter(),null);// TODO: send location value here
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {

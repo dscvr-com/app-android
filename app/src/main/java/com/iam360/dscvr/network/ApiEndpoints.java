@@ -110,7 +110,7 @@ public interface ApiEndpoints {
     @GET("locations/geocode-reverse")
     Call<List<GeocodeReverse>> getNearbyPlaces(@Query("lat") String lat, @Query("lon") String lon);
 
-    @GET("locations/geocode-reverse/{placeid}")
+    @GET("locations/geocode-details/{placeid}")
     Call<GeocodeDetails> getLocationDetails(@Path("placeid") String placeid);
 
     @GET("persons/search")
