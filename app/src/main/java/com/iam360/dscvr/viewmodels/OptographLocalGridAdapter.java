@@ -263,7 +263,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().optograph2dviewLocal.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            callDetailsPage(position);
+                            callDetailsPage(position, null);
                         }
                     });
 
@@ -312,7 +312,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder3.getBinding().optograph2dviewServer.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            callDetailsPage(position);
+                            callDetailsPage(position, null);
                         }
                     });
                 }
@@ -456,7 +456,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             }
                             Optograph opto = notif.getActivity_resource_star().getOptograph();
                             opto.setPerson(person);
-                            callDetailsPage(position);
+                            callDetailsPage(position, opto);
                         }
                     });
                 }
@@ -493,13 +493,21 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    private void callDetailsPage(int position) {
-        Intent intent = new Intent(context, OptographDetailsActivity.class);
-        intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
-        if(context instanceof ProfileActivity)
-            ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
-        else if(context instanceof MainActivity)
-            ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+    private void callDetailsPage(int position, Optograph optograph) {
+
+        if(optograph == null) {
+            Intent intent = new Intent(context, OptographDetailsActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
+            if (context instanceof ProfileActivity)
+                ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+            else if (context instanceof MainActivity)
+                ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
+        } else {
+            Intent intent = new Intent(context, OptographDetailsActivity.class);
+            intent.putExtra("opto", optograph);
+            context.startActivity(intent);
+        }
+
 
     }
 
@@ -1544,7 +1552,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Log.d("myTag"," isLocal? "+optograph.is_local());
         if (optograph.is_local()) {
             int last = getLastPositionOfLocalImage();
-            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
+            Log.d("myTag"," isLocal? last value: "+last + " opto count : " + optographs.size());
+//            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
             if (last==0) {
                 optographs.add(2,optograph);
                 notifyItemInserted(2);

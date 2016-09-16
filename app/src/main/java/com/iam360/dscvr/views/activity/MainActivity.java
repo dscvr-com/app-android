@@ -26,6 +26,7 @@ import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.sensors.CoreMotionListener;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.MyViewPager;
 import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
 import com.iam360.dscvr.sensors.GestureDetectors;
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 //                        adapterViewPager.mainFeedFragment.refresh(false);
                         break;
                     case PROFILE_MODE:
+                        adapterViewPager.profileRootFragment.refresh();
                         break;
                     case SHARING_MODE:
                         adapterViewPager.sharingFragment.updateOptograph();
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 //        setStatusBarTranslucent(true);
 //        int statusBarHeight = new GeneralUtils().getStatusBarHeight(this);
 
+        MixpanelHelper.trackAppLaunch(this);
     }
 
     protected void setStatusBarTranslucent(boolean makeTranslucent) {

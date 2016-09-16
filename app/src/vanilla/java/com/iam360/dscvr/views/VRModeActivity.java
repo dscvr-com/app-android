@@ -62,7 +62,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         setCardboardView(cardboardView);
 
         initializeTextures();
-        MixpanelHelper.trackViewViewerVR(this);
+        MixpanelHelper.trackViewViewer(this);
 
         creationTime = DateTime.now();
         thresholdForSwitchReached = false;
@@ -87,7 +87,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
     @Override
     public void onDestroy() {
-        MixpanelHelper.flush(this);
+//        MixpanelHelper.flush(this);
         super.onDestroy();
     }
 

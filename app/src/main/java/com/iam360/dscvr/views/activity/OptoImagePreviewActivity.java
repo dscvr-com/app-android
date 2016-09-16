@@ -54,6 +54,7 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.MixpanelHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -239,6 +240,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         if (!UPLOAD_IMAGE_MODE) {
             optograph.setOptograph_type(cache.getInt(Cache.CAMERA_MODE) ==(Constants.ONE_RING_MODE)?optoType360_1:optoType360_3);
+            MixpanelHelper.trackCreateOptographPost(this);
         } else {
             optograph.setOptograph_type(optoTypeTheta);
         }
@@ -254,9 +256,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //        Location location = locationManager.getLastKnownLocation(provider);
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Log.d("myTag"," location: first null? "+location);
         if (location==null) location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        Log.d("myTag"," location: second null? "+location);
 
         if (location!=null) {
             Log.d("myTag"," location: not null lat: "+location.getLatitude()+" long: "+location.getLongitude());
@@ -645,7 +645,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 Log.d("myTag"," Preview upload: success upload data id: "+optograph.getId()+" isDataUploaded? "+res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)));
                 // do things for success
                 optographGlobal.setIs_published(true);
-                uploadPlaceHolder(optographGlobal);
+                if(UPLOAD_IMAGE_MODE) uploadPlaceHolder(optographGlobal);
             }
 
             @Override
@@ -877,7 +877,11 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED, true);
 
                 // update texts of theta
-                if (UPLOAD_IMAGE_MODE) updateOptograph(optographGlobal);
+                if (UPLOAD_IMAGE_MODE) {
+                    updateOptograph(optographGlobal);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_ON_SERVER, true);
+                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_IS_LOCAL, false);
+                }
 
                 postLaterIcon.setVisibility(View.VISIBLE);
                 postLaterProgress.setVisibility(View.GONE);
