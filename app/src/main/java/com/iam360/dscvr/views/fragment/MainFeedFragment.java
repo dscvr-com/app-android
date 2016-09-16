@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -693,20 +694,23 @@ private AlertDialog networkProblemAlert = null;
                 }
                 break;
             case R.id.fb_share:
-                userToken = cache.getString(Cache.USER_TOKEN);
-                Log.d("myTag"," fb share: userToken: "+userToken+" fbLogged? "+cache.getBoolean(Cache.USER_FB_LOGGED_IN, false));
-                if (userToken == null || userToken.equals("")) {
+                Set<String> permissions = null;
+                if(com.facebook.AccessToken.getCurrentAccessToken() == null)
                     sharedNotLoginDialog();
-                    return;
-                } else if (cache.getBoolean(Cache.USER_FB_LOGGED_IN, false)) {
-                    isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
-                    cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
-                    initializeShareButtons();
-                    PersonManager.updatePerson();
-                    return;
+                else {
+                    permissions = com.facebook.AccessToken.getCurrentAccessToken().getPermissions();
+
+                    if (permissions.contains("publish_actions")) {
+                        Log.d("myTag", "Contains publish actions.");
+                        isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+                        cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                        initializeShareButtons();
+                        PersonManager.updatePerson();
+                    } else {
+                        Log.d("myTag", "No publish actions.");
+                        loginFacebook();
+                    }
                 }
-                loginFacebook();
-                Log.d("myTag", "fbShareClicked.");
                 break;
             case R.id.twitter_share:
                 userToken = cache.getString(Cache.USER_TOKEN);
@@ -759,6 +763,8 @@ private AlertDialog networkProblemAlert = null;
             binding.twitterProgress.setVisibility(View.GONE);
             binding.twitterShare.setClickable(true);
         }
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }
 
@@ -854,7 +860,9 @@ private AlertDialog networkProblemAlert = null;
     }
 
     private void loginFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+        Log.d("myTag", "loginFacebook");
+        final List<String> PUBLISH_PERMISSIONS = Arrays.asList("publish_actions");
+        LoginManager.getInstance().logInWithPublishPermissions(this, PUBLISH_PERMISSIONS);
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
