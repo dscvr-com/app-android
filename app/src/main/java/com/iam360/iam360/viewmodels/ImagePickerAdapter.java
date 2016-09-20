@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.iam360.iam360.R;
 import com.iam360.iam360.util.Constants;
+import com.iam360.iam360.views.activity.ImagePickerActivity;
 import com.iam360.iam360.views.activity.OptoImagePreviewActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -27,6 +28,7 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
     private ArrayList<String> mDataset;
     private Context context;
     private ImageLoader imageLoader;
+    private int mode;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
@@ -50,10 +52,10 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
         notifyItemRemoved(position);
     }
 
-    public ImagePickerAdapter(Context context, ArrayList<String> myDataset) {
+    public ImagePickerAdapter(Context context, ArrayList<String> myDataset, int mode) {
         mDataset = myDataset;
         this.context = context;
-
+        this.mode = mode;
         imageLoader = ImageLoader.getInstance();
     }
 
@@ -69,39 +71,37 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
     public void onBindViewHolder(ViewHolder holder, int position) {
         final String path = mDataset.get(position);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / 3);
+        int height = (mode == ImagePickerActivity.UPLOAD_OPTO_MODE ? ImagePickerActivity.NUM_COLUMNS_OPTO : ImagePickerActivity.NUM_COLUMNS_STORY);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / height);
         holder.itemView.setLayoutParams(params);
 
         imageLoader.displayImage("file://" + path, holder.image);
 
         holder.text.setText(path);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Timber.d("Image path : " + path);
+        holder.itemView.setOnClickListener(v -> startUploadOrStory(path));
+
+    }
+
+    private void startUploadOrStory(String path) {
+        Timber.d("Image path : " + path);
+
+        switch (mode) {
+            case ImagePickerActivity.UPLOAD_OPTO_MODE:
                 Intent intent = new Intent(context, OptoImagePreviewActivity.class);
                 intent.putExtra("id", UUID.randomUUID().toString());
                 intent.putExtra("path", path);
                 context.startActivity(intent);
-                ((Activity)context).finish();
-            }
-        });
-
-//        holder.image.setMaxWidth(ITEM_WIDTH / 3);
-//        holder.image.getViewTreeObserver()
-//                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                    // Wait until layout to call Picasso
-//                    @Override
-//                    public void onGlobalLayout() {
-//                        // Ensure we call this only once
-//                        holder.image.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                            Picasso.with(holder.image.getContext())
-//                                    .load(new File(path))
-//                                    .resize(holder.image.getWidth(), 0)
-////                                    .centerCrop()
-//                                    .into(holder.image);
-//                    }
-//                });
+                ((Activity) context).finish();
+                break;
+            case ImagePickerActivity.CREATE_STORY_MODE:
+                // TODO add actions here
+                ((Activity) context).finish();
+                break;
+            case ImagePickerActivity.ADD_SCENE_MODE:
+                // TODO add actions here
+                ((Activity) context).finish();
+                break;
+        }
     }
 
     @Override

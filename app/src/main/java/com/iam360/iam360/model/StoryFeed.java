@@ -3,6 +3,7 @@ package com.iam360.iam360.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -205,8 +206,8 @@ public class StoryFeed implements Parcelable {
     private List<Optograph> you;
 
     public StoryFeed() {
-        feed = null;
-        you = null;
+        feed = new ArrayList<Optograph>();
+        you = new ArrayList<Optograph>();
     }
 
     public StoryFeed(Parcel source) {

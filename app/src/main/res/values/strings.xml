@@ -193,4 +193,8 @@
     <string name="story_you">YOUR STORIES</string>
     <string name="story_header">Stories</string>
 
+    <!-- Image Picker -->
+    <string name="image_picker_all_images">360 Images</string>
+    <string name="image_picker_your_images">Your 360 Images</string>
+
 </resources>

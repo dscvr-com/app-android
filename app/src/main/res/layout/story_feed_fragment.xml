@@ -35,7 +35,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:layout_marginRight="15dp" />
+                android:layout_marginRight="15dp"
+                android:background="@drawable/create_story_small_icn" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -48,6 +49,7 @@
                 android:id="@+id/story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="130dp"
                 android:clipToPadding="false"/>
 
             <LinearLayout
@@ -88,6 +90,7 @@
                 android:id="@+id/my_story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="110dp"
                 android:layout_below="@+id/center_line"
                 android:clipToPadding="false"/>
 

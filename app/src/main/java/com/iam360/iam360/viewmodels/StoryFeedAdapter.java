@@ -112,9 +112,9 @@ public class StoryFeedAdapter extends RecyclerView.Adapter<StoryFeedAdapter.Stor
         DateTime created_at = optograph.getCreated_atDateTime();
 
         // skip if optograph is already in list
-        if (optographs.contains(optograph)) {
-            return;
-        }
+//        if (optographs.contains(optograph)) {
+//            return;
+//        }
 
         optographs.add(optographs.size(), optograph);
         notifyItemInserted(optographs.size() - 1);
