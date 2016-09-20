@@ -39,7 +39,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
 
     private void initialize(Context context) {
         setEGLContextClientVersion(2);
-        optograph2DCubeRenderer = new Optograph2DCubeRenderer();
+        optograph2DCubeRenderer = new Optograph2DCubeRenderer(context);
         setRenderer(optograph2DCubeRenderer);
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 

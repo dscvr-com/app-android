@@ -1,17 +1,26 @@
 package com.iam360.iam360.opengl;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.iam360.iam360.R;
 import com.iam360.iam360.sensors.CombinedMotionManager;
 import com.iam360.iam360.sensors.TouchEventListener;
 import com.iam360.iam360.storytelling.MarkerNode;
 import com.iam360.iam360.util.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -35,9 +44,13 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float DAMPING_FACTOR = 0.9f;
 
     private final float[] mvpMatrix = new float[16];
+    private final float[] mvpMatrix2 = new float[16];
+
 
     private final float[] projection = new float[16];
+    private final float[] projection2 = new float[16];
     private final float[] camera = new float[16];
+    private final float[] camera2 = new float[16];
     private float[] rotationMatrix = new float[16];
 
     private float[] unInverseRotationMatrix = new float[16];
@@ -47,12 +60,23 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private Cube cube;
     private String optoType;
 
-    private MarkerNode sphere;
+//    private MarkerNode sphere;
     private List<MarkerNode> spheres = new ArrayList<MarkerNode>();
-//    private float[] markerPost = new float[16];
 
-    public Optograph2DCubeRenderer() {
+    private Sphere sphere;
+
+    private Context context;
+
+    private float[] mProjMatrix = new float[16];
+    private float[] mVMatrix = new float[16];
+    private float[] mVPMatrix = new float[16];
+
+
+    private int[] textures = new int[1];
+
+    public Optograph2DCubeRenderer(Context context) {
         Timber.v("cube renderer constructor");
+        this.context = context;
         this.cube = new Cube();
         this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
         Matrix.setIdentityM(rotationMatrix, 0);
@@ -61,9 +85,12 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Timber.v("onSurfaceCreated");
+        // Create the GLText
+
         this.cube.initialize();
 
-        sphere = new MarkerNode(5, sphereRadius);
+//        sphere = new MarkerNode(5, sphereRadius);
+        sphere = new Sphere(5, sphereRadius);
         sphere.initializeProgram();
         setSpherePosition(2.0f, 1.0f, 2.0f);
 
@@ -83,6 +110,23 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         GLES20.glClearDepthf(1.0f);
+
+
+        GLES20.glGenTextures(1, textures, 0);
+
+        if (textures[0] == GLES20.GL_FALSE)
+            throw new RuntimeException("Error loading texture");
+
+        // bind the texture and set parameters
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0]);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+        // Load a bitmap from resources folder and pass it to OpenGL
+        // in the end, we recycle it to free unneeded resources
+        Bitmap b = BitmapFactory.decodeResource(context.getResources(), R.drawable.logo_mini_icn);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, b, 0);
+        b.recycle();
     }
 
     public void setSpherePosition(float x, float y, float z) {
@@ -105,6 +149,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         ratio = (float) width / height;
 
         Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
+
     }
 
     @Override
@@ -112,14 +157,14 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         TouchEventListener touchEventListener = combinedMotionManager.getTouchEventListener();
         float currTheta = touchEventListener.getTheta();
         float currPhi = touchEventListener.getPhi();
-//        double longRadians = Math.toRadians(currTheta);
-//        double latRadians = Math.toRadians(currPhi);
 
         //x=rsinφcosθ; y=rsinφsinθ; z=rcosφ
 //        float x = (float) (1f * (Math.sin(currPhi) * Math.cos(currTheta)));
 //        float y = (float) (1f * (Math.sin(currPhi) * Math.sin(currTheta)));
 //        float z = (float) (1f * Math.cos(currPhi));
 
+        float xDeg = (float) Math.toDegrees(currPhi);
+        float yDeg = (float) Math.toDegrees(currTheta);
 
         double xy_distance = V_DISTANCE * Math.cos(currPhi);
         float x = (float) (xy_distance * Math.cos(currTheta));
@@ -136,14 +181,20 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
+        float[] view2 = new float[16];
+
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+        Matrix.multiplyMM(view2, 0, camera2, 0, unInverseRotationMatrix, 0);
+
 
         if (optoType!=null && optoType.equals("optograph_1")) Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
         else Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
+        Matrix.multiplyMM(mvpMatrix2, 0, projection2, 0, view2, 0);
+
 
         Log.d("onDrawFrame","newPosition[0] = "+ newPosition[0]+"  newPosition[1] = "+newPosition[1]+"  newPosition[2] = "+newPosition[2]);
 
@@ -153,20 +204,32 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         cube.draw(mvpMatrix);
 
+        Matrix.multiplyMM(mVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+
+        Log.d("MARK","mVPMatrix = "+ Arrays.toString(mVPMatrix));
+
         sphere.draw(mvpMatrix);
         Log.d("currPhicurrTheta","currPhi = "+currPhi+"  currTheta = "+currTheta);
-//        sphere.setCenter(currPhi, currTheta, 1f);
-
 
         sphere.setCenter(x, y, z);
-//        sphere.setCenter(newPosition[0], newPosition[1], newPosition[2]);
 
         for(int a=0; a< spheres.size(); a++){
             if(spheres.get(a).isInitiliazed()){
-                Log.d("MARK2","overlapSpheres trufalse = "+overlapSpheres(sphere, spheres.get(a)));
+//                Log.d("MARK2","overlapSpheres trufalse = "+overlapSpheres(sphere, spheres.get(a)));
+                if(overlapSpheres(sphere, spheres.get(a))){
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone r = RingtoneManager.getRingtone(context, notification);
+                        r.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("MARK","marker name : "+spheres.get(a).getMarkerName());
+                }
                 spheres.get(a).draw(mvpMatrix);
             }
         }
+
     }
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
@@ -237,8 +300,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     }
 
     public static boolean overlapSpheres(Sphere point, Sphere marker) {
-        // we are using multiplications because it's faster than calling Math.pow
-
         Log.d("MARK2","overlapSpheres point.center.x="+point.getCenter().x+"  point.center.y="+point.getCenter().y+"  point.center.z="+point.getCenter().z);
         Log.d("MARK2","overlapSpheres marker.center.x="+marker.getCenter().x+"  marker.center.y="+marker.getCenter().y+"  marker.center.z="+marker.getCenter().z);
 
