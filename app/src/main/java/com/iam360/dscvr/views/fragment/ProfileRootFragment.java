@@ -46,4 +46,10 @@ public class ProfileRootFragment extends Fragment {
             if (frag instanceof ProfileFragmentExercise) ((ProfileFragmentExercise) frag).refresh();
         }
     }
+
+    public void switchToProfilePage() {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
+        transaction.commit();
+    }
 }

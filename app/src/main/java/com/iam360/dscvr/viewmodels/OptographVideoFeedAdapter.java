@@ -483,9 +483,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
         if(opto.getId() == null) return;
 
-        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-        res.moveToFirst();
-        if (res.getCount() > 0) {
+        Cursor res1 = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res1.moveToFirst();
+        if (res1.getCount() > 0) {
             String id = DBHelper.OPTOGRAPH_ID;
             String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
             if (opto.getText() != null && !opto.getText().equals("")) mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_TEXT, opto.getText());
@@ -522,15 +522,17 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                     opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
                     opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
         }
+
+        res1.close();
         String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
         String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
 
         if (!per.equals("")) {
-            res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
-            res.moveToFirst();
+            Cursor res2 = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+            res2.moveToFirst();
             if (opto.getPerson().getId() != null) {
                 Person person = opto.getPerson();
-                if (res.getCount() > 0) {
+                if (res2.getCount() > 0) {
                     String id = "id";
                     String tb = DBHelper.PERSON_TABLE_NAME;
                     if (person.getCreated_at() != null && !person.getCreated_at().equals(""))
@@ -568,14 +570,16 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
                 }
             }
+
+            res2.close();
         }
 
         if (!loc.equals("")) {
-            res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
-            res.moveToFirst();
+            Cursor res3 = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
+            res3.moveToFirst();
             if (opto.getLocation().getId() != null) {
                 Location locs = opto.getLocation();
-                if (res.getCount() > 0) {
+                if (res3.getCount() > 0) {
                     String id = "id";
                     String tb = DBHelper.LOCATION_TABLE_NAME;
                     if (locs.getCreated_at() != null && !locs.getCreated_at().equals(""))
@@ -604,9 +608,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                             locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                 }
             }
+            res3.close();
         }
 
-        res.close();
     }
 
     public Optograph get(int position) {
