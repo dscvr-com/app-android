@@ -271,8 +271,8 @@ public class GCMPushReceiverService extends GcmListenerService {
         location.setPlace(data.location_place);
         location.setRegion(data.location_region);
         location.setPoi(data.location_poi);
-        location.setLatitude(data.location_latitude);
-        location.setLongitude(data.location_longitude);
+        location.setLatitude(Double.valueOf(data.location_latitude));
+        location.setLongitude(Double.valueOf(data.location_longitude));
         opto.setLocation(location);
         Person person = new Person();
         person.setId(data.person_id);

@@ -30,6 +30,7 @@ import com.iam360.dscvr.BR;
 import com.iam360.dscvr.NewFeedItemBinding;
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.model.LocationToUpdate;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.OptoData;
 import com.iam360.dscvr.model.OptoDataUpdate;
@@ -431,16 +432,40 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 
     private void updateOptograph(Optograph opto) {
         Timber.d("isFBShare? "+opto.isPostFacebook()+" isTwitShare? "+opto.isPostTwitter()+" optoId: "+opto.getId());
-        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter(),null);// TODO: send location value here
+        LocationToUpdate location = null;
+
+        Cursor optLocId = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        optLocId.moveToFirst();
+        if (optLocId.getCount() != 0) {
+            String locId = optLocId.getString(optLocId.getColumnIndex(DBHelper.OPTOGRAPH_LOCATION_ID));
+            if (locId != null && !locId.equals("")) {
+                Cursor loc = mydb.getData(locId, DBHelper.LOCATION_TABLE_NAME, DBHelper.LOCATION_ID);
+                loc.moveToFirst();
+                if (loc.getCount() != 0) {
+                    location = new LocationToUpdate(loc.getDouble(loc.getColumnIndex(DBHelper.LOCATION_LATITUDE)),
+                            loc.getDouble(loc.getColumnIndex(DBHelper.LOCATION_LONGITUDE)),
+                            loc.getString(loc.getColumnIndex(DBHelper.LOCATION_TEXT)),
+                            loc.getString(loc.getColumnIndex(DBHelper.LOCATION_COUNTRY)),
+                            loc.getString(loc.getColumnIndex(DBHelper.LOCATION_COUNTRY_SHORT)),
+                            loc.getString(loc.getColumnIndex(DBHelper.LOCATION_PLACE)),
+                            loc.getString(loc.getColumnIndex(DBHelper.LOCATION_REGION)),
+                            loc.getInt(loc.getColumnIndex(DBHelper.LOCATION_POI)) != 0);
+                }
+                loc.close();
+            }
+        }
+        optLocId.close();
+
+        OptoDataUpdate data = new OptoDataUpdate(opto.getText(),opto.is_private(),opto.is_published(),opto.isPostFacebook(),opto.isPostTwitter(),location);
         apiConsumer.updateOptoData(opto.getId(), data, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
-                Log.d("myTag", " onResponse isSuccess: " + response.isSuccess());
-                Log.d("myTag"," onResponse body: "+response.body());
-                Log.d("myTag", " onResponse message: " + response.message());
-                Log.d("myTag", " onResponse raw: " + response.raw().toString());
+                Log.d("myTag", " feedAdapter onResponse isSuccess: " + response.isSuccess());
+                Log.d("myTag"," feedAdapter onResponse body: "+response.body());
+                Log.d("myTag", " feedAdapter onResponse message: " + response.message());
+                Log.d("myTag", " feedAdapter onResponse raw: " + response.raw().toString());
                 if (!response.isSuccess()) {
-                    Log.d("myTag", "response errorBody: " + response.errorBody());
+                    Log.d("myTag", " feedAdapter response errorBody: " + response.errorBody());
                     Snackbar.make(uploadButton, "Failed to upload.", Snackbar.LENGTH_SHORT).show();
                     uploadButton.setVisibility(View.VISIBLE);
                 upload_progress.setVisibility(View.GONE);

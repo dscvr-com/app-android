@@ -513,7 +513,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
             mydb.updateTableColumn(tb, id, opto.getId(), DBHelper.OPTOGRAPH_SHARE_ALIAS, opto.getShare_alias());
             if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals(""))
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
-
+            if (opto.getLocation() != null && opto.getLocation().getId() != null && !opto.getLocation().getId().equals("")) {
+                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
+            }
         } else {
             Timber.d("saveToSQLiteFeeds <= 0 " + opto.is_staff_picked() );
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
@@ -584,9 +586,9 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         mydb.updateTableColumn(tb, id, locs.getId(), "updated_at", locs.getUpdated_at());
                     if (locs.getDeleted_at() != null && !locs.getDeleted_at().equals(""))
                         mydb.updateTableColumn(tb, id, locs.getId(), "deleted_at", locs.getDeleted_at());
-                    if (locs.getLatitude() != null && !locs.getLatitude().equals(""))
+                    if (locs.getLatitude() != 0)
                         mydb.updateTableColumn(tb, id, locs.getId(), "latitude", locs.getLatitude());
-                    if (locs.getLongitude() != null && !locs.getLongitude().equals(""))
+                    if (locs.getLongitude() != 0)
                         mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
                     if (locs.getText() != null && !locs.getText().equals(""))
                         mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
@@ -600,6 +602,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
                     mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
                 } else {
+                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
                     mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
                             locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                 }

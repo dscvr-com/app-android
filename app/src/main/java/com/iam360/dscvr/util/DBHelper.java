@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.iam360.dscvr.model.Location;
+import com.iam360.dscvr.model.Optograph;
+
 import org.joda.time.DateTime;
 
 import timber.log.Timber;
@@ -242,8 +245,8 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertLocation(String id, String created_at, String updated_at, String deleted_at, String latitude,
-                                String longitude, String country, String text, String country_short, String place,
+    public boolean insertLocation(String id, String created_at, String updated_at, String deleted_at, double latitude,
+                                double longitude, String country, String text, String country_short, String place,
                                   String region, boolean poi){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -442,7 +445,96 @@ public class DBHelper extends SQLiteOpenHelper {
         return  true;
     }
 
+    public boolean updateTableColumn(String tableName, String primaryColumn, String primaryColumnValue, String column, double value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(column,value);
+        db.update(tableName, contentValues, primaryColumn + " =  ? ", new String[]{String.valueOf(primaryColumnValue)});
+        return  true;
+    }
+
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());
+    }
+
+    public Optograph checkOptoDetails(Optograph optograph) {
+
+        Cursor res = getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()==0) {
+//            deleteOptographFromPhone(optograph.getId());
+            return null;
+        }
+        Log.d("myTag"," setMessage: checkToDb shouldPub? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1)+
+                " delAt: "+res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT))+" onserver? "+(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0));
+        if (res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 || !res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)).equals("")) {
+//            deleteOptographFromPhone(optograph.getId());
+            return null;
+        }
+
+        if (checkIfAllImagesUploaded(optograph.getId())) return null;
+        optograph.setStitcher_version(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
+        optograph.setText(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+        optograph.setOptograph_type(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
+//        optograph.setCreated_at(res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
+        optograph.setIs_on_server(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_ON_SERVER)) != 0);
+        optograph.setShould_be_published(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) != 0);
+        optograph.setIs_place_holder_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_PLACEHOLDER_UPLOADED)) != 0);
+        optograph.setIs_data_uploaded(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) != 0);
+        Log.d("myTag", " Profile upload: checkToDB id: " + optograph.getId() + " isDataUploaded? " + res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)));
+        optograph.setPostFacebook(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_FACEBOOK)) != 0);
+        optograph.setPostTwitter(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_TWITTER)) != 0);
+        optograph.setPostInstagram(res.getInt(res.getColumnIndex(DBHelper.OPTOGRAPH_POST_INSTAGRAM)) != 0);
+        Cursor face = getData(optograph.getId(), DBHelper.FACES_TABLE_NAME, DBHelper.FACES_ID);
+        face.moveToFirst();
+        if (face.getCount()==0) return optograph;
+
+        if(optograph.getLeftFace() != null) {
+            optograph.getLeftFace().setStatusByIndex(0, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_ZERO)) != 0);
+            optograph.getLeftFace().setStatusByIndex(1, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_ONE)) != 0);
+            optograph.getLeftFace().setStatusByIndex(2, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_TWO)) != 0);
+            optograph.getLeftFace().setStatusByIndex(3, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_THREE)) != 0);
+            optograph.getLeftFace().setStatusByIndex(4, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_FOUR)) != 0);
+            optograph.getLeftFace().setStatusByIndex(5, face.getInt(face.getColumnIndex(DBHelper.FACES_LEFT_FIVE)) != 0);
+        }
+
+        if(optograph.getRightFace() != null) {
+            optograph.getRightFace().setStatusByIndex(0,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_ZERO))!=0);
+            optograph.getRightFace().setStatusByIndex(1,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_ONE))!=0);
+            optograph.getRightFace().setStatusByIndex(2,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_TWO))!=0);
+            optograph.getRightFace().setStatusByIndex(3,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_THREE))!=0);
+            optograph.getRightFace().setStatusByIndex(4,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FOUR))!=0);
+            optograph.getRightFace().setStatusByIndex(5,face.getInt(face.getColumnIndex(DBHelper.FACES_RIGHT_FIVE))!=0);
+        }
+        face.close();
+        String locId = res.getString(res.getColumnIndex(DBHelper.OPTOGRAPH_LOCATION_ID));
+        Log.d("myTag"," checkDetails location: locId: "+locId);
+        if (locId != null && !locId.equals("")) {
+            Cursor loc = getData(locId, DBHelper.LOCATION_TABLE_NAME, DBHelper.LOCATION_ID);
+            loc.moveToFirst();
+            if (loc.getCount()==0) {
+                res.close();
+                loc.close();
+                return optograph;
+            }
+            Log.d("myTag"," checkDetails location: location Id is existing in database.");
+            Location location = new Location();
+            location.setId(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_ID)));
+            location.setText(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_TEXT)));
+            location.setPlace(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_PLACE)));
+            location.setRegion(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_REGION)));
+            location.setPoi(loc.getInt(loc.getColumnIndex(DBHelper.LOCATION_POI))!=0);
+            location.setCountry(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_COUNTRY)));
+            location.setCountry_short(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_COUNTRY_SHORT)));
+            location.setLatitude(loc.getDouble(loc.getColumnIndex(DBHelper.LOCATION_LATITUDE)));
+            location.setLongitude(loc.getDouble(loc.getColumnIndex(DBHelper.LOCATION_LONGITUDE)));
+            location.setCreated_at(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_CREATED_AT)));
+            location.setDeleted_at(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_DELETED_AT)));
+            location.setUpdated_at(loc.getString(loc.getColumnIndex(DBHelper.LOCATION_UPDATED_AT)));
+            optograph.setLocation(location);
+            loc.close();
+        }
+        res.close();
+        return optograph;
     }
 }

@@ -29,8 +29,8 @@ public class Location implements Parcelable {
     private String created_at;
     private String updated_at;
     private String deleted_at;
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
     private String text;
     private String country;
     private String country_short;
@@ -43,8 +43,8 @@ public class Location implements Parcelable {
         created_at = "";
         updated_at = "";
         deleted_at = "";
-        latitude = "";
-        longitude = "";
+        latitude = 0;
+        longitude = 0;
         text = "";
         country = "";
         country_short = "";
@@ -58,8 +58,8 @@ public class Location implements Parcelable {
         this.created_at = source.readString();
         this.updated_at = source.readString();
         this.deleted_at = source.readString();
-        this.latitude = source.readString();
-        this.longitude = source.readString();
+        this.latitude = source.readDouble();
+        this.longitude = source.readDouble();
         this.text = source.readString();
         this.country = source.readString();
         this.country_short = source.readString();
@@ -100,19 +100,19 @@ public class Location implements Parcelable {
         this.deleted_at = deleted_at;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -176,8 +176,8 @@ public class Location implements Parcelable {
         dest.writeString(this.created_at);
         dest.writeString(this.updated_at);
         dest.writeString(this.deleted_at);
-        dest.writeString(this.latitude);
-        dest.writeString(this.longitude);
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longitude);
         dest.writeString(this.text);
         dest.writeString(this.country);
         dest.writeString(this.country_short);

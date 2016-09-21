@@ -813,6 +813,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        JSONArray resultSet = new JSONArray();
         List<Optograph> optographs = new LinkedList<>();
         cursor.moveToFirst();
+        String locId = "";
 
         for(int a=0; a < cursor.getCount(); a++){
             Optograph opto = null;
@@ -834,6 +835,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 opto.setShould_be_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 ? true : false);
                 opto.setIs_local(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_LOCAL)) == 1 ? true : false);
                 opto.setIs_data_uploaded(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) == 1 ? true : false);
+                locId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_LOCATION_ID));
                 personId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_PERSON_ID));
 
             } catch (Exception e) {
@@ -870,8 +872,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             opto.setPerson(person);
 
             Location location = new Location();
-            if(opto != null && opto.getLocation().getId() !=null && !opto.getLocation().getId().equals("")){
-                Cursor res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME,"id");
+            if(opto != null && locId !=null && !locId.equals("")){
+                Cursor res = mydb.getData(locId, DBHelper.LOCATION_TABLE_NAME,"id");
                 res.moveToFirst();
                 if (res.getCount()!= 0) {
                     location.setId(res.getString(res.getColumnIndex("id")));
@@ -882,8 +884,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                     location.setPlace(res.getString(res.getColumnIndex("place")));
                     location.setRegion(res.getString(res.getColumnIndex("region")));
                     location.setPoi(Boolean.parseBoolean(res.getString(res.getColumnIndex("poi"))));
-                    location.setLatitude(res.getString(res.getColumnIndex("latitude")));
-                    location.setLongitude(res.getString(res.getColumnIndex("longitude")));
+                    location.setLatitude(res.getDouble(res.getColumnIndex("latitude")));
+                    location.setLongitude(res.getDouble(res.getColumnIndex("longitude")));
                 }
             }
             opto.setLocation(location);
