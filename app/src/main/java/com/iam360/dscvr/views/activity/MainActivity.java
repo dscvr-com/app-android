@@ -351,4 +351,7 @@ public class MainActivity extends AppCompatActivity {
     public void refresh() {
         adapterViewPager.profileRootFragment.refresh();
     }
+
+    public void switchToProfilePage() { adapterViewPager.profileRootFragment.switchToProfilePage(); }
+
 }

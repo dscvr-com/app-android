@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -28,8 +29,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
@@ -41,6 +44,7 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
+import com.iam360.dscvr.model.FBSignInData;
 import com.iam360.dscvr.model.GeocodeDetails;
 import com.iam360.dscvr.model.GeocodeReverse;
 import com.iam360.dscvr.model.LocationToUpdate;
@@ -56,6 +60,8 @@ import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.MixpanelHelper;
+import com.iam360.dscvr.util.NotificationSender;
+import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -66,6 +72,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import butterknife.Bind;
@@ -311,7 +318,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void updateOptograph(Optograph opto) {
-        Log.d("myTag", " upload: updateOptograph");
+        Log.d("myTag", " upload: updateOptograph isFBShare? " + opto.isPostFacebook());
         Timber.d("isFBShare? " + opto.isPostFacebook() + " isTwitShare? " + opto.isPostTwitter() + " optoId: " + opto.getId());
         LocationToUpdate loc = null;
 //        JsonObject obj = new JsonObject();
@@ -477,7 +484,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private void loginFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+        final List<String> PUBLISH_PERMISSIONS = Arrays.asList("publish_actions");
+        LoginManager.getInstance().logInWithPublishPermissions(this, PUBLISH_PERMISSIONS);
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -617,7 +625,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, false, false, false,
+                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
                 false, false, "", opto.getOptograph_type());
     }
 
@@ -741,12 +749,9 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 break;
             case R.id.post_later_group:
                 userToken = cache.getString(Cache.USER_TOKEN);
-                Log.d("myTag"," post_later: locDetails null? "+(chosenLocDetails==null));
                 if (chosenLocDetails!=null) {
                     insertLocation(optographId);
                 }
-                Log.d("myTag"," post_later: uploadImageMode: "+UPLOAD_IMAGE_MODE+" userToken: "+userToken+
-                    " isDataUploaded? "+optographGlobal.is_data_uploaded()+" isLocal? "+optographGlobal.is_local()+" id: "+optographGlobal.getId());
 //                if ((userToken == null || userToken.equals("")) && doneUpload) {
 //                    //TODO login page
 ////                    ((MainActivityRedesign) getApplicationContext()).profileDialog();
@@ -767,22 +772,23 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 exitDialog();
                 break;
             case R.id.fb_share:
-                userToken = cache.getString(Cache.USER_TOKEN);
-                Log.d("myTag"," fb share: userToken: "+userToken+" fbLogged? "+cache.getBoolean(Cache.USER_FB_LOGGED_IN, false));
-                if (userToken == null || userToken.equals("")) {
+                Set<String> permissions = null;
+                if(com.facebook.AccessToken.getCurrentAccessToken() == null)
                     sharedNotLoginDialog();
-                    return;
-                } else if (cache.getBoolean(Cache.USER_FB_LOGGED_IN, false)) {
-                    isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
-                    cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
-                    optographGlobal.setPostFacebook(isFBShare);
-                    initializeShareButtons();
-                    mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare);
-                    PersonManager.updatePerson();
-                    return;
+                else {
+                    permissions = com.facebook.AccessToken.getCurrentAccessToken().getPermissions();
+
+                    if (permissions.contains("publish_actions")) {
+                        isFBShare = !cache.getBoolean(Cache.POST_OPTO_TO_FB, false);
+                        cache.save(Cache.POST_OPTO_TO_FB, isFBShare);
+                        optographGlobal.setPostFacebook(isFBShare);
+                        initializeShareButtons();
+                        mydb.updateColumnOptograph(optographId, DBHelper.OPTOGRAPH_POST_FACEBOOK, isFBShare);
+                        PersonManager.updatePerson();
+                    } else {
+                        loginFacebook();
+                    }
                 }
-                loginFacebook();
-                Log.d("myTag", "fbShareClicked.");
                 break;
             case R.id.twitter_share:
                 userToken = cache.getString(Cache.USER_TOKEN);

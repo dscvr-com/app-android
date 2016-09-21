@@ -247,8 +247,10 @@ public class MailingListFragment extends Fragment implements View.OnClickListene
     private void startProfile() {
 
         if(getContext() instanceof MainActivity) {
-            getActivity().finish();
-            startActivity(getActivity().getIntent());
+//            getActivity().finish();
+//            startActivity(getActivity().getIntent());
+
+            ((MainActivity) getContext()).switchToProfilePage();
 
         }
     }
