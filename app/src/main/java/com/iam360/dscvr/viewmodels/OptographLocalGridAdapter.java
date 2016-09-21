@@ -1676,11 +1676,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public void saveToSQLiteFeeds(Optograph opto) {
 
         if (opto.getId() == null) return;
-        Log.d("myTag", " saveToSQLiteFeeds: local? " + opto.is_local()+" id: "+opto.getId()+" loc null? "+(opto.getLocation()==null));
         Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount() > 0) {
-            Log.d("myTag", " saveToSQLiteFeeds: inside res.getCount>0");
             String id = DBHelper.OPTOGRAPH_ID;
             String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
             if (opto.getText() != null && !opto.getText().equals("")) {
@@ -1711,16 +1709,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals("")) {
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
             }
-            Log.d("myTag", " saveToSQLiteFeeds: location null? " + (opto.getLocation() == null));
-            if(opto.getLocation()!=null)Log.d("myTag", " saveToSQLiteFeeds: locId: " + opto.getLocation().getId()+" name: "+opto.getLocation().getText());
             if (opto.getLocation() != null && opto.getLocation().getId() != null && !opto.getLocation().getId().equals("")) {
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
             }
         } else {
-            Log.d("myTag", " saveToSQLiteFeeds: inside else location null? " + (opto.getLocation() == null));
-            if (opto.getLocation()!=null) {
-                Log.d("myTag", " saveToSQLiteFeeds: loc name: "+opto.getLocation().getText());
-            }
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
                     opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
                     opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
@@ -1784,14 +1776,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         if (!loc.equals("")) {
-            Log.d("myTag", " saveToSQLiteFeeds: inside !loc.equals()");
             res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
             res.moveToFirst();
             if (opto.getLocation().getId() != null) {
-                Log.d("myTag", " saveToSQLiteFeeds: inside opto.getLocation().getId() != null");
                 Location locs = opto.getLocation();
                 if (res.getCount() > 0) {
-                    Log.d("myTag", " saveToSQLiteFeeds: inside res.getCount>0");
                     String id = "id";
                     String tb = DBHelper.LOCATION_TABLE_NAME;
                     if (locs.getCreated_at() != null && !locs.getCreated_at().equals("")) {
@@ -1809,7 +1798,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (locs.getLongitude() != 0) {
                         mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
                     }
-                    Log.d("myTag", " saveToSQLiteFeeds: location name: " + locs.getText());
                     if (locs.getText() != null && !locs.getText().equals("")) {
                         mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
                     }
@@ -1827,8 +1815,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     }
                     mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
                 } else {
-                    Log.d("myTag", " saveToSQLiteFeeds: inside else: name: " + locs.getText());
-                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
+//                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
                     mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(),
                             locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
                             locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
