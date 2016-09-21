@@ -606,7 +606,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
                         mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
                     mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
                 } else {
-                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
+//                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
                     mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(), locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
                             locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
                 }
