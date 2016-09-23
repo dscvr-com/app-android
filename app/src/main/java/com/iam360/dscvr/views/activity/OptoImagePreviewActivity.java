@@ -215,6 +215,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         uploadButton.setOnClickListener(this);
         postLaterButton.setOnClickListener(this);
+        postLaterIcon.setOnClickListener(this);
         exitButton.setOnClickListener(this);
         retryButton.setOnClickListener(this);
         fbShareButton.setOnClickListener(this);
@@ -747,7 +748,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 //                }
 
                 break;
-            case R.id.post_later_group:
+            case R.id.post_later_button:
                 userToken = cache.getString(Cache.USER_TOKEN);
                 if (chosenLocDetails!=null) {
                     insertLocation(optographId);
