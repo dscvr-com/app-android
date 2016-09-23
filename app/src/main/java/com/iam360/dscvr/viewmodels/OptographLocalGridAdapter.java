@@ -1542,14 +1542,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
-        Log.d("myTag", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
+        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
 
         Log.d("Caching", "addItem 2");
 
         saveToSQLiteFeeds(optograph);
-        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
-            saveToSQLite(optograph);
-        }
+//        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+//            saveToSQLite(optograph);
+//        }
         Log.d("Caching", "addItem 3");
 
         if (optograph.is_local()) {
@@ -1674,11 +1674,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void saveToSQLiteFeeds(Optograph opto) {
+        Log.d("Caching", "saveToSQLiteFeeds");
 
         if (opto.getId() == null) return;
         Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount() > 0) {
+            Log.d("Caching", "Updating " + opto.getId());
             String id = DBHelper.OPTOGRAPH_ID;
             String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
             if (opto.getText() != null && !opto.getText().equals("")) {
@@ -1713,6 +1715,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
             }
         } else {
+            Log.d("Caching", "Inserting " + opto.getId());
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
                     opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
                     opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),

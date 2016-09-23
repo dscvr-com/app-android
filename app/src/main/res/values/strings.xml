@@ -59,6 +59,8 @@
     <string name="dialog_fb_success">360 photo posted successfully.</string>
     <string name="dialog_tap_to_hide">Tap to hide</string>
     <string name="dialog_loading_dscvr">Loading DSCVR..</string>
+    <string name="dialog_logout_ongoing_upload_title">Are you sure want to logout?</string>
+    <string name="dialog_logout_ongoing_upload_msg">Some optographs are still not uploaded and will be deleted if you logout.</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>

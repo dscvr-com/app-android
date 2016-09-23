@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.iam360.dscvr.model.Location;
@@ -142,10 +143,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table " + PERSON_TABLE_NAME +
                         " (id text primary key not null, created_at text not null," +
                         "deleted_at text, display_name text not null, user_name text not null," +
-                        "email text not null, text text not null,"+
+                        "email text not null, text text not null," +
                         "elite_status boolean not null, avatar_asset_id text not null," +
                         "optographs_count integer not null, followers_count integer not null," +
-                        "followed_count integer not null, is_followed boolean not null,"+
+                        "followed_count integer not null, is_followed boolean not null," +
                         "facebook_user_id text not null, facebook_token text not null," +
                         "twitter_token text not null, twitter_secret text not null)"
         );
@@ -278,9 +279,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getUserOptographs(String id, String table, int limit, String older_than) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + table
-                + " WHERE " + OPTOGRAPH_PERSON_ID + " = \'" + id + "\' AND " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
-                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
-                + " LIMIT " + limit;
+                + " WHERE " + OPTOGRAPH_PERSON_ID + " = \'" + id
+                + "\' "; //AND " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' "
+//                + " AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
+//                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
+//                + " LIMIT " + limit;
         return db.rawQuery(query, null);
     }
 
@@ -304,6 +307,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 + " LIMIT " + limit;
         Timber.d(query);
         return db.rawQuery(query, null);
+    }
+
+    public long getLocalOptoCount(String id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + OPTO_TABLE_NAME_FEEDS
+                + " WHERE " + OPTOGRAPH_PERSON_ID + " = \'" + id + "\' AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
+                + " AND " + OPTOGRAPH_IS_LOCAL;
+
+        Timber.d(query);
+        SQLiteStatement s = db.compileStatement( query);
+        return s.simpleQueryForLong();
     }
 
     public boolean updateFace(String id,String column,int value) {
