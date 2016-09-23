@@ -133,6 +133,10 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".views.activity.SignInActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".views.activity.SigninFBActivity"
             android:screenOrientation="portrait" />
 
