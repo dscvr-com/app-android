@@ -16,10 +16,13 @@ import java.util.Arrays;
 import timber.log.Timber;
 
 /**
- * @author Nilan Marktanner
- * @date 2016-01-12
+ * Created by Joven on 9/22/2016.
  */
-public class Plane {
+public class Plane2 {
+    public boolean isInitiliazed = false;
+    public float[] translation = new float[16];
+    public float[] rotation = new float[16];
+
     private static final int COORDS_PER_VERTEX = 3;
     private static final int COORDS_PER_TEXTURE = 2;
     private static final int VERTICES_PER_PLANE = 4;
@@ -50,21 +53,21 @@ public class Plane {
 
     private final String vertexShaderCode =
             "uniform mat4 uMVPMatrix;" +
-            "attribute vec4 vPosition;" +
-            "attribute vec2 a_texCoord;" +
-            "varying vec2 v_texCoord;" +
-            "void main() {" +
-            "  gl_Position = uMVPMatrix * vPosition;" +
-            "  v_texCoord = a_texCoord;" +
-            "}";
+                    "attribute vec4 vPosition;" +
+                    "attribute vec2 a_texCoord;" +
+                    "varying vec2 v_texCoord;" +
+                    "void main() {" +
+                    "  gl_Position = uMVPMatrix * vPosition;" +
+                    "  v_texCoord = a_texCoord;" +
+                    "}";
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
-            "varying vec2 v_texCoord;" +
-            "uniform sampler2D s_texture;" +
-            "void main() {" +
-            "  gl_FragColor = texture2D(s_texture, v_texCoord);" +
-            "}";
+                    "varying vec2 v_texCoord;" +
+                    "uniform sampler2D s_texture;" +
+                    "void main() {" +
+                    "  gl_FragColor = texture2D(s_texture, v_texCoord);" +
+                    "}";
 
     private int program;
     // Handles
@@ -73,7 +76,7 @@ public class Plane {
     private int texCoordHandle;
     private int textureSamplerHandle;
 
-    public Plane() {
+    public Plane2() {
         initialize();
     }
 
@@ -127,8 +130,8 @@ public class Plane {
     }
 
     public synchronized void updateTexture(final Bitmap texture) {
-            this.texture = texture;
-            this.textureUpdated = true;
+        this.texture = texture;
+        this.textureUpdated = true;
     };
 
     private void loadGLTexture() {
@@ -147,10 +150,6 @@ public class Plane {
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, texture, 0);
         this.hasTexture = true;
         this.textureUpdated = false;
-
-
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        GLES20.glEnable(GLES20.GL_BLEND);
     }
 
     public void draw(float[] mvpMatrix) {
@@ -215,7 +214,29 @@ public class Plane {
         this.hasTexture = false;
         this.textureUpdated = false;
         updateTexture(Constants.getInstance().getDefaultTexture());
+    }
 
-        // TODO: delete formerly bound texture?
+    public void setInitiliazed(boolean initiliazed) {
+        isInitiliazed = initiliazed;
+    }
+
+    public boolean isInitiliazed() {
+        return isInitiliazed;
+    }
+
+    public void setRotation(float[] rotation) {
+        this.rotation = rotation;
+    }
+
+    public float[] getRotation() {
+        return rotation;
+    }
+
+    public void setTranslation(float[] translation) {
+        this.translation = translation;
+    }
+
+    public float[] getTranslation() {
+        return translation;
     }
 }

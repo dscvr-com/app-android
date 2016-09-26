@@ -113,9 +113,6 @@ public class TouchEventListener extends RotationMatrixProvider {
             phiDiff = 0;
             thetaDiff = 0;
         }
-        Log.d("MARK10","minTheta = "+minTheta);
-        Log.d("MARK10","maxTheta = "+maxTheta);
-
 
         // clamp theta for border effect
         theta = Math.max(minTheta, Math.min(theta, maxTheta));
