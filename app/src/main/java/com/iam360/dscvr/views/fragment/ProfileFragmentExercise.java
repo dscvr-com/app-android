@@ -578,15 +578,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
-//                            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
-//                                    .subscribeOn(Schedulers.newThread())
-//                                    .observeOn(AndroidSchedulers.mainThread())
-//                                    .doOnCompleted(() -> updateMessage(null))
-//                                    .onErrorReturn(throwable -> {
-//                                        updateMessage(getResources().getString(R.string.profile_net_prob));
-//                                        return null;
-//                                    })
-//                                    .subscribe(optographLocalGridAdapter::addItem);
+                            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnCompleted(() -> updateMessage(null))
+                                    .onErrorReturn(throwable -> {
+                                        updateMessage(getResources().getString(R.string.profile_net_prob));
+                                        return null;
+                                    })
+                                    .subscribe(optographLocalGridAdapter::addItem);
                         })
                         .onErrorReturn(throwable -> {
                             Log.d("myTag", " Error: message: " + throwable.getMessage());

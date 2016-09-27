@@ -69,6 +69,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -627,11 +628,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (isOnEditMode()) return;
                 onTab = ON_FOLLOWER;
                 setTab(mHolder);
-                followers = new ArrayList<Follower>();
-                followers.add(0, null);
-                followers.add(1, null);
-                notifyDataSetChanged();
-                setMessage("");
+//                followers = new ArrayList<Follower>();
+//                followers.add(0, null);
+//                followers.add(1, null);
+//                notifyDataSetChanged();
+//                setMessage("");
 //                apiConsumer.getFollowers()
 //                        .subscribeOn(Schedulers.newThread())
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -687,14 +688,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void setNotifications() {
-        notifications = new ArrayList<Notification>();
-        notifications.add(0, null);
-        notifications.add(1, null);
-        notifyDataSetChanged();
+        Log.d("myTag", "setNotifications");
+//        notifications = new ArrayList<Notification>();
+//        notifications.add(0, null);
+//        notifications.add(1, null);
+//        notifyDataSetChanged();
         setMessage("");
         apiConsumer.getNotifications(new Callback<List<Notification>>() {
             @Override
             public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
+                Log.d("myTag", "setNotifications onresponse");
                 if (response.isSuccess() && response.body() != null) {
                     List<Notification> notifs = response.body();
                     notifications = new ArrayList<Notification>();
@@ -704,6 +707,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         if (not.getDeleted_at() == null) notifications.add(not);
                     }
                     notifyDataSetChanged();
+
+                    // clear notification badge count
+                    cache.save(Cache.NOTIF_COUNT, 0);
+                    ShortcutBadger.removeCount(context);
                 } else {
                     notifyDataSetChanged();
 //                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();

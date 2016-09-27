@@ -280,10 +280,10 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + table
                 + " WHERE " + OPTOGRAPH_PERSON_ID + " = \'" + id
-                + "\' "; //AND " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' "
-//                + " AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
-//                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
-//                + " LIMIT " + limit;
+                + "\' AND " + OPTOGRAPH_CREATED_AT + " < \'" + older_than + "\' "
+                + " AND " + OPTOGRAPH_DELETED_AT + " = \'\' "
+                + " ORDER BY " + OPTOGRAPH_CREATED_AT + " DESC "
+                + " LIMIT " + limit;
         return db.rawQuery(query, null);
     }
 
