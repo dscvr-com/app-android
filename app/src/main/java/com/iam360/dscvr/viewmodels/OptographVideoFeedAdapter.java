@@ -3,6 +3,7 @@ package com.iam360.dscvr.viewmodels;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.iam360.dscvr.BR;
+import com.iam360.dscvr.NewFeedItemBinding;
+import com.iam360.dscvr.ProfileHeaderBinding;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.LogInReturn;
@@ -42,7 +45,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 import timber.log.Timber;
 
-public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder> {
+public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVideoFeedAdapter.OptographHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     private static final float ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
     private static final float DENSITY = Constants.getInstance().getDisplayMetrics().density;
@@ -68,10 +71,10 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     @Override
-    public OptographVideoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OptographHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.new_feed_item, parent, false);
-        return new OptographVideoHolder(view, context);
+        return new OptographHolder(view, context);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     @Override
-    public void onBindViewHolder(OptographVideoHolder holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(OptographHolder holder, int position, List<Object> payloads) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
@@ -89,8 +92,8 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
     }
 
     @Override
-    public void onBindViewHolder(OptographVideoHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
+    public void onBindViewHolder(OptographHolder holder, int position) {
+//        super.onBindViewHolder(holder, position);
         Optograph optograph = optographs.get(position);
 
 //        if (!optograph.equals(holder.getBinding().getOptograph())) {
@@ -200,11 +203,11 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
     }
 
-    @Nullable
-    @Override
-    protected Object getItem(int position) {
-        return optographs.get(position);
-    }
+//    @Nullable
+//    @Override
+//    protected Object getItem(int position) {
+//        return optographs.get(position);
+//    }
 
     private void startProfile(Person person) {
         if(cache.getString(Cache.USER_ID).equals(person)) {
@@ -245,7 +248,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         return optographList;
     }
 
-    private void followOrUnfollow(Optograph optograph, OptographVideoHolder holder, View v) {
+    private void followOrUnfollow(Optograph optograph, OptographHolder holder, View v) {
 
         if (!cache.getString(Cache.USER_TOKEN).equals("")) {
             if (optograph.getPerson().is_followed()) {
@@ -288,7 +291,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         }
     }
 
-    private void setHeart(Optograph optograph, OptographVideoHolder holder, View v) {
+    private void setHeart(Optograph optograph, OptographHolder holder, View v) {
         if(!cache.getString(Cache.USER_TOKEN).equals("")) {
             if (!optograph.is_starred()) {
                 mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_IS_STARRED, true);
@@ -362,7 +365,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         }
     }
 
-    private void updateHeartLabel(Optograph optograph, OptographVideoHolder holder) {
+    private void updateHeartLabel(Optograph optograph, OptographHolder holder) {
 //        holder.getBinding().heartLabel.setText(String.valueOf(optograph.getStars_count()));
         holder.getBinding().heartLabel.setText("");
         if(optograph.is_starred()) {
@@ -372,7 +375,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         }
     }
 
-    private void followPerson(Optograph optograph, boolean isFollowed, OptographVideoHolder holder) {
+    private void followPerson(Optograph optograph, boolean isFollowed, OptographHolder holder) {
         followPerson(optograph, isFollowed, holder, false);
     }
 
@@ -383,7 +386,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
      * @param holder
      * @param isInitial initial binding of opto list, if for onclick use false
      */
-    private void followPerson(Optograph optograph, boolean isFollowed, OptographVideoHolder holder, boolean isInitial) {
+    private void followPerson(Optograph optograph, boolean isFollowed, OptographHolder holder, boolean isInitial) {
         Cursor res = mydb.getData(optograph.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
         res.moveToFirst();
 
@@ -650,7 +653,7 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
         }
     }
 
-    public void refreshAllOptoThatContainsPersonId(String personId, boolean isFollowed, OptographVideoHolder holder) {
+    public void refreshAllOptoThatContainsPersonId(String personId, boolean isFollowed, OptographHolder holder) {
         Timber.d("refreshAllOptoThatContainsPersonId");
 
         for(int position = 0; position < optographs.size(); position++) {
@@ -670,6 +673,19 @@ public class OptographVideoFeedAdapter extends ToroAdapter<OptographVideoHolder>
 
         }
 
+    }
+
+    public static class OptographHolder extends RecyclerView.ViewHolder {
+        private NewFeedItemBinding bindingHeader;
+
+        public OptographHolder(View rowView, Context context) {
+            super(rowView);
+            this.bindingHeader = DataBindingUtil.bind(rowView);
+        }
+
+        public NewFeedItemBinding getBinding() {
+            return bindingHeader;
+        }
     }
 
 }

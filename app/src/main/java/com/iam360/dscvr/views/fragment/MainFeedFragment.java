@@ -81,7 +81,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
 
 //    NetworkProblemDialog networkProblemDialog;
-private AlertDialog networkProblemAlert = null;
+    private AlertDialog networkProblemAlert = null;
 
 
     private SensorManager sensorManager;
@@ -328,6 +328,12 @@ private AlertDialog networkProblemAlert = null;
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
                 .subscribe(this::countLocal);
         GlobalState.shouldHardRefreshFeed = false;
+
+        refreshNotifBadge();
+
+    }
+
+    public void refreshNotifBadge() {
 
         // refresh notification badge
         if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
@@ -578,9 +584,7 @@ private AlertDialog networkProblemAlert = null;
         disableDrag();
         binding.swipeRefreshLayout.setRefreshing(false);
 
-        // refresh notification badge
-        if(cache.getInt(Cache.NOTIF_COUNT) > 0) binding.notifBadge.setVisibility(View.VISIBLE);
-        else binding.notifBadge.setVisibility(View.GONE);
+        refreshNotifBadge();
 
     }
 

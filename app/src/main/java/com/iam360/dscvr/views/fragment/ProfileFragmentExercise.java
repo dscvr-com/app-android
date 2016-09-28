@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -46,6 +47,7 @@ import java.util.List;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Mariel on 6/24/2016.
@@ -294,26 +296,44 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        long localCount = mydb.getLocalOptoCount(cache.getString(Cache.USER_ID));
+                        Timber.d("Local Opto Count : " + localCount);
                         // logs out
-
-                        PersonManager.logoutPerson();
-                        LoginManager.getInstance().logOut();
-                        backToSignInPage();
-
-                        // remove user cache, remove this fragment
-                        cache.save(Cache.USER_ID, "");
-                        cache.save(Cache.USER_TOKEN, "");
-                        cache.save(Cache.GATE_CODE, "");
-
-                        // delete all database content
-                        mydb.deleteAllTable();
-
+                        if(localCount <= 0) logout();
+                        else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setTitle(R.string.dialog_logout_ongoing_upload_title)
+                                    .setMessage(R.string.dialog_logout_ongoing_upload_msg)
+                                    .setPositiveButton("Yes", (dialog, which) -> {
+                                        dialog.dismiss();
+                                        logout();
+                                    })
+                                    .setNegativeButton("No", (dialog, which) -> {
+                                        dialog.dismiss();
+                                    });
+                            builder.create().show();
+                        }
                         return true;
                     }
                 });
                 popupMenu.show();
                 break;
         }
+    }
+
+    private void logout() {
+        PersonManager.logoutPerson();
+        LoginManager.getInstance().logOut();
+        backToSignInPage();
+
+        // remove user cache, remove this fragment
+        cache.save(Cache.USER_ID, "");
+        cache.save(Cache.USER_TOKEN, "");
+        cache.save(Cache.GATE_CODE, "");
+        cache.save(Cache.UPLOAD_ON_GOING, false);
+
+        // delete all database content
+        mydb.deleteAllTable();
     }
 
     /**
@@ -551,8 +571,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         Cursor cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
 
         if (cursor != null) {
-            Log.d("Caching", "initializeFeed cursor not null");
             cursor.moveToFirst();
+            Log.d("Caching", "Profile Count : " + cursor.getCount());
             if (cursor.getCount() != 0) {
                 cur2Json(cursor)
                         .subscribeOn(Schedulers.newThread())

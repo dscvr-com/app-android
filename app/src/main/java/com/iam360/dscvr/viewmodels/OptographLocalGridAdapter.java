@@ -69,6 +69,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -627,11 +628,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (isOnEditMode()) return;
                 onTab = ON_FOLLOWER;
                 setTab(mHolder);
-                followers = new ArrayList<Follower>();
-                followers.add(0, null);
-                followers.add(1, null);
-                notifyDataSetChanged();
-                setMessage("");
+//                followers = new ArrayList<Follower>();
+//                followers.add(0, null);
+//                followers.add(1, null);
+//                notifyDataSetChanged();
+//                setMessage("");
 //                apiConsumer.getFollowers()
 //                        .subscribeOn(Schedulers.newThread())
 //                        .observeOn(AndroidSchedulers.mainThread())
@@ -687,14 +688,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void setNotifications() {
-        notifications = new ArrayList<Notification>();
-        notifications.add(0, null);
-        notifications.add(1, null);
-        notifyDataSetChanged();
+        Log.d("myTag", "setNotifications");
+//        notifications = new ArrayList<Notification>();
+//        notifications.add(0, null);
+//        notifications.add(1, null);
+//        notifyDataSetChanged();
         setMessage("");
         apiConsumer.getNotifications(new Callback<List<Notification>>() {
             @Override
             public void onResponse(Response<List<Notification>> response, Retrofit retrofit) {
+                Log.d("myTag", "setNotifications onresponse");
                 if (response.isSuccess() && response.body() != null) {
                     List<Notification> notifs = response.body();
                     notifications = new ArrayList<Notification>();
@@ -704,6 +707,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         if (not.getDeleted_at() == null) notifications.add(not);
                     }
                     notifyDataSetChanged();
+
+                    // clear notification badge count
+                    cache.save(Cache.NOTIF_COUNT, 0);
+                    ShortcutBadger.removeCount(context);
                 } else {
                     notifyDataSetChanged();
 //                            Toast.makeText(context, "You have no Notification.", Toast.LENGTH_LONG).show();
@@ -1542,14 +1549,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
-        Log.d("myTag", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
+        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
 
         Log.d("Caching", "addItem 2");
 
         saveToSQLiteFeeds(optograph);
-        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
-            saveToSQLite(optograph);
-        }
+//        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
+//            saveToSQLite(optograph);
+//        }
         Log.d("Caching", "addItem 3");
 
         if (optograph.is_local()) {
@@ -1674,11 +1681,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void saveToSQLiteFeeds(Optograph opto) {
+        Log.d("Caching", "saveToSQLiteFeeds");
 
         if (opto.getId() == null) return;
         Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
         res.moveToFirst();
         if (res.getCount() > 0) {
+            Log.d("Caching", "Updating " + opto.getId());
             String id = DBHelper.OPTOGRAPH_ID;
             String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
             if (opto.getText() != null && !opto.getText().equals("")) {
@@ -1713,6 +1722,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
             }
         } else {
+            Log.d("Caching", "Inserting " + opto.getId());
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
                     opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
                     opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
