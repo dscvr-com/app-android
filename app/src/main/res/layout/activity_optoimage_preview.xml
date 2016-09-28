@@ -28,14 +28,14 @@
             android:layout_alignBottom="@id/preview_image"
             android:layout_marginBottom="15dp"
             android:layout_marginStart="48dp"
-            android:drawablePadding="@dimen/fab_elevation"
+            android:drawablePadding="8dp"
             android:drawableStart="@drawable/location_hand_icn"
             android:text="Move the Image to select your favorite spot."
             android:textColor="@android:color/white"
             android:textSize="12sp"
             android:visibility="gone" />
 
-        <!--android:padding="@dimen/snackbar_padding_vertical"-->
+        <!--android:padding="14dp"-->
         <LinearLayout
             android:id="@+id/location_box"
             android:layout_width="match_parent"
@@ -59,7 +59,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/fab_elevation"
+                android:layout_marginRight="8dp"
                 android:background="@drawable/place_icn" />
 
             <TextView
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:padding="@dimen/snackbar_padding_vertical" />
+                android:padding="14dp" />
 
             <HorizontalScrollView
                 android:id="@+id/location_scroll_layout"
@@ -148,8 +148,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/fab_elevation"
-                    android:paddingBottom="@dimen/fab_elevation"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="UPLOAD NOW"
                     android:textSize="12sp" />
 
@@ -211,8 +211,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/fab_elevation"
-                    android:paddingBottom="@dimen/fab_elevation"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="@string/preview_post_later"
                     android:textAllCaps="true"
                     android:textSize="12sp" />
@@ -235,7 +235,7 @@
                     android:layout_above="@id/post_later_label"
                     android:layout_centerHorizontal="true"
                     android:clickable="true"
-                    android:padding="@dimen/snackbar_padding_vertical" />
+                    android:padding="14dp" />
 
             </RelativeLayout>
         </RelativeLayout>
@@ -318,13 +318,13 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/share_group"
             android:layout_below="@id/add_location_layout"
-            android:layout_marginLeft="@dimen/fab_elevation"
-            android:layout_marginRight="@dimen/fab_elevation"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:background="@drawable/preview_textbox_bg"
             android:gravity="top"
             android:hint="Tell something about what you see..."
             android:inputType="textMultiLine"
-            android:padding="@dimen/fab_elevation"
+            android:padding="8dp"
             android:textSize="14sp" />
 
     </RelativeLayout>

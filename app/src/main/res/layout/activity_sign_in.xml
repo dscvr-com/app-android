@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,11 +16,13 @@
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
         android:background="@color/optonautMain"
         android:title=""
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="45dp"
+        android:paddingBottom="45dp">
 
         <!--android:src="@mipmap/ic_logo_head"-->
         <ImageView
@@ -30,19 +33,65 @@
 
     </RelativeLayout>
 
-    <android.support.design.widget.TabLayout
-        style="@style/MyCustomTabLayout"
-        android:id="@+id/sliding_tabs_signin"
+    <LinearLayout
+        android:id="@+id/tab_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"/>
+        android:orientation="horizontal"
+        android:layout_below="@id/header">
 
+        <RelativeLayout
+            android:id="@+id/login_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="13dp"
+            android:paddingBottom="13dp">
+
+            <TextView
+                android:id="@+id/login_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/bright"
+                android:text="@string/log_in"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/signup_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="13dp"
+            android:paddingBottom="13dp">
+
+            <TextView
+                android:id="@+id/signup_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/bright"
+                android:text="@string/sign_up"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <!--<android.support.design.widget.TabLayout-->
+        <!--style="@style/MyCustomTabLayout"-->
+        <!--android:id="@+id/sliding_tabs_signin"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/header"/>-->
+
+    <!--android:layout_weight="1"-->
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_signin"
-        android:layout_below="@id/sliding_tabs_signin"
+        android:layout_below="@id/tab_header"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:background="@android:color/white" />
 
 </RelativeLayout>

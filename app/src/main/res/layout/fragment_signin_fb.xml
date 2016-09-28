@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/bg_light"
     tools:context=".views.profile.SigninFBFragment">
+    <!--android:background="@drawable/bg_light"-->
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -14,26 +14,83 @@
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
+    <!--android:layout_centerInParent="true"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="35dp"
+        android:weightSum="1">
 
         <ImageView
             android:id="@+id/logo"
+            android:layout_width="43dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/logo_horizontal_settings"
+            android:visibility="gone"
+            android:layout_weight="0.00" />
+        <EditText
+            android:id="@+id/email_signin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/signin_edittext_border"
+            android:hint="@string/email_address_or_username"
+            android:padding="10dp"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/password_signin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:maxLines="1"
+            android:inputType="textPassword"
+            android:hint="@string/password"
+            android:background="@drawable/signin_edittext_border"
+            android:padding="10dp"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/ok_signin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/bright"
+            android:background="@drawable/orange_btn"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="@string/log_in"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/forgot_password_signin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/logo_horizontal_settings" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:text="@string/forgot_password_text"
+            android:textColor="@color/text_yellow"
+            android:textSize="16sp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/btn_gray"/>
 
         <ImageButton
             android:id="@+id/fb_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:background="@drawable/facebook_connect_button" />
-
     </LinearLayout>
 
     <EditText

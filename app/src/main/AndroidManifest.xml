@@ -107,10 +107,10 @@
             </intent-filter>
         </service>
 
+        <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
 
         <activity
             android:name=".views.activity.OptographDetailsActivity"
@@ -135,6 +135,10 @@
         <activity
             android:name=".views.activity.SignInActivity"
             android:screenOrientation="portrait" />
+
+        <!--<activity-->
+            <!--android:name=".views.activity.SignInAct2"-->
+            <!--android:screenOrientation="portrait" />-->
 
         <activity
             android:name=".views.activity.SigninFBActivity"
