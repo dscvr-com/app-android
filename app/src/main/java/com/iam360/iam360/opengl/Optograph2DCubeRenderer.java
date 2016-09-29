@@ -261,7 +261,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});//Matrix.translateM(translationMatrix, 0, x_pos, y_pos, z_pos);//Maths.buildTranslationMatrix(new float[]{-x_pos, y_pos, 20});//{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f};
 
          //Maths.buildRotationMatrix(new float[]{x_rot, y_rot, z_rot, 1}); //combinedMotionManager.getRotationMatrix(); //
+
         float[] rotations = combinedMotionManager.getRotationMatrix();//Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST);//Maths.buildRotationMatrix(new float[]{90, 0, -currPhi, currTheta}); //combinedMotionManager.getRotationMatrix(); //Maths.buildRotationMatrix(new float[]{180, 1, 0, 20}); //{-1.0f, 0.0f, 8.742278E-8f, 0.0f, -8.742278E-8f, -4.371139E-8f, -1.0f, 0.0f, 3.821371E-15f, -1.0f, 4.371139E-8f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
 
       //  Log.d("MARK","Plane translationMatrix = "+Arrays.toString(translationMatrix));
       //  Log.d("MARK","Plane rotations = "+Arrays.toString(rotations));
@@ -322,7 +324,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e4de11758d8d91506d94045226c83c5b74df78a4
     }
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
