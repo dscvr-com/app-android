@@ -136,6 +136,7 @@ public class Cube {
     private void initializePlanes() {
         for (int i = 0; i < FACES_PER_CUBE; ++i) {
             planes[i] = new Plane();
+
         }
     }
 

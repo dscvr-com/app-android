@@ -81,7 +81,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private float[] mVPMatrix = new float[16];
 
 
-    private int[] textures = new int[1];
+    private Bitmap planeTexture;
+
 
     public Optograph2DCubeRenderer(Context context) {
         Timber.v("cube renderer constructor");
@@ -103,8 +104,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         this.cube.initialize();
         this.plane.initializeProgram();
 
-        Bitmap b = BitmapFactory.decodeResource(context.getResources(), R.drawable.pin_icn);
-        this.plane.updateTexture(b);
+        Bitmap planeTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.pin_icn);
+        this.plane.updateTexture(planeTexture);
 
 //        sphere = new MarkerNode(5, sphereRadius);
         sphere = new Sphere(5, sphereRadius);
@@ -112,15 +113,15 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         setSpherePosition(2.0f, 1.0f, 2.0f);
 
         for(int a=0; a < 20; a++){
-            spheres.add(new MarkerNode(5,sphereRadius));
-            spheres.get(spheres.size() - 1).initializeProgram();
-            spheres.get(spheres.size() - 1).setTransform(sphere.getTransform());
-            spheres.get(spheres.size() - 1).setInitiliazed(false);
-
-
+//            spheres.add(new MarkerNode(5,sphereRadius));
+//            spheres.get(spheres.size() - 1).initializeProgram();
+//            spheres.get(spheres.size() - 1).setTransform(sphere.getTransform());
+//            spheres.get(spheres.size() - 1).setInitiliazed(false);
+//
+//
             planes.add(new Plane2());
             planes.get(planes.size() - 1).initializeProgram();
-            planes.get(planes.size() - 1).updateTexture(b);
+            planes.get(planes.size() - 1).updateTexture(planeTexture);
         }
 
         // Set the camera position
@@ -156,10 +157,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         ratio = (float) width / height;
 
         Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
-
-        Matrix.perspectiveM(projection2, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR2);
-
-
     }
 
     @Override
@@ -203,11 +200,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
-        float[] view2 = new float[16];
 
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
-        Matrix.multiplyMM(view2, 0, camera2, 0, unInverseRotationMatrix, 0);
 
         if (optoType!=null && optoType.equals("optograph_1")) {
             Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
@@ -219,8 +214,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
-        Matrix.multiplyMM(mvpMatrix2, 0, projection2, 0, view, 0);
-
 
         Log.d("onDrawFrame","newPosition[0] = "+ newPosition[0]+"  newPosition[1] = "+newPosition[1]+"  newPosition[2] = "+newPosition[2]);
 
@@ -230,11 +223,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         cube.draw(mvpMatrix);
 
-        Matrix.multiplyMM(mVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
-
-        Log.d("MARK","mVPMatrix = "+ Arrays.toString(mVPMatrix));
-
-        sphere.draw(mvpMatrix);
+//        sphere.draw(mvpMatrix);
         Log.d("currPhicurrTheta","currPhi = "+currPhi+"  currTheta = "+currTheta);
 
         sphere.setCenter(x_pos, y_pos, z_pos);
@@ -252,7 +241,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                     }
                     Log.d("MARK","marker name : "+spheres.get(a).getMarkerName());
                 }
-                spheres.get(a).draw(mvpMatrix);
+//                spheres.get(a).draw(mvpMatrix);
             }
         }
 
@@ -260,31 +249,40 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float[] modelView = new float[16];
         float[] finalTransform = new float[16];
 
-        //
-        float[] translations = Maths.buildTranslationMatrix(new float[]{x_pos, y_pos, z_pos});//{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f};
+        //{1, 0, 0, x_pos,
+        // 0, 1, 0, y_pos,
+        // 0, 0, 1, z_pos,
+        // 0, 0, 0, 1}
+        float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});//Matrix.translateM(translationMatrix, 0, x_pos, y_pos, z_pos);//Maths.buildTranslationMatrix(new float[]{-x_pos, y_pos, 20});//{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f};
 
-        //Maths.buildRotationMatrix(new float[]{x_rot, y_rot, z_rot, 1}); //combinedMotionManager.getRotationMatrix(); //
-        float[] rotations = Maths.buildRotationMatrix(new float[]{90, 0, -currPhi, currTheta}); //combinedMotionManager.getRotationMatrix(); //Maths.buildRotationMatrix(new float[]{180, 1, 0, 20}); //{-1.0f, 0.0f, 8.742278E-8f, 0.0f, -8.742278E-8f, -4.371139E-8f, -1.0f, 0.0f, 3.821371E-15f, -1.0f, 4.371139E-8f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-        float[] scales = Maths.buildScaleMatrix(5); // {10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-        float[] planeTransform = Maths.computeTransform(translations, rotations, scales);
+         //Maths.buildRotationMatrix(new float[]{x_rot, y_rot, z_rot, 1}); //combinedMotionManager.getRotationMatrix(); //
+        float[] rotations = { 0.99957824f, 0.007216459f, 0.028129835f, 0.0f,
+                -4.656613E-10f, 0.96863335f, -0.24849428f, 0.0f,
+                -0.029040745f, 0.24838947f, 0.9682248f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f};//combinedMotionManager.getRotationMatrixInverse();//Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST);//Maths.buildRotationMatrix(new float[]{90, 0, -currPhi, currTheta}); //combinedMotionManager.getRotationMatrix(); //Maths.buildRotationMatrix(new float[]{180, 1, 0, 20}); //{-1.0f, 0.0f, 8.742278E-8f, 0.0f, -8.742278E-8f, -4.371139E-8f, -1.0f, 0.0f, 3.821371E-15f, -1.0f, 4.371139E-8f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+
+        Log.d("MARK","Plane translationMatrix = "+Arrays.toString(translationMatrix));
+        Log.d("MARK","Plane rotations = "+Arrays.toString(rotations));
+
+        float[] scales = Maths.buildScaleMatrix(2); // {10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+        float[] planeTransform = Maths.computeTransform(translationMatrix, rotations, scales);
 
         Matrix.multiplyMM(finalTransform, 0, planeTransform, 0, view, 0);
         Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, finalTransform, 0);
         plane.setRotation(rotations);
-        plane.setTranslation(translations);
+        plane.setTranslation(translationMatrix);
         plane.draw(modelView);
-
 
         for(int a=0; a< planes.size(); a++){
             if(planes.get(a).isInitiliazed()){
                 modelView = new float[16];
                 finalTransform = new float[16];
 
-                translations = planes.get(a).getTranslation();
+                translationMatrix = planes.get(a).getTranslation();
 
                 rotations = planes.get(a).getRotation();
-                scales = Maths.buildScaleMatrix(5);
-                planeTransform = Maths.computeTransform(translations, rotations, scales);
+                scales = Maths.buildScaleMatrix(2);
+                planeTransform = Maths.computeTransform(translationMatrix, rotations, scales);
 
                 Matrix.multiplyMM(finalTransform, 0, planeTransform, 0, view, 0);
                 Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, finalTransform, 0);
@@ -292,6 +290,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 planes.get(a).draw(modelView);
             }
         }
+
+        Circle circ = new Circle();
+        circ.draw(mvpMatrix);
     }
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
@@ -359,6 +360,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 break;
             }
         }
+
+        planes.add(new Plane2());
+        planes.get(planes.size() - 1).initializeProgram();
+        planes.get(planes.size() - 1).updateTexture(planeTexture);
 
         for(int a=0; a< planes.size(); a++) {
             if (!planes.get(a).isInitiliazed()) {
