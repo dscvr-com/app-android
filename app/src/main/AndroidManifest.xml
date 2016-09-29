@@ -40,6 +40,9 @@
     <uses-feature
         android:name="android.hardware.screen.portrait"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="true" />
 
     <application
         android:name=".DscvrApp"
