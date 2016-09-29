@@ -356,9 +356,7 @@ public class RecordFragment extends Fragment {
     private void updateBallPosition() {
         float[] vector = {0, 0, 0.9f, 0};
         float[] newPosition = new float[4];
-        Log.d("MARK4","Recorder.getBallPosition() = "+ Arrays.toString(Recorder.getBallPosition()));
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
-        Log.d("MARK4","newPosition = "+ Arrays.toString(newPosition));
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
