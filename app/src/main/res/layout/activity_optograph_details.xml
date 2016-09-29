@@ -346,7 +346,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
                     android:background="@color/transparentOverlay"
-                    android:padding="@dimen/fab_elevation"
+                    android:padding="8dp"
                     android:src="@drawable/delete_icn" />
 
             </RelativeLayout>

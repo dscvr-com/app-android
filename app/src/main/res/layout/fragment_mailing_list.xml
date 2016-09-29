@@ -104,7 +104,7 @@
             android:textColor="@color/text_dark"
             android:textSize="13sp"
             android:text="@string/mailing_reach_us"
-            android:layout_marginEnd="@dimen/appbar_elevation"/>
+            android:layout_marginEnd="4dp"/>
 
         <TextView
             android:id="@+id/app_email_text"

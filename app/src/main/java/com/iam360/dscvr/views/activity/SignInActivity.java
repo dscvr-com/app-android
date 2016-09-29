@@ -1,6 +1,7 @@
 package com.iam360.dscvr.views.activity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,10 +10,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.util.GeneralUtils;
 import com.iam360.dscvr.views.fragment.SignUpFragment;
 import com.iam360.dscvr.views.fragment.SigninFBFragment;
 
@@ -24,6 +30,11 @@ import java.util.List;
  */
 public class SignInActivity extends AppCompatActivity {
 
+    RelativeLayout loginTabBg;
+    TextView loginText;
+    RelativeLayout signupTabBg;
+    TextView signupText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,18 +45,67 @@ public class SignInActivity extends AppCompatActivity {
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 //        getSupportActionBar().setTitle("");
 
+        loginTabBg = (RelativeLayout) findViewById(R.id.login_tab);
+        loginText = (TextView) findViewById(R.id.login_text);
+        signupTabBg = (RelativeLayout) findViewById(R.id.signup_tab);
+        signupText = (TextView) findViewById(R.id.signup_text);
+
+        GeneralUtils utils = new GeneralUtils();
+        utils.setFont(this, loginText, Typeface.NORMAL);
+        utils.setFont(this, signupText, Typeface.NORMAL);
+
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager_signin);
         setupViewPager(viewPager);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs_signin);
-        tabLayout.setupWithViewPager(viewPager);
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs_signin);
+//        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(0);
+        updateTabs(viewPager.getCurrentItem());
 
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                updateTabs(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+        loginTabBg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(0,true);
+            }
+        });
+        signupTabBg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(1,true);
+            }
+        });
+    }
+
+    public void updateTabs(int position) {
+        Log.d("myTag"," updateTabs position: "+position);
+        loginTabBg.setBackgroundColor((position==0) ? getResources().getColor(R.color.bright) : getResources().getColor(R.color.btn_yellow));
+        loginText.setTextColor((position==0) ? getResources().getColor(R.color.btn_yellow) : getResources().getColor(R.color.bright));
+        signupTabBg.setBackgroundColor((position==1) ? getResources().getColor(R.color.bright) : getResources().getColor(R.color.btn_yellow));
+        signupText.setTextColor((position==1) ? getResources().getColor(R.color.btn_yellow) : getResources().getColor(R.color.bright));
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new SignUpFragment(), getResources().getString(R.string.sign_up));
         adapter.addFragment(new SigninFBFragment(), getResources().getString(R.string.log_in));
+        adapter.addFragment(new SignUpFragment(), getResources().getString(R.string.sign_up));
         viewPager.setAdapter(adapter);
     }
 

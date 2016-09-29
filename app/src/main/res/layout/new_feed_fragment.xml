@@ -65,7 +65,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toLeftOf="@+id/record_group"
-                            android:paddingEnd="@dimen/navigation_icon_size">
+                            android:paddingEnd="24dp">
                             <ImageButton
                                 android:id="@+id/theta_btn"
                                 android:layout_width="wrap_content"
@@ -104,7 +104,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingRight="10dp"
-                            android:paddingStart="@dimen/navigation_icon_size">
+                            android:paddingStart="24dp">
 
                             <ImageButton
                                 android:id="@+id/settings_btn"
@@ -117,18 +117,18 @@
                                 android:id="@+id/number_local_image"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="@dimen/fab_size_normal"
+                                android:layout_marginLeft="56dp"
                                 android:layout_alignParentBottom="true"
                                 android:textSize="18sp"
                                 android:text="0"
-                                android:padding="@dimen/navigation_elevation"
+                                android:padding="12dp"
                                 android:visibility="invisible"/>
 
                             <ImageView
                                 android:id="@+id/number_image"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="@dimen/fab_size_mini"
+                                android:layout_marginLeft="40dp"
                                 android:layout_alignParentBottom="true"
                                 android:src="@drawable/upload_later_icn_white"
                                 android:visibility="invisible"/>
