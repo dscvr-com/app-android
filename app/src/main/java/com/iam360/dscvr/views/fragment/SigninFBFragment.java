@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -42,6 +43,8 @@ import com.iam360.dscvr.views.activity.CreateUsernameActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 
+import org.w3c.dom.Text;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -54,10 +57,12 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
     private EditText userNameText;
     private EditText passwordText;
-    private ImageButton loginButton;
+    private Button loginButton;
     private ImageButton registerButton;
     private TextView resetPasswordButton;
     private ProgressBar progressBar;
+    // new UI
+    private TextView forgotPasswordText;
 
     private ApiConsumer apiConsumer;
     private CallbackManager callbackManager;
@@ -97,26 +102,37 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
 //        useExistingBtn = (TextView) view.findViewById(R.id.use_existing_btn);
 //        useExistingBtn.setOnClickListener(this);
-        userNameText = (EditText) view.findViewById(R.id.username_edit);
-        passwordText = (EditText) view.findViewById(R.id.password_edit);
-        loginButton = (ImageButton) view.findViewById(R.id.login_button);
+//        userNameText = (EditText) view.findViewById(R.id.username_edit);
+//        passwordText = (EditText) view.findViewById(R.id.password_edit);
         registerButton = (ImageButton) view.findViewById(R.id.register_button);
         resetPasswordButton = (TextView) view.findViewById(R.id.reset_password);
         fbButton = (ImageButton) view.findViewById(R.id.fb_button);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
-        loginButton.setOnClickListener(this);
         registerButton.setOnClickListener(this);
         fbButton.setOnClickListener(this);
+
+        //new UI
+        userNameText = (EditText) view.findViewById(R.id.email_signin);
+        passwordText = (EditText) view.findViewById(R.id.password_signin);
+        loginButton = (Button) view.findViewById(R.id.login_button);
+        forgotPasswordText = (TextView) view.findViewById(R.id.forgot_password_signin);
+
+        loginButton.setOnClickListener(this);
+        forgotPasswordText.setOnClickListener(this);
         return view;
     }
 
 
     private void login(String email, String password) {
 
+        Log.d("myTag"," signin: email: "+email+" pass: "+password);
         apiConsumer.logIn(new SignInData(email, password), new Callback<LogInReturn>() {
             @Override
             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
+                Log.d("myTag"," signin: success? "+response.isSuccess());
+                Log.d("myTag"," signin: errorbody: "+response.errorBody());
+                Log.d("myTag"," signin: message: "+response.message());
                 if (!response.isSuccess()) {
                     Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
@@ -138,7 +154,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 cache.save(Cache.USER_ID, login.getId());
                 cache.save(Cache.USER_TOKEN, login.getToken());
 
-                Log.d("myTag", "success login. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
+                Log.d("myTag", "success signin: id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
 //                startProfileFragment();
                 startCreateUserPage();
             }
