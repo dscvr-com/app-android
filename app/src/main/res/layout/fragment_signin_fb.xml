@@ -6,14 +6,6 @@
     tools:context=".views.profile.SigninFBFragment">
     <!--android:background="@drawable/bg_light"-->
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@android:style/Widget.ProgressBar.Large.Inverse"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />
-
     <!--android:layout_centerInParent="true"-->
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,9 +53,10 @@
             android:layout_height="wrap_content"
             android:textColor="@color/bright"
             android:background="@drawable/orange_btn"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="25dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/log_in"
             android:textSize="18sp"/>
 
@@ -72,10 +65,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
             android:text="@string/forgot_password_text"
             android:textColor="@color/text_yellow"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:visibility="gone"/>
 
         <View
             android:layout_width="match_parent"
@@ -92,6 +85,14 @@
             android:layout_marginRight="15dp"
             android:background="@drawable/facebook_connect_button" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.ProgressBar.Large.Inverse"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
 
     <ImageButton
         android:id="@+id/register_button"

@@ -150,7 +150,6 @@
                         android:layout_height="match_parent"
                         android:layout_above="@+id/bar_transparent"
                         android:paddingBottom="10dp"
-                        android:paddingLeft="70dp"
                         android:background="@color/settings_bg" >
 
                         <TextView
@@ -171,7 +170,6 @@
                             android:layout_below="@id/settings_title"
                             android:background="@drawable/logo_horizontal_settings"
                             android:layout_centerHorizontal="true"/>
-
                         <TextView
                             android:id="@+id/version"
                             android:layout_width="wrap_content"
@@ -182,6 +180,12 @@
                             app:font="@{``}"
                             android:layout_alignEnd="@+id/iam_logo"
                             android:layout_below="@+id/iam_logo"/>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="70dp"
+                            android:layout_below="@id/version">
 
                         <TextView
                             android:id="@+id/settings_vr_image"
@@ -601,7 +605,7 @@
                             </RelativeLayout>
                             </LinearLayout>
                             </LinearLayout>
-
+                        </RelativeLayout>
                     </RelativeLayout>
 
                     <View

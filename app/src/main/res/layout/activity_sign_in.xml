@@ -87,11 +87,19 @@
         <!--android:layout_below="@id/header"/>-->
 
     <!--android:layout_weight="1"-->
-    <android.support.v4.view.ViewPager
+    <!--<android.support.v4.view.ViewPager-->
+        <!--android:id="@+id/viewpager_signin"-->
+        <!--android:layout_below="@id/tab_header"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@android:color/white" />-->
+
+    <com.iam360.dscvr.util.MyViewPager
         android:id="@+id/viewpager_signin"
         android:layout_below="@id/tab_header"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white" />
+        android:background="@android:color/white" >
+    </com.iam360.dscvr.util.MyViewPager>
 
 </RelativeLayout>

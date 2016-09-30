@@ -84,6 +84,8 @@
     <string name="log_in">LOGIN</string>
     <string name="email_address_or_username">Email Address or username</string>
     <string name="password">Password</string>
+    <string name="failed_login">Failed to log in.</string>
+    <string name="login_failed_message">Your entered data wasn\'t correct. Please try again.</string>
 
     <!-- Sign Up -->
     <string name="ok">OK</string>
@@ -91,6 +93,7 @@
     <string name="email_address">Email Address</string>
     <string name="choose_password">Choose a password</string>
     <string name="forgot_password_text">Forgot your password?</string>
+    <string name="failed_signup">Failed signing up.</string>
 
     <!-- Profile -->
     <string name="profile_follow">Follow</string>

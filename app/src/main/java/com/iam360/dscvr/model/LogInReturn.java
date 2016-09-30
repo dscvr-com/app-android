@@ -19,11 +19,13 @@ public class LogInReturn {
     private String token;
     private String id;
     private int onboarding_version;
+    private String message;
 
     public LogInReturn() {
         token = "";
         id = "";
         onboarding_version = 0;
+        message = "";
     }
 
     public String getId() {
@@ -37,4 +39,6 @@ public class LogInReturn {
     public int getOnBoardingVersion() {
         return onboarding_version;
     }
+
+    public String getMessage() {return message;}
 }

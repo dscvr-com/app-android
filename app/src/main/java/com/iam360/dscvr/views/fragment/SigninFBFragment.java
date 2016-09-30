@@ -41,6 +41,7 @@ import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.views.activity.CreateUsernameActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
+import com.iam360.dscvr.views.activity.SignInActivity;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 
 import org.w3c.dom.Text;
@@ -134,18 +135,26 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 Log.d("myTag"," signin: errorbody: "+response.errorBody());
                 Log.d("myTag"," signin: message: "+response.message());
                 if (!response.isSuccess()) {
-                    Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+                    String message = getString(R.string.failed_login);
+                    if (response.body()!=null) {
+                        LogInReturn errorLogin = response.body();
+                        if (errorLogin.getMessage()!=null && !errorLogin.getMessage().equals(""))
+                            message = getString(R.string.login_failed_message);
+                    }
+                    Toast toast = Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     setButtonsClickable(true);
+                    progressBar.setVisibility(View.GONE);
                     return;
                 }
                 LogInReturn login = response.body();
                 if (login == null) {
-                    Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getActivity(), getString(R.string.failed_login), Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     setButtonsClickable(true);
+                    progressBar.setVisibility(View.GONE);
                     return;
                 }
 
@@ -161,10 +170,11 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Throwable t) {
-                Toast toast = Toast.makeText(getActivity(), "Failed to log in.", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getActivity(), getString(R.string.failed_login), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
                 setButtonsClickable(true);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -194,6 +204,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 break;*/
             case R.id.login_button:
                 Log.d("myTag", "login clicked.");
+                if (userNameText.getText().toString().equals("") || passwordText.getText().toString().equals("")) break;
+                progressBar.setVisibility(View.VISIBLE);
                 setButtonsClickable(false);
                 login(userNameText.getText().toString(), passwordText.getText().toString());
                 break;
@@ -240,6 +252,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.fb_button:
+                setButtonsClickable(false);
                 LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile","user_friends"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
@@ -312,6 +325,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onCancel() {
                         Log.d("myTag", "oncancel login on fb.");
+                        setButtonsClickable(true);
                     }
 
                     @Override
@@ -323,6 +337,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 LoginManager.getInstance().logOut();
                             }
                         }
+                        setButtonsClickable(true);
                     }
                 });
                 break;
@@ -358,6 +373,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setButtonsClickable(boolean clickable) {
+        ((SignInActivity)getActivity()).swipeEnable(clickable);
         registerButton.setClickable(clickable);
         loginButton.setClickable(clickable);
         fbButton.setClickable(clickable);

@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.util.GeneralUtils;
+import com.iam360.dscvr.util.MyViewPager;
 import com.iam360.dscvr.views.fragment.SignUpFragment;
 import com.iam360.dscvr.views.fragment.SigninFBFragment;
 
@@ -34,6 +35,8 @@ public class SignInActivity extends AppCompatActivity {
     TextView loginText;
     RelativeLayout signupTabBg;
     TextView signupText;
+
+    MyViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,7 @@ public class SignInActivity extends AppCompatActivity {
         utils.setFont(this, loginText, Typeface.NORMAL);
         utils.setFont(this, signupText, Typeface.NORMAL);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager_signin);
+        viewPager = (MyViewPager) findViewById(R.id.viewpager_signin);
         setupViewPager(viewPager);
 
 //        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs_signin);
@@ -79,7 +82,6 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
-
         loginTabBg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +94,12 @@ public class SignInActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(1,true);
             }
         });
+    }
+
+    public void swipeEnable(boolean enable) {
+        viewPager.setPageEnable(enable);
+        loginTabBg.setClickable(enable);
+        signupTabBg.setClickable(enable);
     }
 
     public void updateTabs(int position) {
