@@ -69,7 +69,7 @@ public class CameraUtils {
             File parent = file.getParentFile();
             parent.mkdirs();
             out = new FileOutputStream(filename);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -90,7 +90,7 @@ public class CameraUtils {
             File parent = file.getParentFile();
             parent.mkdirs();
             out = new FileOutputStream(filename);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
 
             ExifInterface exif = null;
             try {
