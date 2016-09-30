@@ -3,15 +3,14 @@ package com.iam360.iam360.opengl;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-import android.util.Log;
 
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.MyGLUtils;
+import com.iam360.iam360.util.Vector3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -22,6 +21,8 @@ public class Plane2 {
     public boolean isInitiliazed = false;
     public float[] translation = new float[16];
     public float[] rotation = new float[16];
+    public float[] init_rotation = new float[16];
+
 
     private static final int COORDS_PER_VERTEX = 3;
     private static final int COORDS_PER_TEXTURE = 2;
@@ -31,17 +32,18 @@ public class Plane2 {
 
 
     private static final float[] VERTICES = {
-            -0.5f, 0.0f, 0.5f, // left front
-            -0.5f, 0.0f, -0.5f, // left back
-            0.5f, 0.0f, 0.5f, // right front
-            0.5f, 0.0f, -0.5f  // right back
+            -0.5f, 0.5f, 0.0f, // left front
+            -0.5f, -0.5f, 0.0f, // left back
+            0.5f, 0.5f, 0.0f, // right front
+            0.5f, -0.5f, 0.0f  // right back
     };
 
     private static final float[] TEXTURE_COORDS = {
-            0, 1, // top left
             0, 0,  // bottom left
-            1, 1, // top right
-            1, 0 // bottom right
+            0, 1, // top left
+            1, 0, // bottom right
+            1, 1 // top right
+
     };
 
     private FloatBuffer vertexBuffer;
@@ -75,6 +77,7 @@ public class Plane2 {
     private int mvpMatrixHandle;
     private int texCoordHandle;
     private int textureSamplerHandle;
+    private final Vector3 center = new Vector3();
 
     public Plane2() {
         initialize();
@@ -134,6 +137,9 @@ public class Plane2 {
         this.textureUpdated = true;
     };
 
+
+
+
     private void loadGLTexture() {
         if (texture == null) {
             Timber.w("Loading texture but got no texture in Plane!");
@@ -153,7 +159,7 @@ public class Plane2 {
     }
 
     public void draw(float[] mvpMatrix) {
-        Log.d("MARK","Plane mvpMatrix = "+ Arrays.toString(mvpMatrix));
+        // Log.d("MARK","Plane mvpMatrix = "+ Arrays.toString(mvpMatrix));
         if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
             Timber.v("Rebinding texture, context was probably lost.");
             synchronized (this) {
@@ -224,9 +230,23 @@ public class Plane2 {
         return isInitiliazed;
     }
 
+    public void setInitRotation(float[] rotation) {
+        this.init_rotation = rotation;
+    }
+
+
+
+    public float[] getInitRotation() {
+        return init_rotation;
+    }
+
+
+
     public void setRotation(float[] rotation) {
         this.rotation = rotation;
     }
+
+
 
     public float[] getRotation() {
         return rotation;
@@ -238,5 +258,13 @@ public class Plane2 {
 
     public float[] getTranslation() {
         return translation;
+    }
+
+    public void setCenter(float x, float y, float z){
+        this.center.set(x,y,z);
+    }
+
+    public Vector3 getCenter() {
+        return center;
     }
 }

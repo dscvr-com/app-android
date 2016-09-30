@@ -20,7 +20,6 @@ import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.Maths;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -62,7 +61,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private Cube cube;
     private String optoType;
 
-//    private MarkerNode sphere;
+    //    private MarkerNode sphere;
     private List<MarkerNode> spheres = new ArrayList<MarkerNode>();
 
     private List<Plane2> planes = new ArrayList<Plane2>();
@@ -80,6 +79,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private float[] mVMatrix = new float[16];
     private float[] mVPMatrix = new float[16];
 
+    private static final float[] ROTATION_AHEAD_FIRST = {0, 1, 0, 0};
+    private static final float[] ROTATION_AHEAD_SECOND = {0, 0, 1, 0};
+
 
     private Bitmap planeTexture;
 
@@ -89,6 +91,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         this.context = context;
         this.cube = new Cube();
         this.plane = new Plane2();
+
+        this.plane.setInitRotation(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
 
         this.markerCube = new MarkerCube(context);
         this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
@@ -147,7 +151,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 x, y, z, 1
         });
 
-        Log.d("MARK2","setSpherePosition x="+x+"  y="+y+"  z="+z);
+        Log.d("MARK2", "setSpherePosition x=" + x + "  y=" + y + "  z=" + z);
     }
 
     @Override
@@ -173,25 +177,16 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float r = (float) (V_DISTANCE * Math.sin(currPhi));
 
         //x=Psinφcosθ; y=Psinφsinθ; z=Pcosφ
-//        float x_pos = (float) (V_DISTANCE * (Math.sin(phiDeg) * Math.cos(thetaDeg)));
-//        float y_pos = (float) (V_DISTANCE * (Math.sin(phiDeg) * Math.sin(thetaDeg)));
-//        float z_pos = (float) (V_DISTANCE * Math.cos(phiDeg));
+        float x_pos = (float) (V_DISTANCE * (Math.sin(thetaDeg) * Math.cos(phiDeg)));
+        float y_pos = (float) (V_DISTANCE * (Math.sin(thetaDeg) * Math.sin(phiDeg)));
+        float z_pos = (float) (V_DISTANCE * Math.cos(thetaDeg));
 
         //x=Pcosθ; y=Psinθ; z=z;
-        float x_pos = (float) (r * Math.cos(thetaDeg));
-        float y_pos = (float) (r * Math.sin(thetaDeg));
-        float z_pos = z;
+//        float x_pos = (float) (r * Math.cos(thetaDeg));
+//        float y_pos = (float) (r * Math.sin(thetaDeg));
+//        float z_pos = z;
 
-//        float xy_distance = (float) (V_DISTANCE * Math.cos(currTheta));
-//        float x_pos = (float) (xy_distance * Math.cos(currPhi));
-//        float y_pos = (float) (V_DISTANCE * Math.sin(currTheta));
-//        float z_pos = (float) (xy_distance * Math.sin(currPhi));
-
-        float x_rot = 0;
-        float y_rot = -currPhi;
-        float z_rot = currTheta;
-
-        Log.d("currXYZ","x = "+x_pos+"  y = "+y_pos+"  z = "+z_pos);
+        // Log.d("currXYZ","x = "+x_pos+"  y = "+y_pos+"  z = "+z_pos);
 
         unInverseRotationMatrix = combinedMotionManager.getRotationMatrix();
         float[] vector = {0, 0, V_DISTANCE, 0};
@@ -206,16 +201,12 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         if (optoType!=null && optoType.equals("optograph_1")) {
             Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
-            Matrix.perspectiveM(projection2, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR2);
         } else {
             Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
-            Matrix.perspectiveM(projection2, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR2);
         }
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
-
-        Log.d("onDrawFrame","newPosition[0] = "+ newPosition[0]+"  newPosition[1] = "+newPosition[1]+"  newPosition[2] = "+newPosition[2]);
 
         setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
 
@@ -224,14 +215,49 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         cube.draw(mvpMatrix);
 
 //        sphere.draw(mvpMatrix);
-        Log.d("currPhicurrTheta","currPhi = "+currPhi+"  currTheta = "+currTheta);
 
-        sphere.setCenter(x_pos, y_pos, z_pos);
+        plane.setCenter(x_pos, y_pos, z_pos);
 
         for(int a=0; a< spheres.size(); a++){
             if(spheres.get(a).isInitiliazed()){
 //                Log.d("MARK2","overlapSpheres trufalse = "+overlapSpheres(sphere, spheres.get(a)));
-                if(overlapSpheres(sphere, spheres.get(a))){
+//                if(overlapSpheres(sphere, spheres.get(a))){
+//                    try {
+//                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                        Ringtone r1 = RingtoneManager.getRingtone(context, notification);
+//                        r1.play();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    Log.d("MARK","marker name : "+spheres.get(a).getMarkerName());
+//                }
+//                spheres.get(a).draw(mvpMatrix);
+            }
+        }
+
+
+        float[] modelView = new float[16];
+        float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});//Matrix.translateM(translationMatrix, 0, x_pos, y_pos, z_pos);//Maths.buildTranslationMatrix(new float[]{-x_pos, y_pos, 20});//{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f};
+        float[] rotations = combinedMotionManager.getRotationMatrix();
+        float[] scales = Maths.buildScaleMatrix(2);
+
+        float[] modelMatrix = new float[16];
+        float[] scaleRotationMatrix = new float[16];
+        float[] newRotation = new float[16];
+
+        Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+        Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
+        Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
+
+        Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, modelMatrix, 0);
+        plane.setRotation(rotations);
+        plane.setTranslation(translationMatrix);
+        plane.draw(modelView);
+
+        for(int a=0; a< planes.size(); a++){
+            if(planes.get(a).isInitiliazed()){
+                if(overlapSpheres(plane, planes.get(a))){
+                    Log.d("MARK","plane intersection");
                     try {
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                         Ringtone r1 = RingtoneManager.getRingtone(context, notification);
@@ -239,55 +265,19 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Log.d("MARK","marker name : "+spheres.get(a).getMarkerName());
                 }
-//                spheres.get(a).draw(mvpMatrix);
-            }
-        }
-
-
-        float[] modelView = new float[16];
-        float[] finalTransform = new float[16];
-
-        //{1, 0, 0, x_pos,
-        // 0, 1, 0, y_pos,
-        // 0, 0, 1, z_pos,
-        // 0, 0, 0, 1}
-        float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});//Matrix.translateM(translationMatrix, 0, x_pos, y_pos, z_pos);//Maths.buildTranslationMatrix(new float[]{-x_pos, y_pos, 20});//{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f};
-
-         //Maths.buildRotationMatrix(new float[]{x_rot, y_rot, z_rot, 1}); //combinedMotionManager.getRotationMatrix(); //
-        float[] rotations = combinedMotionManager.getRotationMatrixInverse();//Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST);//Maths.buildRotationMatrix(new float[]{90, 0, -currPhi, currTheta}); //combinedMotionManager.getRotationMatrix(); //Maths.buildRotationMatrix(new float[]{180, 1, 0, 20}); //{-1.0f, 0.0f, 8.742278E-8f, 0.0f, -8.742278E-8f, -4.371139E-8f, -1.0f, 0.0f, 3.821371E-15f, -1.0f, 4.371139E-8f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-
-        Log.d("MARK","Plane translationMatrix = "+Arrays.toString(translationMatrix));
-        Log.d("MARK","Plane rotations = "+Arrays.toString(rotations));
-
-        float[] scales = Maths.buildScaleMatrix(2); // {10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-        float[] planeTransform = Maths.computeTransform(translationMatrix, rotations, scales);
-
-        Matrix.multiplyMM(finalTransform, 0, planeTransform, 0, view, 0);
-        Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, finalTransform, 0);
-        plane.setRotation(rotations);
-        plane.setTranslation(translationMatrix);
-        plane.draw(modelView);
-
-        for(int a=0; a< planes.size(); a++){
-            if(planes.get(a).isInitiliazed()){
-                modelView = new float[16];
-                finalTransform = new float[16];
-
                 translationMatrix = planes.get(a).getTranslation();
-
                 rotations = planes.get(a).getRotation();
-                scales = Maths.buildScaleMatrix(2);
-                planeTransform = Maths.computeTransform(translationMatrix, rotations, scales);
 
-                Matrix.multiplyMM(finalTransform, 0, planeTransform, 0, view, 0);
-                Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, finalTransform, 0);
+                Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+                Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
+                Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
+
+                Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, modelMatrix, 0);
 
                 planes.get(a).draw(modelView);
             }
         }
-
     }
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
@@ -343,11 +333,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     public void addMarker(){
         for(int a=0; a< spheres.size(); a++){
-//            Log.d("MARK","spheres.get(a) = "+ Arrays.toString(spheres.get(a).getTransform()));
             if(!spheres.get(a).isInitiliazed()){
                 spheres.get(a).setMarkerType("text");
                 spheres.get(a).setMarkerName("text-"+a);
-//                Log.d("MARK","addMarker = "+ Arrays.toString(sphere.getTransform()));
                 spheres.get(a).setTransform(sphere.getTransform());
                 Log.d("MARK2","overlapSpheres addMarker .x="+sphere.getCenter().x+"  .y="+sphere.getCenter().y+"  .z="+sphere.getCenter().z);
                 spheres.get(a).setCenter(sphere.getCenter().x, sphere.getCenter().y, sphere.getCenter().z);
@@ -370,7 +358,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public static boolean overlapSpheres(Sphere point, Sphere marker) {
+    public static boolean overlapSpheres(Plane2 point, Plane2 marker) {
         Log.d("MARK2","overlapSpheres point.center.x="+point.getCenter().x+"  point.center.y="+point.getCenter().y+"  point.center.z="+point.getCenter().z);
         Log.d("MARK2","overlapSpheres marker.center.x="+marker.getCenter().x+"  marker.center.y="+marker.getCenter().y+"  marker.center.z="+marker.getCenter().z);
 
@@ -382,7 +370,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         double distance = Math.sqrt( x*x + y*y + z*z );
 
         Log.d("MARK2","distance == "+distance);
-        Log.d("MARK2","marker.radius == "+marker.radius);
+//        Log.d("MARK2","marker.radius == "+marker.radius);
 
         //idk why?
         return distance <= 1;//marker.radius;
