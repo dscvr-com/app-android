@@ -45,7 +45,6 @@ public class DscvrApp extends Application {
 
         configureJobManager();
 
-        Timber.v("cache dir: %s", getExternalCacheDir().getPath());
     }
 
     public JobManager getJobManager() {

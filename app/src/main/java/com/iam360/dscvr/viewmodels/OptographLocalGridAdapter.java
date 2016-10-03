@@ -1721,6 +1721,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             if (opto.getLocation() != null && opto.getLocation().getId() != null && !opto.getLocation().getId().equals("")) {
                 mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
             }
+            res.close();
         } else {
             Log.d("Caching", "Inserting " + opto.getId());
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
@@ -1728,6 +1729,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
                     opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
                     opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
+            res.close();
         }
         String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
         String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
@@ -1777,10 +1779,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals("")) {
                         mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", String.valueOf(person.getTwitter_secret()));
                     }
+                    res.close();
                 } else {
                     mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
                             person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
                             person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+                    res.close();
                 }
             }
         }
@@ -1824,15 +1828,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                         mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
                     }
                     mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
+                    res.close();
                 } else {
 //                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
                     mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(),
                             locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
                             locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
+                    res.close();
                 }
             }
         }
-        res.close();
     }
 
 //    public Optograph checkToDB(Optograph optograph) {

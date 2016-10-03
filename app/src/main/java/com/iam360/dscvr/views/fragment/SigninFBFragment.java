@@ -373,7 +373,8 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setButtonsClickable(boolean clickable) {
-        ((SignInActivity)getActivity()).swipeEnable(clickable);
+        if(getContext() instanceof SignInActivity)
+            ((SignInActivity)getActivity()).swipeEnable(clickable);
         registerButton.setClickable(clickable);
         loginButton.setClickable(clickable);
         fbButton.setClickable(clickable);

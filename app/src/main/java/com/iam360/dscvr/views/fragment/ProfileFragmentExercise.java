@@ -665,6 +665,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void refresh() {
         Log.d("myTag", " refresh:");
 
+        if(person == null) return; //catch for empty person
+
         Cursor cursor = null;
         if (!isCurrentUser) cursor = mydb.getUserOptographs(person.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);
         else cursor = mydb.getUserOptographs(person.getId() , DBHelper.OPTO_TABLE_NAME_FEEDS, ApiConsumer.PROFILE_GRID_LIMIT);

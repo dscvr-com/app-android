@@ -23,6 +23,7 @@ public class LocalOptographManager {
 
         if (dir.exists()) {
             File[] files = dir.listFiles();
+            if (files == null) return optographs;
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {
