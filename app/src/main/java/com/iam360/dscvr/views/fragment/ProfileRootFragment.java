@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -43,15 +44,23 @@ public class ProfileRootFragment extends Fragment {
     }
 
     public void refresh() {
-        for (Fragment frag:getFragmentManager().getFragments()) {
-            if (frag instanceof ProfileFragmentExercise) ((ProfileFragmentExercise) frag).refresh();
+        android.support.v4.app.FragmentManager fragmentManager = getFragmentManager();
+        if(fragmentManager != null) {
+            for (Fragment frag : fragmentManager.getFragments()) {
+                if (frag instanceof ProfileFragmentExercise)
+                    ((ProfileFragmentExercise) frag).refresh();
+            }
         }
     }
 
     public void switchToProfilePage() {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
-        transaction.commit();
+        try {
+            android.support.v4.app.FragmentManager fragmentManager = getFragmentManager();
+            if(fragmentManager == null) return;
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
+            transaction.commit();
+        } catch (Exception e1) {}
     }
 
     public void swipeEnable(boolean clickable) {

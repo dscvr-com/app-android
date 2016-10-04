@@ -406,13 +406,16 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
         Log.d("myTag","res: "+res+" getCount: "+res.getCount()+" getColumnCount: "+res.getColumnCount()+" getPosition: "+res.getPosition());
         if (res == null || res.getCount() <= 0) {
+            res.close();
             return false;
         }
         for (String i: facesList) {
             if (res.getInt(res.getColumnIndex(i))==0) {
+                res.close();
                 return false;
             }
         }
+        res.close();
         return true;
     }
 
