@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -62,6 +63,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
     private Button okButton;
     private ImageButton fbButton;
     private ProgressBar progressBar;
+    private RelativeLayout progressLayout;
 
     private Person person;
     private int signInRequestCode = 2;
@@ -82,6 +84,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
         okButton = (Button) view.findViewById(R.id.ok_signup);
         fbButton = (ImageButton) view.findViewById(R.id.fb_button_signup);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        progressLayout = (RelativeLayout) view.findViewById(R.id.progress_layout);
 
         okButton.setOnClickListener(this);
         fbButton.setOnClickListener(this);
@@ -90,7 +93,8 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
     }
 
     private void setButtonsClickable(boolean clickable) {
-        ((SignInActivity)getActivity()).swipeEnable(clickable);
+        if(getContext() instanceof SignInActivity)((SignInActivity)getActivity()).swipeEnable(clickable);
+        else if (getContext() instanceof MainActivity) ((MainActivity)getActivity()).swipeEnable(clickable);
         okButton.setClickable(clickable);
         fbButton.setClickable(clickable);
     }
@@ -109,13 +113,13 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                 cache.save(Cache.ONBOARDING_VERSION, person.getOnboardingVersion());
                 Timber.d("User email : " + person.getEmail());
 
-                progressBar.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.GONE);
                 startCreateUserPage();
             }
 
             @Override
             public void onFailure(Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.GONE);
                 Timber.d("Failed to load person!");
             }
         });
@@ -157,7 +161,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();
                     setButtonsClickable(true);
-                    progressBar.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
                     return;
                 }
                 LogInReturn login = response.body();
@@ -166,7 +170,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();
                     setButtonsClickable(true);
-                    progressBar.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
                     return;
                 }
 
@@ -186,7 +190,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
                 setButtonsClickable(true);
-                progressBar.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -202,7 +206,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId() + " token: " + loginResult.getAccessToken().getToken());
 
-                        progressBar.setVisibility(View.VISIBLE);
+                        progressLayout.setVisibility(View.VISIBLE);
                         apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
                             @Override
                             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
@@ -211,7 +215,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
-                                    progressBar.setVisibility(View.GONE);
+                                    progressLayout.setVisibility(View.GONE);
                                     return;
                                 }
                                 LogInReturn login = response.body();
@@ -220,7 +224,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
-                                    progressBar.setVisibility(View.GONE);
+                                    progressLayout.setVisibility(View.GONE);
                                     return;
                                 }
 
@@ -259,7 +263,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                                 GenericOKDialog genericOKDialog = new GenericOKDialog();
                                 genericOKDialog.setArguments(bundle);
                                 genericOKDialog.show(getFragmentManager(), "Error");
-                                progressBar.setVisibility(View.GONE);
+                                progressLayout.setVisibility(View.GONE);
                             }
                         });
                     }
@@ -286,7 +290,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
             case R.id.ok_signup:
                 if (!emailSignUp.getText().toString().isEmpty()) {
                     setButtonsClickable(false);
-                    progressBar.setVisibility(View.VISIBLE);
+                    progressLayout.setVisibility(View.VISIBLE);
                     apiConsumer.signUp(new SignInData(emailSignUp.getText().toString(), passwordSignUp.getText().toString()),new Callback<SignUpReturn>() {
                         @Override
                         public void onResponse(Response<SignUpReturn> response, Retrofit retrofit) {
@@ -297,7 +301,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                                 toast.setGravity(Gravity.CENTER,0,0);
                                 toast.show();
                                 setButtonsClickable(true);
-                                progressBar.setVisibility(View.GONE);
+                                progressLayout.setVisibility(View.GONE);
                                 return;
                             }
                             SignUpReturn signUpReturn = response.body();
@@ -319,7 +323,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
                             setButtonsClickable(true);
-                            progressBar.setVisibility(View.GONE);
+                            progressLayout.setVisibility(View.GONE);
                         }
                     });
                 }

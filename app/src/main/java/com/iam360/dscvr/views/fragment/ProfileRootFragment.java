@@ -27,7 +27,8 @@ public class ProfileRootFragment extends Fragment {
 
 
         if (cache.getString(Cache.USER_TOKEN).isEmpty()) {
-            transaction.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
+//            transaction.replace(R.id.root_frame, SigninFBFragment.newInstance("", ""));
+            transaction.replace(R.id.root_frame, SignInFragment.newInstance("", ""));
         } else {
             Timber.d("Not logged in.");
             if (cache.getString(Cache.GATE_CODE).isEmpty()) {
@@ -51,5 +52,11 @@ public class ProfileRootFragment extends Fragment {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
         transaction.commit();
+    }
+
+    public void swipeEnable(boolean clickable) {
+        for (Fragment frag:getFragmentManager().getFragments()) {
+            if (frag instanceof SignInFragment) ((SignInFragment) frag).swipeEnable(clickable);
+        }
     }
 }

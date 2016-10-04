@@ -289,10 +289,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         Cursor curs = mydb.getFeedsData(5);
         Log.d("MARK","initializeFeed curs.getCount() = "+curs.getCount());
         if (curs.getCount() > 0) {
+            Log.d("myTag"," Subscribe1");
             cur2Json(curs)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
+                        Log.d("myTag"," Subscribe2");
                         apiConsumer.getOptographs(5)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -311,6 +313,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         } else {
             binding.loadingScreen.setVisibility(View.VISIBLE);
+            Log.d("myTag"," Subscribe3");
             apiConsumer.getOptographs(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -323,6 +326,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         }
 
+        Log.d("myTag"," Subscribe4");
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
@@ -483,10 +487,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         Cursor curs = mydb.getFeedsData(5, optographFeedAdapter.getOldest().getCreated_at());
         Log.d("MARK", "load cursCount - " + curs.getCount());
         if (curs.getCount() > 0) {
+            Log.d("myTag"," Subscribe5");
             cur2Json(curs)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
+                        Log.d("myTag"," Subscribe6");
                         apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -504,6 +510,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         } else {
             Timber.d("LoadMore. No more cache data.");
+            Log.d("myTag"," Subscribe7");
             apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -514,6 +521,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         }
 
+        Log.d("myTag"," Subscribe8");
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
@@ -536,11 +544,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         if(!scrollToTop) binding.loadingScreen.setVisibility(View.VISIBLE);
 
         if (curs.getCount() > 0) {
+            Log.d("myTag"," Subscribe9");
             cur2Json(curs)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
                         if(scrollToTop) mLayoutManager.scrollToPosition(0);
+                        Log.d("myTag"," Subscribe10");
                         apiConsumer.getOptographs(5)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -561,6 +571,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     })
                     .subscribe(optographFeedAdapter::addItem);
         }else{
+            Log.d("myTag"," Subscribe11");
             apiConsumer.getOptographs(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -576,6 +587,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         }
 
+        Log.d("myTag"," Subscribe12");
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))

@@ -360,4 +360,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void switchToProfilePage() { adapterViewPager.profileRootFragment.switchToProfilePage(); }
 
+    public void swipeEnable(boolean clickable) {
+        adapterViewPager.profileRootFragment.swipeEnable(clickable);
+    }
 }

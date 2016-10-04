@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
     private ProgressBar progressBar;
     // new UI
     private TextView forgotPasswordText;
+    private RelativeLayout progressLayout;
 
     private ApiConsumer apiConsumer;
     private CallbackManager callbackManager;
@@ -118,6 +120,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
         passwordText = (EditText) view.findViewById(R.id.password_signin);
         loginButton = (Button) view.findViewById(R.id.login_button);
         forgotPasswordText = (TextView) view.findViewById(R.id.forgot_password_signin);
+        progressLayout = (RelativeLayout)view.findViewById(R.id.progress_layout);
 
         loginButton.setOnClickListener(this);
         forgotPasswordText.setOnClickListener(this);
@@ -145,7 +148,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     setButtonsClickable(true);
-                    progressBar.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
                     return;
                 }
                 LogInReturn login = response.body();
@@ -154,7 +157,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                     setButtonsClickable(true);
-                    progressBar.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
                     return;
                 }
 
@@ -174,7 +177,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
                 setButtonsClickable(true);
-                progressBar.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -205,7 +208,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
             case R.id.login_button:
                 Log.d("myTag", "login clicked.");
                 if (userNameText.getText().toString().equals("") || passwordText.getText().toString().equals("")) break;
-                progressBar.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
                 setButtonsClickable(false);
                 login(userNameText.getText().toString(), passwordText.getText().toString());
                 break;
@@ -221,7 +224,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
                                 setButtonsClickable(true);
-                                progressBar.setVisibility(View.GONE);
+                                progressLayout.setVisibility(View.GONE);
                                 return;
                             }
                             SignUpReturn signUpReturn = response.body();
@@ -237,7 +240,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
                             Timber.d(response.toString());
                             setButtonsClickable(true);
-                            progressBar.setVisibility(View.GONE);
+                            progressLayout.setVisibility(View.GONE);
                         }
 
                         @Override
@@ -246,7 +249,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             setButtonsClickable(true);
-                            progressBar.setVisibility(View.GONE);
+                            progressLayout.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -259,7 +262,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("myTag", "success login on fb: " + loginResult.getAccessToken().getUserId()+" token: "+loginResult.getAccessToken().getToken());
 
-                        progressBar.setVisibility(View.VISIBLE);
+                        progressLayout.setVisibility(View.VISIBLE);
                         apiConsumer.fbLogIn(new FBSignInData(loginResult.getAccessToken().getUserId(), loginResult.getAccessToken().getToken()), new Callback<LogInReturn>() {
                             @Override
                             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
@@ -269,7 +272,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
-                                    progressBar.setVisibility(View.GONE);
+                                    progressLayout.setVisibility(View.GONE);
                                     return;
                                 }
                                 LogInReturn login = response.body();
@@ -278,7 +281,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                     toast.setGravity(Gravity.CENTER, 0, 0);
                                     toast.show();
                                     setButtonsClickable(true);
-                                    progressBar.setVisibility(View.GONE);
+                                    progressLayout.setVisibility(View.GONE);
                                     return;
                                 }
 
@@ -317,7 +320,7 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
                                 GenericOKDialog genericOKDialog = new GenericOKDialog();
                                 genericOKDialog.setArguments(bundle);
                                 genericOKDialog.show(getFragmentManager(), "Error");
-                                progressBar.setVisibility(View.GONE);
+                                progressLayout.setVisibility(View.GONE);
                             }
                         });
                     }
@@ -366,14 +369,15 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.GONE);
                 Timber.d("Failed to load person!");
             }
         });
     }
 
     private void setButtonsClickable(boolean clickable) {
-        ((SignInActivity)getActivity()).swipeEnable(clickable);
+        if (getContext() instanceof SignInActivity) ((SignInActivity)getActivity()).swipeEnable(clickable);
+        else if (getContext() instanceof MainActivity) ((MainActivity)getActivity()).swipeEnable(clickable);
         registerButton.setClickable(clickable);
         loginButton.setClickable(clickable);
         fbButton.setClickable(clickable);
