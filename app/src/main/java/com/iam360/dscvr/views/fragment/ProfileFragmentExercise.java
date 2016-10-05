@@ -418,7 +418,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         person = personReceivedEvent.getPerson();
 
+        Log.d("myTag"," white: person null? "+(person==null));
         if (person != null) {
+            Log.d("myTag"," white: avatarId: "+person.getAvatar_asset_id());
             insertPerson(person);
             binding.executePendingBindings();
             initializeProfileFeed();

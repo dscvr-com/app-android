@@ -143,8 +143,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         optographs.add(1, null);
 
         this.followers = new ArrayList<>();
-//        followers.add(0,null);
-//        followers.add(1,null);
+        followers.add(0,null);
+        followers.add(1,null);
 
         this.notifications = new ArrayList<Notification>();
         this.notifications.add(0, null);

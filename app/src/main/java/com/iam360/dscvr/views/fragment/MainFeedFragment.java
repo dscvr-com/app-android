@@ -281,7 +281,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         }
 
         refresh();
-
+        initializeButtons();
+        initializeShareButtons();
     }
 
     @Override
