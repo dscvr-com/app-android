@@ -24,6 +24,7 @@ LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
                    online-stitcher/src/stitcher/ringStitcher.cpp \
                    online-stitcher/src/stitcher/simpleSphereStitcher.cpp \
                    online-stitcher/src/stitcher/simplePlaneStitcher.cpp \
+                   online-stitcher/src/stitcher/flowBlender.cpp \
                    online-stitcher/src/debug/debugHook.cpp \
                    RecorderBridge.cpp \
                    AlignmentBridge.cpp \

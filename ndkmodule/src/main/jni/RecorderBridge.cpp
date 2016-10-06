@@ -2,8 +2,9 @@
 #include <android/log.h>
 #include <android/bitmap.h>
 #include "online-stitcher/src/recorder/recorder.hpp"
+#include "online-stitcher/src/recorder/recorder2.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
-#include "online-stitcher/src/recorder/imageSink.hpp"
+//#include "online-stitcher/src/recorder/imageSink.hpp"
 #include "online-stitcher/src/recorder/recorderGraph.hpp"
 
 using namespace optonaut;
@@ -16,11 +17,12 @@ Mat intrinsics;
 
 //std::shared_ptr<CheckpointStore> leftStore;
 //std::shared_ptr<CheckpointStore> rightStore;
-std::shared_ptr<CheckpointStore> postStore;
+//std::shared_ptr<CheckpointStore> postStore;
 std::shared_ptr<ImageSink> sink;
 
-std::shared_ptr<Recorder> recorder;
+std::shared_ptr<Recorder2> recorder;
 std::string debugPath;
+std::string path;
 
 extern "C" {
     // storagePath should end on "/"!
@@ -91,20 +93,21 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
 void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
-    std::string path(cString);
+    std::string pathLocal(cString);
+    path = pathLocal;
     __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
     //leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
     //rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
-    postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
+//    postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
 
 
 
     //leftStore->Clear();
     //rightStore->Clear();
-    postStore->Clear();
+//    postStore->Clear();
 
-    sink =std::make_shared<ImageSink>(*postStore);
+//    sink =std::make_shared<ImageSink>(*postStore);
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -124,7 +127,8 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode);
+//    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode);
+    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode);
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
@@ -203,11 +207,20 @@ jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject 
 void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *env, jobject thiz)
 {
     recorder->Finish();
+
+    CheckpointStore leftStore(path + "left/", path + "shared/");
+    CheckpointStore rightStore(path + "right/", path + "shared/");
+
+    leftStore.SaveOptograph(recorder->GetLeftResult());
+    rightStore.SaveOptograph(recorder->GetRightResult());
 }
 
 void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *env, jobject thiz)
 {
-    recorder->Dispose();
+    assert(recorder != NULL);
+    // Do nothing, except deleting
+//    [[NSFileManager defaultManager] removeItemAtPath:self->tempPath error:nil]; //TODO
+//    recorder->Dispose();
     recorder = NULL;
 }
 
@@ -263,7 +276,8 @@ jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *env, j
 
 jfloatArray Java_com_iam360_dscvr_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
 {
-    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
+    assert(false);
+//    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
 }
 
 jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
@@ -295,12 +309,15 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
 
 jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz)
 {
-
-    Mat result = recorder->FinishPreview()->image.data;
+    assert(recorder != NULL);
+//    Mat result = recorder->FinishPreview()->image.data;
+    Mat result = recorder->GetPreviewImage()->image.data;
     return matrixToBitmap(env, result);
 }
 
 jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
 {
-    return recorder->PreviewAvailable();
+    assert(recorder != NULL);
+    return true;
+//    return recorder->PreviewAvailable();
 }

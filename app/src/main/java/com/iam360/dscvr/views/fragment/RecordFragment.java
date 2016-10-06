@@ -99,12 +99,12 @@ public class RecordFragment extends Fragment {
             Vector3 ballHeading = new Vector3(ballPosition);
             ballHeading.normalize();
 
-            float[] currentRotation = Recorder.getCurrentRotation();
-            recorderOverlayView.getRecorderOverlayRenderer().setRotationMatrix(currentRotation);
+//            float[] currentRotation = Recorder.getCurrentRotation();
+            recorderOverlayView.getRecorderOverlayRenderer().setRotationMatrix(coreMotionMatrix);
 
 
             float[] currentHeading = new float[4];
-            Matrix.multiplyMV(currentHeading, 0, currentRotation, 0, unit, 0);
+            Matrix.multiplyMV(currentHeading, 0, coreMotionMatrix, 0, unit, 0);
             Vector3 currentHeadingVec = new Vector3(currentHeading[0], currentHeading[1], currentHeading[2]);
 
             // Use 3D diff as dist

@@ -27,26 +27,21 @@ void Java_com_iam360_dscvr_record_Alignment_clear(JNIEnv *env, jobject thiz, jst
 void Java_com_iam360_dscvr_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath)
 {
 
-    const char *cPath = env->GetStringUTFChars(path, NULL);
-    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
-
-
-
-
-    const char *cString = env->GetStringUTFChars(storagePath, NULL);
-    std::string s_path(cString);
-
-    leftStore = std::make_shared<CheckpointStore>(s_path + "left/", s_path + "shared/");
-    rightStore = std::make_shared<CheckpointStore>(s_path + "right/", s_path + "shared/");
-    postDataStore = std::make_shared<CheckpointStore>(s_path + "post/", s_path + "shared/");
-
-    leftStore->Clear();
-    rightStore->Clear();
-
-    globalAligner = std::make_shared<GlobalAlignment>( *postDataStore, *leftStore, *rightStore);
-    globalAligner->Finish();
-
-
+//    const char *cPath = env->GetStringUTFChars(path, NULL);
+//    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
+//
+//    const char *cString = env->GetStringUTFChars(storagePath, NULL);
+//    std::string s_path(cString);
+//
+//    leftStore = std::make_shared<CheckpointStore>(s_path + "left/", s_path + "shared/");
+//    rightStore = std::make_shared<CheckpointStore>(s_path + "right/", s_path + "shared/");
+//    postDataStore = std::make_shared<CheckpointStore>(s_path + "post/", s_path + "shared/");
+//
+//    leftStore->Clear();
+//    rightStore->Clear();
+//
+//    globalAligner = std::make_shared<GlobalAlignment>( *postDataStore, *leftStore, *rightStore);
+//    globalAligner->Finish();
 
 }
 

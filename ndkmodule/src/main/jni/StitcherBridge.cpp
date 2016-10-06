@@ -36,8 +36,13 @@ std::vector<Mat> getCubeFaces(const Mat& sphere)
 std::vector<Mat> getResult(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
-    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+//    Stitcher stitcher(store);
+//    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+
+    StitchingResultP result = store.LoadOptograph();
+    result->image.Load();
+    Mat sphere = result->image.data;
+
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
     panoBlur.Blur(sphere, blurred);
@@ -49,8 +54,12 @@ std::vector<Mat> getResult(const std::string& path, const std::string& sharedPat
 Mat getEQResult(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
-    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+//    Stitcher stitcher(store);
+//    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+    StitchingResultP result = store.LoadOptograph();
+    result->image.Load();
+    Mat sphere = result->image.data;
+
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
     panoBlur.Black(sphere, blurred);
