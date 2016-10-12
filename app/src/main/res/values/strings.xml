@@ -57,6 +57,10 @@
     <string name="dialog_fb_title">Facebook</string>
     <string name="dialog_fb_text">Say something about this 360 photo</string>
     <string name="dialog_fb_success">360 photo posted successfully.</string>
+    <string name="dialog_tap_to_hide">Tap to hide</string>
+    <string name="dialog_loading_dscvr">Loading DSCVR..</string>
+    <string name="dialog_logout_ongoing_upload_title">Are you sure want to logout?</string>
+    <string name="dialog_logout_ongoing_upload_msg">Some optographs are still not uploaded and will be deleted if you logout.</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
@@ -77,15 +81,19 @@
     <!-- Sign In -->
     <string name="action_back">Back</string>
     <string name="sign_in_use_existing"><u>Use Existing Account</u></string>
-    <string name="log_in">LOG IN</string>
+    <string name="log_in">LOGIN</string>
     <string name="email_address_or_username">Email Address or username</string>
     <string name="password">Password</string>
+    <string name="failed_login">Failed to log in.</string>
+    <string name="login_failed_message">Your entered data wasn\'t correct. Please try again.</string>
 
     <!-- Sign Up -->
     <string name="ok">OK</string>
-    <string name="sign_up">SIGN UP</string>
+    <string name="sign_up">SIGNUP</string>
     <string name="email_address">Email Address</string>
     <string name="choose_password">Choose a password</string>
+    <string name="forgot_password_text">Forgot your password?</string>
+    <string name="failed_signup">Failed signing up.</string>
 
     <!-- Profile -->
     <string name="profile_follow">Follow</string>
@@ -143,6 +151,9 @@
     <string name="settings_capture_type">CAPTURE TYPE</string>
     <string name="settings_motor_on">MOTOR ON</string>
     <string name="settings_motor_off">MOTOR OFF</string>
+    <string name="settings_manual">MANUAL</string>
+    <string name="settings_motor">MOTOR</string>
+    <string name="settings_share_auto">AUTO SHARE IMAGE ON:</string>
 
     <!-- Mailing List Invite -->
     <string name="mailing_type_invite">Super Secret Code:</string>
@@ -163,6 +174,7 @@
     <string name="create_username_create">CREATE USERNAME</string>
     <string name="create_username_sucessful">User successfully created.</string>
     <string name="create_username_failed">Error in creatting username. Please try again.</string>
+    <string name="create_username_min_char">Username must be 5-12 characters</string>
 
 
     <string name="btle_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>

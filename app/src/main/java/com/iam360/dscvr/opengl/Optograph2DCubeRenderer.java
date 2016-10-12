@@ -1,0 +1,394 @@
+package com.iam360.dscvr.opengl;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
+
+import com.iam360.dscvr.R;
+import com.iam360.dscvr.model.SendStory;
+import com.iam360.dscvr.model.SendStoryChild;
+import com.iam360.dscvr.sensors.CombinedMotionManager;
+import com.iam360.dscvr.sensors.TouchEventListener;
+import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.util.Maths;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import timber.log.Timber;
+
+/**
+ * @author Nilan Marktanner
+ * @date 2016-01-17
+ */
+public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
+    private static final float FIELD_OF_VIEW_Y = 95.0f;
+    private static final float FIELD_OF_VIEW_Y_ZOOM = 70.0f;
+    private static final float Z_NEAR = 0.1f;
+    private static final float Z_FAR = 120.0f;
+
+    private static final float V_DISTANCE = 20f;
+    private float scaleFactor = 1.f;
+    private float ratio = 1.f;
+
+    private static final float DAMPING_FACTOR = 0.9f;
+
+    private final float[] mvpMatrix = new float[16];
+
+    private final float[] projection = new float[16];
+    private final float[] camera = new float[16];
+    private float[] rotationMatrix = new float[16];
+
+    private float[] unInverseRotationMatrix = new float[16];
+    private float sphereRadius = 50f;
+    private CombinedMotionManager combinedMotionManager;
+
+    private Cube cube;
+    private String optoType;
+
+    //    private MarkerNode sphere;
+    private List<PinMarker> planes = new ArrayList<PinMarker>();
+    private Sphere sphere;
+    private PinMarker plane;
+
+    private Context context;
+
+    private static final float[] ROTATION_AHEAD_FIRST = {0, 1, 0, 0};
+    private static final float[] ROTATION_AHEAD_SECOND = {0, 0, 1, 0};
+
+    private Bitmap planeTexture;
+    private Bitmap planeTexture2;
+
+    private boolean markerShown = false;
+    private boolean withStory = false;
+    private SendStory myStory = new SendStory();
+    private List<SendStoryChild> myStoryChld = new ArrayList<SendStoryChild>();
+    public boolean overlapChcker = false;
+    private int selectedPin = 0;
+
+
+    public Optograph2DCubeRenderer(Context context) {
+        Timber.v("cube renderer constructor");
+        this.context = context;
+        this.cube = new Cube();
+        this.plane = new PinMarker();
+        this.plane.setInitRotation(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
+        this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
+
+        Matrix.setIdentityM(rotationMatrix, 0);
+
+        myStory.setChildren(myStoryChld);
+    }
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Timber.v("onSurfaceCreated");
+        // Create the GLText
+
+        this.cube.initialize();
+        this.plane.initializeProgram();
+
+        planeTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.pin_icn);
+        planeTexture2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.close_x_icn);
+
+        this.plane.updateTexture(planeTexture);
+
+        sphere = new Sphere(5, sphereRadius);
+        sphere.initializeProgram();
+        setSpherePosition(2.0f, 1.0f, 2.0f);
+
+        for(int a=0; a < 20; a++){
+            planes.add(new PinMarker());
+            planes.get(planes.size() - 1).initializeProgram();
+            planes.get(planes.size() - 1).updateTexture(planeTexture);
+        }
+
+        // Set the camera position
+        Matrix.setLookAtM(camera, 0,
+                0.0f, 0.0f, 0.0f, // eye; location
+                0.0f, 0.0f, 0.01f, // center; looking toward center
+                0.0f, 1.0f, 0.0f); // up; pointing along Y-axis
+
+        // Set the background frame color
+        GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        GLES20.glClearDepthf(1.0f);
+
+    }
+
+    public void setSpherePosition(float x, float y, float z) {
+        //x=left/right; +right,-left
+        //y=top/bot pos; +up,-down
+        //z=depth; bigger number is farther
+        sphere.setTransform(new float[]{
+                0.01f, 0, 0, 0,
+                0, 0.01f, 0, 0,
+                0, 0, 0.01f, 0,
+                x, y, z, 1
+        });
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Timber.v("onSurfaceChanged");
+        GLES20.glViewport(0, 0, width, height);
+        ratio = (float) width / height;
+
+        Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y, ratio, Z_NEAR, Z_FAR);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+        TouchEventListener touchEventListener = combinedMotionManager.getTouchEventListener();
+
+        unInverseRotationMatrix = combinedMotionManager.getRotationMatrix();
+        float[] vector = {0, 0, V_DISTANCE, 0};
+        float[] newPosition = new float[4];
+        Matrix.multiplyMV(newPosition, 0, unInverseRotationMatrix, 0, vector, 0);
+
+        if(withStory){
+            newPosition = new float[]{(float) 0.4805193, (float) 0.50669, (float) -0.0486471};
+        }
+
+        // rotate viewMatrix to allow for user-interaction
+        float[] view = new float[16];
+
+        rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
+        Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
+
+        if (optoType!=null && optoType.equals("optograph_1")) {
+            Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
+        } else {
+            Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y / scaleFactor, ratio, Z_NEAR, Z_FAR);
+        }
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
+
+//        Log.d("MARK","newPosition x = "+newPosition[0] +" y = "+ newPosition[1] +" z = "+ newPosition[2]);
+
+        setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+
+        // Draw shape
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        cube.draw(mvpMatrix);
+
+        plane.setCenter(newPosition[0], newPosition[1], newPosition[2]);
+
+        float[] modelView = new float[16];
+        float[] modelView2 = new float[16];
+
+        float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});
+        float[] rotations = combinedMotionManager.getRotationMatrix();
+
+        if(withStory){
+            rotations = new float[16];
+            Matrix.setRotateM(rotations, 0, 0, 1.501244f, -2.980232e-08f, -0.7588946f);
+        }
+
+        float[] scales = Maths.buildScaleMatrix(2);
+        float[] scales2 = Maths.buildScaleMatrix(1);
+
+        float[] modelMatrix = new float[16];
+        float[] modelMatrix2 = new float[16];
+
+        float[] scaleRotationMatrix = new float[16];
+        float[] scaleRotationMatrix2 = new float[16];
+
+        float[] newRotation = new float[16];
+
+        Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+        Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
+        Matrix.multiplyMM(scaleRotationMatrix2, 0, translationMatrix, 0, scales2, 0);
+
+        Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
+        Matrix.multiplyMM(modelMatrix2, 0, scaleRotationMatrix2, 0, newRotation, 0);
+
+
+        Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, modelMatrix, 0);
+        Matrix.multiplyMM(modelView2, 0, mvpMatrix, 0, modelMatrix2, 0);
+
+        plane.setRotation(rotations);
+        plane.setTranslation(translationMatrix);
+
+        overlapChcker = false;
+        for(int a=0; a< planes.size(); a++){
+            if(planes.get(a).isInitiliazed()){
+                if(overlapSpheres(plane, planes.get(a))){
+                    selectedPin = a;
+                    overlapChcker = true;
+                    Log.d("MARK","plane intersection");
+                }
+                float[] modelView3 = new float[16];
+                translationMatrix = planes.get(a).getTranslation();
+                rotations = planes.get(a).getRotation();
+
+                Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+                Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
+                Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
+
+                Matrix.multiplyMM(modelView3, 0, mvpMatrix, 0, modelMatrix, 0);
+
+                planes.get(a).draw(modelView3);
+            }
+        }
+
+        if(markerShown){
+            if(overlapChcker) {
+                plane.updateTexture(planeTexture2);
+                plane.draw(modelView2);
+            }else if(!overlapChcker){
+                sphere.draw(mvpMatrix);
+            }
+        }
+    }
+
+    public TextureSet.TextureTarget getTextureTarget(int face) {
+        return this.cube.getCubeTextureSet().getTextureTarget(face);
+    }
+
+    public void setMode(int mode) { Log.v("mcandres", "cube renderer"); combinedMotionManager.setMode(mode);}
+
+    public void reset() {
+        this.cube.resetTextures();
+    }
+
+    public void reset(String type) {
+        this.optoType = type;
+        this.cube.resetTextures();
+    }
+
+    public void touchStart(Point point) {
+        combinedMotionManager.touchStart(point);
+    }
+
+    public void touchMove(Point point) {
+        combinedMotionManager.touchMove(point);
+    }
+
+    public void touchEnd(Point point) {
+        combinedMotionManager.touchEnd(point);
+    }
+
+    public void registerOnSensors() {
+        combinedMotionManager.registerOnCoreMotionListener();
+    }
+
+    public void unregisterOnSensors() {
+        combinedMotionManager.unregisterOnCoreMotionListener();
+    }
+
+    public boolean isRegisteredOnSensors() {
+        return combinedMotionManager.isRegisteredOnCoreMotionListener();
+    }
+
+    public void setScaleFactor(float scaleFactor) {
+        this.scaleFactor = scaleFactor;
+    }
+
+    public CombinedMotionManager getCombinedMotionManager() {
+        return combinedMotionManager;
+    }
+
+    public void setType(String type) {
+        this.optoType = type;
+    }
+
+    public void addMarker(SendStoryChild chld){
+//        planes.add(new MarkerNode());
+//        planes.get(planes.size() - 1).initializeProgram();
+//        planes.get(planes.size() - 1).updateTexture(planeTexture);
+//        planes.get(planes.size() - 1).setTranslation(plane.getTranslation());
+//        planes.get(planes.size() - 1).setRotation(plane.getRotation());
+//        planes.get(planes.size() - 1).setInitiliazed(true);
+//        planes.get(planes.size() - 1).setMediaType(chld.getStory_object_media_type());
+//        planes.get(planes.size() - 1).setMarkerName(chld.getStory_object_media_type()+"-"+(planes.size() - 1));
+//        planes.get(planes.size() - 1).setCenter(plane.getCenter().x, plane.getCenter().y, plane.getCenter().z);
+
+        for(int a=0; a< planes.size(); a++) {
+            if (!planes.get(a).isInitiliazed()) {
+                chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
+                chld.setStory_object_rotation( Arrays.asList("123", "456", "789"));
+
+                planes.get(a).setTranslation(plane.getTranslation());
+                planes.get(a).setRotation(plane.getRotation());
+                planes.get(a).setInitiliazed(true);
+                planes.get(a).setMediaType(chld.getStory_object_media_type());
+                planes.get(a).setMarkerName(chld.getStory_object_media_type()+"-"+a);
+                planes.get(a).setCenter(plane.getCenter().x, plane.getCenter().y, plane.getCenter().z);
+                break;
+            }else{
+                if(overlapSpheres(plane, planes.get(a))){
+                    return;
+                }
+            }
+        }
+    }
+
+    public void addStoryChildren(SendStoryChild chld){
+        if(overlapChcker){
+            removePin(selectedPin);
+            return;
+        }
+        myStoryChld.add(chld);
+        if(chld.getStory_object_media_face().equals("pin")){
+            addMarker(chld);
+        }
+    }
+
+    public void planeSetter(SendStoryChild chld){
+        for(int a=0; a< planes.size(); a++) {
+            if (!planes.get(a).isInitiliazed()) {
+                planes.get(a).setInitiliazed(true);
+                planes.get(a).setMediaType(chld.getStory_object_media_type());
+                planes.get(a).setMarkerName(chld.getStory_object_media_type()+"-"+a);
+                planes.get(a).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
+                planes.get(a).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
+            }
+        }
+    }
+
+    public static boolean overlapSpheres(PinMarker point, PinMarker marker) {
+        float x, y, z;
+        x = point.getCenter().x - marker.getCenter().x;
+        y = point.getCenter().y - marker.getCenter().y;
+        z = point.getCenter().z - marker.getCenter().z;
+
+        double distance = Math.sqrt( x*x + y*y + z*z );
+
+        //idk why?
+        return distance <= 1;
+    }
+
+    private void removePin(int markerPos){
+        planes.get(markerPos).setInitiliazed(false);
+    }
+
+    public void setMarkerShown(boolean markerShown) {
+        this.markerShown = markerShown;
+    }
+
+    public boolean isWithStory() {
+        return withStory;
+    }
+
+    public void setWithStory(boolean withStory) {
+        this.withStory = withStory;
+    }
+
+    public SendStory getMyStory() {
+        return myStory;
+    }
+
+    public boolean isOverlap() {
+        return overlapChcker;
+    }
+}

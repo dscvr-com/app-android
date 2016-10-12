@@ -4,7 +4,7 @@
 
     <data class=".ProfileHeaderBinding">
 
-        <import type="com.iam360.iam360.model.Person" />
+        <import type="com.iam360.dscvr.model.Person" />
 
         <variable
             name="person"
@@ -121,9 +121,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/person_is_followed"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="@dimen/navigation_elevation"
-                android:layout_marginRight="@dimen/navigation_elevation"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
                 android:gravity="center_horizontal"
                 android:text="@{person.text}"
                 android:textColor="@color/text_dark"
@@ -135,9 +136,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/person_is_followed"
                 android:background="@drawable/edittext_profile_bg"
-                android:padding="@dimen/appbar_elevation"
-                android:layout_marginStart="@dimen/appbar_elevation"
-                android:layout_marginEnd="@dimen/appbar_elevation"
+                android:padding="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="top|center_horizontal"
                 android:text="@{person.text}"
@@ -153,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@id/person_desc_edit"
-                android:layout_marginTop="@dimen/navigation_padding_bottom"
+                android:layout_marginTop="8dp"
                 android:background="@color/profile_columns_text"
                 android:visibility="gone" />
 

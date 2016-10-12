@@ -4,8 +4,8 @@
 
     <data class=".GridNotificationFollowBinding">
 
-    <import type="com.iam360.iam360.model.Notification" />
-    <import type="com.iam360.iam360.model.Person" />
+    <import type="com.iam360.dscvr.model.Notification" />
+    <import type="com.iam360.dscvr.model.Person" />
 
     <variable
     name="notification"
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_toRightOf="@id/person_avatar_asset_padding"
-            android:layout_marginStart="@dimen/appbar_elevation"
+            android:layout_marginStart="4dp"
             android:layout_alignParentBottom="true"
             android:background="@color/profile_line_separator" />
 
@@ -73,14 +73,14 @@
             android:layout_height="60dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/appbar_elevation"
-            android:layout_marginStart="@dimen/appbar_elevation">
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp">
         <ImageView
             android:id="@+id/follow_notif"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:padding="@dimen/fab_elevation"
+            android:padding="8dp"
             android:background="@color/transparentOverlay"/>
         </RelativeLayout>
         <LinearLayout
@@ -110,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_dark"
-                android:layout_marginStart="@dimen/appbar_elevation"
+                android:layout_marginStart="4dp"
                 android:textSize="13sp"
                 android:text="@string/profile_notif_follow_text"
                 app:font="@{`italic`}" />

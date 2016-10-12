@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iam360.iam360">
+    package="com.iam360.dscvr">
 
     <supports-screens
         android:largeScreens="true"
@@ -41,6 +41,9 @@
         android:required="true" />
     <uses-feature
         android:name="android.hardware.screen.portrait"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
         android:required="true" />
 
     <application
@@ -109,11 +112,10 @@
             </intent-filter>
         </service>
 
-        <!-- android:theme="@android:style/Theme.Translucent.NoTitleBar" -->
+        <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-             />
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
 
         <activity
             android:name=".views.activity.OptographDetailsActivity"
@@ -138,6 +140,14 @@
         <activity
             android:name=".views.activity.SharingActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".views.activity.SignInActivity"
+            android:screenOrientation="portrait" />
+
+        <!--<activity-->
+            <!--android:name=".views.activity.SignInAct2"-->
+            <!--android:screenOrientation="portrait" />-->
 
         <activity
             android:name=".views.activity.SigninFBActivity"

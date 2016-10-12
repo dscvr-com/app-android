@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data class=".GridItemLocalBinding">
-        <import type="com.iam360.iam360.model.Optograph"/>
+        <import type="com.iam360.dscvr.model.Optograph"/>
         <variable
             name="optograph"
             type="Optograph"/>
@@ -16,10 +16,10 @@
             android:id="@+id/optograph2dview_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/fab_elevation"
-            android:layout_marginRight="@dimen/appbar_elevation"
-            android:layout_marginBottom="@dimen/snackbar_elevation"
-            android:layout_marginTop="@dimen/snackbar_elevation"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:background="@android:color/black"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
@@ -35,8 +35,8 @@
             android:id="@+id/upload_local_btn"
             android:layout_width="100dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="@dimen/appbar_elevation"
-            android:padding="@dimen/appbar_elevation"
+            android:layout_marginEnd="4dp"
+            android:padding="4dp"
             android:background="@drawable/upload_yellow_btn_bg"
             android:textSize="10sp"
             android:layout_gravity="right|center_vertical"/>
@@ -45,8 +45,8 @@
             android:id="@+id/upload_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/navigation_elevation"
-            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:padding="12dp"
+            android:layout_marginEnd="4dp"
             android:background="@drawable/upload_yellow_btn"
             android:layout_gravity="right|center_vertical"
             android:visibility="gone"/>
@@ -55,7 +55,7 @@
             android:id="@+id/upload_progress_local"
             android:layout_width="100dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:layout_marginEnd="4dp"
             android:layout_gravity="right|center_vertical"
             android:progressDrawable="@drawable/progressbar"
             style="@android:style/Widget.ProgressBar.Horizontal"
@@ -64,7 +64,7 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="@dimen/appbar_elevation"
+            android:layout_marginEnd="4dp"
             android:text="@string/profile_uploading"
             android:textSize="10sp"
             android:gravity="center"
@@ -98,10 +98,10 @@
                 <!--android:drawablePadding="5dp"-->
                 <!--android:drawableRight="@drawable/like_icn"-->
                 <!--android:textColor="@color/bright"-->
-                <!--android:paddingRight="@dimen/fab_elevation"-->
-                <!--android:paddingLeft="@dimen/fab_elevation"-->
-                <!--android:paddingTop="@dimen/appbar_elevation"-->
-                <!--android:paddingBottom="@dimen/appbar_elevation"-->
+                <!--android:paddingRight="8dp"-->
+                <!--android:paddingLeft="8dp"-->
+                <!--android:paddingTop="4dp"-->
+                <!--android:paddingBottom="4dp"-->
                 <!--android:layout_alignParentEnd="true"-->
                 <!--android:layout_marginRight="12dp"-->
                 <!--android:layout_marginLeft="12dp"/>-->

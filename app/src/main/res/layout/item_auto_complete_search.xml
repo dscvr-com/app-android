@@ -4,8 +4,8 @@
 
     <data class=".ItemAutoCompleteSearchBinding">
 
-        <import type="com.iam360.iam360.model.Person" />
-        <import type="com.iam360.iam360.model.Location" />
+        <import type="com.iam360.dscvr.model.Person" />
+        <import type="com.iam360.dscvr.model.Location" />
         <variable
             name="person"
             type="Person" />

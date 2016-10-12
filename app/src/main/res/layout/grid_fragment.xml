@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data class=".ProfileGridBinding">
-        <import type="com.iam360.iam360.model.Person" />
+        <import type="com.iam360.dscvr.model.Person" />
         <variable
             name="person"
             type="Person" />
@@ -74,7 +74,7 @@
                     android:layout_alignParentEnd="true"
                     android:visibility="gone"
                     android:layout_marginRight="@dimen/fab_margin"
-                    android:paddingTop="@dimen/fab_elevation"/>
+                    android:paddingTop="8dp"/>
             </RelativeLayout>
 
             <!--tools:src="@android:drawable/sym_def_app_icon"-->
@@ -185,7 +185,7 @@
                 android:layout_height="1dp"
                 android:background="@color/profile_columns_text"
                 android:layout_below="@id/person_desc_edit"
-                android:layout_marginTop="@dimen/navigation_padding_bottom"/>
+                android:layout_marginTop="8dp"/>
 
             <!--android:layout_marginLeft="50dp"-->
             <!--android:layout_marginRight="50dp"-->
