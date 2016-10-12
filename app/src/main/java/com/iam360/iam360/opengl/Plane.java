@@ -3,7 +3,6 @@ package com.iam360.iam360.opengl;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-import android.util.Log;
 
 import com.iam360.iam360.util.Constants;
 import com.iam360.iam360.util.MyGLUtils;
@@ -11,7 +10,6 @@ import com.iam360.iam360.util.MyGLUtils;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -154,7 +152,6 @@ public class Plane {
     }
 
     public void draw(float[] mvpMatrix) {
-        Log.d("MARK","Plane mvpMatrix = "+ Arrays.toString(mvpMatrix));
         if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
             Timber.v("Rebinding texture, context was probably lost.");
             synchronized (this) {

@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.iam360.iam360.BR;
-import com.iam360.iam360.ProfileHeaderBinding;
 import com.iam360.iam360.R;
 import com.iam360.iam360.StoryFeedItemBinding;
 import com.iam360.iam360.model.Optograph;
@@ -27,8 +24,6 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class StoryFeedAdapter extends RecyclerView.Adapter<StoryFeedAdapter.StoryFeedItemHolder> {
     private List<Optograph> optographs;
@@ -79,6 +74,7 @@ public class StoryFeedAdapter extends RecyclerView.Adapter<StoryFeedAdapter.Stor
     private void callDetailsPage(Optograph optograph) {
         Intent intent = new Intent(context, OptographDetailsActivity.class);
         intent.putExtra("opto", optograph);
+        intent.putExtra("story", true);
         context.startActivity(intent);
     }
 

@@ -45,18 +45,10 @@
             android:layout_height="match_parent"
             android:padding="10dp">
 
-            <com.iam360.iam360.viewmodels.SnappyRecyclerView
-                android:id="@+id/story_feeds"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="130dp"
-                android:clipToPadding="false"/>
-
             <LinearLayout
                 android:id="@+id/center_line"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/story_feeds"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
                 android:gravity="center"
@@ -67,7 +59,6 @@
                     android:layout_height="1dp"
                     android:layout_weight="1"
                     android:background="#e2e2e2" />
-
                 <TextView
                     android:id="@+id/your_stories_text"
                     android:layout_width="wrap_content"
@@ -76,33 +67,50 @@
                     android:layout_marginRight="5dp"
                     app:font="@{``}"
                     android:text="@string/story_you" />
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="#e2e2e2" />
-
             </LinearLayout>
 
             <com.iam360.iam360.viewmodels.SnappyRecyclerView
                 android:id="@+id/my_story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="110dp"
+                android:minHeight="10dp"
                 android:layout_below="@+id/center_line"
                 android:clipToPadding="false"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="30dp"
+
+
+            <RelativeLayout
+                android:layout_marginTop="50dp"
                 android:layout_below="@+id/my_story_feeds"
-                android:background="#e2e2e2" />
-
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true">
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignWithParentIfMissing="true">
+                        <ImageView
+                            android:id="@+id/create_story_btn2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/create_a_story_btn" />
+                    </RelativeLayout>
+                </RelativeLayout>
+            </RelativeLayout>
         </RelativeLayout>
-
     </LinearLayout>
-
 </layout>

@@ -490,6 +490,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
+    public int getFirstPositionOfServerImage() {
+        for (int i = 2; i < optographs.size(); i++) {
+            Optograph current = optographs.get(i);
+            if (current != null && !current.is_local()) return i;
+        }
+        return 0;
+    }
+
     private void callDetailsPage(int position) {
         Intent intent = new Intent(context, OptographDetailsActivity.class);
         intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));

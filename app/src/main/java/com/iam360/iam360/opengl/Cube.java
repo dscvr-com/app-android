@@ -2,12 +2,10 @@ package com.iam360.iam360.opengl;
 
 import android.graphics.Bitmap;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.iam360.iam360.util.Maths;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -93,7 +91,6 @@ public class Cube {
     }
 
     private void initializeTranslations() {
-        Log.d("MARK","Cube initializeTranslations = "+ Arrays.toString(Maths.buildTranslationMatrix(POSITION_AHEAD)));
         translations.add(Maths.buildTranslationMatrix(POSITION_AHEAD));
         translations.add(Maths.buildTranslationMatrix(POSITION_RIGHT));
         translations.add(Maths.buildTranslationMatrix(POSITION_BEHIND));
@@ -103,7 +100,6 @@ public class Cube {
     }
 
     private void initializeRotations() {
-        Log.d("MARK","Cube initializeRotations = "+ Arrays.toString(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST)));
         rotations.add(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
         //rotations.add(buildRotationMatrix(new float[]{90, 0, 1, 0}));
         rotations.add(Maths.buildRotationMatrix(ROTATION_RIGHT_SECOND, ROTATION_RIGHT_FIRST));
@@ -114,7 +110,6 @@ public class Cube {
     }
 
     private void initializeScales() {
-        Log.d("MARK","Cube initializeScales = "+ Arrays.toString(Maths.buildScaleMatrix(SIDE_LENGTH)));
         scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
         scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));
         scales.add(Maths.buildScaleMatrix(SIDE_LENGTH));

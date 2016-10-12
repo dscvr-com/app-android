@@ -7,6 +7,8 @@
         <import type="com.iam360.iam360.model.Optograph" />
         <import type="com.iam360.iam360.model.Person" />
         <import type="com.iam360.iam360.model.Location" />
+        <import type="com.iam360.iam360.model.Story" />
+
 
         <variable
             name="optograph"
@@ -19,6 +21,10 @@
         <variable
             name="location"
             type="Location" />
+
+        <variable
+            name="story"
+            type="Story" />
     </data>
 
     <FrameLayout

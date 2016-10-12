@@ -92,7 +92,6 @@ dependencies {
         transitive = true;
     }
 
-
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':ndkmodule')
     compile project(':library')

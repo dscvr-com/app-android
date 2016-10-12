@@ -9,10 +9,15 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.SendStory;
+import com.iam360.iam360.model.SendStoryChild;
+import com.iam360.iam360.model.StoryChild;
+import com.iam360.iam360.util.Cache;
 import com.iam360.iam360.util.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Nilan Marktanner
@@ -97,10 +102,23 @@ public class Optograph2DCubeView extends GLSurfaceView {
         }
     }
 
+    public void initStoryChildrens(){
+        if(!optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+            List<StoryChild> chldrns = optograph.getStory().getChildren();
+            for(int a=0; a < chldrns.size(); a++){
+                SendStoryChild stryChld = new SendStoryChild();
+                stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
+
+            }
+        }
+    }
+
     public void setOptograph(Optograph optograph) {
 
         // this view is set with the same optograph - abort
         optograph2DCubeRenderer.setType(optograph.getOptograph_type());
+
+        optograph2DCubeRenderer.setWithStory(optograph.isWithStory());
         if (optograph.equals(this.optograph)) {
             return;
         }
@@ -113,6 +131,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
         // actually set optograph
         this.optograph = optograph;
         initializeTextures();
+
+        initStoryChildrens();
     }
 
     @Override
@@ -181,9 +201,12 @@ public class Optograph2DCubeView extends GLSurfaceView {
     }
 
 
-    public void addMarker() {
-        Log.d("MARK","2dBIEW addMarker");
-        optograph2DCubeRenderer.addMarker();
+    public void addMarker(SendStoryChild chld) {
+        optograph2DCubeRenderer.addStoryChildren(chld);
+    }
+
+    public void setMarker(boolean type){
+        optograph2DCubeRenderer.setMarkerShown(type);
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -196,4 +219,13 @@ public class Optograph2DCubeView extends GLSurfaceView {
             return true;
         }
     }
+
+    public SendStory getSendStory(){
+        Cache cache = Cache.open();
+        SendStory stry = optograph2DCubeRenderer.getMyStory();
+        stry.setStory_optograph_id(optograph.getId());
+        stry.setStory_person_id(cache.getString(Cache.USER_ID));
+        return optograph2DCubeRenderer.getMyStory();
+    }
+
 }

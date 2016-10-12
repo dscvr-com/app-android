@@ -4,12 +4,14 @@ import android.util.Log;
 
 import com.iam360.iam360.model.Gateway;
 import com.iam360.iam360.model.NotificationTriggerData;
-import com.iam360.iam360.model.Optograph;
+import com.iam360.iam360.model.SendStory;
+import com.iam360.iam360.model.SendStoryResponse;
 import com.iam360.iam360.model.StoryFeed;
 import com.iam360.iam360.util.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 
 import java.io.IOException;
 
@@ -18,8 +20,6 @@ import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
-import retrofit.http.Query;
-import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -128,4 +128,14 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
+
+    public void sendStories(SendStory data, Callback<SendStoryResponse> callback) {
+        Call<SendStoryResponse> call = service.sendStories(data);
+        call.enqueue(callback);
+    }
+
+    public void uploadBgm(RequestBody data, Callback<String> callback) {
+        Call<String> call = service.uploadBgm(data);
+        call.enqueue(callback);
+    }
 }

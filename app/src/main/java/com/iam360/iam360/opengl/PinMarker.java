@@ -17,7 +17,17 @@ import timber.log.Timber;
 /**
  * Created by Joven on 9/22/2016.
  */
-public class Plane2 {
+public class PinMarker {
+    public String markerName;
+    //NAV, FXTXT, MUS, TXT, Image, BGM
+    public String mediaType;
+    //pin, Yo, no pin,
+    public String mediaFace;
+    public String mediaDescription;
+    public String mediaAdditionalData;
+    public String objectMediaFilename;
+    public String objectMediaFileurl;
+
     public boolean isInitiliazed = false;
     public float[] translation = new float[16];
     public float[] rotation = new float[16];
@@ -79,7 +89,7 @@ public class Plane2 {
     private int textureSamplerHandle;
     private final Vector3 center = new Vector3();
 
-    public Plane2() {
+    public PinMarker() {
         initialize();
     }
 
@@ -266,5 +276,22 @@ public class Plane2 {
 
     public Vector3 getCenter() {
         return center;
+    }
+
+
+    public void setMarkerName(String markerName) {
+        this.markerName = markerName;
+    }
+
+    public String getMarkerName() {
+        return markerName;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
     }
 }

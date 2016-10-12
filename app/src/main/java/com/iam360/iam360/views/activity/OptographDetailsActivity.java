@@ -52,6 +52,7 @@ import org.joda.time.Interval;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -80,11 +81,16 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean isMultipleOpto = false;
     private int viewsWithSoftKey;
 
+    private boolean withStory = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
+        if(getIntent().getExtras().get("story") != null){
+            withStory = (boolean) getIntent().getExtras().get("story");
+        }
 
         if(optographList != null) {
             isMultipleOpto = true;
@@ -106,10 +112,16 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             new GeneralUtils().decrementBadgeCount(cache, this);
         }
 
+        Log.d("MARK","MARKOPTO optograph = "+ Objects.toString(optograph));
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_optograph_details);
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
+        if(withStory){
+            optograph.setWithStory(true);
+            binding.setVariable(BR.story, optograph.getStory());
+        }
 
         Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) isCurrentUser = true;// TODO: if the Person table is created on the local DB remove this line and set the person's data on the optograph(OptographLocalGridAdapter->addItem(Optograph))
@@ -491,7 +503,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 break;
             case R.id.heart_container:
             case R.id.heart_label:
-                binding.optograph2dview.addMarker();
                 if(!cache.getString(Cache.USER_TOKEN).equals("")) {
                     if (!cache.getString(Cache.USER_TOKEN).equals("") && !optograph.is_starred()) {
 

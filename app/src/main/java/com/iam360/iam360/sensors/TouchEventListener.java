@@ -1,7 +1,6 @@
 package com.iam360.iam360.sensors;
 
 import android.graphics.Point;
-import android.util.Log;
 
 import com.iam360.iam360.util.Maths;
 
@@ -116,9 +115,6 @@ public class TouchEventListener extends RotationMatrixProvider {
 
         // clamp theta for border effect
         theta = Math.max(minTheta, Math.min(theta, maxTheta));
-        Log.d("MARK10","theta = "+theta);
-        Log.d("MARK10","phi = "+phi);
-
 
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
