@@ -40,6 +40,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.google.gson.JsonObject;
+import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
@@ -61,6 +62,7 @@ import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
+import com.iam360.dscvr.views.UploaderJob;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
@@ -363,7 +365,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                     return;
                 }
                 Log.d("myTag", " updateOptoData location: updateOptoData: uploadimagemode: " + UPLOAD_IMAGE_MODE);
-                if (!UPLOAD_IMAGE_MODE) ; // getLocalImage(opto);
+                if (!UPLOAD_IMAGE_MODE)
+                    DscvrApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(UUID.fromString(opto.getId()))); // upload 12images in background process
                 else {
                     Snackbar.make(uploadButton, getString(R.string.image_uploaded), Snackbar.LENGTH_SHORT).show();
                     finish(); //no need to upload cube faces for theta upload
@@ -626,8 +629,8 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
     private boolean createDefaultOptograph(Optograph opto) {
         return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
-                false, false, "", opto.getOptograph_type());
+                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", false, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
+                false, false, "", opto.getOptograph_type());// should_be_published change defaul to false for automatic upload
     }
 
     private void uploadOptonautData(Optograph optograph) {

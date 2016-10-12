@@ -96,7 +96,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         binding.homeBtn.setImageResource(getActivity() instanceof ProfileActivity? R.drawable.back_arrow : R.drawable.logo_mini_icn);
 
+        Log.d("myTag"," follower: person null? "+(person==null));
         if (person != null) {
+            Log.d("myTag"," follower: exercise name: "+person.getDisplay_name()+" followed? "+person.is_followed());
 //            binding.setVariable(BR.person, person);
             binding.executePendingBindings();
             initializeProfileFeed();
@@ -144,7 +146,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 super.onScrolled(recyclerView, dx, dy);
                 if (optographLocalGridAdapter.isOnEditMode()) enableScroll(false);
                 View view = binding.optographFeed.getChildAt(1);
-                if (view==null)return;
+                if (view==null) {
+                    binding.toolbarLayout.setVisibility(View.VISIBLE);
+//                    binding.toolbar.setVisibility(View.VISIBLE);
+                    binding.toolbarReplace.setVisibility(View.GONE);
+                    return;
+                }
                 yPos += dy;
                 float top = view.getY();
 //                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
@@ -206,7 +213,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void setAvatar(Bitmap bitmap) {
-        optographLocalGridAdapter.avatarUpload(bitmap);
+        optographLocalGridAdapter.setAvatar(bitmap);
     }
 
     public void refreshAfterDelete(String id,boolean isLocal) {
@@ -287,6 +294,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 optographLocalGridAdapter.setEditMode(isEditMode);
                 binding.cancelBtn.setVisibility(View.VISIBLE);
                 binding.homeBtn.setVisibility(View.GONE);
+                optographLocalGridAdapter.cancelUpdate();
                 updateHomeButton();
                 break;
             case R.id.overflow_btn:
@@ -358,6 +366,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
     }
 
+    /*
+    * check if user is existing on database
+    * @return false if user is not saved on database or
+     * Person if existing on DB
+    */
     private boolean myGetData(String id) {
         Person person1 = new Person();
         Cursor res = mydb.getData(id,DBHelper.PERSON_TABLE_NAME,"id");
@@ -371,12 +384,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         person1.setUser_name(res.getString(res.getColumnIndex("user_name")));
         person1.setEmail(res.getString(res.getColumnIndex("email")));
         person1.setText(res.getString(res.getColumnIndex("text")));
-        person1.setElite_status(res.getString(res.getColumnIndex("elite_status")).equalsIgnoreCase("true"));
+        person1.setElite_status(res.getInt(res.getColumnIndex("elite_status"))!=0);
         person1.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
         person1.setOptographs_count(res.getInt(res.getColumnIndex("optographs_count")));
         person1.setFollowers_count(res.getInt(res.getColumnIndex("followers_count")));
         person1.setFollowed_count(res.getInt(res.getColumnIndex("followed_count")));
-        person1.setIs_followed(res.getString(res.getColumnIndex("is_followed")).equalsIgnoreCase("true"));
+        person1.setIs_followed(res.getInt(res.getColumnIndex("is_followed"))!=0);
         person1.setFacebook_user_id(res.getString(res.getColumnIndex("facebook_user_id")));
         person1.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
         person1.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
@@ -393,6 +406,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
                     person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
                     person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+//        } else {
+//            mydb.updatePerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+//                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+//                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
         }
     }
 
@@ -418,9 +435,9 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         person = personReceivedEvent.getPerson();
 
-        Log.d("myTag"," white: person null? "+(person==null));
+        Log.d("myTag"," follower: person null? "+(person==null));
         if (person != null) {
-            Log.d("myTag"," white: avatarId: "+person.getAvatar_asset_id());
+            Log.d("myTag"," follower: personName: "+person.getDisplay_name()+" followed? "+person.is_followed());
             insertPerson(person);
             binding.executePendingBindings();
             initializeProfileFeed();
@@ -432,6 +449,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         super.onResume();
         BusProvider.getInstance().register(this);
 
+        Log.d("myTag"," follower: onresume person null? "+(person==null));
         if(person == null) setPerson();
         else refresh();
 
@@ -740,7 +758,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 " item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
         Log.d("myTag"," setMessage: count: "+optographLocalGridAdapter.getItemCount());
         if (optographLocalGridAdapter.getItemCount()-2==0  && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
-            optographLocalGridAdapter.setMessage((message==null)?getResources().getString(R.string.profile_no_image):message);
+            optographLocalGridAdapter.setMessage((message==null && getActivity()!=null)?getResources().getString(R.string.profile_no_image):message);
             updateHomeButton();
         } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
             optographLocalGridAdapter.setMessage("");

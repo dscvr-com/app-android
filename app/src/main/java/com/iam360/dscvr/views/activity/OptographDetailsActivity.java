@@ -99,6 +99,14 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             optograph = getIntent().getExtras().getParcelable("opto");
             optographList = new ArrayList<>();
         }
+//        Log.d("myTag"," delete: opto null? "+(optograph ==null));
+//        if (optograph!=null) Log.d("myTag"," delete: details deletedAt: -"+optograph.getDeleted_at()
+//                +"- deleteAt null? "+(optograph.getDeleted_at()==null));
+//        if (optograph!=null && optograph.getDeleted_at()!=null) Log.d("myTag","delete: details isEmpty? "+(optograph.getDeleted_at().isEmpty()));
+//        if (optograph==null) {
+//            this.finish();
+//            return;
+//        }
 
         cache = Cache.open();
         mydb = new DBHelper(this);
@@ -114,7 +122,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
 
-        Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
+        Log.d("myTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) isCurrentUser = true;// TODO: if the Person table is created on the local DB remove this line and set the person's data on the optograph(OptographLocalGridAdapter->addItem(Optograph))
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
         if(isCurrentUser) {
@@ -625,6 +633,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.overlayDelete.setVisibility(View.VISIBLE);
         if (optograph.is_local()) {
             deleteOptographFromPhone(optograph.getId());
+            Log.d("myTag"," delete: details deleteOptographs local -"+RFC3339DateFormatter.toRFC3339String(DateTime.now())+"-");
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
             mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
 //            mydb.deleteEntry(DBHelper.FACES_TABLE_NAME,DBHelper.FACES_ID,optograph.getId());
@@ -643,8 +652,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 binding.overlayDelete.setVisibility(View.GONE);
                 if (response.isSuccess()) {
+                    Log.d("myTag"," delete: details deleteOptographs server -"+RFC3339DateFormatter.toRFC3339String(DateTime.now())+"-");
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+                    optograph.setDeleted_at(RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());

@@ -125,12 +125,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private boolean isEditMode = false;
     private boolean needSave = false;
     private boolean avatarChange = false;
+    private boolean cancelAvatar = false;
+    private boolean viewAvatarPreview = false;
     private boolean fromCancelEdit = false;
 
     private int onTab;
     private String follow, following;
     private String origPersonName, origPersonDesc;
     private String personName, personDesc;
+    private Bitmap previousAvatarImage;
     private Bitmap avatarImage;
     private String avatarId;
     private String message;
@@ -142,7 +145,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         optographs.add(0, null);
         optographs.add(1, null);
 
-        this.followers = new ArrayList<>();
+        this.followers = new ArrayList<Follower>();
         followers.add(0,null);
         followers.add(1,null);
 
@@ -240,6 +243,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                 }
 
+                if (optograph.getDeleted_at()==null) Log.d("myTag"," delete: local not deleted");
+                else if (!optograph.getDeleted_at().isEmpty()) return;
                 if (optograph.is_local()) count += 1;
 
                 Log.d("myTag", " local? " + optograph.is_local() + " isuploading? " + optograph.isIs_uploading());
@@ -303,6 +308,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (mHolder3.getBinding().getOptograph() != null) {
 
                     }
+                    Log.d("myTag"," delete: server deleted? -"+optograph.getDeleted_at()+"- size? "+optographs.size());
+                    if (optograph.getDeleted_at()==null) Log.d("myTag"," delete: server not deleted");
+                    else if (!optograph.getDeleted_at().isEmpty()) return;
 //                mHolder3.getBinding().optograph2dviewServer.getLayoutParams().height = (ITEM_WIDTH - 30) / 4;
                     mHolder3.getBinding().optograph2dviewServer.getLayoutParams().width = (ITEM_WIDTH - 30) / COLUMNS;
                     mHolder3.getBinding().optograph2dviewServer.requestLayout();
@@ -356,7 +364,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                             mHolder2.getBinding().getFollower().setIs_followed(false);
                                             mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
                                             mHolder2.getBinding().invalidateAll();
-                                            notifyItemChanged(position);
 
                                             Cursor res = mydb.getData(mHolder2.getBinding().getFollower().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                             res.moveToFirst();
@@ -364,6 +371,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                 mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder2.getBinding().getFollower().getId(), "is_followed", false);
                                                 mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder2.getBinding().getFollower().getId(), "followers_count", mHolder2.getBinding().getFollower().getFollowers_count());
                                             }
+                                            notifyItemChanged(position);
                                         }
 
                                     }
@@ -389,6 +397,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                 if (res.getCount() > 0) {
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "is_followed", true);
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
+                                                }
+                                            } else {
+                                                Cursor res = mydb.getData(follower.getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                                res.moveToFirst();
+                                                if (res.getCount() > 0) {
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "is_followed", true);
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "followers_count", follower.getFollowers_count());
                                                 }
                                             }
                                             notifyItemChanged(position);
@@ -553,6 +568,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void startProfile(String id) {
+        Log.d("myTag"," follower: startProfile id: "+id);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra("id", id);
         context.startActivity(intent);
@@ -733,10 +749,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private void initializeHeaderOne(HeaderOneViewHolder mHolder1) {
         mHolder1.getBinding().setVariable(BR.person, person);
         mHolder1.getBinding().executePendingBindings();
-        if (avatarChange) {
+        Log.d("myTag"," initializeOne avatar: "+avatarImage+" change? "+avatarChange+" viewAvatarPreview? "+viewAvatarPreview+"  cancelAvatar? "+cancelAvatar+" editMode? "+isOnEditMode());
+        if(viewAvatarPreview) {
+//            previousAvatarImage = mHolder1.getBinding().personAvatarAsset.getDrawingCache();
+            mHolder1.getBinding().personAvatarAsset.setImageBitmap(avatarImage);
+        } else if (cancelAvatar) {
+            if (previousAvatarImage!=null) mHolder1.getBinding().personAvatarAsset.setImageBitmap(previousAvatarImage);
+        } else if (avatarChange) {
             if (avatarImage != null) {
+                avatarId = UUID.randomUUID().toString();
+                Log.d("myTag"," avatar: "+avatarImage+" id: "+avatarId);
                 mHolder1.getBinding().personAvatarAsset.setImageBitmap(avatarImage);
                 mHolder1.getBinding().getPerson().setAvatar_asset_id(avatarId);
+                previousAvatarImage = null;
+                avatarUpload(avatarImage);
             }
             avatarChange = false;
         }
@@ -889,6 +915,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder1.getBinding().getPerson().getId(), "is_followed", true);
                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder1.getBinding().getPerson().getId(), "followers_count", mHolder1.getBinding().getPerson().getFollowers_count());
                                 }
+                                res.close();
                             }
                         }
 
@@ -905,6 +932,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onClick(View v) {
                 if (isEditMode) {
+                    if(previousAvatarImage==null)previousAvatarImage = mHolder1.getBinding().personAvatarAsset.getDrawingCache();
                     Intent intent = new Intent();
                     // Show only images, no vieos or anything else
                     intent.setType("image/*");
@@ -923,20 +951,30 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         for (Optograph opto : optographs) {
             if (opto != null && opto.getId().equals(id) && opto.is_local() == isLocal) {
                 int position = optographs.indexOf(opto);
-                optographs.remove(opto);
+                opto.setDeleted_at(RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+                optographs.remove(position);
                 notifyItemRemoved(position);
-                notifyItemRangeChanged(position, optographs.size() - position - 1);
+//                notifyItemRangeChanged(position, optographs.size() - position - 1);
+                notifyItemRangeChanged(position, optographs.size());
                 return;
             }
         }
     }
 
-    public void avatarUpload(Bitmap bitmap) {
-        String avatar = UUID.randomUUID().toString();
-        avatarChange = true;
+    public void setAvatar(Bitmap bitmap) {
+        Log.d("myTag"," setAvatar: bitmap: "+bitmap);
+        viewAvatarPreview = true;
+//        avatarChange = true;
         avatarImage = bitmap;
-        avatarId = avatar;
         notifyItemChanged(0);
+    }
+
+    public void avatarUpload(Bitmap bitmap) {
+//        String avatar = UUID.randomUUID().toString();
+//        avatarChange = true;
+        avatarImage = bitmap;
+//        avatarId = avatar;
+//        notifyItemChanged(0);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
@@ -946,15 +984,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("avatar_asset", "avatar.jpg", fbody)
-                .addFormDataPart("avatar_asset_id", avatar)
+                .addFormDataPart("avatar_asset_id", avatarId)
                 .build();
 
-        Timber.d("Avatar " + avatar);
+        Timber.d("Avatar " + avatarId);
         apiConsumer.uploadAvatar(fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Timber.d("Response : " + response.message());
 //                binding.getPerson().setAvatar_asset_id(avatar);
+                Log.d("myTag"," avatar: success upload? "+response.isSuccess());
+                avatarImage = null;
+                avatarId = null;
             }
 
             @Override
@@ -1034,10 +1075,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     public void saveUpdate() {
         needSave = true;
-        avatarImage = null;
-        avatarId = null;
+//        avatarImage = null;
+//        avatarId = null;
         isEditMode = false;
+        viewAvatarPreview = false;
+        cancelAvatar = false;
+        avatarChange = true;
         notifyItemChanged(0);
+    }
+
+    public void cancelUpdate() {
+//        if(!avatarChange){return;}
+        viewAvatarPreview = false;
+        cancelAvatar = true;
+        if(!avatarChange)notifyItemChanged(0);
     }
 
     public boolean isOnEditMode() {
@@ -1282,7 +1333,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
-        List<String> filePathList = new ArrayList<>();
+        List<String> filePathList = new ArrayList<String>();
         filePathList.add(String.valueOf(position));
 
         if (dir.exists()) {// remove the not notation here
@@ -1546,6 +1597,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         DateTime created_at = optograph.getCreated_atDateTime();
 
         if (optographs.contains(optograph)) {
+            Log.d("myTag"," delete: opto contains");
             return;
         }
 

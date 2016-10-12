@@ -246,6 +246,33 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updatePerson(String id, String created_at, String email, String deleted_at, boolean elite_status,
+                                String display_name, String user_name, String text, String avatar_asset_id, String facebook_user_id,
+                                int optographs_count, int followers_count, int followed_count, boolean is_followed, String facebook_token, String twitter_token, String twitter_secret){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id", id);
+        contentValues.put("created_at", created_at);
+        contentValues.put("deleted_at", deleted_at);
+        contentValues.put("display_name", display_name);
+        contentValues.put("user_name", user_name);
+        contentValues.put("email", email);
+        contentValues.put("text", text);
+        contentValues.put("elite_status", elite_status);
+        contentValues.put("avatar_asset_id", avatar_asset_id);
+        contentValues.put("optographs_count", optographs_count);
+        contentValues.put("followers_count", followers_count);
+        contentValues.put("followed_count", followed_count);
+        contentValues.put("is_followed", is_followed);
+        contentValues.put("facebook_user_id", facebook_user_id);
+        contentValues.put("facebook_token", facebook_token);
+        contentValues.put("twitter_token", twitter_token);
+        contentValues.put("twitter_secret", twitter_secret);
+//        db.insert(PERSON_TABLE_NAME, null, contentValues);
+        db.update(PERSON_TABLE_NAME, contentValues, PERSON_ID+" = ? ", new String[] { id } );
+        return true;
+    }
+
     public boolean insertLocation(String id, String created_at, String updated_at, String deleted_at, double latitude,
                                 double longitude, String country, String text, String country_short, String place,
                                   String region, boolean poi){
