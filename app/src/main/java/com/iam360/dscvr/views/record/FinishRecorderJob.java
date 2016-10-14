@@ -42,10 +42,6 @@ public class FinishRecorderJob extends Job {
     @Override
     public void onRun() throws Throwable {
 
-        Timber.v("finishing Recorder...");
-        Recorder.finish();
-        Timber.v("Sending event");
-
         MixpanelHelper.trackStitchingStart(getApplicationContext());
 
 //TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
@@ -59,6 +55,10 @@ public class FinishRecorderJob extends Job {
         if(previewBitmap != null)
             CameraUtils.saveBitmapToLocation(previewBitmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "/preview/placeholder.jpg");
         Timber.v("after save of placeholder");
+
+        Timber.v("finishing Recorder...");
+        Recorder.finish();
+        Timber.v("Sending event");
 
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
