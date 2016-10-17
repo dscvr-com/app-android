@@ -59,6 +59,8 @@ import java.util.ArrayList;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class OptographDetailsActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
@@ -83,6 +85,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean isMultipleOpto = false;
     private int viewsWithSoftKey;
 
+    private boolean isActivityActive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,21 +101,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         } else {
             isMultipleOpto = false;
             optograph = getIntent().getExtras().getParcelable("opto");
-            optographList = new ArrayList<>();
+            optographList = new ArrayList<Optograph>();
         }
-//        Log.d("myTag"," delete: opto null? "+(optograph ==null));
-//        if (optograph!=null) Log.d("myTag"," delete: details deletedAt: -"+optograph.getDeleted_at()
-//                +"- deleteAt null? "+(optograph.getDeleted_at()==null));
-//        if (optograph!=null && optograph.getDeleted_at()!=null) Log.d("myTag","delete: details isEmpty? "+(optograph.getDeleted_at().isEmpty()));
-//        if (optograph==null) {
-//            this.finish();
-//            return;
-//        }
 
         cache = Cache.open();
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+
+        if (optograph!=null) getUpdatedDetailsOfDSCVRImage(optograph.getId());
 
         if (getIntent().getExtras().getParcelable("notif")!=null) {
             new GeneralUtils().decrementBadgeCount(cache, this);
@@ -202,6 +200,36 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     }
 
+    // get latest details of the current optograph from server
+    private void getUpdatedDetailsOfDSCVRImage(String dscvrImageId) {
+        apiConsumer.getOptograph(dscvrImageId, new Callback<Optograph>() {
+            @Override
+            public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body()!=null) {
+                    updateOptoDataOnDB(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag"," Error: getOptoDetails message: "+t.getMessage());
+            }
+        });
+    }
+
+    // update the details of optograph on DB and on UI
+    private void updateOptoDataOnDB(Optograph optograph) {
+        mydb.updateOptograph(optograph);
+        // check if the Activity is still running if yes update the UI
+        if (isActivityActive) {
+            this.optograph = optograph;
+            setHeart(optograph.is_starred(), optograph.getStars_count());
+            followPerson(optograph.getPerson().is_followed());
+            setDeleteButton(optograph);
+        }
+    }
+
+
     private void hideShowAni() {
         if(arrowClicked){
             arrowClicked = false;
@@ -270,6 +298,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 //            intent.putExtra("optograph", optograph);
 //            startActivity(intent);
         }
+    }
+
+    // set the visibility of delete button
+    // if the optograph is already deleted the delete
+    // button will set to invisible and vise versa
+    private void setDeleteButton(Optograph optograph) {
+        if (optograph.getDeleted_at()==null || optograph.getDeleted_at().equals(""))
+            binding.deleteButton.setVisibility(View.VISIBLE);
+        else binding.deleteButton.setVisibility(View.INVISIBLE);
     }
 
     private void setHeart(boolean liked, int count) {
@@ -418,6 +455,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onPause() {
         super.onPause();
+        isActivityActive = false;
         unregisterAccelerationListener();
     }
 
@@ -426,8 +464,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         super.onResume();
         registerAccelerationListener();
         inVRMode = false;
+        isActivityActive = true;
     }
-
 
     private void gyroValidation() {
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
@@ -675,7 +713,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         });
     }
 
-
     private void deleteOptographFromPhone(String id) {
         Log.d("myTag", " delete: Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
@@ -766,5 +803,23 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActivityActive = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isActivityActive = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isActivityActive = false;
     }
 }

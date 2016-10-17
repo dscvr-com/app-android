@@ -92,6 +92,12 @@ public interface ApiEndpoints {
     @PUT("/optographs/{id}")
     Call<LogInReturn.EmptyResponse> updateOptograph(@Path("id") String id,@Body OptoDataUpdate data);
 
+    @GET("/optographs/{id}")
+    Observable<List<Optograph>> getOptographObservable(@Path("id") String id);
+
+    @GET("/optographs/{id}")
+    Call<Optograph> getOptograph(@Path("id") String id);
+
     @POST("optographs/{id}/star")
     Call<LogInReturn.EmptyResponse> postStar(@Path("id") String id);
 

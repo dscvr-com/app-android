@@ -406,10 +406,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
                     person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
                     person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
-//        } else {
-//            mydb.updatePerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
-//                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
-//                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+        } else {
+            mydb.updatePerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
         }
     }
 
@@ -435,9 +435,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         person = personReceivedEvent.getPerson();
 
-        Log.d("myTag"," follower: person null? "+(person==null));
         if (person != null) {
-            Log.d("myTag"," follower: personName: "+person.getDisplay_name()+" followed? "+person.is_followed());
             insertPerson(person);
             binding.executePendingBindings();
             initializeProfileFeed();
@@ -449,9 +447,14 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         super.onResume();
         BusProvider.getInstance().register(this);
 
-        Log.d("myTag"," follower: onresume person null? "+(person==null));
         if(person == null) setPerson();
         else refresh();
+        Log.d("myTag"," follower: onResume called. onFollowerTab? "+optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER));
+        // refresh list of followers if the Follower Tab is active
+        if (person!=null && optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER)) {
+            optographLocalGridAdapter.updateFollowers();
+            optographLocalGridAdapter.notifyItemRangeChanged(2,optographLocalGridAdapter.getItemCount() - 2);
+        }
 
         if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) {
             optographLocalGridAdapter.notifyItemRangeChanged(2, optographLocalGridAdapter.getItemCount() - 2);
@@ -753,6 +756,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        }
     }
 
+    // set message(or blank message) on tab(notification,follower,images) item space depends on whose active
     private void updateMessage(String message) {
         Log.d("myTag"," setMessage: onImage? "+optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)+
                 " item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
@@ -862,7 +866,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         Log.d("Caching", "cur2Json");
 //        JSONArray resultSet = new JSONArray();
-        List<Optograph> optographs = new LinkedList<>();
+        List<Optograph> optographs = new LinkedList<Optograph>();
         cursor.moveToFirst();
         String locId = "";
 

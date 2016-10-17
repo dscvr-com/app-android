@@ -8,8 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import com.iam360.dscvr.model.Follower;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.model.Person;
 
 import org.joda.time.DateTime;
 
@@ -119,7 +121,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         "optograph_is_published boolean not null, optograph_is_private boolean not null," +
                         "optograph_is_stitcher_version text not null, optograph_is_in_feed boolean not null," +
                         "optograph_is_on_server boolean not null, optograph_updated_at text not null," +
-                        "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null,"+
+                        "optograph_is_staff_pick boolean not null, optograph_is_data_uploaded boolean not null," +
                         "optograph_should_be_published boolean not null, optograph_is_place_holder_uploaded boolean not null," +
                         "optograph_is_local boolean not null, " +
                         "post_facebook boolean not null, post_twitter boolean not null, post_instagram boolean not null," +
@@ -171,6 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // insert a new optograph data with initial values
     public boolean insertOptograph(String id, String text, String pId, String lId, String cAt, String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri, String stitchVer, boolean isFeed,
                                    boolean onServer, String uAt, boolean shouldPublished, boolean isLocal, boolean isPHUploaded, boolean postFB,
@@ -269,7 +272,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("twitter_token", twitter_token);
         contentValues.put("twitter_secret", twitter_secret);
 //        db.insert(PERSON_TABLE_NAME, null, contentValues);
-        db.update(PERSON_TABLE_NAME, contentValues, PERSON_ID+" = ? ", new String[] { id } );
+        db.update(PERSON_TABLE_NAME, contentValues, PERSON_ID + " = ? ", new String[]{id});
         return true;
     }
 
@@ -291,6 +294,27 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("region", region);
         contentValues.put("poi", poi);
         db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        return true;
+    }
+
+    public boolean updateLocation(String id, String created_at, String updated_at, String deleted_at, double latitude,
+                                double longitude, String country, String text, String country_short, String place,
+                                  String region, boolean poi){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id", id);
+        contentValues.put("created_at", created_at);
+        contentValues.put("updated_at", updated_at);
+        contentValues.put("deleted_at", deleted_at);
+        contentValues.put("latitude", latitude);
+        contentValues.put("longitude", longitude);
+        contentValues.put("text", text);
+        contentValues.put("country", country);
+        contentValues.put("country_short", country_short);
+        contentValues.put("place", place);
+        contentValues.put("region", region);
+        contentValues.put("poi", poi);
+        db.update(LOCATION_TABLE_NAME, contentValues, LOCATION_ID + " = ? ", new String[]{id});
         return true;
     }
 
@@ -393,7 +417,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,
                                    boolean isStarred, int sCount, boolean isPub, boolean isPri,String stitchVer,boolean isFeed,
-                                   boolean onServer,String uAt,String shouldPublished, boolean isLocal, boolean isStaffPick, String shareAlias, String type) {
+                                   boolean onServer,String uAt,String shouldPublished, boolean isLocal,
+                                   boolean isStaffPick, String shareAlias, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         if(id != null) contentValues.put(OPTOGRAPH_ID, id);
@@ -417,6 +442,79 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(OPTOGRAPH_IS_STAFF_PICK, isStaffPick);
 
         db.update(OPTO_TABLE_NAME_FEEDS, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { id } );
+        return true;
+    }
+
+    // if optograph is existing -- it updates the data(opto data, person and location)
+    // else insert optograph(opto data, person, location)
+    public boolean updateOptograph(Optograph optograph) {
+        boolean isExist = false;
+        Cursor res = getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        if (res.getCount()>0) isExist = true;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        if(optograph.getId() != null) contentValues.put(OPTOGRAPH_ID, optograph.getId());
+        if(optograph.getText() != null) contentValues.put(OPTOGRAPH_TEXT, optograph.getText());
+        if(optograph.getPerson() != null) contentValues.put(OPTOGRAPH_PERSON_ID, optograph.getPerson().getId());
+        if(optograph.getLocation() != null) contentValues.put(OPTOGRAPH_LOCATION_ID, optograph.getLocation().getId());
+        if(optograph.getCreated_at() != null) contentValues.put(OPTOGRAPH_CREATED_AT,optograph.getCreated_at());
+        if(optograph.getDeleted_at() != null) contentValues.put(OPTOGRAPH_DELETED_AT,optograph.getDeleted_at());
+        if(optograph.getStitcher_version() != null) contentValues.put(OPTOGRAPH_IS_STITCHER_VERSION, optograph.getStitcher_version());
+//        if(uAt != null) contentValues.put(OPTOGRAPH_UPDATED_AT, uAt);
+        if(optograph.getShare_alias() != null) contentValues.put(OPTOGRAPH_SHARE_ALIAS, optograph.getShare_alias());
+        if(optograph.getOptograph_type() != null) contentValues.put(OPTOGRAPH_TYPE,optograph.getOptograph_type());
+        contentValues.put(OPTOGRAPH_IS_STARRED, optograph.is_starred());
+        contentValues.put(OPTOGRAPH_STARS_COUNT, optograph.getStars_count());
+        contentValues.put(OPTOGRAPH_IS_PUBLISHED, optograph.is_published());
+        contentValues.put(OPTOGRAPH_IS_PRIVATE, optograph.is_private());
+//        contentValues.put(OPTOGRAPH_IS_IN_FEED, isFeed);
+        contentValues.put(OPTOGRAPH_IS_ON_SERVER, optograph.is_on_server());
+        contentValues.put(OPTOGRAPH_SHOULD_BE_PUBLISHED, optograph.isShould_be_published());
+        contentValues.put(OPTOGRAPH_IS_LOCAL, optograph.is_local());
+        contentValues.put(OPTOGRAPH_IS_STAFF_PICK, optograph.is_staff_picked());
+        contentValues.put(OPTOGRAPH_IS_DATA_UPLOADED, optograph.is_data_uploaded());
+
+        if (isExist) db.update(OPTO_TABLE_NAME_FEEDS, contentValues, OPTOGRAPH_ID+" = ? ", new String[] { optograph.getId() } );
+        else db.insert(OPTO_TABLE_NAME_FEEDS, null, contentValues);
+
+        if (optograph.getPerson()!=null) {
+            Person person = optograph.getPerson();
+            res = getData(person.getId(), DBHelper.PERSON_TABLE_NAME, DBHelper.PERSON_ID);
+            if (res.getCount()>0) {
+                updatePerson(person.getId(),person.getCreated_at(),person.getEmail(),person.getDeleted_at(),
+                        person.isElite_status(),person.getDisplay_name(),person.getUser_name(),person.getText()
+                        ,person.getAvatar_asset_id(),person.getFacebook_user_id(),person.getOptographs_count(),
+                        person.getFollowers_count(),person.getFollowed_count(),person.is_followed(),
+                        person.getFacebook_token(),person.getTwitter_token(),person.getTwitter_secret());
+            } else {
+                insertPerson(person.getId(),person.getCreated_at(),person.getEmail(),person.getDeleted_at(),
+                        person.isElite_status(),person.getDisplay_name(),person.getUser_name(),person.getText()
+                        ,person.getAvatar_asset_id(),person.getFacebook_user_id(),person.getOptographs_count(),
+                        person.getFollowers_count(),person.getFollowed_count(),person.is_followed(),
+                        person.getFacebook_token(),person.getTwitter_token(),person.getTwitter_secret());
+            }
+        }
+
+        if (optograph.getLocation()==null) {
+            res.close();
+            return true;
+        }
+        Location location = optograph.getLocation();
+        res = getData(location.getId(), DBHelper.LOCATION_TABLE_NAME, DBHelper.LOCATION_ID);
+        if (res.getCount()>0) {
+            updateLocation(location.getId(),location.getCreated_at(),location.getUpdated_at(),
+                    location.getDeleted_at(),location.getLatitude(),location.getLongitude(),
+                    location.getCountry(),location.getText(),location.getCountry_short(),
+                    location.getPlace(),location.getRegion(),location.isPoi());
+        } else {
+            insertLocation(location.getId(),location.getCreated_at(),location.getUpdated_at(),
+                    location.getDeleted_at(),location.getLatitude(),location.getLongitude(),
+                    location.getCountry(),location.getText(),location.getCountry_short(),
+                    location.getPlace(),location.getRegion(),location.isPoi());
+        }
+        res.close();
         return true;
     }
 
@@ -499,6 +597,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update(tableName, contentValues, primaryColumn + " =  ? ", new String[]{String.valueOf(primaryColumnValue)});
         return  true;
     }
+
 
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());

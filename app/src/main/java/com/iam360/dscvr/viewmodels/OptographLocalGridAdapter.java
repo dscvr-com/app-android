@@ -329,6 +329,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         } else if (onTab == ON_FOLLOWER) {
             Follower follower = followers.get(position);
+            if(follower!=null)Log.d("myTag"," follower: position: "+position+" name: "+follower.getDisplay_name()+
+                    " isFollowed? "+follower.is_followed());
 
             if (follower == null && position == 0) {
                 HeaderOneViewHolder mHolder = (HeaderOneViewHolder) holder;
@@ -338,7 +340,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 initializeHeaderSecond(mHolder1);
             } else {
                 FollowerViewHolder mHolder2 = (FollowerViewHolder) holder;
-                if (!follower.equals(mHolder2.getBinding().getFollower())) {
+//                if (!follower.equals(mHolder2.getBinding().getFollower())) {
                     if (mHolder2.getBinding().getFollower() != null) {
 
                     }
@@ -346,6 +348,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().setVariable(BR.follower, follower);
                     mHolder2.getBinding().executePendingBindings();
 
+                    Log.d("myTag"," follower: name: "+follower.getDisplay_name()+" isFollowed: "+follower.is_followed());
                     if (follower.is_followed())
                         mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.following_btn);
                     else
@@ -356,10 +359,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().followUnfollowBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            mHolder2.getBinding().followUnfollowBtn.setClickable(false);
                             if (mHolder2.getBinding().getFollower().is_followed()) {
                                 apiConsumer.unfollow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         if (response.isSuccess()) {
                                             mHolder2.getBinding().getFollower().setIs_followed(false);
                                             mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
@@ -372,12 +377,14 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                 mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder2.getBinding().getFollower().getId(), "followers_count", mHolder2.getBinding().getFollower().getFollowers_count());
                                             }
                                             notifyItemChanged(position);
+                                            res.close();
                                         }
 
                                     }
 
                                     @Override
                                     public void onFailure(Throwable t) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         Log.d("myTag", "Error unfollow: " + t.getMessage());
                                     }
                                 });
@@ -385,6 +392,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.follow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         if (response.isSuccess()) {
                                             mHolder2.getBinding().getFollower().setIs_followed(true);
                                             mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
@@ -398,6 +406,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "is_followed", true);
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
                                                 }
+                                                notifyItemChanged(position);
+                                                res.close();
                                             } else {
                                                 Cursor res = mydb.getData(follower.getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                                 res.moveToFirst();
@@ -405,14 +415,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "is_followed", true);
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "followers_count", follower.getFollowers_count());
                                                 }
+                                                notifyItemChanged(position);
+                                                res.close();
                                             }
-                                            notifyItemChanged(position);
                                         }
 
                                     }
 
                                     @Override
                                     public void onFailure(Throwable t) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         Log.d("myTag", "Error follow: " + t.getMessage());
                                     }
                                 });
@@ -426,7 +438,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             startProfile(follower.getId());
                         }
                     });
-                }
+//                }
             }
         } else {
             Notification notif = notifications.get(position);
@@ -644,6 +656,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (isOnEditMode()) return;
                 onTab = ON_FOLLOWER;
                 setTab(mHolder);
+                notifyDataSetChanged();
 //                followers = new ArrayList<Follower>();
 //                followers.add(0, null);
 //                followers.add(1, null);
@@ -876,10 +889,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         mHolder1.getBinding().personIsFollowed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mHolder1.getBinding().personIsFollowed.setClickable(false);
                 if (mHolder1.getBinding().getPerson().is_followed()) {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             if (response.isSuccess()) {
                                 mHolder1.getBinding().getPerson().setIs_followed(false);
                                 mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() - 1);
@@ -896,6 +911,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                         @Override
                         public void onFailure(Throwable t) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             Log.d("myTag", "Error unfollow: " + t.getMessage());
                         }
                     });
@@ -903,6 +919,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             if (response.isSuccess()) {
                                 mHolder1.getBinding().getPerson().setIs_followed(true);
                                 mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
@@ -921,6 +938,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                         @Override
                         public void onFailure(Throwable t) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             Log.d("myTag", "Error follow: " + t.getMessage());
                         }
                     });
@@ -1890,6 +1908,23 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             }
         }
+    }
+
+    /*
+    * update every item on followers from DB
+     */
+    public void updateFollowers() {
+        Cursor res = null;
+        for (int i = 2; i < followers.size(); i++) {
+            res = mydb.getData(followers.get(i).getId(), DBHelper.PERSON_TABLE_NAME, DBHelper.PERSON_ID);
+            res.moveToFirst();
+            if (res.getCount() > 0) {
+                followers.get(i).setFollowed_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWED_COUNT)));
+                followers.get(i).setFollowers_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWER_COUNT)));
+                followers.get(i).setIs_followed(res.getInt(res.getColumnIndex(DBHelper.PERSON_IS_FOLLOWED))!=0);
+            }
+        }
+        if(res!=null && res.getCount()>0)res.close();
     }
 
 //    public Optograph checkToDB(Optograph optograph) {
