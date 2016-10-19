@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class=".CreateStoryDetailsBinding">
+    <data class="com.iam360.dscvr.CreateStoryDetailsBinding">
 
-        <import type="com.iam360.iam360.model.Optograph" />
-        <import type="com.iam360.iam360.model.Person" />
-        <import type="com.iam360.iam360.model.Location" />
+        <import type="com.iam360.dscvr.model.Optograph" />
+        <import type="com.iam360.dscvr.model.Person" />
+        <import type="com.iam360.dscvr.model.Location" />
 
         <variable
             name="optograph"
@@ -26,13 +26,47 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/bar">
 
-        <com.iam360.iam360.opengl.Optograph2DCubeView
+        <com.iam360.dscvr.opengl.Optograph2DCubeView
             android:id="@+id/optograph2dview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@color/transparentOverlay"
             app:optograph="@{optograph}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="bottom|center_horizontal"
+                android:layout_weight="1">
+                <LinearLayout
+                    android:id="@+id/bubble_text_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="10dp"
+                    android:visibility="gone"
+                    android:paddingRight="10dp">
+                    <TextView
+                        android:id="@+id/bubble_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+            </LinearLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/close_container"
@@ -50,6 +84,8 @@
                 android:background="@drawable/close_x_icn" />
 
         </RelativeLayout>
+
+
 
         <RelativeLayout
             android:id="@+id/profile_bar_1"

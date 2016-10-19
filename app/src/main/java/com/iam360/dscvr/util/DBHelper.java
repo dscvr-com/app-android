@@ -163,7 +163,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
+        //Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS " + OPTO_TABLE_NAME_FEEDS);
         db.execSQL("DROP TABLE IF EXISTS " + PERSON_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + LOCATION_TABLE_NAME);

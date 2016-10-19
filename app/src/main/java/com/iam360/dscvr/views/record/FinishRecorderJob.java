@@ -3,7 +3,14 @@ package com.iam360.dscvr.views.record;
 import android.graphics.Bitmap;
 
 import com.iam360.dscvr.DscvrApp;
+import com.iam360.dscvr.bus.BusProvider;
+import com.iam360.dscvr.bus.RecordFinishedEvent;
+import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
 import com.iam360.dscvr.record.Alignment;
+import com.iam360.dscvr.record.GlobalState;
+import com.iam360.dscvr.record.Recorder;
+import com.iam360.dscvr.record.Stitcher;
+import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.views.UploaderJob;
 import com.path.android.jobqueue.Job;
@@ -12,13 +19,6 @@ import com.path.android.jobqueue.RetryConstraint;
 
 import java.util.UUID;
 
-import com.iam360.dscvr.bus.BusProvider;
-import com.iam360.dscvr.bus.RecordFinishedEvent;
-import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
-import com.iam360.dscvr.record.GlobalState;
-import com.iam360.dscvr.record.Recorder;
-import com.iam360.dscvr.record.Stitcher;
-import com.iam360.dscvr.util.CameraUtils;
 import timber.log.Timber;
 
 /**
@@ -48,7 +48,7 @@ public class FinishRecorderJob extends Job {
 
         MixpanelHelper.trackStitchingStart(getApplicationContext());
 
-//TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
+        //http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
         Bitmap previewBitmap = null;
         if(Recorder.previewAvailable()) {
             previewBitmap = Recorder.getPreviewImage();

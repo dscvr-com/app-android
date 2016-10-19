@@ -201,6 +201,8 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        youpage = 0;
+        refreshFeed(true, true);
     }
 
     @Override

@@ -1640,7 +1640,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         // find correct position of optograph
-        // TODO: allow for "breaks" between new optograph and others...
+        //allow for "breaks" between new optograph and others...
 //        for (int i = 2; i < optographs.size(); i++) {
 //            Optograph current = optographs.get(i);
 //              if (current!=null && created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {

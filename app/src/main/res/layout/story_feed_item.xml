@@ -3,9 +3,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".StoryFeedItemBinding">
-        <import type="com.iam360.iam360.model.Optograph" />
-        <import type="com.iam360.iam360.model.Person" />
-        <import type="com.iam360.iam360.model.Location" />
+        <import type="com.iam360.dscvr.model.Optograph" />
+        <import type="com.iam360.dscvr.model.Person" />
+        <import type="com.iam360.dscvr.model.Location" />
         <variable
             name="optograph"
             type="Optograph" />

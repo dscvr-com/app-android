@@ -2,6 +2,7 @@ package com.iam360.dscvr.network;
 
 import com.iam360.dscvr.model.Gateway;
 import com.iam360.dscvr.model.LogInReturn;
+import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryResponse;
@@ -10,6 +11,7 @@ import com.squareup.okhttp.RequestBody;
 
 import retrofit.Call;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -43,4 +45,6 @@ public interface Api2Endpoints {
     @POST("story/v2/part2")
     Call<LogInReturn.EmptyResponse> uploadBgm(@Body RequestBody asset);
 
+    @DELETE("story/{storyId}/")
+    Call<MapiResponseObject> deleteStory(@Path("storyId") String storyId);
 }

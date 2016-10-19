@@ -4,11 +4,12 @@ import android.util.Log;
 
 import com.iam360.dscvr.model.Gateway;
 import com.iam360.dscvr.model.LogInReturn;
+import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
-import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryResponse;
 import com.iam360.dscvr.model.StoryFeed;
+import com.iam360.dscvr.util.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -129,14 +130,18 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
-
-    public void sendStories(SendStory data, Callback<SendStoryResponse> callback) {
-        Call<SendStoryResponse> call = service.sendStories(data);
+    public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadBgm(data);
         call.enqueue(callback);
     }
 
-    public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.uploadBgm(data);
+    public void deleteStory(String storyId, Callback<MapiResponseObject> callback) {
+        Call<MapiResponseObject> call = service.deleteStory(storyId);
+        call.enqueue(callback);
+    }
+
+    public void sendStories(SendStory sendStory, Callback<SendStoryResponse> callback) {
+        Call<SendStoryResponse> call = service.sendStories(sendStory);
         call.enqueue(callback);
     }
 }

@@ -25,6 +25,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.iam360.dscvr.BR;
 import com.iam360.dscvr.CreateStoryDetailsBinding;
@@ -38,6 +39,7 @@ import com.iam360.dscvr.model.StoryChild;
 import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
+import com.iam360.dscvr.util.BubbleDrawable;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.GeneralUtils;
@@ -96,6 +98,12 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
 
+
+        BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
+        myBubble.setCornerRadius(20);
+        myBubble.setPadding(25, 25, 25, 25);
+        binding.bubbleTextLayout.setBackgroundDrawable(myBubble);
+
         Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
 
         instatiateFeedDisplayButton();
@@ -150,7 +158,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     event.getAction() == KeyEvent.ACTION_DOWN &&
                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) ) {
+
                 binding.optograph2dview.addMarker(createChildStory("TXT",v.getText().toString()));
+
                 binding.markerTextEdittxt.setVisibility(View.GONE);
                 InputMethodManager inputManager = (InputMethodManager)
                         getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -166,7 +176,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     event.getAction() == KeyEvent.ACTION_DOWN &&
                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) ) {
+
                 binding.optograph2dview.addMarker(createChildStory("FXTXT",v.getText().toString()));
+
                 binding.staticTextEdittxt.setVisibility(View.GONE);
                 InputMethodManager inputManager = (InputMethodManager)
                         getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -245,10 +257,8 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             if (selectedMusicUri != null){
                 String pathFromUri = getRealPathFromURI(this, selectedMusicUri);
                 Log.d("MARK","getRealPathFromURI = "+pathFromUri);
-//                fileNamePath.add(pathFromUri);
                 String[] separated = pathFromUri.split("/");
                 String fName = separated[separated.length - 1];
-//                fileName.add(fName);
                 bgmMusName = fName;
                 bgmMusNamePath = pathFromUri;
 
@@ -257,21 +267,13 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                 chld.setStory_object_position(Arrays.asList("0","0","0"));
                 chld.setStory_object_rotation(Arrays.asList("0","0","0"));
 
-                binding.optograph2dview.addMarker(chld);
-
-//                MediaPlayer mp = new MediaPlayer();
-//                try {
-//                    mp.setDataSource(this, Uri.parse(pathFromUri));
-//                    mp.prepare();
-//                    mp.start();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                    binding.optograph2dview.addMarker(chld);
             }
         }else if(resultCode == RESULT_OK && requestCode == 11){
             Log.d("MARK","onActivityResult opto_id = "+data.getStringExtra("opto_id"));
             SendStoryChild chld = createChildStory("NAV", "next optograph");
             chld.setStory_object_media_additional_data(optograph.getId());
+
             binding.optograph2dview.addMarker(chld);
         }
     }
@@ -390,8 +392,18 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     private void sendStory(){
-        Log.d("MARK","sendStory getSendStory = "+binding.optograph2dview.getSendStory().getStory_optograph_id());
+        Log.d("MARK","sendStory getSendStory getStory_optograph_id= "+binding.optograph2dview.getSendStory().getStory_optograph_id());
+        Log.d("MARK","sendStory getSendStory story_person_id= "+binding.optograph2dview.getSendStory().getStory_person_id());
         Log.d("MARK","sendStory getSendStory size = "+binding.optograph2dview.getSendStory().getChildren().size());
+        for(int a =0; a < binding.optograph2dview.getSendStory().getChildren().size(); a++){
+            Log.d("MARK","sendStory getStory_object_position = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_position());
+            Log.d("MARK","sendStory getStory_object_rotation = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_rotation());
+            Log.d("MARK","sendStory getStory_object_media_additional_data = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_additional_data());
+            Log.d("MARK","sendStory getStory_object_media_type = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_type());
+            Log.d("MARK","sendStory getStory_object_media_face = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_face());
+            Log.d("MARK","sendStory getStory_object_media_description = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_description());
+            Log.d("MARK","sendStory getStory_object_media_filename = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_filename());
+        }
 
         apiConsumer.sendStories(binding.optograph2dview.getSendStory(), new Callback<SendStoryResponse>() {
             @Override
@@ -400,15 +412,25 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     return;
                 }
                 SendStoryResponse response1 = response.body();
+                boolean toUpload = false;
                 for(int a =0; a < response1.getData().getChildren().size();a++){
                     StoryChild r1 = response1.getData().getChildren().get(a);
                     String fnamePath = bgmMusNamePath;//fileNamePath.get(fileName.indexOf(r1.getStory_object_media_filename()));
                     try {
-                        sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
+                        if(r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
+                            sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
+                            toUpload = true;
+                        }
                     } catch (IOException e) {
                         Log.d("MARK","sendStory SendStoryResponse error = "+e.getMessage());
                         e.printStackTrace();
                     }
+                }
+                if(!toUpload){
+                    Toast.makeText(StoryCreatorActivity.this, "Story successfully saved.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(StoryCreatorActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
                 Log.d("MARK","sendStory response.getMessage = "+response1.getMessage());
                 Log.d("MARK","sendStory response.getStatus = "+response1.getStatus());
@@ -450,6 +472,11 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Log.d("MARK","sendStory2 success");
+                Toast.makeText(StoryCreatorActivity.this, "Story successfully saved.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(StoryCreatorActivity.this, "Story successfully saved.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(StoryCreatorActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
 
             @Override

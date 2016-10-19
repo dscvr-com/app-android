@@ -19,18 +19,18 @@ import timber.log.Timber;
  */
 public class PinMarker {
     public String markerName;
-    //NAV, FXTXT, MUS, TXT, Image, BGM
-    public String mediaType;
-    //pin, Yo, no pin,
-    public String mediaFace;
+    public String mediaType;//NAV, FXTXT, MUS, TXT, Image, BGM
+    public String mediaFace;//pin, no pin,
     public String mediaDescription;
-    public String mediaAdditionalData;
+    public String mediaAdditionalData; //(optograph id) if type=NAV; text of type=FXTX/TXT; audio data if type=MUS
     public String objectMediaFilename;
     public String objectMediaFileurl;
 
     public boolean isInitiliazed = false;
     public float[] translation = new float[16];
-    public float[] rotation = new float[16];
+    public float xRotation;
+    public float yRotation;
+
     public float[] init_rotation = new float[16];
 
 
@@ -169,7 +169,6 @@ public class PinMarker {
     }
 
     public void draw(float[] mvpMatrix) {
-        // Log.d("MARK","Plane mvpMatrix = "+ Arrays.toString(mvpMatrix));
         if (!GLES20.glIsTexture(this.textures[0]) && hasTexture) {
             Timber.v("Rebinding texture, context was probably lost.");
             synchronized (this) {
@@ -178,13 +177,11 @@ public class PinMarker {
         } else if (GLES20.glIsTexture(this.textures[0]) && !hasTexture) {
             Timber.w("Got no texture but is texture!");
         }
-
         if (textureUpdated) {
             synchronized (this) {
                 loadGLTexture();
             }
         }
-
         if (hasTexture) {
             // bind the previously generated texture.
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -250,16 +247,20 @@ public class PinMarker {
         return init_rotation;
     }
 
-
-
-    public void setRotation(float[] rotation) {
-        this.rotation = rotation;
+    public void setxRotation(float xRotation) {
+        this.xRotation = xRotation;
     }
 
+    public float getxRotation() {
+        return xRotation;
+    }
 
+    public void setyRotation(float yRotation) {
+        this.yRotation = yRotation;
+    }
 
-    public float[] getRotation() {
-        return rotation;
+    public float getyRotation() {
+        return yRotation;
     }
 
     public void setTranslation(float[] translation) {
@@ -293,5 +294,46 @@ public class PinMarker {
 
     public String getMediaType() {
         return mediaType;
+    }
+
+
+    public void setMediaAdditionalData(String mediaAdditionalData) {
+        this.mediaAdditionalData = mediaAdditionalData;
+    }
+
+    public String getMediaAdditionalData() {
+        return mediaAdditionalData;
+    }
+
+    public void setMediaDescription(String mediaDescription) {
+        this.mediaDescription = mediaDescription;
+    }
+
+    public String getMediaDescription() {
+        return mediaDescription;
+    }
+
+    public void setMediaFace(String mediaFace) {
+        this.mediaFace = mediaFace;
+    }
+
+    public String getMediaFace() {
+        return mediaFace;
+    }
+
+    public void setObjectMediaFilename(String objectMediaFilename) {
+        this.objectMediaFilename = objectMediaFilename;
+    }
+
+    public String getObjectMediaFilename() {
+        return objectMediaFilename;
+    }
+
+    public void setObjectMediaFileurl(String objectMediaFileurl) {
+        this.objectMediaFileurl = objectMediaFileurl;
+    }
+
+    public String getObjectMediaFileurl() {
+        return objectMediaFileurl;
     }
 }

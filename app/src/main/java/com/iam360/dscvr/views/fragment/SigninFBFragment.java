@@ -126,13 +126,12 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
 
     private void login(String email, String password) {
-
         Log.d("myTag"," signin: email: "+email+" pass: "+password);
         apiConsumer.logIn(new SignInData(email, password), new Callback<LogInReturn>() {
             @Override
             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
                 Log.d("myTag"," signin: success? "+response.isSuccess());
-                Log.d("myTag"," signin: errorbody: "+response.errorBody());
+                Log.d("myTag"," signin: errorbody: "+response.errorBody().toString());
                 Log.d("myTag"," signin: message: "+response.message());
                 if (!response.isSuccess()) {
                     String message = getString(R.string.failed_login);

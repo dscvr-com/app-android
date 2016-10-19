@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,9 +80,6 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
         int height = (mode == ImagePickerActivity.UPLOAD_OPTO_MODE ? ImagePickerActivity.NUM_COLUMNS_OPTO : ImagePickerActivity.NUM_COLUMNS_STORY);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ITEM_WIDTH / height);
         holder.itemView.setLayoutParams(params);
-
-        Log.d("MARK","path = "+uri);
-        Log.d("MARK","holder.image = "+holder.image);
 
         Picasso.with(holder.image.getContext())
                 .load(uri)
