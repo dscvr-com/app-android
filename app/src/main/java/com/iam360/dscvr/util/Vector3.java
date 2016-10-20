@@ -82,6 +82,11 @@ public class Vector3 {
         return (x * x) + (y * y) + (z * z);
     }
 
+    public final boolean isZero() {
+        if(x == 0 && y == 0 && z == 0) return true;
+        return false;
+    }
+
     public final float distance2(Vector3 other) {
         float dx = x - other.x;
         float dy = y - other.y;

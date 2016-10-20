@@ -312,10 +312,10 @@ public class RecordFragment extends Fragment {
         Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
 
         ballPosition = smoothenBall(ballPosition, newPosition);
+//        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
 
         // use ball position
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(ballPosition.x, ballPosition.y, ballPosition.z);
-//        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
 
     }
 
@@ -333,10 +333,11 @@ public class RecordFragment extends Fragment {
         Vector3 target = new Vector3(newPosition[0], newPosition[1], newPosition[2]);
         Vector3 ball = new Vector3(ballPos);
 
-        if (!Recorder.hasStarted()) {
+        float timeDiff = (float)(newTime - time) / 1000f;
+
+        if (!Recorder.hasStarted() && ballPos.isZero()) {
             ballPos.set(newPosition[0], newPosition[1], newPosition[2]);
         } else {
-            float timeDiff = (float)(newTime - time) / 1000f;
             // Speed per second
             float maxRecordingSpeedInRadiants = sensorWidthInMeters * movementPerFrameInPixels / ((float)(captureWidth) * exposureDuration);
 
