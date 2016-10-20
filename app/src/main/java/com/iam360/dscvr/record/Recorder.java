@@ -44,7 +44,7 @@ public class Recorder {
             initRecorder(storagePath, sensorWidth, sensorHeight, focalLength, mode);
             isInitialized = true;
         } else {
-//            throw new RuntimeException("Recorder already initialized");
+            throw new RuntimeException("Recorder already initialized");
         }
     }
 

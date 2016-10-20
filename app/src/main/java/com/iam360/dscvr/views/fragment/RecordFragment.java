@@ -297,6 +297,7 @@ public class RecordFragment extends Fragment {
     public void cancelRecording() {
 
         MixpanelHelper.trackCameraCancelRecording(getContext());
+        GlobalState.isAnyJobRunning = true;
         recordPreview.setPreviewListener(null);
         recordPreview.stopPreviewFeed();
 

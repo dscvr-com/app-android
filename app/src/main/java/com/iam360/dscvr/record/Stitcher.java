@@ -16,4 +16,7 @@ public class Stitcher {
     public static native Bitmap getEQResult(String path, String sharedPath);
 
     public static native void clear(String path, String sharedPath);
+
+    public static native boolean hasUnstitchedRecordings(String path, String sharedPath);
+
 }

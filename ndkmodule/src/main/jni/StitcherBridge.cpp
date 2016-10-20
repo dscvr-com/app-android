@@ -14,6 +14,7 @@ extern "C" {
     jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
     jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
     void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
 
 
@@ -133,4 +134,17 @@ void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstr
     CheckpointStore store(cPath, cSharedPath);
 
     store.Clear();
+}
+
+jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+{
+    const char *cPath = env->GetStringUTFChars(path, NULL);
+    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
+    CheckpointStore store(cPath, cSharedPath);
+
+    return store.HasUnstitchedRecording();
+
+//    return Stores::left.HasUnstitchedRecording() || Stores::right.HasUnstitchedRecording();
+
+
 }

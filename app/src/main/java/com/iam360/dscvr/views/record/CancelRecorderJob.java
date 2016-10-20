@@ -1,5 +1,7 @@
 package com.iam360.dscvr.views.record;
 
+import com.iam360.dscvr.bus.BusProvider;
+import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
@@ -26,7 +28,9 @@ public class CancelRecorderJob extends Job {
 
     @Override
     public void onRun() throws Throwable {
+
         Timber.v("finishing Recorder...");
+        Recorder.getPreviewImage();
         Recorder.finish();
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
@@ -35,6 +39,8 @@ public class CancelRecorderJob extends Job {
         Stitcher.clear(CameraUtils.CACHE_PATH + "left", CameraUtils.CACHE_PATH + "shared");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right", CameraUtils.CACHE_PATH + "shared");
         Timber.v("CancelRecorderJobfinished");
+
+        BusProvider.getInstance().post(new RecordFinishedEvent());
         GlobalState.isAnyJobRunning = false;
     }
 
