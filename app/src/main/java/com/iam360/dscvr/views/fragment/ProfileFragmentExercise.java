@@ -69,6 +69,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     private OptographLocalGridAdapter optographLocalGridAdapter;
     private NetworkProblemDialog networkProblemDialog;
 
+    private boolean isFragmentActive = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +111,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         binding.cancelBtn.setOnClickListener(this);
         binding.overflowBtn.setOnClickListener(this);
 
-//        setAdapter();
+        setAdapter();
 
         return binding.getRoot();
     }
@@ -357,9 +359,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
+//            PersonManager.loadPerson(person.getId());// to get the updated data of person
         } else if (args.containsKey("id")) {
+//            myGetData(args.getString("id"));
+//            PersonManager.loadPerson(args.getString("id"));// to get the updated data of person
             if (!myGetData(args.getString("id"))) {
-                PersonManager.loadPerson(args.getString("id"));
+                PersonManager.loadPerson(args.getString("id"),getContext());
             }
         } else {
             throw new RuntimeException();
@@ -375,8 +380,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         Person person1 = new Person();
         Cursor res = mydb.getData(id,DBHelper.PERSON_TABLE_NAME,"id");
 
-        if (res==null || res.getCount()==0) return false;
         res.moveToFirst();
+        if (res.getCount()==0) return false;
         person1.setId(res.getString(res.getColumnIndex("id")));
         person1.setCreated_at(res.getString(res.getColumnIndex("created_at")));
         person1.setDeleted_at(res.getString(res.getColumnIndex("deleted_at")));
@@ -433,9 +438,11 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
     @Subscribe
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
+//        boolean needUIUpdate = (person!=null && isFragmentActive);
         person = personReceivedEvent.getPerson();
 
-        if (person != null) {
+        Log.d("myTag"," follower: receivePerson name: "+person.getDisplay_name()+" isFollowed? "+person.is_followed());
+        if (person != null && person.getActivity().equals(getContext().getClass().getSimpleName())) {
             insertPerson(person);
             binding.executePendingBindings();
             initializeProfileFeed();
@@ -448,7 +455,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         BusProvider.getInstance().register(this);
 
         if(person == null) setPerson();
-        else refresh();
+        else {
+            if (!person.getId().equals(cache.getString(Cache.USER_ID)) && getContext() instanceof ProfileActivity)PersonManager.loadPerson(person.getId(),getContext());// to get the updated data of person
+            refresh();
+        }
         Log.d("myTag"," follower: onResume called. onFollowerTab? "+optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER));
         // refresh list of followers if the Follower Tab is active
         if (person!=null && optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER)) {
@@ -608,7 +618,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnCompleted(() -> updateMessage(null))
                                     .onErrorReturn(throwable -> {
-                                        updateMessage(getResources().getString(R.string.profile_net_prob));
+                                        if(getContext()!=null)updateMessage(getResources().getString(R.string.profile_net_prob));
                                         return null;
                                     })
                                     .subscribe(optographLocalGridAdapter::addItem);

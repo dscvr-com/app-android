@@ -580,7 +580,6 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void startProfile(String id) {
-        Log.d("myTag"," follower: startProfile id: "+id);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra("id", id);
         context.startActivity(intent);
@@ -1836,7 +1835,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", String.valueOf(person.getOptographs_count()));
                     mydb.updateTableColumn(tb, id, person.getId(), "followers_count", String.valueOf(person.getFollowers_count()));
                     mydb.updateTableColumn(tb, id, person.getId(), "followed_count", String.valueOf(person.getFollowed_count()));
-                    mydb.updateTableColumn(tb, id, person.getId(), "is_followed", String.valueOf(person.is_followed()));
+                    mydb.updateTableColumn(tb, id, person.getId(), "is_followed", person.is_followed());
                     if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals("")) {
                         mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", String.valueOf(person.getFacebook_user_id()));
                     }
@@ -1916,9 +1915,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     public void updateFollowers() {
         Cursor res = null;
         for (int i = 2; i < followers.size(); i++) {
+            Log.d("myTag"," follower: updateFollowers "+i+"<"+followers.size());
             res = mydb.getData(followers.get(i).getId(), DBHelper.PERSON_TABLE_NAME, DBHelper.PERSON_ID);
             res.moveToFirst();
             if (res.getCount() > 0) {
+                Log.d("myTag"," follower: updateFollowers name: "+res.getString(res.getColumnIndex(DBHelper.PERSON_DISPLAY_NAME))
+                        +" isFollowed? "+res.getInt(res.getColumnIndex(DBHelper.PERSON_IS_FOLLOWED)));
                 followers.get(i).setFollowed_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWED_COUNT)));
                 followers.get(i).setFollowers_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWER_COUNT)));
                 followers.get(i).setIs_followed(res.getInt(res.getColumnIndex(DBHelper.PERSON_IS_FOLLOWED))!=0);

@@ -114,6 +114,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
     @Bind(R.id.location_layout) LinearLayout locationLayout;
     @Bind(R.id.add_location_text) TextView addLocText;
+    @Bind(R.id.add_location_icon) ImageButton addLocIcon;
     @Bind(R.id.location_progress) ProgressBar locationProgress;
 
     @Bind(R.id.fb_share) ImageButton fbShareButton;
@@ -818,6 +819,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
                 Snackbar.make(instaShareButton, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
                 break;
+            case R.id.add_location_icon:
             case R.id.add_location_text:
                 buildAlertMessageNoGps();
                 break;//uncomment when location is active

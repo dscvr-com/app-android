@@ -273,6 +273,11 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("twitter_secret", twitter_secret);
 //        db.insert(PERSON_TABLE_NAME, null, contentValues);
         db.update(PERSON_TABLE_NAME, contentValues, PERSON_ID + " = ? ", new String[]{id});
+        Cursor res = getData(id,PERSON_TABLE_NAME,PERSON_ID);
+        res.moveToFirst();
+        Log.d("myTag"," follower: updatePersonCheck name: "+res.getString(res.getColumnIndex(PERSON_DISPLAY_NAME))
+                +" isFollowed: "+res.getInt(res.getColumnIndex(PERSON_IS_FOLLOWED)));
+        res.close();
         return true;
     }
 
