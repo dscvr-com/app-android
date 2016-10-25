@@ -179,6 +179,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
+        // zoom single ring optographs to remove blur
         if (optoType!=null && optoType.equals("optograph_1")) {
             Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
         } else {
