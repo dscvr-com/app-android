@@ -19,6 +19,7 @@ public class SendStoryChild implements Parcelable {
     private List<String> story_object_rotation;
     private String story_object_media_filename;
     private String story_object_media_fileurl;
+    private String story_object_name;
 
     public SendStoryChild() {
         story_object_id = "";
@@ -30,6 +31,7 @@ public class SendStoryChild implements Parcelable {
         story_object_rotation = new ArrayList<String>();
         story_object_media_filename = "";
         story_object_media_fileurl = "";
+        story_object_name = "";
     }
 
     public SendStoryChild(Parcel source) {
@@ -43,6 +45,7 @@ public class SendStoryChild implements Parcelable {
         this.story_object_rotation = source.readArrayList(String.class.getClassLoader());
         this.story_object_media_filename = source.readString();
         this.story_object_media_fileurl = source.readString();
+        this.story_object_name = source.readString();
     }
 
 
@@ -118,6 +121,14 @@ public class SendStoryChild implements Parcelable {
         this.story_object_id = story_object_id;
     }
 
+    public void setStory_object_name(String story_object_name) {
+        this.story_object_name = story_object_name;
+    }
+
+    public String getStory_object_name() {
+        return story_object_name;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -134,6 +145,7 @@ public class SendStoryChild implements Parcelable {
         dest.writeList(story_object_rotation);
         dest.writeString(this.story_object_media_filename);
         dest.writeString(this.story_object_media_fileurl);
+        dest.writeString(this.story_object_name);
     }
 
     public static final Creator<StoryChild> CREATOR =

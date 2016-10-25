@@ -105,6 +105,7 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
         }else{
             Intent intent = new Intent(context, StoryCreatorActivity.class);
             intent.putExtra("opto", optograph);
+            intent.putExtra("type", "view");
             context.startActivity(intent);
         }
     }

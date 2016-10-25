@@ -4,18 +4,22 @@ import com.iam360.dscvr.model.Gateway;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
+import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryResponse;
-import com.iam360.dscvr.model.StoryFeed;
 import com.squareup.okhttp.RequestBody;
+
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import rx.Observable;
 
 /**
  * @author Nilan Marktanner
@@ -36,15 +40,22 @@ public interface Api2Endpoints {
     Call<String> triggerNotif(@Body NotificationTriggerData data);
 
 //    https://mapi.dscvr.com/story/merged/7753e6e9-23c6-46ec-9942-35a5ea744ece?feedpage=1&feedsize=5&youpage=1&yousize=5
-    @GET("story/merged/{id}")
-    Call<StoryFeed> getStories(@Path("id") String id, @Query("feedpage") int feedpage, @Query("feedsize") int feedsize, @Query("youpage") int youpage, @Query("yousize") int yousize);
+    @GET("/story/profile")
+    Call<List<Optograph>> getStories(@Query("limit") int limit, @Query("older_than") String older_than);
 
-    @POST("story/v2/part1")
+    @POST("story/create")
     Call<SendStoryResponse> sendStories(@Body SendStory data);
 
-    @POST("story/v2/part2")
+    @POST("story/upload")
     Call<LogInReturn.EmptyResponse> uploadBgm(@Body RequestBody asset);
 
     @DELETE("story/{storyId}/")
     Call<MapiResponseObject> deleteStory(@Path("storyId") String storyId);
+
+    @PUT("story/{storyId}/")
+    Call<SendStoryResponse> updateStories(@Path("storyId") String storyId, @Body SendStory data);
+
+    @GET("story/feed")
+    Observable<List<Optograph>> getStoryFeeds(@Query("limit") int limit, @Query("older_than") String older_than);
+
 }

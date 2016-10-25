@@ -79,8 +79,7 @@ public class ImageUrlBuilder {
 //            String signedUrl = getSignedUrl(urlPartToSign);
 //             return signedUrl;
             // this two line for direct call
-            String urlPartToSign = String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
-            return urlPartToSign;
+            return String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
         } else {
             String side = isLeftId ? "left/" : "right/";
             String path = CameraUtils.PERSISTENT_STORAGE_PATH + id + "/" + side + face + ".jpg";

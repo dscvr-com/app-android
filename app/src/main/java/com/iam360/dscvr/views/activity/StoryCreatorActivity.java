@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -76,6 +77,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     private Person person;
 
     protected Api2Consumer apiConsumer;
+    private String storyType;
 
     private int viewsWithSoftKey;
 
@@ -87,6 +89,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer =new Api2Consumer(token.equals("") ? null : token, "story");
         optograph = getIntent().getExtras().getParcelable("opto");
+        storyType = getIntent().getExtras().getString("type");
         mydb = new DBHelper(this);
 
         if (getIntent().getExtras().getParcelable("notif")!=null) {
@@ -97,6 +100,22 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
+
+        if(storyType != null){
+            optograph.setWithStory(true);
+            BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
+            myBubble.setCornerRadius(20);
+            myBubble.setPadding(25, 25, 25, 25);
+            binding.bubbleTextLayout.setBackgroundDrawable(myBubble);
+
+            binding.optograph2dview.setBubbleTextLayout(binding.bubbleTextLayout);
+            binding.optograph2dview.setBubbleText(binding.bubbleText);
+
+            binding.optograph2dview.setStoryType(storyType);
+            binding.optograph2dview.setDeleteStoryMarkerImage(binding.deleteStoryMarker);
+            binding.deleteStoryMarker.setOnClickListener(this);
+            binding.optograph2dview.setMyAct(this);
+        }
 
 
         BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
@@ -184,8 +203,8 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                         getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.toggleSoftInput(0, 0);
 
-                binding.staticText.setText(v.getText().toString());
-                binding.staticText.setVisibility(View.VISIBLE);
+                binding.storyFixTxt.setText(v.getText().toString());
+                binding.storyFixTxt.setVisibility(View.VISIBLE);
                 return true;
             }
             return false;
@@ -195,8 +214,42 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
 
         binding.optograph2dview.setMarker(true);
+
+        initStoryChildrens();
     }
 
+    public void initStoryChildrens() {
+        Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
+        Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
+        if(optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
+            List<StoryChild> chldrns = optograph.getStory().getChildren();
+            for(int a=0; a < chldrns.size(); a++){
+                Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
+                if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
+                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_fileurl() = "+chldrns.get(a).getStory_object_media_fileurl());
+//                    playBGM(chldrns.get(a).getStory_object_media_fileurl());
+                }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
+                    showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
+                }else{
+                    SendStoryChild stryChld = new SendStoryChild();
+                    stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
+                    stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
+                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
+
+                    binding.optograph2dview.planeSetter(stryChld);
+                }
+            }
+//            binding.optograph2dview.setLoadingScreen(binding.loadingScreen);
+        }
+    }
+
+    private void showFixTxt(String txt){
+        binding.storyFixTxt.setText(txt);
+        binding.storyFixTxt.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void onClick(View v) {
@@ -234,6 +287,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             case R.id.done_add:
                 sendStory();
                 break;
+            case R.id.delete_story_marker:
+                binding.optograph2dview.removeMarker();
+                break;
         }
     }
 
@@ -267,7 +323,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                 chld.setStory_object_position(Arrays.asList("0","0","0"));
                 chld.setStory_object_rotation(Arrays.asList("0","0","0"));
 
-                    binding.optograph2dview.addMarker(chld);
+                binding.optograph2dview.addMarker(chld);
             }
         }else if(resultCode == RESULT_OK && requestCode == 11){
             Log.d("MARK","onActivityResult opto_id = "+data.getStringExtra("opto_id"));
@@ -404,11 +460,20 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             Log.d("MARK","sendStory getStory_object_media_description = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_description());
             Log.d("MARK","sendStory getStory_object_media_filename = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_filename());
         }
+        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
+        if(binding.optograph2dview.getStoryType().equals("edit")){
+            updateStory();
+        }else{
+            createStory();
+        }
+    }
 
+    private void createStory(){
         apiConsumer.sendStories(binding.optograph2dview.getSendStory(), new Callback<SendStoryResponse>() {
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
+                    Log.d("MARK","createStory response.isSuccess = "+response.errorBody());
                     return;
                 }
                 SendStoryResponse response1 = response.body();
@@ -417,30 +482,79 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     StoryChild r1 = response1.getData().getChildren().get(a);
                     String fnamePath = bgmMusNamePath;//fileNamePath.get(fileName.indexOf(r1.getStory_object_media_filename()));
                     try {
+                        Log.d("MARK","createStory fnamePath = "+fnamePath);
+                        Log.d("MARK","createStory r1.getStory_object_id() = "+r1.getStory_object_id());
+                        Log.d("MARK","createStory r1.getStory_object_media_type() = "+r1.getStory_object_media_type());
+
                         if(r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
                             sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
                             toUpload = true;
                         }
                     } catch (IOException e) {
-                        Log.d("MARK","sendStory SendStoryResponse error = "+e.getMessage());
+                        Log.d("MARK","createStory SendStoryResponse error = "+e.getMessage());
                         e.printStackTrace();
                     }
                 }
                 if(!toUpload){
-                    Toast.makeText(StoryCreatorActivity.this, "Story successfully saved.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StoryCreatorActivity.this, "Story successfully created.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(StoryCreatorActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
-                Log.d("MARK","sendStory response.getMessage = "+response1.getMessage());
-                Log.d("MARK","sendStory response.getStatus = "+response1.getStatus());
-                Log.d("MARK","sendStory response.getData().getStory_id = "+response1.getData().getStory_id());
-                Log.d("MARK","sendStory response.getData().getChildren().size() = "+response1.getData().getChildren().size());
+                Log.d("MARK","createStory response.getMessage = "+response1.getMessage());
+                Log.d("MARK","createStory response.getStatus = "+response1.getStatus());
+                Log.d("MARK","createStory response.getData().getStory_id = "+response1.getData().getStory_id());
+                Log.d("MARK","createStory response.getData().getChildren().size() = "+response1.getData().getChildren().size());
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.d("MARK","sendStory onFailure = "+t.getMessage());
+            }
+        });
+    }
+    private void updateStory(){
+        apiConsumer.updateStories(optograph.getStory().getId(), binding.optograph2dview.getSendStory(), new Callback<SendStoryResponse>() {
+            @Override
+            public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
+                if (!response.isSuccess()) {
+                    Log.d("MARK","updateStory response.isSuccess = "+response.errorBody());
+                    return;
+                }
+                SendStoryResponse response1 = response.body();
+                boolean toUpload = false;
+                for(int a =0; a < response1.getData().getChildren().size();a++){
+                    StoryChild r1 = response1.getData().getChildren().get(a);
+                    String fnamePath = bgmMusNamePath;//fileNamePath.get(fileName.indexOf(r1.getStory_object_media_filename()));
+                    try {
+                        Log.d("MARK","updateStory fnamePath = "+fnamePath);
+                        Log.d("MARK","updateStory r1.getStory_object_id() = "+r1.getStory_object_id());
+                        Log.d("MARK","updateStory r1.getStory_object_media_type() = "+r1.getStory_object_media_type());
+
+                        if(r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
+                            sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
+                            toUpload = true;
+                        }
+                    } catch (IOException e) {
+                        Log.d("MARK","updateStory SendStoryResponse error = "+e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+                if(!toUpload){
+                    Toast.makeText(StoryCreatorActivity.this, "Story successfully updated.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(StoryCreatorActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                Log.d("MARK","updateStory response.getMessage = "+response1.getMessage());
+                Log.d("MARK","updateStory response.getStatus = "+response1.getStatus());
+                Log.d("MARK","updateStory response.getData().getStory_id = "+response1.getData().getStory_id());
+                Log.d("MARK","updateStory response.getData().getChildren().size() = "+response1.getData().getChildren().size());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("MARK","updateStory onFailure = "+t.getMessage());
             }
         });
     }

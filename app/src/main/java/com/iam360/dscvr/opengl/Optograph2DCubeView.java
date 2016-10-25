@@ -8,7 +8,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.iam360.dscvr.model.Optograph;
@@ -34,6 +36,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
     private float mScaleFactor = MIN_ZOOM;
 
     private Activity myAct;
+    private String storyType;
+    private ImageButton deleteStoryMarkerImage;
 
     public Optograph2DCubeView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -125,6 +129,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
         this.optograph = optograph;
         initializeTextures();
 
+        optograph2DCubeRenderer.setOriginalOpto(optograph);
+
     }
 
     @Override
@@ -137,7 +143,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
         if (optograph2DCubeRenderer != null ? !optograph2DCubeRenderer.equals(that.optograph2DCubeRenderer) : that.optograph2DCubeRenderer != null)
             return false;
         return !(optograph != null ? !optograph.equals(that.optograph) : that.optograph != null);
-
     }
 
     @Override
@@ -201,6 +206,10 @@ public class Optograph2DCubeView extends GLSurfaceView {
         optograph2DCubeRenderer.planeSetter(stryChld);
     }
 
+    public void setLoadingScreen(RelativeLayout loadingScreen){
+        optograph2DCubeRenderer.setLoadingScreen(loadingScreen);
+    }
+
     public boolean isSurfaceCreated() {
         return optograph2DCubeRenderer.isSurfaceCreated();
     }
@@ -225,6 +234,30 @@ public class Optograph2DCubeView extends GLSurfaceView {
             }});
     }
 
+    public void setStoryType(String storyType) {
+        this.storyType = storyType;
+        queueEvent(new Runnable(){
+            @Override
+            public void run() {
+                if(storyType.equals("view")){
+                    optograph2DCubeRenderer.setStoryType(1);
+                }else{
+                    optograph2DCubeRenderer.setStoryType(2);
+                }
+            }});
+    }
+     public void setDeleteStoryMarkerImage(ImageButton imgBtn){
+         queueEvent(new Runnable(){
+             @Override
+             public void run() {
+                 optograph2DCubeRenderer.setDeleteStoryMarkerImage(imgBtn);
+             }});
+     }
+
+    public void removeMarker() {
+        optograph2DCubeRenderer.removePin();
+    }
+
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -242,6 +275,10 @@ public class Optograph2DCubeView extends GLSurfaceView {
         stry.setStory_optograph_id(optograph.getId());
         stry.setStory_person_id(cache.getString(Cache.USER_ID));
         return optograph2DCubeRenderer.getMyStory();
+    }
+
+    public String getStoryType() {
+        return storyType;
     }
 
     public void setMyAct(Activity myAct) {

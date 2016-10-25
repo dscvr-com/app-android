@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.model.Person;
 
 import org.joda.time.DateTime;
 
@@ -23,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "OptoData.db";
     public static final String OPTO_TABLE_NAME_FEEDS = "Optograph_Feeds";
     public static final String PERSON_TABLE_NAME = "Person";
+    public static final String STORY_TABLE_NAME = "Story";
     public static final String LOCATION_TABLE_NAME = "Location";
     public static final String FACES_TABLE_NAME = "OptoCubeFaces";
 
@@ -269,6 +271,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getData(String id,String table,String column) {
         SQLiteDatabase db = this.getReadableDatabase();
+        Log.d("MARKS","getData  == select * from " + table + " where " + column + "=\'" + id + "\'");
         return db.rawQuery("select * from " + table + " where " + column + "=\'" + id + "\'", null);
     }
 
@@ -561,5 +564,79 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         res.close();
         return optograph;
+    }
+
+    public Optograph getOptoDataFromLocalDB(Cursor cursor){
+        cursor.moveToFirst();
+
+        Optograph opto = new Optograph(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_ID)));
+        opto.setCreated_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_CREATED_AT)));
+        opto.setIs_starred(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STARRED)) == 1 ? true : false);
+        opto.setDeleted_at(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_DELETED_AT)));
+        opto.setStitcher_version(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STITCHER_VERSION)));
+        opto.setText(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TEXT)));
+        opto.setViews_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+        opto.setIs_staff_picked(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_STAFF_PICK)) == 1 ? true : false);
+        opto.setShare_alias(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHARE_ALIAS)));
+        opto.setIs_private(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PRIVATE)) == 1 ? true : false);
+        opto.setIs_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_PUBLISHED)) == 1 ? true : false);
+        opto.setOptograph_type(cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_TYPE)));
+        opto.setStars_count(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STARS_COUNT)));
+        opto.setShould_be_published(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_SHOULD_BE_PUBLISHED)) == 1 ? true : false);
+        opto.setIs_local(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_LOCAL)) == 1 ? true : false);
+        opto.setIs_data_uploaded(cursor.getInt(cursor.getColumnIndex(DBHelper.OPTOGRAPH_IS_DATA_UPLOADED)) == 1 ? true : false);
+        String locId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_LOCATION_ID));
+        String personId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_PERSON_ID));
+
+
+        Person person = new Person();
+        if(personId !=null && !personId.equals("")){
+            Cursor res = getData(personId, DBHelper.PERSON_TABLE_NAME,"id");
+            res.moveToFirst();
+            if (res.getCount()!= 0) {
+                person.setId(res.getString(res.getColumnIndex("id")));
+                person.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                person.setDeleted_at(res.getString(res.getColumnIndex("deleted_at")));
+                person.setDisplay_name(res.getString(res.getColumnIndex("display_name")));
+                person.setUser_name(res.getString(res.getColumnIndex("user_name")));
+                person.setText(res.getString(res.getColumnIndex("email")));
+                person.setEmail(res.getString(res.getColumnIndex("text")));
+                person.setElite_status(res.getInt(res.getColumnIndex("elite_status")) == 1 ? true : false);
+                person.setAvatar_asset_id(res.getString(res.getColumnIndex("avatar_asset_id")));
+                person.setOptographs_count(res.getInt(res.getColumnIndex("optographs_count")));
+                person.setFollowers_count(res.getInt(res.getColumnIndex("followers_count")));
+                person.setFollowed_count(res.getInt(res.getColumnIndex("followed_count")));
+                person.setIs_followed(res.getInt(res.getColumnIndex("is_followed")) == 1 ? true : false);
+                person.setFacebook_user_id(res.getString(res.getColumnIndex("facebook_user_id")));
+                person.setFacebook_token(res.getString(res.getColumnIndex("facebook_token")));
+                person.setTwitter_token(res.getString(res.getColumnIndex("twitter_token")));
+                person.setTwitter_secret(res.getString(res.getColumnIndex("twitter_secret")));
+            }
+        }
+
+        Location location = new Location();
+        if(opto != null && locId !=null && !locId.equals("")){
+            Cursor res = getData(locId, DBHelper.LOCATION_TABLE_NAME,"id");
+            res.moveToFirst();
+            if (res.getCount()!= 0) {
+                location.setId(res.getString(res.getColumnIndex("id")));
+                location.setCreated_at(res.getString(res.getColumnIndex("created_at")));
+                location.setText(res.getString(res.getColumnIndex("text")));
+                location.setCountry(res.getString(res.getColumnIndex("id")));
+                location.setCountry_short(res.getString(res.getColumnIndex("country")));
+                location.setPlace(res.getString(res.getColumnIndex("place")));
+                location.setRegion(res.getString(res.getColumnIndex("region")));
+                location.setPoi(Boolean.parseBoolean(res.getString(res.getColumnIndex("poi"))));
+                location.setLatitude(res.getDouble(res.getColumnIndex("latitude")));
+                location.setLongitude(res.getDouble(res.getColumnIndex("longitude")));
+            }
+        }
+
+        opto.setPerson(person);
+        opto.setLocation(location);
+
+        cursor.close();
+
+        return opto;
     }
 }

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.iam360.dscvr.NewFeedBinding;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
@@ -38,6 +39,7 @@ import im.ene.lab.toro.Toro;
 public abstract class OptographListFragment extends Fragment {
     protected OptographVideoFeedAdapter optographFeedAdapter;
     protected ApiConsumer apiConsumer;
+    protected Api2Consumer api2Consumer;
     protected Cache cache;
     protected NewFeedBinding binding;
     protected int firstVisible = 0;
@@ -56,6 +58,7 @@ public abstract class OptographListFragment extends Fragment {
         cache = Cache.open();
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+        api2Consumer = new Api2Consumer(token.equals("") ? null : token, "story");
         optographFeedAdapter = new OptographVideoFeedAdapter(getActivity());
 
     }
