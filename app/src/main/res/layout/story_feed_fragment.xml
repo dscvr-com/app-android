@@ -75,40 +75,31 @@
                     android:background="#e2e2e2" />
             </LinearLayout>
 
-            <com.iam360.dscvr.viewmodels.SnappyRecyclerView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/my_story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="10dp"
                 android:layout_below="@+id/center_line"
-                android:clipToPadding="false"/>
-
-
+                android:layout_marginBottom="70dp"
+                android:clipToPadding="true"/>
 
             <RelativeLayout
-                android:layout_marginTop="50dp"
                 android:layout_below="@+id/my_story_feeds"
                 android:layout_width="match_parent"
                 android:layout_height="56dp">
                 <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_alignParentBottom="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerHorizontal="true">
-                    <RelativeLayout
+                    <ImageView
+                        android:id="@+id/create_story_btn2"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignWithParentIfMissing="true">
-                        <ImageView
-                            android:id="@+id/create_story_btn2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginLeft="12dp"
-                            android:layout_marginRight="12dp"
-                            android:src="@drawable/create_a_story_btn" />
-                    </RelativeLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/create_a_story_btn" />
                 </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>

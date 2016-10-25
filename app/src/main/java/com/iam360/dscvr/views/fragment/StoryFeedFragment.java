@@ -5,24 +5,27 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.StoryFeedBinding;
+import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
-import com.iam360.dscvr.model.StoryFeed;
 import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
+import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
 import com.iam360.dscvr.viewmodels.StoryFeedAdapter;
 import com.iam360.dscvr.views.activity.ImagePickerActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
-import com.iam360.dscvr.StoryFeedBinding;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -36,12 +39,7 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     private Api2Consumer api2Consumer;
     private Cache cache;
     private StoryFeedBinding binding;
-
     private Person person;
-
-//    private LinearLayoutManager storyLayoutManager;
-    private LinearLayoutManager myStoryLayoutManager;
-//    private StoryFeedAdapter storyFeedAdapter;
     private StoryFeedAdapter myStoryFeedAdapter;
 
     private int feedpage = 0;
@@ -62,20 +60,15 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
         String token = cache.getString(Cache.USER_TOKEN);
         api2Consumer = new Api2Consumer(token.equals("") ? null : token, "story");
         mydb = new DBHelper(getContext());
-//        storyFeedAdapter = new StoryFeedAdapter(getActivity(), true);
         myStoryFeedAdapter = new StoryFeedAdapter(getActivity(), false);
 
         setPerson();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.story_feed_fragment, container, false);
-//        storyLayoutManager = new LinearLayoutManager(getContext());
-        myStoryLayoutManager = new LinearLayoutManager(getContext());
-
         return binding.getRoot();
 
     }
@@ -84,50 +77,41 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        storyLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-//        binding.storyFeeds.setLayoutManager(storyLayoutManager);
-//        binding.storyFeeds.setAdapter(storyFeedAdapter);
-//        binding.storyFeeds.setItemViewCacheSize(10);
-
-        myStoryLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        binding.myStoryFeeds.setLayoutManager(myStoryLayoutManager);
         binding.myStoryFeeds.setAdapter(myStoryFeedAdapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), OptographLocalGridAdapter.COLUMNS);
+
+        binding.myStoryFeeds.setLayoutManager(manager);
         binding.myStoryFeeds.setItemViewCacheSize(10);
 
-        binding.homeBtn.setOnClickListener(this);
-        binding.createStoryBtn.setOnClickListener(this);
-        binding.createStoryBtn2.setOnClickListener(this);
+        binding.myStoryFeeds.addOnScrollListener(new InfiniteScrollListener(manager) {
+            int yPos = 0;
+            float height01=0;
 
-//        binding.storyFeeds.addOnScrollListener(new InfiniteScrollListener(storyLayoutManager) {
-//            @Override
-//            public void onLoadMore() {
-//                loadMore(true, false);
-//            }
-//
-//
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//            }
-//
-//        });
-
-        binding.myStoryFeeds.addOnScrollListener(new InfiniteScrollListener(myStoryLayoutManager) {
             @Override
             public void onLoadMore() {
                 loadMore(false, true);
             }
 
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
+                View view = binding.myStoryFeeds.getChildAt(1);
+                if (view==null)return;
+                yPos += dy;
+                float top = view.getY();
+                if((top + view.getHeight())>height01) {
+                    height01 = top + view.getHeight();
+                }
+                if (height01 <= yPos) {
+                    binding.toolbar.setVisibility(View.GONE);
+                }
             }
-
         });
 
+
+        binding.homeBtn.setOnClickListener(this);
+        binding.createStoryBtn.setOnClickListener(this);
+        binding.createStoryBtn2.setOnClickListener(this);
     }
 
     @Override
@@ -138,40 +122,21 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
 
     public void refreshFeed(boolean loadFeed, boolean loadYou) {
 
-        if(loadFeed) feedpage++;
         if (loadYou) youpage++;
 
         // TODO remove hardcoded person ID, this is for testing with data
-        String userId = cache.getString(Cache.USER_ID);
-        api2Consumer.getStories(userId, feedpage, feedsize, youpage, yousize, new Callback<StoryFeed>() {
+        api2Consumer.getStories(100, "", new Callback<List<Optograph>>() {
             @Override
-            public void onResponse(Response<StoryFeed> response, Retrofit retrofit) {
+            public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
 
                 if (!response.isSuccess()) {
                     return;
                 }
 
-                StoryFeed storyFeed = response.body();
-
-                Timber.d("Feed Count : " + storyFeed.getFeed().size());
-                Timber.d("You Count : " + storyFeed.getYou().size());
-
-//                if(loadFeed) {
-//                    Observable.from(storyFeed.getFeed())
-//                            .subscribeOn(Schedulers.newThread())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .doOnCompleted(() -> {
-//                                Timber.d("Count : " + storyFeedAdapter.getItemCount());
-//                            })
-//                            .onErrorReturn(throwable -> {
-//                                throwable.printStackTrace();
-//                                return null;
-//                            })
-//                            .subscribe(storyFeedAdapter::addItem);
-//                }
+                List<Optograph> storyFeed = response.body();
 
                 if(loadYou) {
-                    Observable.from(storyFeed.getYou())
+                    Observable.from(storyFeed)
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnCompleted(() -> { Timber.d("Count : " + myStoryFeedAdapter.getItemCount()); })
@@ -231,7 +196,6 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
 
     private void setPerson() {
         PersonManager.loadPerson(cache.getString(Cache.USER_ID));
-
         myGetData(cache.getString(Cache.USER_ID));
     }
 

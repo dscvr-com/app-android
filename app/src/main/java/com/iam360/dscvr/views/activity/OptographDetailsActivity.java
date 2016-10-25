@@ -29,6 +29,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.iam360.dscvr.BR;
@@ -92,6 +94,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private int viewsWithSoftKey;
 
     private boolean withStory = false;
+    private String storyType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
         if(getIntent().getExtras().get("story") != null){
             withStory = (boolean) getIntent().getExtras().get("story");
+            storyType = getIntent().getExtras().getString("type");
         }
 
         if(optographList != null) {
@@ -138,6 +142,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.optograph2dview.setBubbleTextLayout(binding.bubbleTextLayout);
             binding.optograph2dview.setBubbleText(binding.bubbleText);
             binding.optograph2dview.setMyAct(this);
+            binding.optograph2dview.setStoryType(storyType);
         }
 
         Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
@@ -220,6 +225,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
 
         initStoryChildrens();
+
+        Animation clockwiseRotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise);
+        binding.circleBig.startAnimation(clockwiseRotateAnimation);
+        Animation counterClockwiseRotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_counterclockwise);
+        binding.circleSmall.startAnimation(counterClockwiseRotateAnimation);
 
     }
 
@@ -830,32 +840,24 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             List<StoryChild> chldrns = optograph.getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
+                Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
                 if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
+                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_fileurl() = "+chldrns.get(a).getStory_object_media_fileurl());
                     playBGM(chldrns.get(a).getStory_object_media_fileurl());
-                    break;
                 }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
                     showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
+                }else{
+                    SendStoryChild stryChld = new SendStoryChild();
+                    stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
+                    stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
+                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
+
+                    binding.optograph2dview.planeSetter(stryChld);
                 }
-                SendStoryChild stryChld = new SendStoryChild();
-                stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
-                stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
-                stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
-                stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
-                stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
-
-                binding.optograph2dview.planeSetter(stryChld);
             }
-        }
-    }
-
-    private void planeSender(SendStoryChild stryChld){
-        Log.d("MARK","planeSender issurf = "+binding.optograph2dview.isSurfaceCreated());
-        if(!binding.optograph2dview.isSurfaceCreated()){
-            while(!binding.optograph2dview.isSurfaceCreated()){
-                binding.optograph2dview.planeSetter(stryChld);
-            }
-        }else{
-            binding.optograph2dview.planeSetter(stryChld);
+            binding.optograph2dview.setLoadingScreen(binding.loadingScreen);
         }
     }
 
@@ -878,5 +880,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.storyFixTxt.setText(txt);
         binding.storyFixTxt.setVisibility(View.VISIBLE);
     }
+
 
 }

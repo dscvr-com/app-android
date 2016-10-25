@@ -6,22 +6,27 @@ import com.iam360.dscvr.model.Gateway;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
+import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryResponse;
-import com.iam360.dscvr.model.StoryFeed;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.RFC3339DateFormatter;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 
+import org.joda.time.DateTime;
+
 import java.io.IOException;
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -29,8 +34,9 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "https://mapi.dscvr.com/api/";
-    private static final String BASE_URL2 = "https://mapi.dscvr.com/";
+    private static final String BASE_URL = "http://noel.dscvr.com/api";//"https://mapi.dscvr.com/api/";
+    private static final String BASE_URL2 = "http://noel.dscvr.com/";//"https://mapi.dscvr.com/";
+    //http://noel.dscvr.com/
 
     private static final int DEFAULT_LIMIT = 5;
     public static final int PROFILE_GRID_LIMIT = 12;
@@ -125,8 +131,8 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
-    public void getStories(String personId,  int feedpage, int feedsize, int youpage, int yousize, Callback<StoryFeed> callback) {
-        Call<StoryFeed> call = service.getStories(personId, feedpage, feedsize, youpage, yousize);
+    public void getStories(int limit, String older_than, Callback<List<Optograph>> callback) {
+        Call<List<Optograph>> call = service.getStories(limit, older_than);
         call.enqueue(callback);
     }
 
@@ -143,5 +149,27 @@ public class Api2Consumer {
     public void sendStories(SendStory sendStory, Callback<SendStoryResponse> callback) {
         Call<SendStoryResponse> call = service.sendStories(sendStory);
         call.enqueue(callback);
+    }
+
+    public void updateStories(String storyId, SendStory sendStory, Callback<SendStoryResponse> callback) {
+        Call<SendStoryResponse> call = service.updateStories(storyId, sendStory);
+        call.enqueue(callback);
+    }
+
+    public Observable<Optograph> getStoryFeeds(int limit, String older_than) {
+        Timber.i("get optographs request: %s older than %s", limit, older_than);
+        return service.getStoryFeeds(limit, older_than).flatMap(Observable::from).onErrorResumeNext(Observable.error(new Throwable()));
+    }
+
+    public Observable<Optograph> getStoryFeeds(int limit) {
+        return getStoryFeeds(limit, getNow());
+    }
+
+    public Observable<Optograph> getStoryFeeds() {
+        return getStoryFeeds(DEFAULT_LIMIT, getNow());
+    }
+
+    private String getNow() {
+        return RFC3339DateFormatter.toRFC3339String(DateTime.now());
     }
 }

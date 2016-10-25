@@ -302,7 +302,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
                         Log.d("myTag"," Subscribe2");
-                        apiConsumer.getOptographs(5)
+                        api2Consumer.getStoryFeeds(5)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .onErrorReturn(throwable -> {
@@ -321,7 +321,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         } else {
             binding.loadingScreen.setVisibility(View.VISIBLE);
             Log.d("myTag"," Subscribe3");
-            apiConsumer.getOptographs(5)
+            api2Consumer.getStoryFeeds(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> binding.loadingScreen.setVisibility(View.GONE) )
@@ -488,19 +488,15 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     public void loadMore() {
-
         Timber.d("loadMore");
         if(apiConsumer == null) return;
         Cursor curs = mydb.getFeedsData(5, optographFeedAdapter.getOldest().getCreated_at());
-        Log.d("MARK", "load cursCount - " + curs.getCount());
         if (curs.getCount() > 0) {
-            Log.d("myTag"," Subscribe5");
             cur2Json(curs)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() ->{
-                        Log.d("myTag"," Subscribe6");
-                        apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
+                        api2Consumer.getStoryFeeds(5, optographFeedAdapter.getOldest().getCreated_at())
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .onErrorReturn(throwable -> {
@@ -517,8 +513,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         } else {
             Timber.d("LoadMore. No more cache data.");
-            Log.d("myTag"," Subscribe7");
-            apiConsumer.getOptographs(5, optographFeedAdapter.getOldest().getCreated_at())
+            api2Consumer.getStoryFeeds(5, optographFeedAdapter.getOldest().getCreated_at())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> {
@@ -528,13 +523,10 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         }
 
-        Log.d("myTag"," Subscribe8");
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(e -> !mydb.checkIfAllImagesUploaded(e.getId()))
                 .subscribe(this::countLocal);
-
-        // TODO: prefetch textures
     }
 
     @Override
@@ -558,7 +550,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .doOnCompleted(() ->{
                         if(scrollToTop) mLayoutManager.scrollToPosition(0);
                         Log.d("myTag"," Subscribe10");
-                        apiConsumer.getOptographs(5)
+                        api2Consumer.getStoryFeeds(5)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .doOnCompleted(() -> {
@@ -579,7 +571,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     .subscribe(optographFeedAdapter::addItem);
         }else{
             Log.d("myTag"," Subscribe11");
-            apiConsumer.getOptographs(5)
+            api2Consumer.getStoryFeeds(5)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
 //                                  .doOnCompleted(() -> MixpanelHelper.trackViewViewer2D(getActivity()))
