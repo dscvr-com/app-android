@@ -274,7 +274,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
         SendStory stry = optograph2DCubeRenderer.getMyStory();
         stry.setStory_optograph_id(optograph.getId());
         stry.setStory_person_id(cache.getString(Cache.USER_ID));
-        return optograph2DCubeRenderer.getMyStory();
+        return stry;
     }
 
     public String getStoryType() {

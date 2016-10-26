@@ -301,21 +301,11 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-        if(bubbleTextLayout != null && planes!=null && act != null &&  planes.get(selectedPin) != null){// && planes.get(selectedPin).getMediaType().equals("TXT")){
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    bubbleTextLayout.setVisibility(View.GONE);
-                }
-            });
+        if(bubbleTextLayout != null && planes!=null && act != null &&  planes.get(selectedPin) != null){
+            showHideBubbleText("hide");
         }
-        if(storyType == 2 && deleteStoryMarkerImage != null){
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    deleteStoryMarkerImage.setVisibility(View.GONE);
-                }
-            });
+        if(deleteStoryMarkerImage != null){
+            showHideMarkerRemover("hide");
         }
 
 //        Log.d("MARKS","markerShown = "+markerShown);
@@ -325,24 +315,13 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 //            Log.d("MARKS","storyType = "+storyType);
 //            Log.d("MARKS","planes.get(selectedPin).getMediaType() = "+planes.get(selectedPin).getMediaType());
             if(overlapChcker && (storyType == 0 || storyType == 2) && deleteStoryMarkerImage != null) {
-                act.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        deleteStoryMarkerImage.setVisibility(View.VISIBLE);
-                    }
-                });
+                showHideMarkerRemover("show");
 //                plane.updateTexture(planeTexture2);
 //                if(storyPageOriginal) {
 //                    plane.draw(planeModelView);
 //                }
             }else if(overlapChcker && bubbleTextLayout != null && planes.get(selectedPin).getMediaType().equals("TXT")) {
-                act.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        bubbleText.setText(planes.get(selectedPin).getMediaAdditionalData());
-                        bubbleTextLayout.setVisibility(View.VISIBLE);
-                    }
-                });
+                showHideBubbleText("show");
                 sphere.draw(mvpMatrix);
             }else if(overlapChcker && storyType == 1 && !storyPageOriginal){
                 act.runOnUiThread(new Runnable() {
@@ -522,7 +501,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             if (!planes.get(a).isInitiliazed()) {
                 chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
                 chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
-                chld.setStory_object_name("child_"+a);
+                chld.setStory_object_name("child_"+myStoryChld.size());
                 myStoryChld.add(chld);
 
 //                Log.d("MARK","addMarker xRot = "+plane.getxRotation());
@@ -544,7 +523,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 planes.get(a).setMediaFace(chld.getStory_object_media_face());
                 planes.get(a).setObjectMediaFilename(chld.getStory_object_media_filename());
                 planes.get(a).setObjectMediaFileurl(chld.getStory_object_media_fileurl());
-                planes.get(a).setMarkerName(chld.getStory_object_media_type()+"-"+a);
+                planes.get(a).setMarkerName("child_"+myStoryChld.size());
                 planes.get(a).setCenter(plane.getCenter().x, plane.getCenter().y, plane.getCenter().z);
                 break;
             }else{
@@ -565,14 +544,13 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         }else{
             chld.setStory_object_position( Arrays.asList("0", "0", "0"));
             chld.setStory_object_rotation( Arrays.asList("0", "0", "0"));
-            chld.setStory_object_name("child_"+myStoryChld.size()+1);
+            chld.setStory_object_name("child_"+myStoryChld.size());
             myStoryChld.add(chld);
         }
     }
 
     public void planeSetter(SendStoryChild chld) {
         markerShown = true;
-//        Log.d("MARK","planeSetter size = "+planes.size());
 
         planes.add(new PinMarker());
         planes.get(planes.size() - 1).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
@@ -585,38 +563,45 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         planes.get(planes.size() - 1).setMediaFace(chld.getStory_object_media_face());
         planes.get(planes.size() - 1).setObjectMediaFileurl(chld.getStory_object_media_fileurl());
         planes.get(planes.size() - 1).setObjectMediaFilename(chld.getStory_object_media_filename());
-        planes.get(planes.size() - 1).setMarkerName(chld.getStory_object_media_type()+"-"+(planes.size() - 1));
+        planes.get(planes.size() - 1).setMarkerName("child_"+myStoryChld.size());
         planes.get(planes.size() - 1).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
 
+//        Log.d("MARK","planeSetter size = "+planes.size());
+
+//        chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
+//        chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
+        chld.setStory_object_name("child_"+myStoryChld.size());
+        myStoryChld.add(chld);
+
+//        for(int a=0; a< planes.size(); a++) {
+////            Log.d("MARK","planeSetter is init? = "+planes.get(a).isInitiliazed());
+//            if (!planes.get(a).isInitiliazed()) {
+//                chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
+//                chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
+//                chld.setStory_object_name("child_"+myStoryChld.size());
+//                myStoryChld.add(chld);
+////                Log.d("MARK","planeSetter2 x = "+chld.getStory_object_position().get(0));
+////                Log.d("MARK","planeSetter2 y = "+chld.getStory_object_position().get(1));
+////                Log.d("MARK","planeSetter2 z = "+chld.getStory_object_position().get(2));
 //
-        for(int a=0; a< planes.size(); a++) {
-//            Log.d("MARK","planeSetter is init? = "+planes.get(a).isInitiliazed());
-            if (!planes.get(a).isInitiliazed()) {
-                chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
-                chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
-                chld.setStory_object_name("child_"+a);
-                myStoryChld.add(chld);
-//                Log.d("MARK","planeSetter2 x = "+chld.getStory_object_position().get(0));
-//                Log.d("MARK","planeSetter2 y = "+chld.getStory_object_position().get(1));
-//                Log.d("MARK","planeSetter2 z = "+chld.getStory_object_position().get(2));
-
-                planes.get(a).setInitiliazed(true);
-                planes.get(a).setMediaType(chld.getStory_object_media_type());
-                planes.get(a).setMediaAdditionalData(chld.getStory_object_media_additional_data());
-                planes.get(a).setMediaDescription(chld.getStory_object_media_description());
-                planes.get(a).setMediaFace(chld.getStory_object_media_face());
-                planes.get(a).setObjectMediaFilename(chld.getStory_object_media_filename());
-                planes.get(a).setObjectMediaFileurl(chld.getStory_object_media_fileurl());
-                planes.get(a).setMarkerName(chld.getStory_object_media_type()+"-"+a);
-
-                planes.get(a).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
-                planes.get(a).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
-
-                planes.get(a).setxRotation(Float.parseFloat(chld.getStory_object_rotation().get(0)));
-                planes.get(a).setyRotation(Float.parseFloat(chld.getStory_object_rotation().get(1)));
-                break;
-            }
-        }
+//                planes.get(a).setInitiliazed(true);
+//                planes.get(a).setMediaType(chld.getStory_object_media_type());
+//                planes.get(a).setMediaAdditionalData(chld.getStory_object_media_additional_data());
+//                planes.get(a).setMediaDescription(chld.getStory_object_media_description());
+//                planes.get(a).setMediaFace(chld.getStory_object_media_face());
+//                planes.get(a).setObjectMediaFilename(chld.getStory_object_media_filename());
+//                planes.get(a).setObjectMediaFileurl(chld.getStory_object_media_fileurl());
+//                planes.get(a).setMarkerName("child_"+myStoryChld.size());
+//
+//                planes.get(a).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
+//                planes.get(a).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
+//
+//                planes.get(a).setxRotation(Float.parseFloat(chld.getStory_object_rotation().get(0)));
+//                planes.get(a).setyRotation(Float.parseFloat(chld.getStory_object_rotation().get(1)));
+//                break;
+//            }
+//        }
+//        Log.d("MARK","planeSetter myStoryChld.size = "+myStoryChld.size());
     }
 
     public static boolean overlapSpheres(PinMarker point, PinMarker marker) {
@@ -636,14 +621,16 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     public void removePin(){
         if(overlapChcker){
+//            Log.d("MARK","removePin size = "+myStoryChld.size());
             planes.get(selectedPin).setInitiliazed(false);
             int counter = myStoryChld.size();
             for(int a=0; a < counter; a++){
-                if(myStoryChld.get(a).getStory_object_name().equals("child_"+selectedPin)){
+                if(myStoryChld.get(a).getStory_object_name().equals(planes.get(selectedPin).getMarkerName())){
                     myStoryChld.remove(a);
-                    counter--;
+                    break;
                 }
             }
+//            Log.d("MARK","removePin size after = "+myStoryChld.size());
         }
     }
 
@@ -710,5 +697,45 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     public int getStoryType() {
         return storyType;
+    }
+
+    private void showHideBubbleText(String type){
+        if(type.equals("show")){
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bubbleText.setText(planes.get(selectedPin).getMediaAdditionalData());
+                    bubbleTextLayout.setVisibility(View.VISIBLE);
+                }
+            });
+        }else{
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bubbleText.setText("");
+                    bubbleTextLayout.setVisibility(View.GONE);
+                }
+            });
+        }
+    }
+    private void showHideMarkerRemover(String type){
+        if(type.equals("show")){
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(planes.get(selectedPin).getMediaType().equals("TXT")){
+                        showHideBubbleText("show");
+                    }
+                    deleteStoryMarkerImage.setVisibility(View.VISIBLE);
+                }
+            });
+        }else {
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    deleteStoryMarkerImage.setVisibility(View.GONE);
+                }
+            });
+        }
     }
 }

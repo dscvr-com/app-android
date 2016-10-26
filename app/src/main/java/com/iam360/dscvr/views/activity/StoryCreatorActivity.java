@@ -447,9 +447,11 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     private void sendStory(){
+        Log.d("MARK","sendStory getSendStory optograph.getStory().getId = "+optograph.getStory().getId());
         Log.d("MARK","sendStory getSendStory getStory_optograph_id= "+binding.optograph2dview.getSendStory().getStory_optograph_id());
         Log.d("MARK","sendStory getSendStory story_person_id= "+binding.optograph2dview.getSendStory().getStory_person_id());
         Log.d("MARK","sendStory getSendStory size = "+binding.optograph2dview.getSendStory().getChildren().size());
+        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
         for(int a =0; a < binding.optograph2dview.getSendStory().getChildren().size(); a++){
             Log.d("MARK","sendStory getStory_object_position = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_position());
             Log.d("MARK","sendStory getStory_object_rotation = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_rotation());
@@ -459,7 +461,6 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             Log.d("MARK","sendStory getStory_object_media_description = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_description());
             Log.d("MARK","sendStory getStory_object_media_filename = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_filename());
         }
-        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
         if(binding.optograph2dview.getStoryType().equals("edit")){
             updateStory();
         }else{
@@ -517,7 +518,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Log.d("MARK","updateStory response.isSuccess = "+response.errorBody());
+                    Log.d("MARK","createStory response.isSuccess = "+response.errorBody());
                     return;
                 }
                 SendStoryResponse response1 = response.body();
@@ -553,6 +554,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
 
             @Override
             public void onFailure(Throwable t) {
+                Toast.makeText(StoryCreatorActivity.this, "Story update failed.", Toast.LENGTH_SHORT).show();
                 Log.d("MARK","updateStory onFailure = "+t.getMessage());
             }
         });

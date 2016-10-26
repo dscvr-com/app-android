@@ -25,7 +25,7 @@ public class SendStoryChild implements Parcelable {
         story_object_id = "";
         story_object_media_type = "";
         story_object_media_face = "";
-        story_object_media_description = "";
+        story_object_media_description = "Test Description";
         story_object_media_additional_data = "";
         story_object_position = new ArrayList<String>();
         story_object_rotation = new ArrayList<String>();
