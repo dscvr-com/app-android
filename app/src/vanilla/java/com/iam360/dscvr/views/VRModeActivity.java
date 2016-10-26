@@ -60,7 +60,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         setContentView(R.layout.activity_vrmode);
         initializeOptograph();
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
-        cardboardRenderer = new CardboardRenderer();
+        cardboardRenderer = new CardboardRenderer(getApplicationContext());
         cardboardView.setRenderer(cardboardRenderer);
 
         // might use this for performance boost...
@@ -203,7 +203,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private void switchToNormalMode() {
         Timber.v("switching to feed mode");
         inVRMode = false;
-        this.finish();
+//        this.finish();
     }
 
     @Override
@@ -214,12 +214,16 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
 
     public void initStoryChildrens() {
+        Timber.d("PINMARKER initStoryChildrens");
+
         if(optographList.get(currentIndex).getStory() != null && !optographList.get(currentIndex).getStory().getId().equals("") && optographList.get(currentIndex).getStory().getChildren().size() > 0){
+            Timber.d("PINMARKER initStoryChildrens IF");
             List<StoryChild> chldrns = optographList.get(currentIndex).getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
+                Timber.d("PINMARKER initStoryChildrens FOR");
                 if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
 //                    playBGM(chldrns.get(a).getStory_object_media_fileurl());
-                    break;
+                    continue;
                 }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
 //                    showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
                 }

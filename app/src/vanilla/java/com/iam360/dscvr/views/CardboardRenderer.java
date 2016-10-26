@@ -1,5 +1,8 @@
 package com.iam360.dscvr.views;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -12,6 +15,7 @@ import com.google.vrtoolkit.cardboard.Viewport;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
+import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.model.StoryChild;
 import com.iam360.dscvr.opengl.Cube;
@@ -41,7 +45,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private Cube leftCube;
     private Cube rightCube;
 
-
     private List<PinMarker> planes = new ArrayList<PinMarker>();
     private PinMarker plane;
 
@@ -49,13 +52,18 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     private float[] unInverseRotationMatrix = new float[16];
 
-    private CombinedMotionManager combinedMotionManager;
-    private static final float FIELD_OF_VIEW_Y = 95.0f;
-    private static final float DAMPING_FACTOR = 0.9f;
+    private static final float[] ROTATION_AHEAD_FIRST = {0, 1, 0, 0};
+    private static final float[] ROTATION_AHEAD_SECOND = {0, 0, 1, 0};
 
+    private Bitmap planeTexture;
+    private float[] headView = new float[16];
 
-    public CardboardRenderer() {
-        this.combinedMotionManager = new CombinedMotionManager(DAMPING_FACTOR, Constants.getInstance().getDisplayMetrics().widthPixels, Constants.getInstance().getDisplayMetrics().heightPixels, FIELD_OF_VIEW_Y);
+    public CardboardRenderer(Context context) {
+
+        this.plane = new PinMarker();
+        this.plane.initializeProgram();
+        this.plane.setInitRotation(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
+        planeTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.main_pin_icn);
         initializeCubes();
     }
 
@@ -66,6 +74,8 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
                 0.0f, 0.0f, 0.0f, // eye
                 0.0f, 0.0f, 0.01f, // center
                 0.0f, 1.0f, 0.0f); // up
+
+        headTransform.getHeadView(headView, 0);
     }
 
     @Override
@@ -75,12 +85,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
         float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(modelViewProjection, 0, perspective, 0, view, 0);
-
-
-        Timber.d("Eye: " + eye.getEyeView().toString());
-        Timber.d("Rotation: " + combinedMotionManager.getRotationMatrix());
-        Timber.d("Inverse: " + combinedMotionManager.getRotationMatrixInverse());
-
 
         /****************/
 
@@ -96,87 +100,56 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         if (eye.getType() == Eye.Type.LEFT) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             this.leftCube.draw(modelViewProjection);
+
         } else if (eye.getType() == Eye.Type.RIGHT) {
             // Set the background frame color
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             this.rightCube.draw(modelViewProjection);
         }
 
+        /*************/
+
+        Matrix.invertM(unInverseRotationMatrix, 0, eye.getEyeView(), 0);
+        float[] vector = {0, 0, V_DISTANCE, 0};
+        float[] newPosition = new float[4];
+        Matrix.multiplyMV(newPosition, 0, eye.getEyeView(), 0, vector, 0);
+
+        plane.setCenter(newPosition[0], newPosition[1], newPosition[2]);
 
         /******************/
+        float[] scaleRotationMatrix = new float[16];
+        float[] newRotation = new float[16];
+        float[] scales = Maths.buildScaleMatrix(2);
+        float[] modelMatrix = new float[16];
 
+        // draw pins
+        for(int a=0; a< planes.size(); a++){
+            if(planes.get(a).isInitiliazed()){
+//                if(overlapSpheres(plane, planes.get(a))){
+//                    Timber.d("OVERLAP YES");
+//                    selectedPin = a;
+//                    overlapChcker = true;
+//                }
+                float[] modelView3 = new float[16];
+                float[] translationMatrix = planes.get(a).getTranslation();
+                float phi2 = planes.get(a).getxRotation();
+                float theta2 = planes.get(a).getyRotation();
 
-//        float[] modelView = new float[16];
-//        float[] modelView2 = new float[16];
-//
-//        float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});
-////        float[] rotations = combinedMotionManager.getRotationMatrix();
-//
-////        float phi = 0.42578393f;
-//        float phi = combinedMotionManager.getTouchEventListener().getPhi();
-////        float theta = 0.041445374f;
-//        float theta = combinedMotionManager.getTouchEventListener().getTheta();
-//        float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
-//        float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
-//        float[] rotations = Maths.buildRotationMatrix(rotationY, rotationX);
-//
-//        float[] scales = Maths.buildScaleMatrix(2);
-//        float[] scales2 = Maths.buildScaleMatrix(1);
-//
-//        float[] modelMatrix = new float[16];
-//        float[] modelMatrix2 = new float[16];
-//
-//        float[] scaleRotationMatrix = new float[16];
-//        float[] scaleRotationMatrix2 = new float[16];
-//
-//        float[] newRotation = new float[16];
-//
-//
-//        Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
-//        Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
-//        Matrix.multiplyMM(scaleRotationMatrix2, 0, translationMatrix, 0, scales2, 0);
-//
-//        Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
-//        Matrix.multiplyMM(modelMatrix2, 0, scaleRotationMatrix2, 0, newRotation, 0);
-//
-//
-//        Matrix.multiplyMM(modelView, 0, modelViewProjection, 0, modelMatrix, 0);
-//        Matrix.multiplyMM(modelView2, 0, modelViewProjection, 0, modelMatrix2, 0);
-//
-//        plane.setxRotation(combinedMotionManager.getTouchEventListener().getPhi());
-//        plane.setyRotation(combinedMotionManager.getTouchEventListener().getTheta());
-//
-//        plane.setTranslation(translationMatrix);
-//
-//        /******************/
-//
-//        // draw pins
-//        for(int a=0; a< planes.size(); a++){
-//            if(planes.get(a).isInitiliazed()){
-////                if(overlapSpheres(plane, planes.get(a))){
-////                    selectedPin = a;
-////                    overlapChcker = true;
-////                }
-//                float[] modelView3 = new float[16];
-//                translationMatrix = planes.get(a).getTranslation();
-//                float phi2 = planes.get(a).getxRotation();
-//                float theta2 = planes.get(a).getyRotation();
-//                Log.d("MARK","renderer xRot = "+phi2);
-//                Log.d("MARK","renderer yRot = "+theta2);
-//
-//                float[] rotationX2 = {(float) Math.toDegrees(theta2), 1, 0, 0};
-//                float[] rotationY2 = {(float) -Math.toDegrees(phi2), 0, 1, 0};
-//                rotations = Maths.buildRotationMatrix(rotationY2, rotationX2);
-//
-//                Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
-//                Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
-//                Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
-//
-//                Matrix.multiplyMM(modelView3, 0, modelViewProjection, 0, modelMatrix, 0);
-//
-//                planes.get(a).draw(modelView3);
-//            }
-//        }
+                float[] rotationX2 = {(float) Math.toDegrees(theta2), 1, 0, 0};
+                float[] rotationY2 = {(float) -Math.toDegrees(phi2), 0, 1, 0};
+                float[] rotations = Maths.buildRotationMatrix(rotationY2, rotationX2);
+
+                Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+                Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
+                Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
+
+                Matrix.multiplyMM(modelView3, 0, modelViewProjection, 0, modelMatrix, 0);
+
+                planes.get(a).draw(modelView3);
+
+                isLookingAtObject(modelMatrix);
+            }
+        }
 
 //        if(planes.get(selectedPin).getMediaType().equals("TXT")){
 //            act.runOnUiThread(new Runnable() {
@@ -193,6 +166,41 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
     }
 
+    private boolean isLookingAtObject(float[] rotations) {
+        float[] POS_MATRIX_MULTIPLY_VEC = {0, 0, 0, 1.0f};
+        final float YAW_LIMIT = 0.12f;
+        final float PITCH_LIMIT = 0.12f;
+
+        float[] modelView  = new float[16];
+        float[] tempPosition  = new float[4];
+        // Convert object space to camera space. Use the headView from onNewFrame.
+        Timber.d("LookingR : " + Arrays.toString(rotations));
+        Timber.d("LookingH : " + Arrays.toString(headView));
+        Matrix.multiplyMM(modelView, 0, headView, 0, rotations, 0);
+        Matrix.multiplyMV(tempPosition, 0, modelView, 0, POS_MATRIX_MULTIPLY_VEC, 0);
+        Timber.d("LookingP : " + Arrays.toString(tempPosition));
+        float pitch = (float) Math.atan2(tempPosition[1], -tempPosition[2]);
+        float yaw = (float) Math.atan2(tempPosition[0], -tempPosition[2]);
+
+        Timber.d("LOOKING : " + pitch + " " + yaw);
+        return Math.abs(pitch) < PITCH_LIMIT && Math.abs(yaw) < YAW_LIMIT;
+    }
+
+
+
+    public static boolean overlapSpheres(PinMarker point, PinMarker marker) {
+
+        float x, y, z;
+        x = point.getCenter().x - marker.getCenter().x;
+        y = point.getCenter().y - marker.getCenter().y;
+        z = point.getCenter().z - marker.getCenter().z;
+
+        double distance = Math.sqrt( x*x + y*y + z*z );
+
+        Timber.d("Overlap : " + distance + " = " + point.getCenter().x + ":" + point.getCenter().y + ":" + point.getCenter().z + " " + marker.getCenter().x + ":" + marker.getCenter().y + ":" + marker.getCenter().z);
+        return distance <= 1;
+    }
+
     @Override
     public void onFinishFrame(Viewport viewport) {
 
@@ -207,6 +215,10 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     public void onSurfaceCreated(EGLConfig eglConfig) {
         this.leftCube.initialize();
         this.rightCube.initialize();
+
+        for(int a=0; a< planes.size(); a++)
+            planes.get(planes.size() - 1).initializeProgram();
+
     }
 
     private void initializeCubes() {
@@ -239,6 +251,8 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
 
     public void planeSetter(SendStoryChild chld) {
+
+        Timber.d("PINMARKER planeSetter");
         planes.add(new PinMarker());
         planes.get(planes.size() - 1).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)), Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
         planes.get(planes.size() - 1).setxRotation(Float.parseFloat(chld.getStory_object_rotation().get(0)));
@@ -250,8 +264,9 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         planes.get(planes.size() - 1).setMediaFace(chld.getStory_object_media_face());
         planes.get(planes.size() - 1).setObjectMediaFileurl(chld.getStory_object_media_fileurl());
         planes.get(planes.size() - 1).setObjectMediaFilename(chld.getStory_object_media_filename());
-        planes.get(planes.size() - 1).setMarkerName(chld.getStory_object_media_type()+"-"+(planes.size() - 1));
-        planes.get(planes.size() - 1).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
+        planes.get(planes.size() - 1).setMarkerName(chld.getStory_object_media_type() + "-" + (planes.size() - 1));
+        planes.get(planes.size() - 1).setCenter(Float.parseFloat(chld.getStory_object_position().get(0)), Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2)));
+        planes.get(planes.size() - 1).updateTexture(planeTexture);
 
         for(int a=0; a< planes.size(); a++) {
             if (!planes.get(a).isInitiliazed()) {

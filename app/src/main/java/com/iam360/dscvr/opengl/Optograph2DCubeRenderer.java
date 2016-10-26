@@ -630,6 +630,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         z = point.getCenter().z - marker.getCenter().z;
 
         double distance = Math.sqrt( x*x + y*y + z*z );
+        Timber.d("Overlap : " + distance + " = " + point.getCenter().x + ":" + point.getCenter().y + ":" + point.getCenter().z + " " + marker.getCenter().x + ":" + marker.getCenter().y + ":" + marker.getCenter().z);
 
         //idk why?
         return distance <= 1;
