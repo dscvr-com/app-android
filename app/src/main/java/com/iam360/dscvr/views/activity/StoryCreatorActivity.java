@@ -100,7 +100,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
-
+        Log.d("StoryCreatorActivity", "storyType = "+storyType);
         if(storyType != null){
             optograph.setWithStory(true);
             BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
@@ -123,7 +123,6 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
         myBubble.setPadding(25, 25, 25, 25);
         binding.bubbleTextLayout.setBackgroundDrawable(myBubble);
 
-        Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
 
         instatiateFeedDisplayButton();
 
@@ -219,9 +218,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     public void initStoryChildrens() {
-        Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
-        Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
         if(optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             List<StoryChild> chldrns = optograph.getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
@@ -448,9 +447,11 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     private void sendStory(){
+        Log.d("MARK","sendStory getSendStory optograph.getStory().getId = "+optograph.getStory().getId());
         Log.d("MARK","sendStory getSendStory getStory_optograph_id= "+binding.optograph2dview.getSendStory().getStory_optograph_id());
         Log.d("MARK","sendStory getSendStory story_person_id= "+binding.optograph2dview.getSendStory().getStory_person_id());
         Log.d("MARK","sendStory getSendStory size = "+binding.optograph2dview.getSendStory().getChildren().size());
+        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
         for(int a =0; a < binding.optograph2dview.getSendStory().getChildren().size(); a++){
             Log.d("MARK","sendStory getStory_object_position = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_position());
             Log.d("MARK","sendStory getStory_object_rotation = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_rotation());
@@ -460,7 +461,6 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             Log.d("MARK","sendStory getStory_object_media_description = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_description());
             Log.d("MARK","sendStory getStory_object_media_filename = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_filename());
         }
-        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
         if(binding.optograph2dview.getStoryType().equals("edit")){
             updateStory();
         }else{
@@ -486,7 +486,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                         Log.d("MARK","createStory r1.getStory_object_id() = "+r1.getStory_object_id());
                         Log.d("MARK","createStory r1.getStory_object_media_type() = "+r1.getStory_object_media_type());
 
-                        if(r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
+                        if(bgmMusNamePath != null && r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
                             sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
                             toUpload = true;
                         }
@@ -518,7 +518,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Log.d("MARK","updateStory response.isSuccess = "+response.errorBody());
+                    Log.d("MARK","createStory response.isSuccess = "+response.errorBody());
                     return;
                 }
                 SendStoryResponse response1 = response.body();
@@ -531,7 +531,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                         Log.d("MARK","updateStory r1.getStory_object_id() = "+r1.getStory_object_id());
                         Log.d("MARK","updateStory r1.getStory_object_media_type() = "+r1.getStory_object_media_type());
 
-                        if(r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
+                        if(bgmMusNamePath != null && r1.getStory_object_media_type().equals("MUS") || r1.getStory_object_media_type().equals("IMAGE")){
                             sendStory2(fnamePath, r1.getStory_object_id(), response1.getData().getStory_id());
                             toUpload = true;
                         }
@@ -554,6 +554,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
 
             @Override
             public void onFailure(Throwable t) {
+                Toast.makeText(StoryCreatorActivity.this, "Story update failed.", Toast.LENGTH_SHORT).show();
                 Log.d("MARK","updateStory onFailure = "+t.getMessage());
             }
         });

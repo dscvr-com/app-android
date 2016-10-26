@@ -834,9 +834,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
 
     public void initStoryChildrens() {
-        Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
-        Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
-        if(optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+        if(optograph != null && optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             List<StoryChild> chldrns = optograph.getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
