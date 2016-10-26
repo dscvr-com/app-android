@@ -301,7 +301,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-        if(bubbleTextLayout != null && act != null && planes.get(selectedPin).getMediaType().equals("TXT")){
+        if(bubbleTextLayout != null && planes!=null && act != null &&  planes.get(selectedPin) != null){// && planes.get(selectedPin).getMediaType().equals("TXT")){
             act.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -324,7 +324,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 //            Log.d("MARKS","overlapChcker = "+overlapChcker);
 //            Log.d("MARKS","storyType = "+storyType);
 //            Log.d("MARKS","planes.get(selectedPin).getMediaType() = "+planes.get(selectedPin).getMediaType());
-            if(overlapChcker && storyType == 2 && deleteStoryMarkerImage != null) {
+            if(overlapChcker && (storyType == 0 || storyType == 2) && deleteStoryMarkerImage != null) {
                 act.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -353,10 +353,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                if(overlapChcker){
+//                                if(overlapChcker){
                                     reInitializedTexture(originalOpto, "BACK");
                                     animateLoader(false);
-                                }
+//                                }
                             }
                         }, 2000);
                     }
@@ -381,10 +381,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if(overlapChcker){
+//                                        if(overlapChcker){
                                             reInitializedTexture(opto, "NAV");
                                             animateLoader(false);
-                                        }
+//                                        }
                                     }
                                 }, 2000);
                                 optographs.add(opto);

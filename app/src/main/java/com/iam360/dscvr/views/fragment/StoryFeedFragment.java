@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,11 +42,6 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     private StoryFeedBinding binding;
     private Person person;
     private StoryFeedAdapter myStoryFeedAdapter;
-
-    private int feedpage = 0;
-    private int feedsize = 5;
-    private int youpage = 0;
-    private int yousize = 15;
     private DBHelper mydb;
 
 
@@ -70,7 +66,6 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.story_feed_fragment, container, false);
         return binding.getRoot();
-
     }
 
     @Override
@@ -89,7 +84,7 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
 
             @Override
             public void onLoadMore() {
-                loadMore(false, true);
+                loadMore();
             }
 
             @Override
@@ -107,8 +102,6 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                 }
             }
         });
-
-
         binding.homeBtn.setOnClickListener(this);
         binding.createStoryBtn.setOnClickListener(this);
         binding.createStoryBtn2.setOnClickListener(this);
@@ -117,57 +110,48 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        refreshFeed(true, true);
+//        refreshFeed(true, true);
     }
 
-    public void refreshFeed(boolean loadFeed, boolean loadYou) {
-
-        if (loadYou) youpage++;
-
-        // TODO remove hardcoded person ID, this is for testing with data
+    public void refreshFeed() {
+        Log.d("MARK","refreshFeed");
         api2Consumer.getStories(100, "", new Callback<List<Optograph>>() {
             @Override
             public void onResponse(Response<List<Optograph>> response, Retrofit retrofit) {
-
                 if (!response.isSuccess()) {
                     return;
                 }
 
-                List<Optograph> storyFeed = response.body();
+                myStoryFeedAdapter.clearData();
 
-                if(loadYou) {
-                    Observable.from(storyFeed)
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .doOnCompleted(() -> { Timber.d("Count : " + myStoryFeedAdapter.getItemCount()); })
-                            .onErrorReturn(throwable -> {
+                List<Optograph> storyFeed = response.body();
+                Observable.from(storyFeed)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnCompleted(() -> { Timber.d("Count : " + myStoryFeedAdapter.getItemCount()); })
+                        .onErrorReturn(throwable -> {
                                 throwable.printStackTrace();
                                 return null;
-                            })
-                            .subscribe(myStoryFeedAdapter::addItem);
-                }
+                        })
+                        .subscribe(myStoryFeedAdapter::addItem);
             }
-
             @Override
             public void onFailure(Throwable t) {
                 Timber.d(t.getMessage());
             }
         });
-
     }
 
-    public void loadMore(boolean loadFeed, boolean loadYou) {
+    public void loadMore() {
         Timber.d("loadMore");
-        feedpage++;
-        refreshFeed(loadFeed, loadYou);
+        refreshFeed();
     }
     public void refresh() {}
 
     @Override
     public void onResume() {
         super.onResume();
-        youpage = 0;
-        refreshFeed(true, true);
+        refreshFeed();
     }
 
     @Override
