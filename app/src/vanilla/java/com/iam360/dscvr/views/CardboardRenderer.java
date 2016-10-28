@@ -20,6 +20,7 @@ import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.model.StoryChild;
 import com.iam360.dscvr.opengl.Cube;
 import com.iam360.dscvr.opengl.PinMarker;
+import com.iam360.dscvr.opengl.Sphere;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.Maths;
@@ -58,6 +59,9 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private Bitmap planeTexture;
     private float[] headView = new float[16];
 
+    private Sphere sphere;
+    private float sphereRadius = 30f;
+
     public CardboardRenderer(Context context) {
 
         this.plane = new PinMarker();
@@ -65,6 +69,11 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         this.plane.setInitRotation(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
         planeTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.main_pin_icn);
         initializeCubes();
+
+        sphere = new Sphere(5, sphereRadius);
+        sphere.initializeProgram();
+        setSpherePosition(2.0f, 1.0f, 2.0f);
+
     }
 
     @Override
@@ -88,13 +97,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
         /****************/
 
-//        Matrix.invertM(unInverseRotationMatrix, 0, eye.getEyeView(), 0);
-//        float[] vector = {0, 0, V_DISTANCE, 0};
-//        float[] newPosition = new float[4];
-//        Matrix.multiplyMV(newPosition, 0, unInverseRotationMatrix, 0, vector, 0);
-
-        /****************/
-
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         if (eye.getType() == Eye.Type.LEFT) {
@@ -112,9 +114,13 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         Matrix.invertM(unInverseRotationMatrix, 0, eye.getEyeView(), 0);
         float[] vector = {0, 0, V_DISTANCE, 0};
         float[] newPosition = new float[4];
-        Matrix.multiplyMV(newPosition, 0, eye.getEyeView(), 0, vector, 0);
+//        Matrix.multiplyMV(newPosition, 0, unInverseRotationMatrix, 0, vector, 0);
 
+        float[] POS_MATRIX_MULTIPLY_VEC = {0, 0, 0, 1.0f};
+        Matrix.multiplyMV(newPosition, 0, headView, 0, POS_MATRIX_MULTIPLY_VEC, 0);
         plane.setCenter(newPosition[0], newPosition[1], newPosition[2]);
+        setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
+        sphere.draw(modelViewProjection);
 
         /******************/
         float[] scaleRotationMatrix = new float[16];
@@ -147,23 +153,20 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
                 planes.get(a).draw(modelView3);
 
-                isLookingAtObject(modelMatrix);
+                boolean isLooking = isLookingAtObject(modelMatrix);
+                Timber.d("LookingAt: " + isLooking);
             }
         }
 
-//        if(planes.get(selectedPin).getMediaType().equals("TXT")){
-//            act.runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    bubbleText.setText(planes.get(selectedPin).getMediaAdditionalData());
-//                    bubbleTextLayout.setVisibility(View.VISIBLE);
-//                }
-//            });
-//            sphere.draw(mvpMatrix);
-//        }else {
-//            sphere.draw(mvpMatrix);
-//        }
+    }
 
+    public void setSpherePosition(float x, float y, float z) {
+        sphere.setTransform(new float[]{
+                0.01f, 0, 0, 0,
+                0, 0.01f, 0, 0,
+                0, 0, 0.01f, 0,
+                x, y, z, 1
+        });
     }
 
     private boolean isLookingAtObject(float[] rotations) {
@@ -171,14 +174,17 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         final float YAW_LIMIT = 0.12f;
         final float PITCH_LIMIT = 0.12f;
 
+        float[] headInverse  = new float[16];
+        float[] rotationInverse  = new float[16];
         float[] modelView  = new float[16];
         float[] tempPosition  = new float[4];
+
+        Matrix.invertM(rotationInverse, 0, rotations, 0);
+        Matrix.invertM(headInverse, 0, headView, 0);
         // Convert object space to camera space. Use the headView from onNewFrame.
-        Timber.d("LookingR : " + Arrays.toString(rotations));
-        Timber.d("LookingH : " + Arrays.toString(headView));
-        Matrix.multiplyMM(modelView, 0, headView, 0, rotations, 0);
+        Matrix.multiplyMM(modelView, 0, headInverse, 0, rotations, 0);
         Matrix.multiplyMV(tempPosition, 0, modelView, 0, POS_MATRIX_MULTIPLY_VEC, 0);
-        Timber.d("LookingP : " + Arrays.toString(tempPosition));
+
         float pitch = (float) Math.atan2(tempPosition[1], -tempPosition[2]);
         float yaw = (float) Math.atan2(tempPosition[0], -tempPosition[2]);
 
@@ -215,6 +221,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     public void onSurfaceCreated(EGLConfig eglConfig) {
         this.leftCube.initialize();
         this.rightCube.initialize();
+        sphere.initializeProgram();
 
         for(int a=0; a< planes.size(); a++)
             planes.get(planes.size() - 1).initializeProgram();
