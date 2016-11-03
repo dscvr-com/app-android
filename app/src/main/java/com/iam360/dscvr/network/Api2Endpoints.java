@@ -41,7 +41,7 @@ public interface Api2Endpoints {
 
 //    https://mapi.dscvr.com/story/merged/7753e6e9-23c6-46ec-9942-35a5ea744ece?feedpage=1&feedsize=5&youpage=1&yousize=5
     @GET("/story/profile")
-    Call<List<Optograph>> getStories(@Query("limit") int limit, @Query("older_than") String older_than);
+    Observable<List<Optograph>> getStories(@Query("limit") int limit, @Query("older_than") String older_than);
 
     @POST("story/create")
     Call<SendStoryResponse> sendStories(@Body SendStory data);

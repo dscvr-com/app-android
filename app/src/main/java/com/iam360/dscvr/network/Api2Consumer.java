@@ -19,7 +19,6 @@ import com.squareup.okhttp.RequestBody;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -131,9 +130,10 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
-    public void getStories(int limit, String older_than, Callback<List<Optograph>> callback) {
-        Call<List<Optograph>> call = service.getStories(limit, older_than);
-        call.enqueue(callback);
+    public Observable<Optograph> getStories(int limit, String older_than) {
+//        Call<List<Optograph>> call = service.getStories(limit, older_than);
+//        call.enqueue(callback);
+        return service.getStories(limit, older_than).flatMap(Observable::from);
     }
 
     public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {

@@ -193,8 +193,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float[] newPosition = new float[4];
         Matrix.multiplyMV(newPosition, 0, unInverseRotationMatrix, 0, vector, 0);
 
-//        newPosition = new float[]{-8.253604f, -0.82867014f, 18.198664f, 0f};
-
         // rotate viewMatrix to allow for user-interaction
         float[] view = new float[16];
 

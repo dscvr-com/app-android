@@ -115,6 +115,8 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             binding.optograph2dview.setDeleteStoryMarkerImage(binding.deleteStoryMarker);
             binding.deleteStoryMarker.setOnClickListener(this);
             binding.optograph2dview.setMyAct(this);
+
+            binding.optograph2dview.setMarker(true);
         }
 
 
@@ -211,8 +213,6 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
 
         adjustIfHasSoftKeys();
         getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
-
-        binding.optograph2dview.setMarker(true);
 
         initStoryChildrens();
     }

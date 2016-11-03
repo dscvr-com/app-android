@@ -143,6 +143,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             binding.optograph2dview.setBubbleText(binding.bubbleText);
             binding.optograph2dview.setMyAct(this);
             binding.optograph2dview.setStoryType(storyType);
+
+            binding.optograph2dview.setMarker(true);
         }
 
         Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
@@ -854,6 +856,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
+                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
                     binding.optograph2dview.planeSetter(stryChld);
                 }
             }

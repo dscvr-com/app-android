@@ -147,6 +147,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'me.leolin:ShortcutBadger:1.1.6@aar'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
+    compile 'com.facebook.stetho:stetho:1.4.1'
 }
 
 configurations {

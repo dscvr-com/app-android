@@ -19,6 +19,7 @@ import android.view.WindowManager;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.stetho.Stetho;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.gcm.GCMRegistrationIntentService;
 import com.iam360.dscvr.model.Optograph;
@@ -62,13 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
+
         if(!Cache.cacheInitialized){
             cache = Cache.getInstance(this);
         }
         cache = Cache.open();
         initializeComponents();
 
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main2);
         Log.d("myTag", "MainActivity. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
         //Initializing our broadcast receiver

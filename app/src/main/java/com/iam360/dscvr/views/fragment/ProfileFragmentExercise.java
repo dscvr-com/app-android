@@ -34,6 +34,7 @@ import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.DBHelper2;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
 import com.iam360.dscvr.views.activity.MainActivity;
@@ -386,15 +387,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         return true;
     }
 
-    private void insertPerson(Person person) {
-        Cursor res = mydb.getData(person.getId(),DBHelper.PERSON_TABLE_NAME,"id");
-
-        if (res==null || res.getCount()==0) {
-            mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
-                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
-                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
-        }
-    }
+//    private void insertPerson(Person person) {
+//        Cursor res = mydb.getData(person.getId(),DBHelper.PERSON_TABLE_NAME,"id");
+//
+//        if (res==null || res.getCount()==0) {
+//            mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+//                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+//                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+//        }
+//    }
 
     public static ProfileFragmentExercise newInstance(Person person) {
 
@@ -421,7 +422,8 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         Log.d("myTag"," white: person null? "+(person==null));
         if (person != null) {
             Log.d("myTag"," white: avatarId: "+person.getAvatar_asset_id());
-            insertPerson(person);
+//            insertPerson(person);
+            new DBHelper2(getContext()).saveToSQLitePer(person);
             binding.executePendingBindings();
             initializeProfileFeed();
         }

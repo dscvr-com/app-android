@@ -203,9 +203,20 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="16dp"
-                            android:layout_toLeftOf="@+id/heart_container"
+                            android:layout_toLeftOf="@+id/story_icon"
                             android:background="@drawable/follow_btn_selector"
                             android:visibility="gone"
+                            android:textColor="@color/bright" />
+
+                        <ImageButton
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="16dp"
+                            android:id="@+id/story_icon"
+                            android:layout_toLeftOf="@+id/heart_container"
+                            android:background="@drawable/create_story_icn"
+                            android:visibility="visible"
                             android:textColor="@color/bright" />
 
                         <RelativeLayout
