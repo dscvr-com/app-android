@@ -6,10 +6,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.vrtoolkit.cardboard.CardboardActivity;
 import com.google.vrtoolkit.cardboard.CardboardView;
+import com.iam360.dscvr.model.SendStoryChild;
+import com.iam360.dscvr.model.StoryChild;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -17,7 +21,9 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
@@ -54,7 +60,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         setContentView(R.layout.activity_vrmode);
         initializeOptograph();
         CardboardView cardboardView = (CardboardView) findViewById(R.id.cardboard_view);
-        cardboardRenderer = new CardboardRenderer();
+        cardboardRenderer = new CardboardRenderer(getApplicationContext());
         cardboardView.setRenderer(cardboardRenderer);
 
         // might use this for performance boost...
@@ -125,6 +131,8 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
                         .into(cardboardRenderer.getRightCube().getCubeTextureSet().getTextureTarget(Cube.FACES[i]));
             }
         }
+
+        initStoryChildrens();
     }
 
     private void initializeOptograph() {
@@ -195,7 +203,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private void switchToNormalMode() {
         Timber.v("switching to feed mode");
         inVRMode = false;
-        this.finish();
+//        this.finish();
     }
 
     @Override
@@ -203,4 +211,52 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
         // TODO: stop endless switching loop with timer?
         // switchToNormalMode();
     }
+
+
+    public void initStoryChildrens() {
+        Timber.d("PINMARKER initStoryChildrens");
+
+        if(optographList.get(currentIndex).getStory() != null && !optographList.get(currentIndex).getStory().getId().equals("") && optographList.get(currentIndex).getStory().getChildren().size() > 0){
+            Timber.d("PINMARKER initStoryChildrens IF");
+            List<StoryChild> chldrns = optographList.get(currentIndex).getStory().getChildren();
+            for(int a=0; a < chldrns.size(); a++){
+                Timber.d("PINMARKER initStoryChildrens FOR");
+                if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
+//                    playBGM(chldrns.get(a).getStory_object_media_fileurl());
+                    continue;
+                }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
+//                    showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
+                }
+                SendStoryChild stryChld = new SendStoryChild();
+                stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
+                stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
+                stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+                stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
+
+                cardboardRenderer.planeSetter(stryChld);
+            }
+        }
+    }
+
+//    private void playBGM(String mp3Url){
+//        MediaPlayer mp = new MediaPlayer();
+//
+//        try {
+//            mp.setDataSource("https://bucket.dscvr.com"+mp3Url);
+//            mp.prepare();
+//            mp.start();
+//            mp.setLooping(true);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    private void showFixTxt(String txt){
+//        binding.storyFixTxt.setText(txt);
+//        binding.storyFixTxt.setVisibility(View.VISIBLE);
+//    }
+
+
 }

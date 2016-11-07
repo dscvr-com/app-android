@@ -206,6 +206,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         rotationMatrix = combinedMotionManager.getRotationMatrixInverse();
         Matrix.multiplyMM(view, 0, camera, 0, rotationMatrix, 0);
 
+        // zoom single ring optographs to remove blur
         if (optoType!=null && optoType.equals("optograph_1")) {
             Matrix.perspectiveM(projection, 0, FIELD_OF_VIEW_Y_ZOOM / scaleFactor, ratio, Z_NEAR, Z_FAR);
         } else {
@@ -659,6 +660,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         z = point.getCenter().z - marker.getCenter().z;
 
         double distance = Math.sqrt( x*x + y*y + z*z );
+        Timber.d("Overlap : " + distance + " = " + point.getCenter().x + ":" + point.getCenter().y + ":" + point.getCenter().z + " " + marker.getCenter().x + ":" + marker.getCenter().y + ":" + marker.getCenter().z);
 
         //idk why?
         return distance <= 1;
