@@ -15,6 +15,11 @@ int counter = 0;
 
 Mat intrinsics;
 
+#ifndef __OPTIMIZE__
+#error Optimization is disabled.
+#endif
+
+
 //std::shared_ptr<CheckpointStore> leftStore;
 //std::shared_ptr<CheckpointStore> rightStore;
 //std::shared_ptr<CheckpointStore> postStore;
@@ -94,20 +99,14 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
+    pathLocal = pathLocal + "/dgb/";
     path = pathLocal;
-    __android_log_print(ANDROID_LOG_VERBOSE, DEBUG_TAG, "%s %s", "Initializing Recorder with path", cString);
 
-    //leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
-    //rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
-//    postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
-
-
-
-    //leftStore->Clear();
-    //rightStore->Clear();
-//    postStore->Clear();
-
-//    sink =std::make_shared<ImageSink>(*postStore);
+    Log << "Init'ing recorder";
+    Log << "Sensor height " << sensorHeight;
+    Log << "Sensor width " << sensorWidth;
+    Log << "Focal len " << focalLength;
+    Log << "Debug path " << path;
 
     double androidBaseData[16] = {
             -1, 0, 0, 0,
@@ -127,8 +126,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-//    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, *sink, debugPath, mode);
-    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode);
+    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, path);
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
