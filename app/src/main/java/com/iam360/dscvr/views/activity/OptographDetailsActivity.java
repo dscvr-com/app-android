@@ -17,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -29,8 +30,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.iam360.dscvr.BR;
@@ -95,6 +94,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
     private boolean withStory = false;
     private String storyType;
+    private CountDownTimer countDownTimer;
+    int progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             optographList = new ArrayList<>();
         }
 
+        if(optograph.getStory() != null && optograph.getStory().getId() != null && !optograph.getStory().getId().equals("")){
+            withStory = true;
+            storyType = "view";
+        }
+
         cache = Cache.open();
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
@@ -125,7 +131,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if (getIntent().getExtras().getParcelable("notif")!=null) {
             new GeneralUtils().decrementBadgeCount(cache, this);
         }
-
+        Log.d("MARKSSS","withStory  = "+withStory);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_optograph_details);
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
@@ -141,6 +147,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
             binding.optograph2dview.setBubbleTextLayout(binding.bubbleTextLayout);
             binding.optograph2dview.setBubbleText(binding.bubbleText);
+
             binding.optograph2dview.setMyAct(this);
             binding.optograph2dview.setStoryType(storyType);
 
@@ -225,15 +232,30 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         adjustIfHasSoftKeys();
         getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
 
-
+//        initLoader();
         initStoryChildrens();
-
-        Animation clockwiseRotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise);
-        binding.circleBig.startAnimation(clockwiseRotateAnimation);
-        Animation counterClockwiseRotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_counterclockwise);
-        binding.circleSmall.startAnimation(counterClockwiseRotateAnimation);
-
     }
+
+//    public void initLoader(){
+//        binding.loadingScreen.setVisibility(View.GONE); // show progress view
+//
+//        progress = 1;
+//        int endTime = 5; // up to finish time
+//
+//        countDownTimer = new CountDownTimer(endTime * 1000 /*finishTime**/, 1000 /*interval**/) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                binding.circleCountDownView.setProgress(progress, endTime);
+//                progress = progress + 1;
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                binding.circleCountDownView.setProgress(progress, endTime);
+//            }
+//        };
+////        countDownTimer.start(); // start timer
+//    }
 
     private void hideShowAni() {
         if(arrowClicked){
@@ -836,7 +858,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
 
     public void initStoryChildrens() {
-        if(optograph != null && optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+        if(optograph != null && optograph.getStory() != null && optograph.getStory().getId()!= null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
@@ -860,10 +882,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     binding.optograph2dview.planeSetter(stryChld);
                 }
             }
-            binding.optograph2dview.setLoadingScreen(binding.loadingScreen);
+            binding.optograph2dview.setLoadingScreen(binding.loadingScreen, binding.circleCountDownView);
         }
     }
-
 
     private void playBGM(String mp3Url){
         MediaPlayer mp = new MediaPlayer();
@@ -883,6 +904,4 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.storyFixTxt.setText(txt);
         binding.storyFixTxt.setVisibility(View.VISIBLE);
     }
-
-
 }

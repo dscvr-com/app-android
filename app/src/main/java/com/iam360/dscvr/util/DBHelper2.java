@@ -99,11 +99,15 @@ public class DBHelper2 {
             res.close();
         } else {
             Log.d("StoryFeedAdapter", "Inserting opto " + opto.getId());
+            String stryId = "";
+            if(opto.getStory() != null && !DBHelper.nullChecker(opto.getStory().getId()).equals("")){
+                stryId = DBHelper.nullChecker(opto.getStory().getId());
+            }
             mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
                     opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
                     opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
                     opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
-                    opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),opto.getStory().getId());
+                    opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),stryId);
             res.close();
         }
     }

@@ -364,7 +364,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getData(String id,String table,String column) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Log.d("MARKS","getData  == select * from " + table + " where " + column + "=\'" + id + "\'");
+//        Log.d("MARKS","getData  == select * from " + table + " where " + column + "=\'" + id + "\'");
         return db.rawQuery("select * from " + table + " where " + column + "=\'" + id + "\'", null);
     }
 

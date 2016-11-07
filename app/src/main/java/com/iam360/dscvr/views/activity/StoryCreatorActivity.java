@@ -33,6 +33,7 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
+import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.model.SendStoryResponse;
 import com.iam360.dscvr.model.StoryChild;
@@ -112,11 +113,12 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             binding.optograph2dview.setBubbleText(binding.bubbleText);
 
             binding.optograph2dview.setStoryType(storyType);
-            binding.optograph2dview.setDeleteStoryMarkerImage(binding.deleteStoryMarker);
-            binding.deleteStoryMarker.setOnClickListener(this);
             binding.optograph2dview.setMyAct(this);
 
             binding.optograph2dview.setMarker(true);
+
+            binding.optograph2dview.setDeleteStoryMarkerImage(binding.deleteStoryMarker);
+            binding.deleteStoryMarker.setOnClickListener(this);
         }
 
 
@@ -447,29 +449,34 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     private void sendStory(){
-        Log.d("MARK","sendStory getSendStory optograph.getStory().getId = "+optograph.getStory().getId());
-        Log.d("MARK","sendStory getSendStory getStory_optograph_id= "+binding.optograph2dview.getSendStory().getStory_optograph_id());
-        Log.d("MARK","sendStory getSendStory story_person_id= "+binding.optograph2dview.getSendStory().getStory_person_id());
-        Log.d("MARK","sendStory getSendStory size = "+binding.optograph2dview.getSendStory().getChildren().size());
-        Log.d("MARK","binding.optograph2dview.getStoryType() = "+binding.optograph2dview.getStoryType());
-        for(int a =0; a < binding.optograph2dview.getSendStory().getChildren().size(); a++){
-            Log.d("MARK","sendStory getStory_object_position = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_position());
-            Log.d("MARK","sendStory getStory_object_rotation = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_rotation());
-            Log.d("MARK","sendStory getStory_object_media_additional_data = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_additional_data());
-            Log.d("MARK","sendStory getStory_object_media_type = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_type());
-            Log.d("MARK","sendStory getStory_object_media_face = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_face());
-            Log.d("MARK","sendStory getStory_object_media_description = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_description());
-            Log.d("MARK","sendStory getStory_object_media_filename = "+binding.optograph2dview.getSendStory().getChildren().get(a).getStory_object_media_filename());
+        SendStory stry = binding.optograph2dview.getSendStory();
+        Log.d("MARK","sendStory getSendStory optograph.getStory() = "+optograph.getStory());
+//        Log.d("MARK","sendStory getSendStory optograph.getStory().getId = "+DBHelper.nullChecker(optograph.getStory().getId()));
+        Log.d("MARK","sendStory getSendStory getStory_optograph_id= "+DBHelper.nullChecker(stry.getStory_optograph_id()));
+        Log.d("MARK","sendStory getSendStory story_person_id= "+DBHelper.nullChecker(stry.getStory_person_id()));
+        Log.d("MARK","sendStory getSendStory size = "+stry.getChildren().size());
+        Log.d("MARK","binding.optograph2dview.getStoryType() = "+DBHelper.nullChecker(binding.optograph2dview.getStoryType()));
+        if(stry.getChildren().size() == 0){
+            return;
+        }
+        for(int a =0; a < stry.getChildren().size(); a++){
+            Log.d("MARK","sendStory getStory_object_position = "+stry.getChildren().get(a).getStory_object_position());
+            Log.d("MARK","sendStory getStory_object_rotation = "+stry.getChildren().get(a).getStory_object_rotation());
+            Log.d("MARK","sendStory getStory_object_media_additional_data = "+stry.getChildren().get(a).getStory_object_media_additional_data());
+            Log.d("MARK","sendStory getStory_object_media_type = "+stry.getChildren().get(a).getStory_object_media_type());
+            Log.d("MARK","sendStory getStory_object_media_face = "+stry.getChildren().get(a).getStory_object_media_face());
+            Log.d("MARK","sendStory getStory_object_media_description = "+stry.getChildren().get(a).getStory_object_media_description());
+            Log.d("MARK","sendStory getStory_object_media_filename = "+stry.getChildren().get(a).getStory_object_media_filename());
         }
         if(binding.optograph2dview.getStoryType().equals("edit")){
-            updateStory();
+            updateStory(stry);
         }else{
-            createStory();
+            createStory(stry);
         }
     }
 
-    private void createStory(){
-        apiConsumer.sendStories(binding.optograph2dview.getSendStory(), new Callback<SendStoryResponse>() {
+    private void createStory(SendStory stry){
+        apiConsumer.sendStories(stry, new Callback<SendStoryResponse>() {
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
@@ -513,8 +520,8 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             }
         });
     }
-    private void updateStory(){
-        apiConsumer.updateStories(optograph.getStory().getId(), binding.optograph2dview.getSendStory(), new Callback<SendStoryResponse>() {
+    private void updateStory(SendStory stry){
+        apiConsumer.updateStories(optograph.getStory().getId(), stry, new Callback<SendStoryResponse>() {
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {

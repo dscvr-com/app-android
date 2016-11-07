@@ -17,6 +17,7 @@ import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.CircleCountDownView;
 import com.iam360.dscvr.util.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 
@@ -206,8 +207,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
         optograph2DCubeRenderer.planeSetter(stryChld);
     }
 
-    public void setLoadingScreen(RelativeLayout loadingScreen){
-        optograph2DCubeRenderer.setLoadingScreen(loadingScreen);
+    public void setLoadingScreen(RelativeLayout loadingScreen, CircleCountDownView countDownView){
+        optograph2DCubeRenderer.setLoadingScreen(loadingScreen, countDownView);
     }
 
     public boolean isSurfaceCreated() {

@@ -249,6 +249,14 @@ public class ImagePickerActivity extends AppCompatActivity {
                         return null;
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
+        }else{
+            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> {
+                        return null;
+                    })
+                    .subscribe(optographLocalGridAdapter::addItem);
         }
     }
 

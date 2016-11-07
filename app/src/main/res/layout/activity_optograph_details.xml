@@ -470,42 +470,21 @@
                     android:src="@drawable/delete_icn" />
 
             </RelativeLayout>
-
         </RelativeLayout>
 
         <RelativeLayout
-            android:visibility="gone"
             android:id="@+id/loading_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
-            android:background="#BB000000">
-
-            <ImageView
-                android:id="@+id/circle_big"
+            android:visibility="gone"
+            android:gravity="center" >
+            <com.iam360.dscvr.util.CircleCountDownView
+                android:id="@+id/circle_count_down_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/oval_android_orange"
-                android:layout_centerInParent="true" />
-
-            <ImageView
-                android:id="@+id/circle_small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/oval_android_yellow"
-                android:layout_centerInParent="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dialog_loading_dscvr"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_centerInParent="true"
-                app:font="@{``}" />
-
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"/>
         </RelativeLayout>
-
     </FrameLayout>
-
 </layout>

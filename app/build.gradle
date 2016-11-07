@@ -149,6 +149,7 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
     compile 'com.facebook.stetho:stetho:1.4.1'
+
 }
 
 configurations {

@@ -1535,13 +1535,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addItem(Optograph optograph) {
-        Log.d("Caching", "addItem " + optograph);
+//        Log.d("Caching", "addItem " + optograph);
 
         if (optograph == null || onTab != ON_IMAGE) {
             return;
         }
-        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
-        Log.d("Caching", "addItem 1");
+//        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
+//        Log.d("Caching", "addItem 1");
 
         DateTime created_at = optograph.getCreated_atDateTime();
 
@@ -1549,16 +1549,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
-        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
+//        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
 
-        Log.d("Caching", "addItem 2");
+//        Log.d("Caching", "addItem 2");
 
 //        saveToSQLiteFeeds(optograph);
         new DBHelper2(context).saveToSQLite(optograph);
 //        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
 //            saveToSQLite(optograph);
 //        }
-        Log.d("Caching", "addItem 3");
+//        Log.d("Caching", "addItem 3");
 
         if (optograph.is_local()) {
             optograph = mydb.checkOptoDetails(optograph);
@@ -1568,11 +1568,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph == null) {
             return;
         }
-        Log.d("Caching", "addItem 4");
+//        Log.d("Caching", "addItem 4");
 
         if (optograph.getDeleted_at() != null && !optograph.getDeleted_at().isEmpty()) return;
 
-        Log.d("Caching", "addItem notifyItemInserted " + optograph.toString());
+//        Log.d("Caching", "addItem notifyItemInserted " + optograph.toString());
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty() || optographs.size() == 2) {
@@ -1590,10 +1590,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //        }
 
         // find correct position of the image
-        Log.d("myTag", " isLocal? " + optograph.is_local());
+//        Log.d("myTag", " isLocal? " + optograph.is_local());
         if (optograph.is_local()) {
             int last = getLastPositionOfLocalImage();
-            Log.d("myTag", " isLocal? last value: " + last + " opto count : " + optographs.size());
+//            Log.d("myTag", " isLocal? last value: " + last + " opto count : " + optographs.size());
 //            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
             if (last == 0) {
                 optographs.add(2, optograph);
@@ -1606,7 +1606,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
             for (int i = 2; i < last; i++) {
                 Optograph current = optographs.get(i);
-                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
+//                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
                 if (created_at.isAfter(current.getCreated_atDateTime())) {
                     optographs.add(i, optograph);
                     notifyItemInserted(i);
@@ -1617,7 +1617,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             notifyItemInserted(last + 1);
         } else {
             int first = getFirstPositionOfServerImage();
-            Log.d("myTag", " isLocal? first value: " + first + " isBefore? " + created_at.isBefore(getOldest().getCreated_atDateTime()));
+//            Log.d("myTag", " isLocal? first value: " + first + " isBefore? " + created_at.isBefore(getOldest().getCreated_atDateTime()));
             if (first == 0) {
                 optographs.add(optograph);
                 notifyItemInserted(optographs.size());
@@ -1629,7 +1629,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
             for (int i = first; i < optographs.size(); i++) {
                 Optograph current = optographs.get(i);
-                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
+//                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
                 if (created_at.isAfter(current.getCreated_atDateTime())) {
                     optographs.add(i, optograph);
                     notifyItemInserted(i);

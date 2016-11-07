@@ -33,8 +33,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "https://mapi.dscvr.com/api/"; //"http://noel.dscvr.com/api";
-    private static final String BASE_URL2 = "https://mapi.dscvr.com/"; //"http://noel.dscvr.com/";
+    private static final String BASE_URL = "http://noel.dscvr.com/api"; //"https://mapi.dscvr.com/api/"; //
+    private static final String BASE_URL2 = "http://noel.dscvr.com/"; //"https://mapi.dscvr.com/"; //
     //http://noel.dscvr.com/
 
     private static final int DEFAULT_LIMIT = 5;
@@ -131,9 +131,11 @@ public class Api2Consumer {
     }
 
     public Observable<Optograph> getStories(int limit, String older_than) {
-//        Call<List<Optograph>> call = service.getStories(limit, older_than);
-//        call.enqueue(callback);
         return service.getStories(limit, older_than).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> getStoriesProfile(int limit, String older_than) {
+        return service.getStoriesProfile(limit, older_than).flatMap(Observable::from);
     }
 
     public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {

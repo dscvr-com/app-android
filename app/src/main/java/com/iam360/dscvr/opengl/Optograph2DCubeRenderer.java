@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,6 +23,7 @@ import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.TouchEventListener;
+import com.iam360.dscvr.util.CircleCountDownView;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.ImageUrlBuilder;
@@ -101,7 +103,12 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private Optograph originalOpto;
     private boolean storyPageOriginal = true;
     private RelativeLayout loadingScreen;
+    private CircleCountDownView countDownView;
+    private CountDownTimer countDownTimer;
     private ImageButton deleteStoryMarkerImage;
+    private float[] convertedPosition = {0f, 0f, 0f};
+    private float[] convertedRotation = {0f, 0f, 0f};
+    private int loaderTimer = 4;
 
 
     public Optograph2DCubeRenderer(Context context) {
@@ -159,7 +166,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         for(int a=0; a < 20; a++){
 //            Log.d("MARK","planeInitializer = "+planes.get(a));
 //            if (planes.get(a) == null) {
-                planes.add(new PinMarker());
+            planes.add(new PinMarker());
 //            }
             planes.get(a).initializeProgram();
             planes.get(a).updateTexture(planeTexture);
@@ -227,6 +234,9 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         float phi = touchEventListener.getPhi();
         float theta = touchEventListener.getTheta();
+        convertCoordinates(phi, theta, V_DISTANCE);
+//        Log.d("MARK","onDrawFrame phi = "+phi);
+//        Log.d("MARK","onDrawFrame theta = "+theta);
         float[] rotationX = {(float) Math.toDegrees(theta), 1, 0, 0};
         float[] rotationY = {(float) -Math.toDegrees(phi), 0, 1, 0};
         float[] rotations = Maths.buildRotationMatrix(rotationY, rotationX);
@@ -255,6 +265,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         plane.setxRotation(combinedMotionManager.getTouchEventListener().getPhi());
         plane.setyRotation(combinedMotionManager.getTouchEventListener().getTheta());
+        plane.setzRotation(0.9f);
 
         plane.setTranslation(translationMatrix);
 
@@ -306,7 +317,13 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             showHideMarkerRemover("hide");
         }
 
+//        Log.d("MARKS","overlapChcker = "+overlapChcker);
 //        Log.d("MARKS","markerShown = "+markerShown);
+//        Log.d("MARKS","bubbleTextLayout = "+bubbleTextLayout);
+//        Log.d("MARKS","planes.get(selectedPin).getMediaType() = "+planes.get(selectedPin).getMediaType());
+//        Log.d("MARKS","");
+
+
 //        Log.d("MARK","storyPageOriginal == "+storyPageOriginal);
         if(markerShown){
 //            Log.d("MARKS","overlapChcker = "+overlapChcker);
@@ -318,6 +335,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 //                if(storyPageOriginal) {
 //                    plane.draw(planeModelView);
 //                }
+                sphere.draw(mvpMatrix);
             }else if(overlapChcker && bubbleTextLayout != null && planes.get(selectedPin).getMediaType().equals("TXT")) {
                 showHideBubbleText("show");
                 sphere.draw(mvpMatrix);
@@ -330,12 +348,12 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-//                                if(overlapChcker){
+                                if(overlapChcker){
                                     reInitializedTexture(originalOpto, "BACK");
-                                    animateLoader(false);
-//                                }
+                                }
+                                animateLoader(false);
                             }
-                        }, 2000);
+                        }, (loaderTimer * 1000));
                     }
                 });
             }else if(overlapChcker && storyType == 1 && planes.get(selectedPin).getMediaType().equals("NAV")){
@@ -358,12 +376,12 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-//                                        if(overlapChcker){
+                                        if(overlapChcker){
                                             reInitializedTexture(opto, "NAV");
-                                            animateLoader(false);
-//                                        }
+                                        }
+                                        animateLoader(false);
                                     }
-                                }, 2000);
+                                }, (loaderTimer * 1000));
                                 optographs.add(opto);
                             }
                         }
@@ -377,20 +395,21 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    for(int a=0; a < optographs.size(); a++){
-                                        if(optographs.get(a).getId().equals(optoId) && overlapChcker){
-                                            //Log.d("MARKS","cacheStories.contains else");
-                                            Optograph opto = optographs.get(a);
-                                            reInitializedTexture(opto, "NAV");
+                                    if(overlapChcker) {
+                                        for (int a = 0; a < optographs.size(); a++) {
+                                            if (optographs.get(a).getId().equals(optoId) && overlapChcker) {
+                                                //Log.d("MARKS","cacheStories.contains else");
+                                                Optograph opto = optographs.get(a);
+                                                reInitializedTexture(opto, "NAV");
+                                            }
                                         }
                                     }
                                     animateLoader(false);
                                 }
-                            }, 2000);
+                            }, (loaderTimer * 1000));
                         }
                     });
                 }
-                sphere.draw(mvpMatrix);
             }else {
                 sphere.draw(mvpMatrix);
             }
@@ -399,6 +418,30 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             backMarker.draw(modelView);
         }
 //        plane.draw(modelView);
+    }
+
+    //lat = phi, long=theta
+    public void convertCoordinates(float phi, float theta, float distance){
+        float lat = (float) Math.toDegrees(phi);
+        float lng = (float) Math.toDegrees(theta);
+
+        float latitude_radians = (float) Math.toRadians(lat);
+        float longitude_radians = (float) Math.toRadians(lng);
+
+        float xy_distance = (float) (distance * Math.cos(latitude_radians));
+        float x_position = (float) (xy_distance * Math.cos(longitude_radians));
+        float y_position = (float) (distance * Math.sin(latitude_radians));
+        float z_position = (float) (xy_distance * Math.sin(longitude_radians));
+
+        int x_rotation = 0;
+        float y_rotation = -(longitude_radians);
+        float z_rotation = latitude_radians;
+
+        float[] position = {x_position, y_position, z_position};
+        float[] rotation = {x_rotation, y_rotation, z_rotation};
+
+        convertedPosition = position;
+        convertedRotation = rotation;
     }
 
     public TextureSet.TextureTarget getTextureTarget(int face) {
@@ -473,11 +516,11 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     public void addMarker(SendStoryChild chld)  {
 //        Log.d("addMarker","planes.size = "+planes.size());
 
-        if(planes.size() > 0){
-            if(overlapSpheres(plane, planes.get(planes.size() - 1))){
-                return;
-            }
-        }
+//        if(planes.size() > 0){
+//            if(overlapSpheres(plane, planes.get(planes.size() - 1))){
+//                return;
+//            }
+//        }
 
 
 //        planes.add(new PinMarker());
@@ -499,6 +542,10 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             if (!planes.get(a).isInitiliazed()) {
                 chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
                 chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
+
+//                chld.setStory_object_position( Arrays.asList(Float.toString(convertedPosition[0]), Float.toString(convertedPosition[1]), Float.toString(convertedPosition[2])));
+//                chld.setStory_object_rotation( Arrays.asList(Float.toString(convertedRotation[0]), Float.toString(convertedRotation[1]), Float.toString(convertedRotation[2])));
+
                 chld.setStory_object_name("child_"+myStoryChld.size());
                 myStoryChld.add(chld);
 
@@ -666,22 +713,48 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setOriginalOpto(Optograph opto) {
-//        Log.d("MARK","setOriginalOpto = "+opto);
         this.originalOpto = opto;
     }
 
-    public void setLoadingScreen(RelativeLayout ls) {
+    public void setLoadingScreen(RelativeLayout ls, CircleCountDownView cd) {
         this.loadingScreen = ls;
+        this.countDownView = cd;
     }
 
     private void animateLoader(boolean show){
         if(loadingScreen != null){
+//            Log.d("MARKSSS","animateLoader show = "+show);
             if(show){
+                if(loadingScreen.getVisibility() == View.VISIBLE){
+                    return;
+                }
+                initLoader();
                 loadingScreen.setVisibility(View.VISIBLE);
             }else{
+                if(loadingScreen.getVisibility() == View.GONE){
+                    return;
+                }
                 loadingScreen.setVisibility(View.GONE);
             }
         }
+    }
+
+    private void initLoader(){
+//        Log.d("MARKSSS","initLoader");
+        final int[] progress = {1};
+        int endTime = loaderTimer - 1; // up to finish time
+        countDownTimer = new CountDownTimer(endTime * 1000 /*finishTime**/, 1000 /*interval**/) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                countDownView.setProgress(progress[0], endTime);
+                progress[0] = progress[0] + 1;
+            }
+            @Override
+            public void onFinish() {
+                countDownView.setProgress(progress[0], endTime);
+            }
+        };
+        countDownTimer.start();
     }
 
     public void setDeleteStoryMarkerImage(ImageButton deleteStoryMarkerImage) {

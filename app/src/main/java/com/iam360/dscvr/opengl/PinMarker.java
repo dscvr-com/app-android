@@ -30,6 +30,7 @@ public class PinMarker {
     public float[] translation = new float[16];
     public float xRotation;
     public float yRotation;
+    public float zRotation;
 
     public float[] init_rotation = new float[16];
 
@@ -261,6 +262,14 @@ public class PinMarker {
 
     public float getyRotation() {
         return yRotation;
+    }
+
+    public void setzRotation(float zRotation) {
+        this.zRotation = zRotation;
+    }
+
+    public float getzRotation() {
+        return zRotation;
     }
 
     public void setTranslation(float[] translation) {

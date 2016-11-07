@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -438,7 +439,7 @@ public class StoryFeedAdapter extends RecyclerView.Adapter<StoryFeedAdapter.Stor
 
         new DBHelper2(context).saveToSQLite(optograph);
         if (optograph.is_local()) optograph = checkToDB(optograph);
-
+        Log.d("MARK","addItem optograph.getStory = "+optograph.getStory());
         optographs.add(optograph);
         notifyItemInserted(getItemCount());
 
