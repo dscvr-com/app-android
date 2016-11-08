@@ -44,7 +44,7 @@ public interface Api2Endpoints {
     Observable<List<Optograph>> getStories(@Query("limit") int limit, @Query("older_than") String older_than);
 
     @GET("/story/person/{id}")
-    Observable<List<Optograph>> getStoriesProfile(@Query("limit") int limit, @Query("older_than") String older_than);
+    Observable<List<Optograph>> getStoriesProfile(@Path("id") String id, @Query("limit") int limit, @Query("older_than") String older_than);
 
 
     @POST("story/create")

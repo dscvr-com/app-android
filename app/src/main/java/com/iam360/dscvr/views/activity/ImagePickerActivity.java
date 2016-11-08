@@ -23,6 +23,7 @@ import com.iam360.dscvr.gcm.Optographs;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.DBHelper;
@@ -59,6 +60,7 @@ public class ImagePickerActivity extends AppCompatActivity {
     private Person person;
     private Cache cache;
     private ApiConsumer apiConsumer;
+    private Api2Consumer api2Consumer;
     private DBHelper mydb;
     private OptographListAdapter optographLocalGridAdapter;
 
@@ -97,6 +99,7 @@ public class ImagePickerActivity extends AppCompatActivity {
             cache = Cache.open();
             String token = cache.getString(cache.USER_TOKEN);
             apiConsumer = new ApiConsumer(token.equals("")?null:token);
+            api2Consumer = new Api2Consumer(null,"");
             mydb = new DBHelper(this);
 
             optographLocalGridAdapter = new OptographListAdapter(this,MODE);
@@ -211,7 +214,7 @@ public class ImagePickerActivity extends AppCompatActivity {
     }
 
     public void loadMore() {
-        apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+        api2Consumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorReturn(throwable -> {
@@ -234,7 +237,7 @@ public class ImagePickerActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> {
-                        apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                        api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                                 .subscribeOn(Schedulers.newThread())
                                 .observeOn(AndroidSchedulers.mainThread())
 //                                .doOnCompleted(() -> updateMessage(null))
@@ -250,7 +253,7 @@ public class ImagePickerActivity extends AppCompatActivity {
                     })
                     .subscribe(optographLocalGridAdapter::addItem);
         }else{
-            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+            api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> {

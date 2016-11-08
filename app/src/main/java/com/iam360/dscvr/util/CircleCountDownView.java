@@ -44,7 +44,6 @@ public class CircleCountDownView extends FrameLayout {
         progressBarView.startAnimation(makeVertical);
     }
 
-
     public void setProgress(int startTime, int endTime) {
         progressBarView.setMax(endTime);
         progressBarView.setSecondaryProgress(endTime);

@@ -112,7 +112,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
 
     public Optograph2DCubeRenderer(Context context) {
-        Timber.v("cube renderer constructor");
+//        Timber.v("cube renderer constructor");
         this.context = context;
         this.cube = new Cube();
         this.plane = new PinMarker();
@@ -127,7 +127,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        Timber.v("onSurfaceCreated");
+//        Timber.v("onSurfaceCreated");
         // Create the GLText
 
         surfaceCreated = true;
@@ -660,7 +660,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         z = point.getCenter().z - marker.getCenter().z;
 
         double distance = Math.sqrt( x*x + y*y + z*z );
-        Timber.d("Overlap : " + distance + " = " + point.getCenter().x + ":" + point.getCenter().y + ":" + point.getCenter().z + " " + marker.getCenter().x + ":" + marker.getCenter().y + ":" + marker.getCenter().z);
+//        Timber.d("Overlap : " + distance + " = " + point.getCenter().x + ":" + point.getCenter().y + ":" + point.getCenter().z + " " + marker.getCenter().x + ":" + marker.getCenter().y + ":" + marker.getCenter().z);
 
         //idk why?
         return distance <= 1;
@@ -764,7 +764,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setStoryType(int storyType) {
-//        Log.d("MARK","setStoryType storyType = "+storyType);
         this.storyType = storyType;
     }
 

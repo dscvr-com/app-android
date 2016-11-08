@@ -44,6 +44,7 @@ import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
+import com.iam360.dscvr.util.AudioStreamWorkerTask;
 import com.iam360.dscvr.util.BubbleDrawable;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
@@ -61,6 +62,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -232,30 +234,9 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         adjustIfHasSoftKeys();
         getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
 
-//        initLoader();
         initStoryChildrens();
     }
 
-//    public void initLoader(){
-//        binding.loadingScreen.setVisibility(View.GONE); // show progress view
-//
-//        progress = 1;
-//        int endTime = 5; // up to finish time
-//
-//        countDownTimer = new CountDownTimer(endTime * 1000 /*finishTime**/, 1000 /*interval**/) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//                binding.circleCountDownView.setProgress(progress, endTime);
-//                progress = progress + 1;
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//                binding.circleCountDownView.setProgress(progress, endTime);
-//            }
-//        };
-////        countDownTimer.start(); // start timer
-//    }
 
     private void hideShowAni() {
         if(arrowClicked){
@@ -867,7 +848,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
                 if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
                     Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_fileurl() = "+chldrns.get(a).getStory_object_media_fileurl());
-                    playBGM(chldrns.get(a).getStory_object_media_fileurl());
+                    playBGM(chldrns.get(a).getStory_object_media_fileurl(), chldrns.get(a).getStory_object_media_filename());
                 }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
                     showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
                 }else{
@@ -886,18 +867,46 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         }
     }
 
-    private void playBGM(String mp3Url){
-        MediaPlayer mp = new MediaPlayer();
+    private void playBGM(String mp3Url, String fName){
+//        MediaPlayer mp = new MediaPlayer();
+//        try {
+//            mp.setDataSource("https://bucket.dscvr.com"+mp3Url);
+//            mp.prepare();
+//            mp.start();
+//            mp.setLooping(true);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        try {
-            mp.setDataSource("https://bucket.dscvr.com"+mp3Url);
-            mp.prepare();
-            mp.start();
-            mp.setLooping(true);
+        new AudioStreamWorkerTask(this, new AudioStreamWorkerTask.OnCacheCallback() {
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onSuccess(FileInputStream fileInputStream) {
+                Log.i(getClass().getSimpleName() + ".MediaPlayer", "now playing...");
+                if (fileInputStream != null) {
+                    // reset media player here if necessary
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    try {
+                        mediaPlayer.setDataSource(fileInputStream.getFD());
+                        mediaPlayer.prepare();
+                        mediaPlayer.setVolume(1f, 1f);
+                        mediaPlayer.setLooping(false);
+                        mediaPlayer.start();
+                        mediaPlayer.setLooping(true);
+                        fileInputStream.close();
+                    } catch (IOException | IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e(getClass().getSimpleName() + ".MediaPlayer", "fileDescriptor is not valid");
+                }
+            }
+
+            @Override
+            public void onError() {
+                Log.e(getClass().getSimpleName() + ".MediaPlayer", "Can't play audio file");
+            }
+        }).execute("https://bucket.dscvr.com"+mp3Url);
     }
 
     private void showFixTxt(String txt){

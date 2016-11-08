@@ -30,6 +30,7 @@ import com.iam360.dscvr.bus.PersonReceivedEvent;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.util.Cache;
@@ -63,6 +64,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     private boolean isCurrentUser = false;
     private boolean isEditMode = false;
     private ApiConsumer apiConsumer;
+    private Api2Consumer api2Consumer;
     private DBHelper mydb;
 
     private int PICK_IMAGE_REQUEST = 1;
@@ -77,6 +79,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         cache = Cache.open();
         String token = cache.getString(cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
+        api2Consumer = new Api2Consumer(null,"");
         mydb = new DBHelper(getContext());
 
         optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(),OptographLocalGridAdapter.ON_IMAGE);
@@ -584,7 +587,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe14");
-                            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                            api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnCompleted(() -> updateMessage(null))
@@ -607,7 +610,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        else {
             Log.d("Caching", "initializeFeed cursor null");
         Log.d("myTag"," Subscribe15");
-            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+        api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> updateMessage(null))
@@ -642,7 +645,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe17");
-                            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+                            api2Consumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> {
@@ -662,7 +665,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 //        else {
         Log.d("myTag"," Subscribe18");
-            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+        api2Consumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> {
@@ -691,7 +694,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe20");
-                            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+                            api2Consumer.getOptographsFromPerson(person.getId(), 10)
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnCompleted(() -> updateMessage(null))
@@ -716,7 +719,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        else {
             Log.d("Caching", "cursor null or cursor item is zero");
         Log.d("myTag"," Subscribe21");
-            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+        api2Consumer.getOptographsFromPerson(person.getId(), 10)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> updateMessage(null))

@@ -134,10 +134,6 @@ public class Api2Consumer {
         return service.getStories(limit, older_than).flatMap(Observable::from);
     }
 
-    public Observable<Optograph> getStoriesProfile(int limit, String older_than) {
-        return service.getStoriesProfile(limit, older_than).flatMap(Observable::from);
-    }
-
     public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.uploadBgm(data);
         call.enqueue(callback);
@@ -173,5 +169,22 @@ public class Api2Consumer {
 
     private String getNow() {
         return RFC3339DateFormatter.toRFC3339String(DateTime.now());
+    }
+
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit, String older_than) {
+        return service.getStoriesProfile(id, limit, older_than).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, String older_than) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, older_than);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit) {
+        return getOptographsFromPerson(id, limit, getNow());
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, getNow());
     }
 }

@@ -467,8 +467,6 @@ public class DBHelper2 {
                 storyChld.setStory_object_media_face(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_MEDIA_FACE)));
                 storyChld.setStory_object_media_description(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_MEDIA_DESCRIPTION)));
                 storyChld.setStory_object_media_additional_data(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_MEDIA_ADDITIONAL_DATA)));
-                Log.d("DBHelper2","STORY_CHILDREN_POSITION = "+res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_POSITION)));
-                Log.d("DBHelper2","STORY_CHILDREN_ROTATION = "+res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_ROTATION)));
 
                 storyChld.setStory_object_position(Arrays.asList(TextUtils.split(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_POSITION)), ",")));
                 storyChld.setStory_object_rotation(Arrays.asList(TextUtils.split(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_ROTATION)),",")));
