@@ -274,11 +274,11 @@ public class OptimizedCoreMotionListener extends CoreMotionListener {
         correctedQuaternion.w(-correctedQuaternion.w());
 
         // Set the rotation matrix as well to have both representations
-        rotationMatrix = new float[16];
-
+        float[] rotationMatrix = new float[16];
         // Invert Y axis.
         float[] quat = correctedQuaternion.array().clone();
         quat[1] = -quat[1];
         SensorManager.getRotationMatrixFromVector(rotationMatrix, quat);
+        setResultMatrix(rotationMatrix);
     }
 }

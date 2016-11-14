@@ -21,9 +21,10 @@ import timber.log.Timber;
 public class CoreMotionListener extends RotationMatrixProvider implements SensorEventListener, SensorTypeList {
     private SensorManager sensorManager;
 
-    protected final float[] CORRECTION;
+    private final float[] POSTCORRECTION;
+    private final float[] PRECORRECTION;
 
-    protected float[] rotationMatrix;
+    private float[] rotationMatrix;
 
     protected CoreMotionListener(Context context) {
         rotationMatrix = null;
@@ -48,16 +49,16 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         Timber.w("Device/Man: " + deviceModel + "/" + deviceMan);
         Timber.w("Sensor/Man: " + sensorName + "/" + sensorVendor);
 
-        if(false && deviceModel.equals("Nexus 6P") && deviceMan.equals("Huawei") && sensorVendor.equals("Bosch") && sensorName.equals("BMI160 accelerometer")) {
-            CORRECTION = new float[16];
-            float[] nexus6PSpecificCorrection = Maths.buildRotationMatrix(new float[]{(float)(0.045 / Math.PI * 180f), 1, 0, 0});
-            Matrix.multiplyMM(CORRECTION, 0, nexus6PSpecificCorrection, 0, baseCorrection, 0);
-
-            Timber.w("Applying Nexus 6P BMI160 rotation offset.");
-
+        if(deviceModel.equals("Nexus 6P") && deviceMan.equals("Huawei") && sensorVendor.equals("Bosch") && sensorName.equals("BMI160 accelerometer")) {
+            final float rotationFixInDegrees = -3f;
+            PRECORRECTION = Maths.buildRotationMatrix(new float[]{ rotationFixInDegrees, 0, 0, 1 });
+            Timber.w("Applying Nexus 6P BMI160 rotation offset of " + rotationFixInDegrees + " degrees.");
+            //CORRECTION = baseCorrection;
         } else {
-            CORRECTION = baseCorrection;
+            PRECORRECTION = new float[16];
+            Matrix.setIdentityM(PRECORRECTION, 0);
         }
+        POSTCORRECTION = baseCorrection;
     }
 
     @Override
@@ -85,11 +86,14 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             setResultMatrix(temp);
         }
     }
-    private synchronized void setResultMatrix(float[] temp) {
+    protected synchronized void setResultMatrix(float[] in) {
         // apply correction so we refer to the coordinate system of the phone when holding it "upright",
         // screen to the user and perpendicular to the ground plane
+
         rotationMatrix = new float[16];
-        Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, temp, 0);
+        float[] temp = new float[16];
+        Matrix.multiplyMM(temp, 0, in, 0, PRECORRECTION, 0);
+        Matrix.multiplyMM(rotationMatrix, 0, POSTCORRECTION, 0, temp, 0);
     }
 
     @Override
