@@ -100,7 +100,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
     pathLocal = pathLocal + "/dgb/";
-    path = pathLocal;
+    path = ""; // If debug is enabled, the recorder will crash on finish.
 
     Log << "Init'ing recorder";
     Log << "Sensor height " << sensorHeight;
