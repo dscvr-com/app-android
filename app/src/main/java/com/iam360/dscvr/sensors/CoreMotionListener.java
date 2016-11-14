@@ -18,17 +18,14 @@ import timber.log.Timber;
  * @author Nilan Marktanner
  * @date 2016-01-29
  */
-public class CoreMotionListener extends RotationMatrixProvider implements SensorEventListener {
-    private static CoreMotionListener coreMotionListener;
-
+public class CoreMotionListener extends RotationMatrixProvider implements SensorEventListener, SensorTypeList {
     private SensorManager sensorManager;
 
-    private final float[] CORRECTION;
-    private int observers = 0;
+    protected final float[] CORRECTION;
 
-    private float[] rotationMatrix;
+    protected float[] rotationMatrix;
 
-    private CoreMotionListener(Context context) {
+    protected CoreMotionListener(Context context) {
         rotationMatrix = null;
         sensorManager = (SensorManager) context.getSystemService(Service.SENSOR_SERVICE);
 
@@ -51,7 +48,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         Timber.w("Device/Man: " + deviceModel + "/" + deviceMan);
         Timber.w("Sensor/Man: " + sensorName + "/" + sensorVendor);
 
-        if(deviceModel.equals("Nexus 6P") && deviceMan.equals("Huawei") && sensorVendor.equals("Bosch") && sensorName.equals("BMI160 accelerometer")) {
+        if(false && deviceModel.equals("Nexus 6P") && deviceMan.equals("Huawei") && sensorVendor.equals("Bosch") && sensorName.equals("BMI160 accelerometer")) {
             CORRECTION = new float[16];
             float[] nexus6PSpecificCorrection = Maths.buildRotationMatrix(new float[]{(float)(0.045 / Math.PI * 180f), 1, 0, 0});
             Matrix.multiplyMM(CORRECTION, 0, nexus6PSpecificCorrection, 0, baseCorrection, 0);
@@ -62,41 +59,6 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             CORRECTION = baseCorrection;
         }
     }
-
-    public static void initialize(Context context) {
-        if (coreMotionListener == null) {
-            coreMotionListener = new CoreMotionListener(context);
-        }
-    }
-
-    public static CoreMotionListener getInstance() {
-        if (coreMotionListener == null) {
-            throw new RuntimeException("CoreMotionListener not initialized!");
-        }
-        return coreMotionListener;
-    }
-
-    private void registerInternal() {
-        if (observers == 0) {
-            Timber.v("Registering CoreMotionListener");
-            sensorManager.registerListener(coreMotionListener, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_FASTEST);
-        } else {
-            Timber.v("Skip Registering CoreMotionListener");
-        }
-
-        observers++;
-    }
-
-    private void unregisterInternal() {
-        observers--;
-        if (observers == 0) {
-            Timber.v("Unregistering CoreMotionListener");
-            sensorManager.unregisterListener(coreMotionListener);
-        } else if (observers < 0) {
-            Timber.w("Unregister call but no observer!");
-        }
-    }
-
 
     @Override
     public synchronized void onSensorChanged(SensorEvent event) {
@@ -120,19 +82,14 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             float[] temp = new float[16];
             SensorManager.getRotationMatrixFromVector(temp, newValues);
 
-            // apply correction so we refer to the coordinate system of the phone when holding it "upright",
-            // screen to the user and perpendicular to the ground plane
-            rotationMatrix = new float[16];
-            Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, temp, 0);
+            setResultMatrix(temp);
         }
     }
-
-    public static void register() {
-        getInstance().registerInternal();
-    }
-
-    public static void unregister() {
-        getInstance().unregisterInternal();
+    private synchronized void setResultMatrix(float[] temp) {
+        // apply correction so we refer to the coordinate system of the phone when holding it "upright",
+        // screen to the user and perpendicular to the ground plane
+        rotationMatrix = new float[16];
+        Matrix.multiplyMM(rotationMatrix, 0, CORRECTION, 0, temp, 0);
     }
 
     @Override
@@ -152,5 +109,10 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
     public synchronized void getRotationMatrix(float[] t) {
         if(rotationMatrix != null)
             System.arraycopy(rotationMatrix, 0, t, 0, 16);
+    }
+
+    @Override
+    public int[] getRequiredSensorTypes() {
+        return new int[] { Sensor.TYPE_ROTATION_VECTOR };
     }
 }

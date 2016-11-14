@@ -34,6 +34,7 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Maths;
 import com.iam360.dscvr.util.MixpanelHelper;
@@ -81,7 +82,7 @@ public class RecordFragment extends Fragment {
             assert colorFormat == Bitmap.Config.ARGB_8888;
 
             // build extrinsics
-            float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+            float[] coreMotionMatrix = DefaultListeners.getInstance().getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
             captureWidth = width;
@@ -210,7 +211,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        CoreMotionListener.register();
+        DefaultListeners.register();
         recordPreview.onResume();
 
 
@@ -220,7 +221,7 @@ public class RecordFragment extends Fragment {
     public void onPause() {
         super.onPause();
         recordPreview.onPause();
-        CoreMotionListener.unregister();
+        DefaultListeners.unregister();
         fromPause = true;
     }
 

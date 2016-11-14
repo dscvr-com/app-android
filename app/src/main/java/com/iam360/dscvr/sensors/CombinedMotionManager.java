@@ -48,7 +48,7 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     @Override
     public float[] getRotationMatrix() {
-        float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
+        float[] coreMotionMatrix = DefaultListeners.getInstance().getRotationMatrix();
 
         if (!touchEventListener.isTouching() && MODE == GYRO_MODE) {
             // Update from motion and damping
@@ -84,12 +84,12 @@ public class CombinedMotionManager extends RotationMatrixProvider {
     }
 
     public void registerOnCoreMotionListener() {
-        CoreMotionListener.register();
+        DefaultListeners.register();
         registeredOnCoreMotionListener = true;
     }
 
     public void unregisterOnCoreMotionListener() {
-        CoreMotionListener.unregister();
+        DefaultListeners.unregister();
         registeredOnCoreMotionListener = false;
     }
 

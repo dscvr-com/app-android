@@ -24,6 +24,7 @@ import com.iam360.dscvr.gcm.GCMRegistrationIntentService;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
         Constants.initializeConstants(this);
         GestureDetectors.initialize(this);
-        CoreMotionListener.initialize(this);
+        DefaultListeners.initialize(this);
 
         // FB Track App Installs and App Opens
         FacebookSdk.sdkInitialize(getApplicationContext());

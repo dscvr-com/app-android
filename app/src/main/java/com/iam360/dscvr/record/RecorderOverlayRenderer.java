@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import com.iam360.dscvr.opengl.Sphere;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.DefaultListeners;
 
 import timber.log.Timber;
 
@@ -108,7 +109,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         float[] cmDiff = new float[16];
         float[] smoothRotation = new float[16];
 
-        Matrix.multiplyMM(cmDiff, 0, CoreMotionListener.getInstance().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
+        Matrix.multiplyMM(cmDiff, 0, DefaultListeners.getInstance().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
 
         Matrix.multiplyMM(smoothRotation, 0, cmDiff, 0, rotationMatrix, 0);
 
@@ -165,7 +166,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     public void setRotationMatrix(float[] rotationMatrix) {
         //System.arraycopy(rotationMatrix, 0, this.rotationMatrix, 0, 16);
         Matrix.transposeM(this.rotationMatrix, 0, rotationMatrix, 0);
-        CoreMotionListener.getInstance().getRotationMatrix(this.lastCmMatrix);
+        DefaultListeners.getInstance().getRotationMatrix(this.lastCmMatrix);
         //Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
     }
 
