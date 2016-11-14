@@ -99,8 +99,8 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
-    pathLocal = pathLocal + "/dgb/";
-    path = ""; // If debug is enabled, the recorder will crash on finish.
+    std::string debugPath = ""; //pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
+    path = pathLocal;
 
     Log << "Init'ing recorder";
     Log << "Sensor height " << sensorHeight;
@@ -126,7 +126,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
     intrinsics = Mat(3, 3, CV_64F, intrinsicsData).clone();
 
     // 1 -> RecorderGraph::ModeCenter
-    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, path);
+    recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, debugPath);
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
