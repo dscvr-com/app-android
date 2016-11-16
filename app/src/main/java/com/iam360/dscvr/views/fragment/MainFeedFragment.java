@@ -43,6 +43,7 @@ import com.iam360.dscvr.viewmodels.LocalOptographManager;
 import com.iam360.dscvr.views.activity.ImagePickerActivity;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.activity.RecorderActivity;
+import com.iam360.dscvr.views.activity.RingOptionActivity;
 import com.iam360.dscvr.views.activity.SearchActivity;
 import com.iam360.dscvr.views.activity.WebViewActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -644,7 +645,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
                 Intent intent;
                 if(!cache.getString(Cache.GATE_CODE).equals("")) {
-                    intent = new Intent(getActivity(), RecorderActivity.class);
+                    intent = new Intent(getActivity(), RingOptionActivity.class);
                     startActivity(intent);
                 } else
                     ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);

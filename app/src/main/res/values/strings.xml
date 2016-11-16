@@ -27,6 +27,10 @@
     <string name="capture">Capture</string>
     <string name="cancel_label">Cancel</string>
 
+    <!-- Ring Option -->
+    <string name="manual_mode">MANUAL MODE</string>
+    <string name="motor_mode">MOTOR MODE</string>
+
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
     <string name="feature_record_soon">Recording is available soon!</string>

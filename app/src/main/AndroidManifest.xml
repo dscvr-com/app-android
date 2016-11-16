@@ -163,6 +163,9 @@
         <activity android:name=".views.activity.ProfileActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".views.activity.RingOptionActivity"
+            android:screenOrientation="portrait" />
+
         <!-- change to true to debug mixpanel -->
         <meta-data
             android:name="com.mixpanel.android.MPConfig.EnableDebugLogging"
