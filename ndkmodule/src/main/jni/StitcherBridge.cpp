@@ -11,8 +11,8 @@ using namespace optonaut;
 #define DEBUG_TAG "Stitcher.cpp"
 
 extern "C" {
-    jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
-    jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode);
+    jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode);
     void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
     jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
@@ -52,6 +52,19 @@ std::vector<Mat> getResult(const std::string& path, const std::string& sharedPat
     return getCubeFaces(blurred);
 }
 
+std::vector<Mat> getResultThreeRing(const std::string& path, const std::string& sharedPath)
+{
+    CheckpointStore store(path, sharedPath);
+    Stitcher stitcher(store);
+    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+    Mat blurred;
+    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
+    panoBlur.Blur(sphere, blurred);
+    sphere.release();
+
+    return getCubeFaces(blurred);
+}
+
 Mat getEQResult(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
@@ -61,6 +74,19 @@ Mat getEQResult(const std::string& path, const std::string& sharedPath)
     result->image.Load();
     Mat sphere = result->image.data;
 
+    Mat blurred;
+    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
+    panoBlur.Black(sphere, blurred);
+    sphere.release();
+
+    return blurred;
+}
+
+Mat getEQResultThreeRing(const std::string& path, const std::string& sharedPath)
+{
+    CheckpointStore store(path, sharedPath);
+    Stitcher stitcher(store);
+    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
     panoBlur.Black(sphere, blurred);
@@ -97,12 +123,18 @@ jobject matToBitmap(JNIEnv *env, const Mat& mat)
 }
 
 
-jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
 
-    auto result = getResult(cPath, cSharedPath);
+    std::vector<Mat> result(6);
+//    std::vector<Mat> result;// = NULL;// = getResult(cPath, cSharedPath);
+    if(mode == RecorderGraph::ModeCenter) {
+        result = getResult(cPath, cSharedPath);
+    } else {
+        result = getResultThreeRing(cPath, cSharedPath);
+    }
 
     AssertEQ(result.size(), (size_t) 6);
 
@@ -117,12 +149,18 @@ jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobjec
     return bitmaps;
 }
 
-jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
 
-    auto result = getEQResult(cPath, cSharedPath);
+    Mat result;
+
+    if(mode == RecorderGraph::ModeCenter ) {
+        result = getEQResult(cPath, cSharedPath);
+    } else {
+        result = getEQResultThreeRing(cPath, cSharedPath);
+    }
 
     return matToBitmap(env, result);
 }

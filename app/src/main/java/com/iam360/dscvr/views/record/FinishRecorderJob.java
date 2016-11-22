@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.record.Alignment;
+import com.iam360.dscvr.record.ConvertToStereo;
+import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.views.UploaderJob;
 import com.path.android.jobqueue.Job;
@@ -28,10 +31,15 @@ import timber.log.Timber;
 public class FinishRecorderJob extends Job {
 
     private UUID id;
+    private Cache cache;
+    int mode;
+
     public FinishRecorderJob(UUID uuid) {
         // TODO: persist job?
         super(new Params(1));
         this.id = uuid;
+        cache = Cache.open();
+        mode = cache.getInt(Cache.CAMERA_MODE);
     }
 
     @Override
@@ -64,19 +72,21 @@ public class FinishRecorderJob extends Job {
         Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
 
-        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
+//        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
+        if(mode == Constants.THREE_RING_MODE)
+            ConvertToStereo.convert(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
 
-        Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+        Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
 //        UUID id = UUID.randomUUID();
         for (int i = 0; i < bitmaps.length; ++i) {
             CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/left/" + i + ".jpg");
             bitmaps[i].recycle();
         }
 
-        Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
+        Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
         CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "_1.jpg");
 
-        bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
+        bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/", mode);
         for (int i = 0; i < bitmaps.length; ++i) {
             CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.PERSISTENT_STORAGE_PATH + id + "/right/" + i + ".jpg");
             bitmaps[i].recycle();

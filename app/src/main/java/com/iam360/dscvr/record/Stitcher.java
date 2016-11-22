@@ -11,9 +11,9 @@ public class Stitcher {
         System.loadLibrary("ndkmodule");
     }
 
-    public static native Bitmap[] getResult(String path, String sharedPath);
+    public static native Bitmap[] getResult(String path, String sharedPath, int mode);
 
-    public static native Bitmap getEQResult(String path, String sharedPath);
+    public static native Bitmap getEQResult(String path, String sharedPath, int mode);
 
     public static native void clear(String path, String sharedPath);
 

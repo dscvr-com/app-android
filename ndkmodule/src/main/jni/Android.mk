@@ -34,7 +34,9 @@ LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
                    online-stitcher/src/debug/debugHook.cpp \
                    RecorderBridge.cpp \
                    AlignmentBridge.cpp \
-                   StitcherBridge.cpp
+                   StitcherBridge.cpp \
+                   ConvertToStereoBridge.cpp
+
 LOCAL_EXPORT_LDLIBS := -llog
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog -lz
 LOCAL_LDFLAGS += -ljnigraphics
