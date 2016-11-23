@@ -232,7 +232,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
             @Override
             public void run() {
                 optograph2DCubeRenderer.setBubbleTextLayout(bubbleTextLayout);
-            }});
+            }
+        });
     }
 
     public void setStoryType(String storyType) {

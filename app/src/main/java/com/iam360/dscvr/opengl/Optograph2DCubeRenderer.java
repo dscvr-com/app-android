@@ -128,8 +128,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 //        Timber.v("onSurfaceCreated");
-        // Create the GLText
-
         surfaceCreated = true;
 
         this.cube.initialize();
@@ -254,15 +252,15 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float[] newRotation = new float[16];
 
         Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
+
         Matrix.multiplyMM(scaleRotationMatrix, 0, backMarkerTranslationMatrix, 0, scales, 0);
-        Matrix.multiplyMM(scaleRotationMatrix2, 0, translationMatrix, 0, scales2, 0);
-
         Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
-        Matrix.multiplyMM(modelMatrix2, 0, scaleRotationMatrix2, 0, newRotation, 0);
-
-
         Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, modelMatrix, 0); //center plane
+
+        Matrix.multiplyMM(scaleRotationMatrix2, 0, translationMatrix, 0, scales2, 0);
+        Matrix.multiplyMM(modelMatrix2, 0, scaleRotationMatrix2, 0, newRotation, 0);
         Matrix.multiplyMM(planeModelView, 0, mvpMatrix, 0, modelMatrix2, 0);
+
 
         plane.setxRotation(combinedMotionManager.getTouchEventListener().getPhi());
         plane.setyRotation(combinedMotionManager.getTouchEventListener().getTheta());
@@ -270,35 +268,33 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
         plane.setTranslation(translationMatrix);
 
+        if(!storyPageOriginal){
+            backMarker.draw(modelView);
+        }
+
         overlapChcker = false;
         for(int a=0; a< planes.size(); a++){
             if(planes.get(a).isInitiliazed()){
-//                Log.d("MARKS","storyPageOriginal = "+storyPageOriginal);
                 if(storyPageOriginal) {
                     if(overlapSpheres(plane, planes.get(a))){
                         selectedPin = a;
                         overlapChcker = true;
                     }
-//                    Log.d("MARKS","overlapChcker1 = "+overlapChcker);
                 }else{
                     if(overlapSpheres(plane, backMarker)){
                         selectedPin = a;
                         overlapChcker = true;
                     }
-//                    Log.d("MARKS","overlapChcker2 = "+overlapChcker);
                 }
 
                 float[] modelView3 = new float[16];
                 translationMatrix = planes.get(a).getTranslation();
                 float phi2 = planes.get(a).getxRotation();
                 float theta2 = planes.get(a).getyRotation();
-//                Log.d("MARK","renderer xRot = "+phi2);
-//                Log.d("MARK","renderer yRot = "+theta2);
 
                 float[] rotationX2 = {(float) Math.toDegrees(theta2), 1, 0, 0};
                 float[] rotationY2 = {(float) -Math.toDegrees(phi2), 0, 1, 0};
                 rotations = Maths.buildRotationMatrix(rotationY2, rotationX2);
-//                Log.d("MARK","renderer rotations = "+ Arrays.toString(rotations));
 
                 Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
                 Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
@@ -318,18 +314,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
             showHideMarkerRemover("hide");
         }
 
-//        Log.d("MARKS","overlapChcker = "+overlapChcker);
-//        Log.d("MARKS","markerShown = "+markerShown);
-//        Log.d("MARKS","bubbleTextLayout = "+bubbleTextLayout);
-//        Log.d("MARKS","planes.get(selectedPin).getMediaType() = "+planes.get(selectedPin).getMediaType());
-//        Log.d("MARKS","");
-
-
-//        Log.d("MARK","storyPageOriginal == "+storyPageOriginal);
         if(markerShown){
-//            Log.d("MARKS","overlapChcker = "+overlapChcker);
-//            Log.d("MARKS","storyType = "+storyType);
-//            Log.d("MARKS","planes.get(selectedPin).getMediaType() = "+planes.get(selectedPin).getMediaType());
             if(overlapChcker && (storyType == 0 || storyType == 2) && deleteStoryMarkerImage != null) {
                 showHideMarkerRemover("show");
 //                plane.updateTexture(planeTexture2);
@@ -415,10 +400,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 sphere.draw(mvpMatrix);
             }
         }
-        if(!storyPageOriginal){
-            backMarker.draw(modelView);
-        }
-//        plane.draw(modelView);
+
+//        plane.draw(planeModelView);
     }
 
     //lat = phi, long=theta

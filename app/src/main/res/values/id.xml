@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item
+        type="id"
+        name="vr_mode_textview_L" />
+    <item
+        type="id"
+        name="vr_mode_textview_R" />
+</resources>

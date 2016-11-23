@@ -32,7 +32,7 @@ public abstract class TextureSet {
 
     public abstract void reset();
 
-    protected class TextureTarget implements Target {
+    public class TextureTarget implements Target {
         private int index;
         private Bitmap texture;
 

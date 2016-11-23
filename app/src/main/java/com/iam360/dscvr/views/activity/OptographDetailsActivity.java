@@ -868,18 +868,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     }
 
     private void playBGM(String mp3Url, String fName){
-//        MediaPlayer mp = new MediaPlayer();
-//        try {
-//            mp.setDataSource("https://bucket.dscvr.com"+mp3Url);
-//            mp.prepare();
-//            mp.start();
-//            mp.setLooping(true);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         new AudioStreamWorkerTask(this, new AudioStreamWorkerTask.OnCacheCallback() {
-
             @Override
             public void onSuccess(FileInputStream fileInputStream) {
                 Log.i(getClass().getSimpleName() + ".MediaPlayer", "now playing...");
