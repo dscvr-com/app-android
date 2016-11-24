@@ -653,12 +653,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 break;
             case R.id.theta_btn:
                 Intent intent1;
-                if(!cache.getString(Cache.GATE_CODE).equals("")) {
+//                if(!cache.getString(Cache.GATE_CODE).equals("")) {
                     intent = new Intent(getActivity(), ImagePickerActivity.class);
                     intent.putExtra(ImagePickerActivity.PICKER_MODE, ImagePickerActivity.UPLOAD_OPTO_MODE);
                     startActivity(intent);
-                } else
-                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
+//                } else
+//                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
                 break;
             case R.id.a3d_button:
                 cache.save(Cache.VR_3D_ENABLE,!cache.getBoolean(Cache.VR_3D_ENABLE,false));

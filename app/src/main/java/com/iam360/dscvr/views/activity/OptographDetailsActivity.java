@@ -842,7 +842,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         if(optograph != null && optograph.getStory() != null && optograph.getStory().getId()!= null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
-            Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             List<StoryChild> chldrns = optograph.getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
                 Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
@@ -860,6 +859,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
                     Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
+                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_rotation() = "+chldrns.get(a).getStory_object_rotation());
                     binding.optograph2dview.planeSetter(stryChld);
                 }
             }

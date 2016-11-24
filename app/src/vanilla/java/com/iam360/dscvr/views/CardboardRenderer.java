@@ -74,7 +74,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     public boolean overlapChcker = false;
     private int selectedPin = 0;
 
-    private static final float V_DISTANCE = 15f;
+    private static final float V_DISTANCE = 20f;
 
     private static final float[] ROTATION_AHEAD_FIRST = {0, 1, 0, 0};
     private static final float[] ROTATION_AHEAD_SECOND = {0, 0, 1, 0};
@@ -84,7 +84,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
     private float[] headTransFormEulersAngles = {0, 0, 0};
     private float[] headTransFormQuaternion = {0, 0, 0, 0};
     private Sphere sphere;
-    private float sphereRadius = 30f;
+    private float sphereRadius = 20f;
 
     private List<Optograph> optographs = new ArrayList<Optograph>();
     private List<String> cacheStories = new ArrayList<String>();
@@ -187,7 +187,6 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         Matrix.multiplyMV(newPosition, 0, eye.getEyeView(), 0, vector, 0);
 
         setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
-        sphere.draw(modelViewProjection);
 
         plane.setCenter(newPosition[0], newPosition[1], newPosition[2]);
 

@@ -50,7 +50,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 120.0f;
 
-    private static final float V_DISTANCE = 15f;
+    private static final float V_DISTANCE = 20f;
     private float scaleFactor = 1.f;
     private float ratio = 1.f;
 
@@ -63,7 +63,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
     private float[] rotationMatrix = new float[16];
 
     private float[] unInverseRotationMatrix = new float[16];
-    private float sphereRadius = 30f;
+    private float sphereRadius = 20f;
     private CombinedMotionManager combinedMotionManager;
 
     private Cube cube;
@@ -224,7 +224,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         plane.setCenter(newPosition[0], newPosition[1], newPosition[2]);
 
         float[] modelView = new float[16]; //center plane
-        float[] planeModelView = new float[16];
 
         float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});
         float[] backMarkerTranslationMatrix = Maths.buildTranslationMatrix(new float[]{-0.5321962f, -3.774146f, 14.507673f});
@@ -241,29 +240,18 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         float[] rotations = Maths.buildRotationMatrix(rotationY, rotationX);
 
         float[] scales = Maths.buildScaleMatrix(2);
-        float[] scales2 = Maths.buildScaleMatrix(1);
 
         float[] modelMatrix = new float[16];
-        float[] modelMatrix2 = new float[16];
-
         float[] scaleRotationMatrix = new float[16];
-        float[] scaleRotationMatrix2 = new float[16];
-
         float[] newRotation = new float[16];
 
         Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
-
         Matrix.multiplyMM(scaleRotationMatrix, 0, backMarkerTranslationMatrix, 0, scales, 0);
         Matrix.multiplyMM(modelMatrix, 0, scaleRotationMatrix, 0, newRotation, 0);
         Matrix.multiplyMM(modelView, 0, mvpMatrix, 0, modelMatrix, 0); //center plane
 
-        Matrix.multiplyMM(scaleRotationMatrix2, 0, translationMatrix, 0, scales2, 0);
-        Matrix.multiplyMM(modelMatrix2, 0, scaleRotationMatrix2, 0, newRotation, 0);
-        Matrix.multiplyMM(planeModelView, 0, mvpMatrix, 0, modelMatrix2, 0);
-
-
-        plane.setxRotation(combinedMotionManager.getTouchEventListener().getPhi());
-        plane.setyRotation(combinedMotionManager.getTouchEventListener().getTheta());
+        plane.setxRotation(phi);
+        plane.setyRotation(theta);
         plane.setzRotation(0.9f);
 
         plane.setTranslation(translationMatrix);
@@ -317,10 +305,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         if(markerShown){
             if(overlapChcker && (storyType == 0 || storyType == 2) && deleteStoryMarkerImage != null) {
                 showHideMarkerRemover("show");
-//                plane.updateTexture(planeTexture2);
-//                if(storyPageOriginal) {
-//                    plane.draw(planeModelView);
-//                }
                 sphere.draw(mvpMatrix);
             }else if(overlapChcker && bubbleTextLayout != null && planes.get(selectedPin).getMediaType().equals("TXT")) {
                 showHideBubbleText("show");
@@ -400,8 +384,6 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 sphere.draw(mvpMatrix);
             }
         }
-
-//        plane.draw(planeModelView);
     }
 
     //lat = phi, long=theta
@@ -525,7 +507,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         for(int a=0; a< planes.size(); a++) {
             if (!planes.get(a).isInitiliazed()) {
                 chld.setStory_object_position( Arrays.asList(Float.toString(plane.getCenter().x), Float.toString(plane.getCenter().y), Float.toString(plane.getCenter().z)));
-                chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), "0"));
+                chld.setStory_object_rotation( Arrays.asList(Float.toString(plane.getxRotation()), Float.toString(plane.getyRotation()), Float.toString(plane.getzRotation())));
 
 //                chld.setStory_object_position( Arrays.asList(Float.toString(convertedPosition[0]), Float.toString(convertedPosition[1]), Float.toString(convertedPosition[2])));
 //                chld.setStory_object_rotation( Arrays.asList(Float.toString(convertedRotation[0]), Float.toString(convertedRotation[1]), Float.toString(convertedRotation[2])));

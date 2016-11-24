@@ -618,9 +618,16 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
-        return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
-                false, false, "", opto.getOptograph_type(), "");
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        boolean ret = false;
+        if (res.getCount() == 0) {
+            ret = true;
+            mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
+                    opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
+                    false, false, "", opto.getOptograph_type(), "");
+        }
+        return ret;
     }
 
     private void uploadOptonautData(Optograph optograph) {
