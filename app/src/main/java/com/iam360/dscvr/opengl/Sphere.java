@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.iam360.dscvr.util.Maths;
 import com.iam360.dscvr.util.MyGLUtils;
+import com.iam360.dscvr.util.Vector3;
 
 /**
  * @author Nilan Marktanner
@@ -67,15 +68,21 @@ public class Sphere {
     private int colorHandle;
     private float[] transform = new float[16];
 
+
+    public boolean isInitiliazed = false;
+    public final Vector3 center = new Vector3();
+    public float radius;
+
     /**
      * Sphere constructor.
      * @param depth integer representing the split of the sphere. Will be clamped to internal variable {@code MAXIMUM_ALLOWED_DEPTH}
      * @param radius The spheres radius.
      */
     public Sphere(final int depth, final float radius) {
+        this.radius = radius;
+
         // Clamp depth to the range 1 to MAXIMUM_ALLOWED_DEPTH;
         final int d = Math.max(1, Math.min(MAXIMUM_ALLOWED_DEPTH, depth));
-
 
         Matrix.setIdentityM(transform, 0);
 
@@ -94,6 +101,7 @@ public class Sphere {
             // Calculate position of the first vertex in this strip.
             altitude = Maths.NINETY_DEGREES;
             azimuth = stripNum * azimuthStepAngle;
+
 
             // Draw the rest of this strip.
             for (int vertexNum = 0; vertexNum < numVerticesPerStrip; vertexNum += 2) {
@@ -183,5 +191,21 @@ public class Sphere {
 
     public void setTransform(float[] transform) {
         this.transform = transform;
+    }
+
+    public void setCenter(float x, float y, float z){
+        this.center.set(x,y,z);
+    }
+
+    public Vector3 getCenter() {
+        return center;
+    }
+
+    public void setInitiliazed(boolean initiliazed) {
+        isInitiliazed = initiliazed;
+    }
+
+    public boolean isInitiliazed(){
+        return isInitiliazed;
     }
 }

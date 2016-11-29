@@ -1,5 +1,7 @@
 package com.iam360.dscvr.record;
 
+import android.util.Log;
+
 /**
  * @author Nilan Marktanner
  * @date 2016-02-10
@@ -59,6 +61,9 @@ public class SelectionPoint {
         value += " globalId=" + globalId + " " +
                 "ringId=" + ringId + " " +
                 "localId=" + localId + " ";
+
+
+        Log.d("MARK","SelectionPoint value - "+value);
 
         return value;
     }

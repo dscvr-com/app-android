@@ -106,6 +106,7 @@
     <string name="profile_login_first">Please login first.</string>
     <string name="profile_login_again">Login failed. Please try to login again.</string>
     <string name="profile_delete_message">Are you sure you want to delete this 360 image?</string>
+    <string name="story_delete_message">Are you sure you want to delete this Story?</string>
     <string name="profile_export_message">Are you sure you want to export this 360 image?</string>
     <string name="profile_upload">UPLOAD</string>
     <string name="profile_uploading">UPLOADING...</string>
@@ -149,6 +150,8 @@
     <string name="settings_one_ring">ONE RING</string>
     <string name="settings_three_ring">THREE RING</string>
     <string name="settings_capture_type">CAPTURE TYPE</string>
+    <string name="settings_motor_on">MOTOR ON</string>
+    <string name="settings_motor_off">MOTOR OFF</string>
     <string name="settings_manual">MANUAL</string>
     <string name="settings_motor">MOTOR</string>
     <string name="settings_share_auto">AUTO SHARE IMAGE ON:</string>
@@ -173,5 +176,38 @@
     <string name="create_username_sucessful">User successfully created.</string>
     <string name="create_username_failed">Error in creatting username. Please try again.</string>
     <string name="create_username_min_char">Username must be 5-12 characters</string>
+
+
+    <string name="btle_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>
+    <string name="error_btle_notsupport">Sorry, your devices does not support Bluetooth LE</string>
+    <string name="error_btle_notfound">No device found</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <!-- Story Feeds -->
+    <string name="story_you">YOUR STORIES</string>
+    <string name="story_header">Stories</string>
+
+    <!-- Image Picker -->
+    <string name="image_picker_all_images">360 Images</string>
+    <string name="image_picker_your_images">Your 360 Images</string>
 
 </resources>

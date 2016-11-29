@@ -134,6 +134,28 @@ public class CustomBindingAdapter {
 
     }
 
+    @BindingAdapter("app:story_preview")
+    public static void loadStoryPreview(ImageView imageView, Optograph optograph) {
+
+        String uri = ImageUrlBuilder.buildCubeUrl(optograph, true, Cube.FACES[Cube.FACE_AHEAD]);
+//        String uri = ImageUrlBuilder.buildImagePreviewUrl(optograph.getId());
+
+        imageView.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    // Wait until layout to call Picasso
+                    @Override
+                    public void onGlobalLayout() {
+                        // Ensure we call this only once
+                        imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        Picasso.with(imageView.getContext())
+                                .load(uri)
+                                .placeholder(R.drawable.placeholder)
+                                .resize(imageView.getWidth(), 0)
+                                .into(imageView);
+                    }
+                });
+    }
+
     @BindingAdapter("app:createdAt")
     public static void setTimeAgo(TextView textViev, String created_at) {
         textViev.setText(TimeUtils.getTimeAgo(RFC3339DateFormatter.fromRFC3339String(created_at)));

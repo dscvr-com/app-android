@@ -18,13 +18,13 @@ std::shared_ptr<CheckpointStore> postDataStore;
 std::shared_ptr<GlobalAlignment> globalAligner;
 
 extern "C" {
-void Java_com_iam360_dscvr_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath);
-void Java_com_iam360_dscvr_record_Alignment_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+void Java_com_iam360_iam360_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath);
+void Java_com_iam360_iam360_record_Alignment_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
 
 
 
-void Java_com_iam360_dscvr_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath)
+void Java_com_iam360_iam360_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath)
 {
 
     const char *cPath = env->GetStringUTFChars(path, NULL);
@@ -50,7 +50,7 @@ void Java_com_iam360_dscvr_record_Alignment_align(JNIEnv *env, jobject thiz, jst
 
 }
 
-void Java_com_iam360_dscvr_record_Alignment_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_iam360_record_Alignment_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);

@@ -142,4 +142,6 @@ public interface ApiEndpoints {
 
     @POST("activities/{id}/read")
     Call<LogInReturn.EmptyResponse> setNotificationToRead(@Path("id") String id);
+
+
 }

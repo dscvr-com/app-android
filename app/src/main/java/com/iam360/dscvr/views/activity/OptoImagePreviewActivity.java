@@ -17,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -29,10 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.CallbackManager;
-import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
@@ -45,7 +42,6 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
-import com.iam360.dscvr.model.FBSignInData;
 import com.iam360.dscvr.model.GeocodeDetails;
 import com.iam360.dscvr.model.GeocodeReverse;
 import com.iam360.dscvr.model.LocationToUpdate;
@@ -629,9 +625,16 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
-        return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", false, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
-                false, false, "", opto.getOptograph_type());// should_be_published change defaul to false for automatic upload
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        boolean ret = false;
+        if (res.getCount() == 0) {
+            ret = true;
+            mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
+                    opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
+                    false, false, "", opto.getOptograph_type(), "");
+        }
+        return ret;
     }
 
     private void uploadOptonautData(Optograph optograph) {

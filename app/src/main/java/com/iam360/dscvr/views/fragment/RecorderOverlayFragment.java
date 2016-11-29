@@ -12,12 +12,13 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.views.activity.RecorderActivity;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class RecorderOverlayFragment extends Fragment {
     public static final int PREVIEW_RECORD = 1;

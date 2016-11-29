@@ -7,6 +7,8 @@
         <import type="com.iam360.dscvr.model.Optograph" />
         <import type="com.iam360.dscvr.model.Person" />
         <import type="com.iam360.dscvr.model.Location" />
+        <import type="com.iam360.dscvr.model.Story" />
+
 
         <variable
             name="optograph"
@@ -19,6 +21,10 @@
         <variable
             name="location"
             type="Location" />
+
+        <variable
+            name="story"
+            type="Story" />
     </data>
 
     <FrameLayout
@@ -33,6 +39,52 @@
             android:layout_gravity="center"
             android:background="@color/transparentOverlay"
             app:optograph="@{optograph}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="bottom|center_horizontal"
+                android:layout_weight="1">
+                <LinearLayout
+                    android:id="@+id/bubble_text_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="10dp"
+                    android:visibility="gone"
+                    android:paddingRight="10dp">
+                    <TextView
+                        android:id="@+id/bubble_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.iam360.dscvr.views.ExpandableTextView
+            android:id="@+id/story_marker_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/bright"
+            android:text=""
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp" />
 
         <RelativeLayout
             android:id="@+id/close_container"
@@ -135,9 +187,67 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="0dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/private_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:textColor="@color/bright"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/feed_upload_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
+                android:paddingBottom="3dp"
+                android:text="upload"
+                android:textColor="@color/bright"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/feed_upload_progress"
+                style="@android:style/Widget.ProgressBar.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/bright"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/overlay_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="@color/semiTransparentOverlay"
+            android:visibility="gone">
+
+            <ProgressBar
+                style="@android:style/Widget.ProgressBar.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/profile_bar_1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <RelativeLayout
                 android:id="@+id/profile_bar"
@@ -318,7 +428,6 @@
                         android:textSize="11dp"
                         android:visibility="gone"
                         app:createdAt="@{optograph.created_at}" />
-
                 </RelativeLayout>
             </RelativeLayout>
 
@@ -328,6 +437,19 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@id/profile_bar"
                 android:layout_margin="10dp">
+
+                <com.iam360.dscvr.views.ExpandableTextView
+                    android:id="@+id/story_fix_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/tw__composer_black"
+                    app:trimLength="45"
+                    android:background="#ffbc00"
+                    android:text=""
+                    android:padding="2dp"
+                    android:visibility="gone"
+                    android:layout_above="@+id/description_label"
+                    android:layout_alignParentStart="true" />
 
                 <com.iam360.dscvr.views.ExpandableTextView
                     android:id="@+id/description_label"
@@ -350,66 +472,21 @@
                     android:src="@drawable/delete_icn" />
 
             </RelativeLayout>
-
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="0dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/private_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
-                android:textColor="@color/bright"
-                android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/feed_upload_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:drawableStart="@drawable/abc_ic_commit_search_api_mtrl_alpha"
-                android:paddingBottom="3dp"
-                android:text="upload"
-                android:textColor="@color/bright"
-                android:visibility="gone"/>
-
-            <ProgressBar
-                android:id="@+id/feed_upload_progress"
-                style="@android:style/Widget.ProgressBar.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:paddingBottom="3dp"
-                android:textColor="@color/bright"
-                android:visibility="gone" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/overlay_delete"
+            android:id="@+id/loading_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true"
-            android:background="@color/semiTransparentOverlay"
-            android:visibility="gone">
-
-            <ProgressBar
-                style="@android:style/Widget.ProgressBar.Inverse"
+            android:visibility="gone"
+            android:gravity="center" >
+            <com.iam360.dscvr.util.CircleCountDownView
+                android:id="@+id/circle_count_down_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"/>
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"/>
         </RelativeLayout>
-
     </FrameLayout>
-
 </layout>

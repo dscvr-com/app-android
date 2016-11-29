@@ -1,7 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -236,7 +235,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener{
                                 cache.save(Cache.USER_FB_TOKEN, loginResult.getAccessToken().getToken());
                                 cache.save(Cache.USER_FB_LOGGED_IN, true);
 
-                                // TODO save avatar
 //                                http://stackoverflow.com/questions/32310878/how-to-get-facebook-profile-image-in-android
 
 //                        ((MainActivity) getActivity()).onBackPressed();

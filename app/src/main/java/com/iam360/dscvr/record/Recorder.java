@@ -1,6 +1,7 @@
 package com.iam360.dscvr.record;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import timber.log.Timber;
 
@@ -13,7 +14,7 @@ public class Recorder {
         System.loadLibrary("ndkmodule");
     }
 
-    private static boolean isInitialized = false;
+    public static boolean isInitialized = false;
 
     private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode);
     public static native void push(byte[] data, int width, int height, double[] extrinsicsData);
@@ -44,7 +45,7 @@ public class Recorder {
             initRecorder(storagePath, sensorWidth, sensorHeight, focalLength, mode);
             isInitialized = true;
         } else {
-//            throw new RuntimeException("Recorder already initialized");
+            throw new RuntimeException("Recorder already initialized");
         }
     }
 

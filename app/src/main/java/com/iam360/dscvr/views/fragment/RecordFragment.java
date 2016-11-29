@@ -18,12 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.record.Edge;
@@ -33,7 +27,10 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
+import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
+import com.iam360.dscvr.util.DeviceName;
 import com.iam360.dscvr.util.Maths;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.Vector3;
@@ -41,6 +38,12 @@ import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import timber.log.Timber;
 
@@ -70,20 +73,75 @@ public class RecordFragment extends Fragment {
     // Map globalIds of the edge's selection points : LineNode
     private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
 
+    private float currentDegree = (float) 0.03;
+
+    private long lastElapsedTime = System.currentTimeMillis();
+    private float currentTheta = (float) 0.0;
+    private float currentPhi = (float) 0.0;
+    private boolean isRecording = false;
+//    private Camera.Parameters camParam;
+
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
             if (Recorder.isFinished()) {
-                // sync hack
-                return;
+                return;// sync hack
             }
             assert colorFormat == Bitmap.Config.ARGB_8888;
-
-            // build extrinsics
             float[] coreMotionMatrix = CoreMotionListener.getInstance().getRotationMatrix();
-            double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
+            if(((RecorderActivity) getActivity()).cache.getBoolean(Cache.MOTOR_ON)){
+                long mediaTime = System.currentTimeMillis();
+                long timeDiff = mediaTime - lastElapsedTime;
+                double elapsedSec = timeDiff / 1000.0;
 
-            Log.w(TAG, "Pushing data: " + width + "x" + height);
+                int sessionRotateCount = 7200;
+                int sessionBuffCount = 200;
+                int PPS = 300;
+                int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
+
+                double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
+                double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+
+
+                lastElapsedTime = System.currentTimeMillis();
+                if(isRecording){
+                    currentDegree += degreeIncr;
+                }
+
+//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
+//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
+
+                if(((RecorderActivity) getActivity()).dataHasCome){
+                    isRecording = true;
+                }
+                Log.d("MARK","degreeIncr = "+degreeIncr);
+//                float thetaH = (float) Math.toRadians(camParam.getHorizontalViewAngle());
+//                Log.d("MARK","thetaH t = "+Float.toString(thetaH));
+
+
+                currentPhi = (float) Math.toRadians(currentDegree);
+
+                if (currentPhi > ( 2 * Math.PI) -0.001) {
+                    isRecording = false;
+                    if(currentTheta == 0) {
+                        currentTheta = (-DeviceName.getCurrentThetaValue());
+                    } else if(currentTheta < 0) {
+                        currentTheta = DeviceName.getCurrentThetaValue();
+                    } else if(currentTheta > 0) {
+                        currentTheta = 0;
+                    }
+                    currentDegree = 0;
+                }
+                Log.d("MARK","currentDegree = "+currentDegree);
+                Log.d("MARK","currentTheta = "+currentTheta);
+
+
+                CustomRotationMatrixSource customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
+                coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+
+            }
+
+            double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
             assert width * height * 4 == data.length;
 
             Recorder.push(data, width, height, extrinsicsData);
@@ -132,7 +190,6 @@ public class RecordFragment extends Fragment {
             // shading of recorded nodes
             if (Recorder.hasStarted()) {
                 SelectionPoint currentKeyframe = Recorder.lastKeyframe();
-
                 if (lastKeyframe == null) {
                     lastKeyframe = currentKeyframe;
                 } else if (currentKeyframe.getGlobalId() != lastKeyframe.getGlobalId()) {
@@ -163,20 +220,20 @@ public class RecordFragment extends Fragment {
                 Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
                 setupSelectionPoints();
+
             } catch (CameraAccessException e) {
+                Log.d("MARK","CameraAccessException e"+e.getMessage());
                 e.printStackTrace();
             }
         }
 
         @Override
         public void cameraClosed(CameraDevice device) {
-
         }
     };
 
     private void queueFinishRecording() {
         // see: http://stackoverflow.com/a/11125271/1176596
-
         // Get a handler that can be used to post to the main thread
         Handler mainHandler = new Handler(getActivity().getMainLooper());
         mainHandler.post(this::finishRecording);
@@ -209,8 +266,6 @@ public class RecordFragment extends Fragment {
         super.onResume();
         CoreMotionListener.register();
         recordPreview.onResume();
-
-
     }
 
     @Override
@@ -242,6 +297,7 @@ public class RecordFragment extends Fragment {
         camera.setPreviewCallback(previewCallback);
 */
         Recorder.setIdle(false);
+        isRecording = true;
     }
 
     private void setupSelectionPoints() {
@@ -249,6 +305,7 @@ public class RecordFragment extends Fragment {
         List<SelectionPoint> points = new LinkedList<>();
         List<SelectionPoint> points2 = new LinkedList<>();
 
+        Log.d("MARK","setupSelectionPoints rawPoints.length = "+rawPoints.length);
         for (SelectionPoint p : rawPoints) {
             points.add(p);
             points2.add(p);
@@ -310,8 +367,5 @@ public class RecordFragment extends Fragment {
 
         recorderOverlayView.getRecorderOverlayRenderer().setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
         ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
-
-
     }
-
 }

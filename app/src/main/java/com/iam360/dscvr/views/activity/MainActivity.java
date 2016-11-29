@@ -19,22 +19,24 @@ import android.view.WindowManager;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.stetho.Stetho;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.gcm.GCMRegistrationIntentService;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.MyViewPager;
 import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
-import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.views.fragment.MainFeedFragment;
 import com.iam360.dscvr.views.fragment.ProfileFragmentExercise;
 import com.iam360.dscvr.views.fragment.ProfileRootFragment;
 import com.iam360.dscvr.views.fragment.SharingFragment;
 import com.iam360.dscvr.views.fragment.SigninFBFragment;
+import com.iam360.dscvr.views.fragment.StoryFeedFragment;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHARING_MODE = 0;
     public static final int FEED_MODE = 1;
     public static final int PROFILE_MODE = 2;
+    public static final int STORY_MODE = 3;
+    public static final int REQUEST_BLE_LIST = 1000;
     private MyPagerAdapter adapterViewPager;
     private MyViewPager viewPager;
 
@@ -59,13 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
+
         if(!Cache.cacheInitialized){
             cache = Cache.getInstance(this);
         }
         cache = Cache.open();
         initializeComponents();
 
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main2);
         Log.d("myTag", "MainActivity. id: " + cache.getString(Cache.USER_ID) + " token: " + cache.getString(Cache.USER_TOKEN));
         //Initializing our broadcast receiver
@@ -113,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case SHARING_MODE:
                         break;
+                    case STORY_MODE:
+                        break;
                 }
                 currentMode = position;
             }
@@ -134,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case SHARING_MODE:
                         adapterViewPager.sharingFragment.updateOptograph();
+                        break;
+                    case STORY_MODE:
                         break;
                 }
             }
@@ -222,16 +233,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
-        private int NUM_ITEMS = 3;
+        private int NUM_ITEMS = 4;
         private SharingFragment sharingFragment;
         private MainFeedFragment mainFeedFragment;
         private ProfileRootFragment profileRootFragment;
+        private StoryFeedFragment storyFeedFragment;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
             profileRootFragment = new ProfileRootFragment();
             mainFeedFragment = new MainFeedFragment();
             sharingFragment = new SharingFragment();
+            storyFeedFragment = new StoryFeedFragment();
         }
 
         // Returns total number of pages
@@ -244,12 +257,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case SHARING_MODE:
                     return sharingFragment;
-                case 1:
+                case FEED_MODE:
                     return mainFeedFragment;
-                case 2:
+                case PROFILE_MODE:
                     return profileRootFragment;
+                case STORY_MODE:
+                    return storyFeedFragment;
                 default:
                     return null;
             }
@@ -323,6 +338,8 @@ public class MainActivity extends AppCompatActivity {
                     ((MainFeedFragment) frag).refreshAfterDelete(id,local);
                 }
             }
+        }else if(requestCode == REQUEST_BLE_LIST && resultCode == RESULT_OK){
+
         }
     }
 

@@ -35,4 +35,6 @@ public class NetworkProblemDialog extends DialogFragment {
         // finishing activity to allow a reload
 //        getActivity().finish();
     }
+
+
 }

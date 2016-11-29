@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.iam360.dscvr.util.MixpanelHelper;
-
 import timber.log.Timber;
 
 /**
@@ -57,7 +55,7 @@ public final class SnappyRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Timber.v("received touch event in SnappyRecyclerView");
+//        Timber.v("received touch event in SnappyRecyclerView");
         if (isScrollingEnabled) {
             try {
                 // We want the parent to handle all touch events--there's a lot going on there,
