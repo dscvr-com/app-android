@@ -1,7 +1,10 @@
 package com.iam360.dscvr.views.record;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -11,6 +14,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -32,6 +36,7 @@ import timber.log.Timber;
 /**
  * Created by emi on 16/06/16.
  */
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class RecorderPreviewView extends AutoFitTextureView {
 
     private static final String TAG = "RecordPreviewView";
@@ -59,7 +64,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
     public RecorderPreviewView(Context ctx) {
         super(ctx);
         this.textureView = this;
-        this.videoSize = new Size(720, 1280); //Size we want for stitcher input
+        this.videoSize = new Size(1280, 960); //Size we want for stitcher input
     }
 
     // To be called from parent activity
@@ -117,7 +122,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     private void createDecoderSurface() {
-        surface = new CodecSurface(videoSize.getWidth(), videoSize.getHeight());
+        surface = new CodecSurface(videoSize.getHeight(), videoSize.getWidth());
         decoderHandler.obtainMessage(FETCH_FRAME).sendToTarget();
     }
 
@@ -195,7 +200,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     private void configureTransform(int width, int height) {
-        // Do nothing for now, we are locked in portrait anyway.
+
     }
 
     private void openCamera(int width, int height) {
@@ -213,6 +218,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
                     continue;
                 }
                 StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
                 previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
                 textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 configureTransform(width, height);
@@ -237,6 +243,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         int w = aspectRatio.getWidth();
         int h = aspectRatio.getHeight();
         for (Size option : choices) {
+            Timber.d("Size: " + option.getWidth() + "x" + option.getHeight());
             if (option.getHeight() == option.getWidth() * h / w &&
                     option.getWidth() >= width && option.getHeight() >= height) {
                 bigEnough.add(option);
@@ -260,12 +267,11 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
         try {
             closePreviewSession();
-            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-
+            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             Surface previewSurface = textureView.getHolder().getSurface();
+
             previewBuilder.addTarget(previewSurface);
             previewBuilder.addTarget(surface.getSurface());
-
             cameraDevice.createCaptureSession(Arrays.asList(previewSurface, surface.getSurface()), new CameraCaptureSession.StateCallback() {
 
                 @Override
@@ -347,6 +353,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
         @Override
         public void onOpened(CameraDevice cameraDevice) {
+
             RecorderPreviewView.this.cameraDevice = cameraDevice;
             startPreview();
             cameraOpenCloseLock.release();
