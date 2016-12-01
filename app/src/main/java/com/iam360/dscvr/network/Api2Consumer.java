@@ -33,8 +33,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "http://noel.dscvr.com/api"; //"https://mapi.dscvr.com/api/"; //
-    private static final String BASE_URL2 = "http://noel.dscvr.com/"; //"https://mapi.dscvr.com/"; //
+    private static final String BASE_URL = "https://noel.dscvr.com/api"; //"https://mapi.dscvr.com/api/"; //
+    private static final String BASE_URL2 = "https://noel.dscvr.com/"; //"https://mapi.dscvr.com/"; //
     //http://noel.dscvr.com/
 
     private static final int DEFAULT_LIMIT = 5;

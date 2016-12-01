@@ -120,7 +120,7 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
 
         this.backMarker.initializeProgram();
         this.backMarker.setInitiliazed(true);
-        backMarker.setCenter(-0.5321962f, -3.774146f, 14.507673f);
+        backMarker.setCenter(0.026925718f, -4.939698f, 19.380367f);
         this.plane.initializeProgram();
         this.plane.setInitRotation(Maths.buildRotationMatrix(ROTATION_AHEAD_SECOND, ROTATION_AHEAD_FIRST));
         planeTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.main_pin_icn);
@@ -225,17 +225,24 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
                         overlapChcker = true;
                     }
                 }
+
                 float[] modelView3 = new float[16];
-                float[] translationMatrix = planes.get(a).getTranslation();
+//                translationMatrix = planes.get(a).getTranslation();
                 float phi2 = planes.get(a).getxRotation();
                 float theta2 = planes.get(a).getyRotation();
 
                 float[] rotationX2 = {(float) Math.toDegrees(theta2), 1, 0, 0};
                 float[] rotationY2 = {(float) -Math.toDegrees(phi2), 0, 1, 0};
-                float[] newRotation = new float[16];
-                float[] scaleRotationMatrix = new float[16];
-                float[] modelMatrix = new float[16];
                 float[] rotations = Maths.buildRotationMatrix(rotationY2, rotationX2);
+
+                Matrix.multiplyMV(newPosition, 0, rotations, 0, vector, 0);
+                float[] translationMatrix = Maths.buildTranslationMatrix(new float[]{newPosition[0], newPosition[1], newPosition[2]});
+
+                planes.get(a).setCenter(newPosition[0], newPosition[1], newPosition[2]);
+
+                float[] modelMatrix = new float[16];
+                float[] scaleRotationMatrix = new float[16];
+                float[] newRotation = new float[16];
 
                 Matrix.multiplyMM(newRotation, 0, plane.getInitRotation(), 0, rotations, 0);
                 Matrix.multiplyMM(scaleRotationMatrix, 0, translationMatrix, 0, scales, 0);
@@ -490,8 +497,10 @@ public class CardboardRenderer implements CardboardView.StereoRenderer {
         markerShown = true;
         planes.add(new PinMarker());
         planes.get(planes.size() - 1).setTranslation(Maths.buildTranslationMatrix(new float[]{Float.parseFloat(chld.getStory_object_position().get(0)),Float.parseFloat(chld.getStory_object_position().get(1)), Float.parseFloat(chld.getStory_object_position().get(2))}));
-        planes.get(planes.size() - 1).setxRotation(Float.parseFloat(chld.getStory_object_rotation().get(0)));
-        planes.get(planes.size() - 1).setyRotation(Float.parseFloat(chld.getStory_object_rotation().get(1)));
+//        planes.get(planes.size() - 1).setxRotation(Float.parseFloat(chld.getStory_object_rotation().get(0)));
+//        planes.get(planes.size() - 1).setyRotation(Float.parseFloat(chld.getStory_object_rotation().get(1)));
+        planes.get(planes.size() - 1).setxRotation(Float.parseFloat(chld.getStory_object_phi()));
+        planes.get(planes.size() - 1).setyRotation(Float.parseFloat(chld.getStory_object_theta()));
         planes.get(planes.size() - 1).setInitiliazed(true);
         planes.get(planes.size() - 1).setMediaType(chld.getStory_object_media_type());
         planes.get(planes.size() - 1).setMediaAdditionalData(chld.getStory_object_media_additional_data());

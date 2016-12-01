@@ -51,6 +51,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+
 /**
  * Created by Mariel on 6/24/2016.
  */
@@ -442,16 +443,17 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         person = personReceivedEvent.getPerson();
 
-        Log.d("myTag"," follower: receivePerson name: "+person.getDisplay_name()+" isFollowed? "+person.is_followed());
+        Log.d("myTag", " follower: receivePerson name: " + person.getDisplay_name() + " isFollowed? " + person.is_followed());
         if (person != null && person.getActivity().equals(getContext().getClass().getSimpleName())) {
             insertPerson(person);
-        Log.d("myTag"," white: person null? "+(person==null));
-        if (person != null) {
-            Log.d("myTag"," white: avatarId: "+person.getAvatar_asset_id());
+            Log.d("myTag", " white: person null? " + (person == null));
+            if (person != null) {
+                Log.d("myTag", " white: avatarId: " + person.getAvatar_asset_id());
 //            insertPerson(person);
-            new DBHelper2(getContext()).saveToSQLitePer(person);
-            binding.executePendingBindings();
-            initializeProfileFeed();
+                new DBHelper2(getContext()).saveToSQLitePer(person);
+                binding.executePendingBindings();
+                initializeProfileFeed();
+            }
         }
     }
 

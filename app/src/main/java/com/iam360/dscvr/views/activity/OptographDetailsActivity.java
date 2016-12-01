@@ -65,6 +65,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit.Callback;
@@ -114,7 +115,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             withStory = (boolean) getIntent().getExtras().get("story");
             storyType = getIntent().getExtras().getString("type");
         }
-
+        Timber.d("optographList = "+optographList);
         if(optographList != null) {
             isMultipleOpto = true;
             optograph = optographList.get(0);
@@ -123,7 +124,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             optograph = getIntent().getExtras().getParcelable("opto");
             optographList = new ArrayList<Optograph>();
         }
-
+        Timber.d("optograph = "+optograph);
         if(optograph.getStory() != null && optograph.getStory().getId() != null && !optograph.getStory().getId().equals("")){
             withStory = true;
             storyType = "view";
@@ -729,6 +730,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             public void onResponse(Response<MapiResponseObject> response, Retrofit retrofit) {
                 binding.overlayDelete.setVisibility(View.GONE);
                 if (response.isSuccess()) {
+                    mydb.updateColumnStory(storyId, DBHelper.STORY_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());
@@ -908,7 +910,20 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
             List<StoryChild> chldrns = optograph.getStory().getChildren();
             for(int a=0; a < chldrns.size(); a++){
+                Log.d("MARK","initStoryChildrens getStory_object_media_type = "+chldrns.get(a).getStory_object_media_type());
+                Log.d("MARK","initStoryChildrens getStory_object_media_face = "+chldrns.get(a).getStory_object_media_face());
+                Log.d("MARK","initStoryChildrens getStory_object_media_description = "+chldrns.get(a).getStory_object_media_description());
+                Log.d("MARK","initStoryChildrens getStory_object_media_additional_data = "+chldrns.get(a).getStory_object_media_additional_data());
+                Log.d("MARK","initStoryChildrens getStory_object_position = "+chldrns.get(a).getStory_object_position());
+                Log.d("MARK","initStoryChildrens getStory_object_rotation = "+chldrns.get(a).getStory_object_rotation());
+                Log.d("MARK","initStoryChildrens getStory_object_phi = "+chldrns.get(a).getStory_object_phi());
+                Log.d("MARK","initStoryChildrens getStory_object_theta = "+chldrns.get(a).getStory_object_theta());
+                Log.d("MARK","initStoryChildrens getStory_object_media_filename = "+chldrns.get(a).getStory_object_media_filename());
+                Log.d("MARK","initStoryChildrens getStory_object_media_fileurl = "+chldrns.get(a).getStory_object_media_fileurl());
+
                 Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
+
+
                 if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
                     Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_fileurl() = "+chldrns.get(a).getStory_object_media_fileurl());
                     playBGM(chldrns.get(a).getStory_object_media_fileurl(), chldrns.get(a).getStory_object_media_filename());
@@ -918,12 +933,18 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                     SendStoryChild stryChld = new SendStoryChild();
                     stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
                     stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
-                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
-                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+//                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+//                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_rotation(Arrays.asList("0","0","0"));
+                    stryChld.setStory_object_position(Arrays.asList("0","0","0"));
+
+                    stryChld.setStory_object_phi(String.valueOf(chldrns.get(a).getStory_object_phi()));
+                    stryChld.setStory_object_theta(String.valueOf(chldrns.get(a).getStory_object_theta()));
+
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
-                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
-                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_rotation() = "+chldrns.get(a).getStory_object_rotation());
+//                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
+//                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_rotation() = "+chldrns.get(a).getStory_object_rotation());
                     binding.optograph2dview.planeSetter(stryChld);
                 }
             }

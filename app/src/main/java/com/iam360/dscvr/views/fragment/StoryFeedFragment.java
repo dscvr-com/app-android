@@ -200,7 +200,7 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     }
 
     private void setPerson() {
-        PersonManager.loadPerson(cache.getString(Cache.USER_ID));
+        PersonManager.loadPerson(cache.getString(Cache.USER_ID),getContext());
         myGetData(cache.getString(Cache.USER_ID));
     }
 

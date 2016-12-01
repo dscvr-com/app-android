@@ -312,6 +312,7 @@ public class DBHelper2 {
                         StoryChild chld = chldrn.get(z);
                         mydb.insertStoryChildren(chld.getStory_object_id(), chld.getStory_object_story_id(), chld.getStory_object_media_type(), chld.getStory_object_media_face(),
                                 chld.getStory_object_media_description(), chld.getStory_object_media_additional_data(), TextUtils.join(",", chld.getStory_object_position()), TextUtils.join(",", chld.getStory_object_rotation()),
+                                chld.getStory_object_phi(), chld.getStory_object_theta(),
                                 chld.getStory_object_created_at(), chld.getStory_object_updated_at(), chld.getStory_object_deleted_at(), chld.getStory_object_media_filename(), chld.getStory_object_media_fileurl());
 
                         childrenIds.add(chldrn.get(z).getStory_object_id());
@@ -470,6 +471,9 @@ public class DBHelper2 {
 
                 storyChld.setStory_object_position(Arrays.asList(TextUtils.split(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_POSITION)), ",")));
                 storyChld.setStory_object_rotation(Arrays.asList(TextUtils.split(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_ROTATION)),",")));
+                storyChld.setStory_object_phi(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_PHI)));
+                storyChld.setStory_object_theta(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_THETA)));
+                storyChld.setStory_object_updated_at(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_UPDATED_AT)));
 
                 storyChld.setStory_object_created_at(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_CREATED_AT)));
                 storyChld.setStory_object_updated_at(res.getString(res.getColumnIndex(DBHelper.STORY_CHILDREN_UPDATED_AT)));

@@ -17,6 +17,8 @@ public class SendStoryChild implements Parcelable {
     private String story_object_media_additional_data;
     private List<String> story_object_position;
     private List<String> story_object_rotation;
+    private String story_object_phi;
+    private String story_object_theta;
     private String story_object_media_filename;
     private String story_object_media_fileurl;
     private String story_object_name;
@@ -29,6 +31,8 @@ public class SendStoryChild implements Parcelable {
         story_object_media_additional_data = "";
         story_object_position = new ArrayList<String>();
         story_object_rotation = new ArrayList<String>();
+        story_object_phi = "0";
+        story_object_theta = "0";
         story_object_media_filename = "";
         story_object_media_fileurl = "";
         story_object_name = "";
@@ -43,6 +47,8 @@ public class SendStoryChild implements Parcelable {
         this.story_object_media_additional_data = source.readString();
         this.story_object_position = source.readArrayList(String.class.getClassLoader());
         this.story_object_rotation = source.readArrayList(String.class.getClassLoader());
+        this.story_object_phi = source.readString();
+        this.story_object_theta = source.readString();
         this.story_object_media_filename = source.readString();
         this.story_object_media_fileurl = source.readString();
         this.story_object_name = source.readString();
@@ -143,6 +149,8 @@ public class SendStoryChild implements Parcelable {
         dest.writeString(this.story_object_media_additional_data);
         dest.writeList(story_object_position);
         dest.writeList(story_object_rotation);
+        dest.writeString(story_object_phi);
+        dest.writeString(story_object_theta);
         dest.writeString(this.story_object_media_filename);
         dest.writeString(this.story_object_media_fileurl);
         dest.writeString(this.story_object_name);
@@ -161,4 +169,20 @@ public class SendStoryChild implements Parcelable {
                     return new StoryChild[size];
                 }
             };
+
+    public String getStory_object_phi() {
+        return story_object_phi;
+    }
+
+    public void setStory_object_phi(String story_object_phi) {
+        this.story_object_phi = story_object_phi;
+    }
+
+    public String getStory_object_theta() {
+        return story_object_theta;
+    }
+
+    public void setStory_object_theta(String story_object_theta) {
+        this.story_object_theta = story_object_theta;
+    }
 }

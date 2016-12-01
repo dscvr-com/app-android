@@ -525,21 +525,17 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void callDetailsPage(int position, Optograph optograph) {
-
+        Intent intent = new Intent(context, OptographDetailsActivity.class);
         if (optograph == null) {
-            Intent intent = new Intent(context, OptographDetailsActivity.class);
             intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
             if (context instanceof ProfileActivity)
                 ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
             else if (context instanceof MainActivity)
                 ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
         } else {
-            Intent intent = new Intent(context, OptographDetailsActivity.class);
             intent.putExtra("opto", optograph);
             context.startActivity(intent);
         }
-
-
     }
 
     private ArrayList<Optograph> getNextOptographList(int position, int count) {

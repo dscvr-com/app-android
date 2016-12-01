@@ -118,6 +118,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String STORY_CHILDREN_MEDIA_ADDITIONAL_DATA = "story_object_media_additional_data";
     public static final String STORY_CHILDREN_POSITION = "story_object_position";
     public static final String STORY_CHILDREN_ROTATION = "story_object_rotation";
+    public static final String STORY_CHILDREN_PHI = "story_object_phi";
+    public static final String STORY_CHILDREN_THETA = "story_object_theta";
     public static final String STORY_CHILDREN_CREATED_AT = "story_object_created_at";
     public static final String STORY_CHILDREN_UPDATED_AT = "story_object_updated_at";
     public static final String STORY_CHILDREN_DELETED_AT = "story_object_deleted_at";
@@ -209,6 +211,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         "story_object_media_additional_data text,"+
                         "story_object_position text,"+
                         "story_object_rotation text,"+
+                        "story_object_phi text,"+
+                        "story_object_theta text,"+
                         "story_object_created_at text not null," +
                         "story_object_updated_at text," +
                         "story_object_deleted_at text,"+
@@ -396,8 +400,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertStoryChildren(String id, String story_id, String media_type, String media_face, String media_desc, String media_add_data,
-            String pos, String rot, String created_at, String updated_at, String deleted_at, String media_fname, String media_fUrl){
+    public boolean insertStoryChildren(String id, String story_id, String media_type, String media_face, String media_desc, String media_add_data, String pos, String rot,
+                                       String phi, String theta,
+                                       String created_at, String updated_at, String deleted_at, String media_fname, String media_fUrl){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(STORY_CHILDREN_OBJECT_ID, nullChecker(id));
@@ -408,6 +413,8 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(STORY_CHILDREN_MEDIA_ADDITIONAL_DATA, nullChecker(media_add_data));
         contentValues.put(STORY_CHILDREN_POSITION, nullChecker(pos));
         contentValues.put(STORY_CHILDREN_ROTATION, nullChecker(rot));
+        contentValues.put(STORY_CHILDREN_PHI, nullChecker(phi));
+        contentValues.put(STORY_CHILDREN_THETA, nullChecker(theta));
         contentValues.put(STORY_CHILDREN_CREATED_AT, nullChecker(created_at));
         contentValues.put(STORY_CHILDREN_UPDATED_AT, nullChecker(updated_at));
         contentValues.put(STORY_CHILDREN_DELETED_AT, nullChecker(deleted_at));
@@ -548,6 +555,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void updateColumnLocation(String id, String column, String value) {
         updateTableColumn(LOCATION_TABLE_NAME, LOCATION_ID, id, column, value);
+    }
+
+    public void updateColumnStory(String id, String column, String value) {
+        updateTableColumn(STORY_TABLE_NAME, STORY_ID, id, column, value);
     }
 
     public boolean updateOptograph(String id,String text,String pId,String lId,String cAt,String dAt,

@@ -236,8 +236,14 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     SendStoryChild stryChld = new SendStoryChild();
                     stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
                     stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
-                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
-                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+//                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+//                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_rotation(Arrays.asList("0","0","0"));
+                    stryChld.setStory_object_position(Arrays.asList("0","0","0"));
+
+                    stryChld.setStory_object_phi(String.valueOf(chldrns.get(a).getStory_object_phi()));
+                    stryChld.setStory_object_theta(String.valueOf(chldrns.get(a).getStory_object_theta()));
+
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
                     binding.optograph2dview.planeSetter(stryChld);
@@ -327,9 +333,12 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                 binding.optograph2dview.addMarker(chld);
             }
         }else if(resultCode == RESULT_OK && requestCode == 11){
-            Log.d("MARK","onActivityResult opto_id = "+data.getStringExtra("opto_id"));
+            Optograph opto = data.getExtras().getParcelable("opto");
+            Log.d("MARK","onActivityResult opto_id = "+opto.getId());
+            Log.d("MARK","onActivityResult opto = "+opto);
+
             SendStoryChild chld = createChildStory("NAV", "next optograph");
-            chld.setStory_object_media_additional_data(optograph.getId());
+            chld.setStory_object_media_additional_data(opto.getId());
 
             binding.optograph2dview.addMarker(chld);
         }
@@ -357,6 +366,8 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             if(type.equals("MUS")){
                 stryChld.setStory_object_media_additional_data("audio data");
             }
+            stryChld.setStory_object_rotation(Arrays.asList("0","0","0"));
+            stryChld.setStory_object_position(Arrays.asList("0","0","0"));
         }
         Log.d("MARK","addChildrenStory type = "+type+"  value = "+data);
 
@@ -460,13 +471,17 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             return;
         }
         for(int a =0; a < stry.getChildren().size(); a++){
-            Log.d("MARK","sendStory getStory_object_position = "+stry.getChildren().get(a).getStory_object_position());
-            Log.d("MARK","sendStory getStory_object_rotation = "+stry.getChildren().get(a).getStory_object_rotation());
-            Log.d("MARK","sendStory getStory_object_media_additional_data = "+stry.getChildren().get(a).getStory_object_media_additional_data());
             Log.d("MARK","sendStory getStory_object_media_type = "+stry.getChildren().get(a).getStory_object_media_type());
             Log.d("MARK","sendStory getStory_object_media_face = "+stry.getChildren().get(a).getStory_object_media_face());
             Log.d("MARK","sendStory getStory_object_media_description = "+stry.getChildren().get(a).getStory_object_media_description());
+            Log.d("MARK","sendStory getStory_object_media_additional_data = "+stry.getChildren().get(a).getStory_object_media_additional_data());
+            Log.d("MARK","sendStory getStory_object_position = "+stry.getChildren().get(a).getStory_object_position());
+            Log.d("MARK","sendStory getStory_object_rotation = "+stry.getChildren().get(a).getStory_object_rotation());
+            Log.d("MARK","sendStory getStory_object_phi = "+stry.getChildren().get(a).getStory_object_phi());
+            Log.d("MARK","sendStory getStory_object_theta = "+stry.getChildren().get(a).getStory_object_theta());
             Log.d("MARK","sendStory getStory_object_media_filename = "+stry.getChildren().get(a).getStory_object_media_filename());
+            Log.d("MARK","sendStory getStory_object_media_fileurl = "+stry.getChildren().get(a).getStory_object_media_fileurl());
+            Log.d("MARK","sendStory getStory_object_name = "+stry.getChildren().get(a).getStory_object_name());
         }
         if(binding.optograph2dview.getStoryType().equals("edit")){
             updateStory(stry);
@@ -480,16 +495,21 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Log.d("MARK","createStory response.isSuccess = "+response.errorBody());
+                    try {
+                        Log.d("MARK","createStory response.errorBody().string() = "+response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("MARK","createStory response.message = "+response.message());
                     return;
                 }
                 SendStoryResponse response1 = response.body();
                 boolean toUpload = false;
+                String fnamePath = bgmMusNamePath;//fileNamePath.get(fileName.indexOf(r1.getStory_object_media_filename()));
+                Log.d("MARK","createStory fnamePath = "+fnamePath);
                 for(int a =0; a < response1.getData().getChildren().size();a++){
                     StoryChild r1 = response1.getData().getChildren().get(a);
-                    String fnamePath = bgmMusNamePath;//fileNamePath.get(fileName.indexOf(r1.getStory_object_media_filename()));
                     try {
-                        Log.d("MARK","createStory fnamePath = "+fnamePath);
                         Log.d("MARK","createStory r1.getStory_object_id() = "+r1.getStory_object_id());
                         Log.d("MARK","createStory r1.getStory_object_media_type() = "+r1.getStory_object_media_type());
 
@@ -517,6 +537,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onFailure(Throwable t) {
                 Log.d("MARK","sendStory onFailure = "+t.getMessage());
+                Toast.makeText(StoryCreatorActivity.this, "Story creation failed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -604,6 +625,11 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             @Override
             public void onFailure(Throwable t) {
                 Log.d("MARK","sendStory2 onFailure = "+t.getMessage());
+                try {
+                    sendStory2(filePath, stry_obj_id, story_id);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
