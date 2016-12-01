@@ -99,13 +99,14 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
     private void startUploadOrStory(Optograph optograph) {
         if(mode == ImagePickerActivity.CREATE_STORY_MODE2){
             Intent resultIntent = new Intent();
+            resultIntent.putExtra("opto", optograph);
             resultIntent.putExtra("opto_id", optograph.getId());
             ((Activity) context).setResult(Activity.RESULT_OK, resultIntent);
             ((Activity) context).finish();
         }else{
             Intent intent = new Intent(context, StoryCreatorActivity.class);
             intent.putExtra("opto", optograph);
-            intent.putExtra("type", "view");
+            intent.putExtra("type", "create");
             context.startActivity(intent);
         }
     }

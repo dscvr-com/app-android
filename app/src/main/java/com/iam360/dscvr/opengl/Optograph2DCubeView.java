@@ -241,9 +241,11 @@ public class Optograph2DCubeView extends GLSurfaceView {
         queueEvent(new Runnable(){
             @Override
             public void run() {
-                if(storyType.equals("view")){
+                if(storyType.equals("create")) {
+                    optograph2DCubeRenderer.setStoryType(0);
+                }else if(storyType.equals("view")){
                     optograph2DCubeRenderer.setStoryType(1);
-                }else{
+                }else if(storyType.equals("edit")){
                     optograph2DCubeRenderer.setStoryType(2);
                 }
             }});

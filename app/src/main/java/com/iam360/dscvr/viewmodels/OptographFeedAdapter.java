@@ -311,6 +311,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 
     private void callDetailsPage(Optograph optograph) {
         Intent intent = new Intent(context, OptographDetailsActivity.class);
+        Timber.d("callDetailsPage optograph = "+optograph);
         intent.putExtra("opto", optograph);
         context.startActivity(intent);
     }

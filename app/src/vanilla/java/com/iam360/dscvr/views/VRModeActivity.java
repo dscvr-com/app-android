@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -302,8 +303,13 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
                     SendStoryChild stryChld = new SendStoryChild();
                     stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
                     stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
-                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
-                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+//                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+//                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_rotation(Arrays.asList("0","0","0"));
+                    stryChld.setStory_object_position(Arrays.asList("0","0","0"));
+                    stryChld.setStory_object_phi(String.valueOf(chldrns.get(a).getStory_object_phi()));
+                    stryChld.setStory_object_theta(String.valueOf(chldrns.get(a).getStory_object_theta()));
+
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
                     cardboardRenderer.planeSetter(stryChld);

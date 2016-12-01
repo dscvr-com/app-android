@@ -43,6 +43,8 @@ public class StoryChild implements Parcelable {
     private String story_object_media_additional_data;
     private List<String> story_object_position;
     private List<String> story_object_rotation;
+    private String story_object_phi;
+    private String story_object_theta;
     private String story_object_created_at;
     private String story_object_updated_at;
     private String story_object_deleted_at;
@@ -58,6 +60,8 @@ public class StoryChild implements Parcelable {
         story_object_media_additional_data = "";
         story_object_position = new ArrayList<String>();
         story_object_rotation = new ArrayList<String>();
+        story_object_phi = "";
+        story_object_theta = "";
         story_object_created_at = "";
         story_object_updated_at = "";
         story_object_deleted_at = "";
@@ -75,6 +79,8 @@ public class StoryChild implements Parcelable {
         this.story_object_media_additional_data = source.readString();
         this.story_object_position = source.readArrayList(String.class.getClassLoader());
         this.story_object_rotation = source.readArrayList(String.class.getClassLoader());
+        this.story_object_phi = source.readString();
+        this.story_object_theta = source.readString();
         this.story_object_created_at = source.readString();
         this.story_object_updated_at = source.readString();
         this.story_object_deleted_at = source.readString();
@@ -186,6 +192,22 @@ public class StoryChild implements Parcelable {
         this.story_object_media_fileurl = story_object_media_fileurl;
     }
 
+    public String getStory_object_phi() {
+        return story_object_phi;
+    }
+
+    public void setStory_object_phi(String story_object_phi) {
+        this.story_object_phi = story_object_phi;
+    }
+
+    public String getStory_object_theta() {
+        return story_object_theta;
+    }
+
+    public void setStory_object_theta(String story_object_theta) {
+        this.story_object_theta = story_object_theta;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -201,6 +223,8 @@ public class StoryChild implements Parcelable {
         dest.writeString(this.story_object_media_additional_data);
         dest.writeList(story_object_position);
         dest.writeList(story_object_rotation);
+        dest.writeString(this.story_object_phi);
+        dest.writeString(this.story_object_theta);
         dest.writeString(this.story_object_created_at);
         dest.writeString(this.story_object_updated_at);
         dest.writeString(this.story_object_deleted_at);
