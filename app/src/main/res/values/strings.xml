@@ -30,6 +30,12 @@
     <!-- Ring Option -->
     <string name="manual_mode">MANUAL MODE</string>
     <string name="motor_mode">MOTOR MODE</string>
+    <string name="bluetooth_searching">Searching...</string>
+    <string name="bluetooth_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_not_supported">Bluetooth not supported.</string>
 
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>

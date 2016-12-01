@@ -46,6 +46,7 @@ public class Cache {
     public static final String GATE_CODE = "GATE_CODE";
     public static final String ONBOARDING_VERSION = "ONBOARDING_VERSION";
     public static final String NOTIF_COUNT = "NOTIF_COUNT";
+    public static final String BLE_DEVICE_ADDRESS = "BLE_DEVICE_ADDRESS";
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
 

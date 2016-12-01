@@ -34,8 +34,12 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.sensors.CoreMotionListener;
+import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
 import com.iam360.dscvr.sensors.DefaultListeners;
+import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
+import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.util.DeviceName;
 import com.iam360.dscvr.util.Maths;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.Vector3;
@@ -72,6 +76,14 @@ public class RecordFragment extends Fragment {
     // Map globalIds of the edge's selection points : LineNode
     private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
 
+    // motor variables
+    private float currentDegree = (float) 0.03;
+    private long lastElapsedTime = System.currentTimeMillis();
+    private float currentTheta = (float) 0.0;
+    private float currentPhi = (float) 0.0;
+    private boolean isRecording = false;
+    CustomRotationMatrixSource customRotationMatrixSource;
+
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
@@ -83,6 +95,12 @@ public class RecordFragment extends Fragment {
 
             // build extrinsics
             float[] coreMotionMatrix = DefaultListeners.getInstance().getRotationMatrix();
+
+            // motor part
+            if(((RecorderActivity) getActivity()).cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
+                coreMotionMatrix = moveViaMotor();
+            }
+
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
             captureWidth = width;
@@ -379,6 +397,54 @@ public class RecordFragment extends Fragment {
         time = newTime;
         return ballPos;
 
+    }
+
+    private float[] moveViaMotor() {
+        float[] coreMotionMatrix;
+        long mediaTime = System.currentTimeMillis();
+        long timeDiff = mediaTime - lastElapsedTime;
+        double elapsedSec = timeDiff / 1000.0;
+
+        int sessionRotateCount = 7200;
+        int sessionBuffCount = 200;
+        int PPS = 300;
+        int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
+
+        double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
+        double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+
+        lastElapsedTime = System.currentTimeMillis();
+        if(isRecording){
+            currentDegree += degreeIncr;
+        }
+
+//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
+//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
+
+        if(((RecorderActivity) getActivity()).dataHasCome){
+            isRecording = true;
+        }
+        Log.d("MARK","degreeIncr = "+degreeIncr);
+
+        currentPhi = (float) Math.toRadians(currentDegree);
+
+        if (currentPhi > ( 2 * Math.PI) -0.001) {
+            isRecording = false;
+            if(currentTheta == 0) {
+                currentTheta = (-DeviceName.getCurrentThetaValue());
+            } else if(currentTheta < 0) {
+                currentTheta = DeviceName.getCurrentThetaValue();
+            } else if(currentTheta > 0) {
+                currentTheta = 0;
+            }
+            currentDegree = 0;
+        }
+        Log.d("MARK","currentDegree = "+currentDegree);
+
+        customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
+        coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+
+        return coreMotionMatrix;
     }
 
 }
