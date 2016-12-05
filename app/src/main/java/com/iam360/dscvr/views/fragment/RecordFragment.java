@@ -98,7 +98,53 @@ public class RecordFragment extends Fragment {
 
             // motor part
             if(((RecorderActivity) getActivity()).cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
-                coreMotionMatrix = moveViaMotor();
+//                coreMotionMatrix = moveViaMotor();
+
+
+//                float[] coreMotionMatrix;
+                long mediaTime = System.currentTimeMillis();
+                long timeDiff = mediaTime - lastElapsedTime;
+                double elapsedSec = timeDiff / 1000.0;
+
+                int sessionRotateCount = 7200;
+                int sessionBuffCount = 200;
+                int PPS = 300;
+                int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
+
+                double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
+                double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+
+                lastElapsedTime = System.currentTimeMillis();
+                if(isRecording){
+                    currentDegree += degreeIncr;
+                }
+
+//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
+//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
+
+                if(((RecorderActivity) getActivity()).dataHasCome){
+                    isRecording = true;
+                }
+                Log.d("MARK","degreeIncr = "+degreeIncr + " datahascome:" + ((RecorderActivity) getActivity()).dataHasCome);
+
+                currentPhi = (float) Math.toRadians(currentDegree);
+
+                if (currentPhi > ( 2 * Math.PI) -0.001) {
+                    isRecording = false;
+                    if(currentTheta == 0) {
+                        currentTheta = (-DeviceName.getCurrentThetaValue());
+                    } else if(currentTheta < 0) {
+                        currentTheta = DeviceName.getCurrentThetaValue();
+                    } else if(currentTheta > 0) {
+                        currentTheta = 0;
+                    }
+                    currentDegree = 0;
+                }
+                Log.d("MARK","currentDegree = "+currentDegree);
+
+                customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
+                coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+
             }
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);

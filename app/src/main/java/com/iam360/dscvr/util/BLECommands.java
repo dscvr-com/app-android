@@ -53,7 +53,8 @@ public class BLECommands {
     }
     public void rotateRight(){
 //        String data = "fe070100001c48012c00"; //012c - 300 speed
-        String data = "fe070100001c48006400"; // 0064 - 100 speed
+//        String data = "fe070100001c48006400"; // 0064 - 100 speed
+        String data = "fe0701000013F7006400"; // changed number of steps
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
         writeData(hexStringToByteArray(data));
