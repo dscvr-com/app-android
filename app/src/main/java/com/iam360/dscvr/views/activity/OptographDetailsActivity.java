@@ -71,8 +71,6 @@ import java.util.List;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class OptographDetailsActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
@@ -103,6 +101,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private String storyType;
     private CountDownTimer countDownTimer;
     int progress;
+
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +135,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
 
-        if (optograph!=null) getUpdatedDetailsOfDSCVRImage(optograph.getId());
+//        if (optograph!=null) getUpdatedDetailsOfDSCVRImage(optograph.getId());
 
         if (getIntent().getExtras().getParcelable("notif")!=null) {
             new GeneralUtils().decrementBadgeCount(cache, this);
@@ -162,6 +162,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
             binding.optograph2dview.setMarker(true);
         }
+        Timber.d("withStory = "+withStory);
 
         Log.d("myTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) isCurrentUser = true;// TODO: if the Person table is created on the local DB remove this line and set the person's data on the optograph(OptographLocalGridAdapter->addItem(Optograph))
@@ -690,7 +691,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 }
                 break;
             case R.id.delete_button:
-                deleteImageItemDialog(optograph);
+                deleteImageItemDialog();
                 break;
             case R.id.export_button:
                 exportImageDialog(optograph);
@@ -700,9 +701,11 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         }
     }
 
-    private void deleteImageItemDialog(Optograph optograph) {
+    private void deleteImageItemDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if(withStory){
+            Timber.d("optograph.getStory() = "+optograph.getStory());
+            Timber.d("optograph.getStory().getId() = "+optograph.getStory().getId());
             builder.setMessage(R.string.story_delete_message)
                     .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
                         deleteStory(optograph.getStory().getId());
@@ -883,23 +886,27 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        stopBGM();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        stopBGM();
         isActivityActive = true;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        stopBGM();
         isActivityActive = false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopBGM();
         isActivityActive = false;
     }
 
@@ -959,7 +966,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 Log.i(getClass().getSimpleName() + ".MediaPlayer", "now playing...");
                 if (fileInputStream != null) {
                     // reset media player here if necessary
-                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    mediaPlayer = new MediaPlayer();
                     try {
                         mediaPlayer.setDataSource(fileInputStream.getFD());
                         mediaPlayer.prepare();
@@ -981,6 +988,12 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 Log.e(getClass().getSimpleName() + ".MediaPlayer", "Can't play audio file");
             }
         }).execute("https://bucket.dscvr.com"+mp3Url);
+    }
+
+    private void stopBGM(){
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+        }
     }
 
     private void showFixTxt(String txt){

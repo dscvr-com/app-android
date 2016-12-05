@@ -11,7 +11,6 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -38,8 +37,6 @@ import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -181,7 +178,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        Timber.v("onSurfaceChanged");
+//        Timber.v("onSurfaceChanged");
         GLES20.glViewport(0, 0, width, height);
         ratio = (float) width / height;
 
@@ -214,7 +211,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mvpMatrix, 0, projection, 0, view, 0);
 
         setSpherePosition(newPosition[0], newPosition[1], newPosition[2]);
-        Log.d("MARK","newPosition == "+Arrays.toString(newPosition));
+//        Log.d("MARK","newPosition == "+Arrays.toString(newPosition));
 
         // Draw shape
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -304,22 +301,22 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         if(deleteStoryMarkerImage != null){
             showHideMarkerRemover("hide");
         }
-        Log.d("MARKSS","overlapChcker = "+overlapChcker);
-        Log.d("MARKSS","storyType = "+storyType);
-        Log.d("MARKSS","storyPageOriginal = "+storyPageOriginal);
+//        Log.d("MARKSS","overlapChcker = "+overlapChcker);
+//        Log.d("MARKSS","storyType = "+storyType);
+//        Log.d("MARKSS","storyPageOriginal = "+storyPageOriginal);
 
         if(markerShown){
             if(overlapChcker && (storyType == 0 || storyType == 2) && deleteStoryMarkerImage != null) {
-                Log.d("MARKS","markerShown if");
+//                Log.d("MARKS","markerShown if");
                 showHideMarkerRemover("show");
                 sphere.draw(mvpMatrix);
             }else if(overlapChcker && bubbleTextLayout != null && planes.get(selectedPin).getMediaType().equals("TXT")) {
-                Log.d("MARKS","markerShown else if");
+//                Log.d("MARKS","markerShown else if");
                 showHideBubbleText("show");
                 sphere.draw(mvpMatrix);
             }else if(overlapChcker && storyType == 1 && !storyPageOriginal){
-                Log.d("MARKS","originalOpto = "+originalOpto.getId());
-                Log.d("MARKS","storyPageOriginal = "+storyPageOriginal);
+//                Log.d("MARKS","originalOpto = "+originalOpto.getId());
+//                Log.d("MARKS","storyPageOriginal = "+storyPageOriginal);
 
                 act.runOnUiThread(new Runnable() {
                     @Override
@@ -339,8 +336,8 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 });
             }else if(overlapChcker && storyType == 1 && planes.get(selectedPin).getMediaType().equals("NAV")){
                 String optoId = planes.get(selectedPin).getMediaAdditionalData();
-                Log.d("MARKS","getMediaAdditionalData = "+planes.get(selectedPin).getMediaAdditionalData());
-                Log.d("MARKS","optoId = "+optoId);
+//                Log.d("MARKS","getMediaAdditionalData = "+planes.get(selectedPin).getMediaAdditionalData());
+//                Log.d("MARKS","optoId = "+optoId);
 
                 if(!cacheStories.contains(optoId)){
                     cacheStories.add(optoId);
@@ -349,7 +346,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                         public void run() {
                             DBHelper mydb = new DBHelper(act);
                             Cursor res = mydb.getData(optoId, DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-                            Log.d("MARKS","res.getCount() = "+res.getCount());
+//                            Log.d("MARKS","res.getCount() = "+res.getCount());
                             if(res.getCount() > 0) {
                                 Optograph opto = mydb.getOptoDataFromLocalDB(res);
                                 animateLoader(true);
@@ -392,7 +389,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                     });
                 }
             }else {
-                Log.d("MARKS","markerShown else");
+//                Log.d("MARKS","markerShown else");
                 sphere.draw(mvpMatrix);
             }
         }
@@ -693,6 +690,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
                 if(loadingScreen.getVisibility() == View.GONE){
                     return;
                 }
+                countDownTimer.cancel();
                 loadingScreen.setVisibility(View.GONE);
             }
         }
@@ -700,13 +698,15 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
 
     private void initLoader(){
 //        Log.d("MARKSSS","initLoader");
-        final int[] progress = {1};
-        int endTime = loaderTimer - 1; // up to finish time
-        countDownTimer = new CountDownTimer(endTime * 1000 /*finishTime**/, 1000 /*interval**/) {
+        final int[] progress = {10};
+        int endTime = (loaderTimer - 1) * 1000; // up to finish time
+        countDownTimer = new CountDownTimer(endTime * 1000 /*finishTime**/, 10 /*interval**/) {
             @Override
             public void onTick(long millisUntilFinished) {
+//                Log.d("initLoader","millisUntilFinished = "+millisUntilFinished);
+//                Log.d("initLoader","progress = "+progress[0]);
                 countDownView.setProgress(progress[0], endTime);
-                progress[0] = progress[0] + 1;
+                progress[0] = progress[0] + 15;
             }
             @Override
             public void onFinish() {

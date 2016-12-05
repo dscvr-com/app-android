@@ -113,14 +113,13 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     }
 
     public void refreshFeed() {
-        Log.d("MARK","refreshFeed person.getId() = "+person.getId());
-        Cursor cursor = mydb.getUserStories(person.getId() , DBHelper.STORY_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
-        Log.d("MARK","refreshFeed cursor = "+cursor);
-        if(cursor != null) {
+        Log.d("MARK", "refreshFeed person.getId() = " + person.getId());
+        Cursor cursor = mydb.getUserStories(person.getId(), DBHelper.STORY_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
+        Log.d("MARK", "refreshFeed cursor = " + cursor);
+        if (cursor != null) {
             cursor.moveToFirst();
-            Log.d("MARK","refreshStoryFeed cursor.getCount() = "+cursor.getCount());
+            Log.d("MARK", "refreshStoryFeed cursor.getCount() = " + cursor.getCount());
             if (cursor.getCount() != 0) {
-                storyFeedAdapter.clearData();
                 new DBHelper2(getContext()).getOptographs(cursor, "story")
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -129,7 +128,9 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                             api2Consumer.getStories(100, "")
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .doOnCompleted(() -> { Timber.d("Count : " + storyFeedAdapter.getItemCount()); })
+                                    .doOnCompleted(() -> {
+                                        Timber.d("Count : " + storyFeedAdapter.getItemCount());
+                                    })
                                     .onErrorReturn(throwable -> {
                                         throwable.printStackTrace();
                                         return null;
@@ -143,16 +144,14 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                             return null;
                         })
                         .subscribe(storyFeedAdapter::addItem);
+            }else{
+                storyFeedAdapter.clearData();
             }
-        }//else{
+        }
             api2Consumer.getStories(100, "")
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> { Timber.d("refreshStoryFeed Count2 : " + storyFeedAdapter.getItemCount()); })
-                    .onErrorReturn(throwable -> {
-                        throwable.printStackTrace();
-                        return null;
-                    })
                     .onErrorReturn(throwable -> {
                         Log.d("myTag", "refreshStoryFeed Error: message: " + throwable.getMessage());
                         if (!networkProblemDialog.isAdded())
@@ -167,7 +166,6 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
         Timber.d("loadMore");
         refreshFeed();
     }
-    public void refresh() {}
 
     @Override
     public void onResume() {

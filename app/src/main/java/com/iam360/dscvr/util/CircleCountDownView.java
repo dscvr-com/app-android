@@ -46,7 +46,8 @@ public class CircleCountDownView extends FrameLayout {
 
     public void setProgress(int startTime, int endTime) {
         progressBarView.setMax(endTime);
-        progressBarView.setSecondaryProgress(endTime);
+        //animation does not work on android version < 5.0
+//        progressBarView.setSecondaryProgress(endTime);
         progressBarView.setProgress(startTime);
         int elapsedTime = endTime - startTime;
         progressTextView.setText(String.valueOf(elapsedTime));

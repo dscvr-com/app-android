@@ -73,6 +73,8 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private int currentIndex = 0;
     private int optoListSize = 0;
 
+    MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Constants.initializeConstants(this);
@@ -164,6 +166,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     @Override
     public void onPause() {
         super.onPause();
+        stopBGM();
         unregisterAccelerationListener();
     }
 
@@ -178,6 +181,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     @Override
     public void onDestroy() {
 //        MixpanelHelper.flush(this);
+        stopBGM();
         super.onDestroy();
     }
 
@@ -278,11 +282,13 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
     private void switchToNormalMode() {
         Timber.v("switching to feed mode");
         inVRMode = false;
+        stopBGM();
         this.finish();
     }
 
     @Override
     public void onBackPressed() {
+        stopBGM();
         // TODO: stop endless switching loop with timer?
         // switchToNormalMode();
     }
@@ -327,7 +333,7 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
                 Log.i(getClass().getSimpleName() + ".MediaPlayer", "now playing...");
                 if (fileInputStream != null) {
                     // reset media player here if necessary
-                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    mediaPlayer = new MediaPlayer();
                     try {
                         mediaPlayer.setDataSource(fileInputStream.getFD());
                         mediaPlayer.prepare();
@@ -350,7 +356,11 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
             }
         }).execute("https://bucket.dscvr.com"+mp3Url);
     }
-
+    private void stopBGM(){
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+        }
+    }
     private void showFixTxt(String txt){
         Timber.d(getClass().getSimpleName(),"Showfixtext");
         storyFixTxt.setText(txt);
