@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.util.Log;
 
 import com.iam360.dscvr.R;
 
@@ -52,12 +51,14 @@ public class BLECommands {
         writeData(hexStringToByteArray(data));
     }
     public void rotateRight(){
-//        String data = "fe070100001c48012c00"; //012c - 300 speed
-//        String data = "fe070100001c48006400"; // 0064 - 100 speed
-        String data = "fe0701000013F7006400"; // changed number of steps
-        data += CalculateCheckSum(hexStringToByteArray(data));
-        data += "ffffffffffff";
-        writeData(hexStringToByteArray(data));
+//                String data = "fe070100001c48012c00"; //012c - 300 speed
+//                String data = "fe070100001c48006400"; // 0064 - 100 speed
+//                String data = "fe0701000013F7006400"; // changed number of steps
+//                String data = "fe0701000013F700c800"; // changed number of steps
+                String data = "fe0701000013ec00c800"; // changed number of steps
+                data += CalculateCheckSum(hexStringToByteArray(data));
+                data += "ffffffffffff";
+                writeData(hexStringToByteArray(data));
     }
 
     public byte[] hexStringToByteArray(final String s) {

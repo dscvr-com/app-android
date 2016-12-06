@@ -20,15 +20,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.util.BLECommands;
@@ -36,6 +33,10 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.views.fragment.RecordFragment;
 import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class RecorderActivity extends AppCompatActivity {
@@ -128,7 +129,14 @@ public class RecorderActivity extends AppCompatActivity {
         if(cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE){
             bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
             Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
-            bleCommands.rotateRight();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dataHasCome = true;
+                    bleCommands.rotateRight();
+                }
+            }, 2000);
             motorRingType = 2; //top ring
         }
     }

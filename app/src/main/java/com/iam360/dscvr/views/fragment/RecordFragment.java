@@ -99,16 +99,19 @@ public class RecordFragment extends Fragment {
             // motor part
             if(((RecorderActivity) getActivity()).cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
 //                coreMotionMatrix = moveViaMotor();
-
-
 //                float[] coreMotionMatrix;
+                if(((RecorderActivity) getActivity()).dataHasCome){
+                    isRecording = true;
+                }else{
+                    isRecording = false;
+                }
                 long mediaTime = System.currentTimeMillis();
                 long timeDiff = mediaTime - lastElapsedTime;
                 double elapsedSec = timeDiff / 1000.0;
 
-                int sessionRotateCount = 7200;
-                int sessionBuffCount = 200;
-                int PPS = 300;
+                int sessionRotateCount = 5100;
+                int sessionBuffCount = 0;
+                int PPS = 200;
                 int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
 
                 double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
@@ -122,9 +125,6 @@ public class RecordFragment extends Fragment {
 //                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
 //                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
 
-                if(((RecorderActivity) getActivity()).dataHasCome){
-                    isRecording = true;
-                }
                 Log.d("MARK","degreeIncr = "+degreeIncr + " datahascome:" + ((RecorderActivity) getActivity()).dataHasCome);
 
                 currentPhi = (float) Math.toRadians(currentDegree);
@@ -141,6 +141,8 @@ public class RecordFragment extends Fragment {
                     currentDegree = 0;
                 }
                 Log.d("MARK","currentDegree = "+currentDegree);
+                Log.d("MARK","currentTheta = "+currentTheta);
+                Log.d("MARK","currentPhi = "+currentPhi);
 
                 customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
                 coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
