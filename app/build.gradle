@@ -69,6 +69,11 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    dexOptions {
+        // Prevent OutOfMemory with MultiDex during the build phase
+        javaMaxHeapSize "4g"
+    }
 }
 
 

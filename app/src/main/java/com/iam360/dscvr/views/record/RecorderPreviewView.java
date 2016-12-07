@@ -95,7 +95,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         this.decoderHandler = new Handler(decoderThread.getLooper()) {
             @Override
             public void handleMessage(Message msg) {
-//                Log.w(TAG, "Message tag: " + msg.what);
+                Log.w(TAG, "Message tag: " + msg.what);
                 if(msg.what == START_DECODER) {
                     createDecoderSurface();
                     // So I have no idea what we wait for. So we just wait.

@@ -639,12 +639,11 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 }
 
                 Intent intent;
-                if(!cache.getString(Cache.GATE_CODE).equals("")) {
+//                if(!cache.getString(Cache.GATE_CODE).equals("")) {
                     intent = new Intent(getActivity(), RingOptionActivity.class);
                     startActivity(intent);
-                } else
-                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
-
+//                } else
+//                    ((MainActivity) getActivity()).setPage(MainActivity.PROFILE_MODE);
 
                 break;
             case R.id.header_logo:

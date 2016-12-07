@@ -31,7 +31,9 @@ public class CancelRecorderJob extends Job {
 
         Timber.v("finishing Recorder...");
         Recorder.getPreviewImage();
-        Recorder.finish();
+        try {
+            Recorder.finish();
+        } catch (Exception e) {}
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
 

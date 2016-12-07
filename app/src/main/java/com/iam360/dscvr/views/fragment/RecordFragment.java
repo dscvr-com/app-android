@@ -368,13 +368,12 @@ public class RecordFragment extends Fragment {
     }
 
     public void cancelRecording() {
+        recordPreview.setPreviewListener(null);
+        recordPreview.stopPreviewFeed();
+        recordPreview.onPause();
 
         MixpanelHelper.trackCameraCancelRecording(getContext());
         GlobalState.isAnyJobRunning = true;
-        recordPreview.setPreviewListener(null);
-        recordPreview.stopPreviewFeed();
-
-        recordPreview.onPause();
 
         // start background thread to cancel recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new CancelRecorderJob());
