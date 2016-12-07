@@ -39,16 +39,18 @@ public class BLECommands {
     }
 
     public void topRing(){
-        String data = "fe0702fffff9f7012c00";
+        String data = "fe0702000005cd012c00";
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
-        writeData(hexStringToByteArray(data));
+//        writeData(hexStringToByteArray(data));
+        writeData(hexStringToByteArray("fe0702000007cf00640041ffffffffffff"));
     }
     public void bottomRing(){
-        String data = "fe070200000c12012c00";
+        String data = "fe0702fffff060012c00";
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
-        writeData(hexStringToByteArray(data));
+//        writeData(hexStringToByteArray(data));
+        writeData(hexStringToByteArray("fe0702fffff062006400bbffffffffffff"));
     }
     public void rotateRight(){
 //                String data = "fe070100001c48012c00"; //012c - 300 speed
@@ -61,7 +63,7 @@ public class BLECommands {
                 writeData(hexStringToByteArray(data));
     }
 
-    public byte[] hexStringToByteArray(final String s) {
+    private byte[] hexStringToByteArray(final String s) {
         mMainActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -80,7 +82,7 @@ public class BLECommands {
         return data;
     }
 
-    public void writeData(byte[] data) {
+    private void writeData(byte[] data) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             return;
         }

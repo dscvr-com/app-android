@@ -2274,9 +2274,9 @@ public class DeviceName {
     public static float getCurrentThetaValue(){
         String devName = getDeviceName();
 
-        float t = (float) 0.523599;
+        float t = (float) 0.523599; //30deg
         if(devName.equals("Nexus 6")){
-            t = (float) 0.785398;
+            t = (float) 0.785398; //45deg
         }
         Log.d("MARK","getCurrentThetaValue t = "+Float.toString(t));
         return t;
