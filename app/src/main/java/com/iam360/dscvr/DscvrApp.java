@@ -2,6 +2,7 @@ package com.iam360.dscvr;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -26,6 +27,12 @@ public class DscvrApp extends Application {
 
     public DscvrApp() {
         instance = this;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override public void onCreate() {

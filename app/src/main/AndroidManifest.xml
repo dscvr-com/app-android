@@ -8,6 +8,8 @@
         android:smallScreens="false"
         android:xlargeScreens="true" />
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -122,6 +124,10 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".views.activity.StoryCreatorActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".views.activity.RecorderActivity"
             android:screenOrientation="portrait" />
 
@@ -191,6 +197,9 @@
             android:exported="true" />
 
         <activity android:name=".views.activity.CreateUsernameActivity"></activity>
+
+        <activity android:name=".views.activity.BLEListActivity"></activity>
+
     </application>
 
 </manifest>

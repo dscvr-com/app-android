@@ -1,6 +1,5 @@
 package com.iam360.dscvr.views.fragment;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,9 +31,9 @@ public class ProfileRootFragment extends Fragment {
             transaction.replace(R.id.root_frame, SignInFragment.newInstance("", ""));
         } else {
             Timber.d("Not logged in.");
-            if (cache.getString(Cache.GATE_CODE).isEmpty()) {
-                transaction.replace(R.id.root_frame, MailingListFragment.newInstance());
-            } else
+//            if (cache.getString(Cache.GATE_CODE).isEmpty()) {
+//                transaction.replace(R.id.root_frame, MailingListFragment.newInstance());
+//            } else
                 transaction.replace(R.id.root_frame, ProfileFragmentExercise.newInstance(cache.getString(Cache.USER_ID)));
         }
 

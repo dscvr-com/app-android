@@ -214,6 +214,15 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
+    public void getOptograph(String optographId, Callback<Optograph> callback) {
+        Call<Optograph> call = service.getOptograph(optographId);
+        call.enqueue(callback);
+    }
+
+    public Observable<Optograph> getOptograph(String optographId) {
+        return service.getOptographObservable(optographId).flatMap(Observable::from);
+    }
+
     /*public void uploadOptoImageJSON(String id, String key, RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
         Call<LogInReturn.EmptyResponse> call = service.uploadOptoImage(id,key,data);
         call.enqueue(callback);

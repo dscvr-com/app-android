@@ -124,6 +124,16 @@
             android:visibility="visible">
         </View>
 
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_margin="14dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/record_progress_bg"
+            android:background="@color/transparentOverlay" />
+
         <View
             android:id="@+id/progress_point"
             android:layout_width="10dp"

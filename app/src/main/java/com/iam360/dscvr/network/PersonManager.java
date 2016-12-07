@@ -1,14 +1,16 @@
 package com.iam360.dscvr.network;
 
+import android.content.Context;
 import android.util.Log;
-
-import java.io.IOException;
 
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.PersonReceivedEvent;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.util.Cache;
+
+import java.io.IOException;
+
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -22,7 +24,7 @@ public class PersonManager {
     private static final String DEBUG_TAG = "Optonaut";
     private static final int LIMIT = 5;
 
-    public static void loadPerson(String id) {
+    public static void loadPerson(String id,Context context) {
         Log.v(DEBUG_TAG, "Load Person " + id);
 
         Cache cache = Cache.open();
@@ -33,6 +35,7 @@ public class PersonManager {
                 @Override
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
                     Person person = response.body();
+                    person.setActivity(context.getClass().getSimpleName());
                     BusProvider.getInstance().post(new PersonReceivedEvent(person));
                 }
 

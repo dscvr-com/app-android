@@ -3,9 +3,9 @@ package com.iam360.dscvr.sensors;
 import android.graphics.Point;
 import android.opengl.Matrix;
 
-import java.util.Arrays;
-
 import com.iam360.dscvr.util.Maths;
+
+import java.util.Arrays;
 
 /**
  * @author Nilan Marktanner
@@ -103,5 +103,9 @@ public class CombinedMotionManager extends RotationMatrixProvider {
 
     public void setMode(int mode) {
         this.MODE = mode;
+    }
+
+    public TouchEventListener getTouchEventListener() {
+        return touchEventListener;
     }
 }

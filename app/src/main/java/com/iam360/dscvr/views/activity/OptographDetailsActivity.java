@@ -12,10 +12,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -34,9 +36,16 @@ import com.iam360.dscvr.BR;
 import com.iam360.dscvr.OptographDetailsBinding;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.LogInReturn;
+import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.model.SendStoryChild;
+import com.iam360.dscvr.model.StoryChild;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
+import com.iam360.dscvr.sensors.GestureDetectors;
+import com.iam360.dscvr.util.AudioStreamWorkerTask;
+import com.iam360.dscvr.util.BubbleDrawable;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
@@ -46,7 +55,6 @@ import com.iam360.dscvr.util.ImageUrlBuilder;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
-import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.views.VRModeActivity;
 
 import org.joda.time.DateTime;
@@ -54,7 +62,11 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -83,6 +95,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     private boolean isMultipleOpto = false;
     private int viewsWithSoftKey;
 
+    private boolean isActivityActive = false;
+
+    private boolean withStory = false;
+    private String storyType;
+    private CountDownTimer countDownTimer;
+    int progress;
+
+    MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,20 +111,31 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         MixpanelHelper.trackViewOptographDetails(this);
 
         optographList = this.getIntent().getParcelableArrayListExtra("opto_list");
-
+        if(getIntent().getExtras().get("story") != null){
+            withStory = (boolean) getIntent().getExtras().get("story");
+            storyType = getIntent().getExtras().getString("type");
+        }
+        Timber.d("optographList = "+optographList);
         if(optographList != null) {
             isMultipleOpto = true;
             optograph = optographList.get(0);
         } else {
             isMultipleOpto = false;
             optograph = getIntent().getExtras().getParcelable("opto");
-            optographList = new ArrayList<>();
+            optographList = new ArrayList<Optograph>();
+        }
+        Timber.d("optograph = "+optograph);
+        if(optograph.getStory() != null && optograph.getStory().getId() != null && !optograph.getStory().getId().equals("")){
+            withStory = true;
+            storyType = "view";
         }
 
         cache = Cache.open();
         mydb = new DBHelper(this);
         String token = cache.getString(Cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("") ? null : token);
+
+//        if (optograph!=null) getUpdatedDetailsOfDSCVRImage(optograph.getId());
 
         if (getIntent().getExtras().getParcelable("notif")!=null) {
             new GeneralUtils().decrementBadgeCount(cache, this);
@@ -113,8 +145,26 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         binding.setVariable(BR.optograph, optograph);
         binding.setVariable(BR.person, optograph.getPerson());
         binding.setVariable(BR.location, optograph.getLocation());
+        if(withStory){
+            optograph.setWithStory(true);
+            binding.setVariable(BR.story, optograph.getStory());
 
-        Log.d("mytTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
+            BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
+            myBubble.setCornerRadius(20);
+            myBubble.setPadding(25, 25, 25, 25);
+            binding.bubbleTextLayout.setBackgroundDrawable(myBubble);
+
+            binding.optograph2dview.setBubbleTextLayout(binding.bubbleTextLayout);
+            binding.optograph2dview.setBubbleText(binding.bubbleText);
+
+            binding.optograph2dview.setMyAct(this);
+            binding.optograph2dview.setStoryType(storyType);
+
+            binding.optograph2dview.setMarker(true);
+        }
+        Timber.d("withStory = "+withStory);
+
+        Log.d("myTag", " delete: opto person's id: "+optograph.getPerson().getId()+" currentUserId: "+cache.getString(Cache.USER_ID)+" isLocal? "+optograph.is_local());
         if (optograph.is_local()) isCurrentUser = true;// TODO: if the Person table is created on the local DB remove this line and set the person's data on the optograph(OptographLocalGridAdapter->addItem(Optograph))
         if(optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) isCurrentUser = true;
         if(isCurrentUser) {
@@ -192,7 +242,39 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         adjustIfHasSoftKeys();
         getWindow().getDecorView().setSystemUiVisibility(viewsWithSoftKey);
 
+        initStoryChildrens();
     }
+
+
+    // get latest details of the current optograph from server
+    private void getUpdatedDetailsOfDSCVRImage(String dscvrImageId) {
+        apiConsumer.getOptograph(dscvrImageId, new Callback<Optograph>() {
+            @Override
+            public void onResponse(Response<Optograph> response, Retrofit retrofit) {
+                if (response.isSuccess() && response.body()!=null) {
+                    updateOptoDataOnDB(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("myTag"," Error: getOptoDetails message: "+t.getMessage());
+            }
+        });
+    }
+
+    // update the details of optograph on DB and on UI
+    private void updateOptoDataOnDB(Optograph optograph) {
+        mydb.updateOptograph(optograph);
+        // check if the Activity is still running if yes update the UI
+        if (isActivityActive) {
+            this.optograph = optograph;
+            setHeart(optograph.is_starred(), optograph.getStars_count());
+            followPerson(optograph.getPerson().is_followed());
+            setDeleteButton(optograph);
+        }
+    }
+
 
     private void hideShowAni() {
         if(arrowClicked){
@@ -262,6 +344,15 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 //            intent.putExtra("optograph", optograph);
 //            startActivity(intent);
         }
+    }
+
+    // set the visibility of delete button
+    // if the optograph is already deleted the delete
+    // button will set to invisible and vise versa
+    private void setDeleteButton(Optograph optograph) {
+        if (optograph.getDeleted_at()==null || optograph.getDeleted_at().equals(""))
+            binding.deleteButton.setVisibility(View.VISIBLE);
+        else binding.deleteButton.setVisibility(View.INVISIBLE);
     }
 
     private void setHeart(boolean liked, int count) {
@@ -410,6 +501,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onPause() {
         super.onPause();
+        isActivityActive = false;
         unregisterAccelerationListener();
     }
 
@@ -418,8 +510,8 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
         super.onResume();
         registerAccelerationListener();
         inVRMode = false;
+        isActivityActive = true;
     }
-
 
     private void gyroValidation() {
         boolean gyro = cache.getBoolean(Cache.GYRO_ENABLE,false);
@@ -599,7 +691,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 }
                 break;
             case R.id.delete_button:
-                deleteImageItemDialog(optograph);
+                deleteImageItemDialog();
                 break;
             case R.id.export_button:
                 exportImageDialog(optograph);
@@ -607,18 +699,57 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             default:
                 break;
         }
-
     }
 
-    private void deleteImageItemDialog(Optograph optograph) {
+    private void deleteImageItemDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.profile_delete_message)
-                .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
-                    deleteOptograph(optograph);
-                }).setNegativeButton(getResources().getString(R.string.cancel_label), (dialog, which) -> {
-            dialog.dismiss();
-        });
+        if(withStory){
+            Timber.d("optograph.getStory() = "+optograph.getStory());
+            Timber.d("optograph.getStory().getId() = "+optograph.getStory().getId());
+            builder.setMessage(R.string.story_delete_message)
+                    .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
+                        deleteStory(optograph.getStory().getId());
+                    }).setNegativeButton(getResources().getString(R.string.cancel_label), (dialog, which) -> {
+                dialog.dismiss();
+            });
+        }else{
+            builder.setMessage(R.string.profile_delete_message)
+                    .setPositiveButton(getResources().getString(R.string.dialog_fire), (dialog, which) -> {
+                        deleteOptograph(optograph);
+                    }).setNegativeButton(getResources().getString(R.string.cancel_label), (dialog, which) -> {
+                dialog.dismiss();
+            });
+        }
+
         builder.create().show();
+    }
+
+    private void deleteStory(String storyId){
+        binding.overlayDelete.setVisibility(View.VISIBLE);
+        String token = cache.getString(Cache.USER_TOKEN);
+        Api2Consumer api2Consumer = new Api2Consumer(token.equals("") ? null : token, "story");
+        api2Consumer.deleteStory(storyId, new Callback<MapiResponseObject>() {
+            @Override
+            public void onResponse(Response<MapiResponseObject> response, Retrofit retrofit) {
+                binding.overlayDelete.setVisibility(View.GONE);
+                if (response.isSuccess()) {
+                    mydb.updateColumnStory(storyId, DBHelper.STORY_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+                    Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("id", optograph.getId());
+                    intent.putExtra("local", false);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                binding.overlayDelete.setVisibility(View.GONE);
+                Log.d("myTag", "ERROR: delete story : " + t.getMessage());
+                Toast.makeText(OptographDetailsActivity.this, "Delete failed.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void deleteOptograph(Optograph optograph) {
@@ -645,6 +776,7 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
                 if (response.isSuccess()) {
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+                    optograph.setDeleted_at(RFC3339DateFormatter.toRFC3339String(DateTime.now()));
                     Toast.makeText(OptographDetailsActivity.this, "Delete successful.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("id", optograph.getId());
@@ -663,7 +795,6 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
             }
         });
     }
-
 
     private void deleteOptographFromPhone(String id) {
         Log.d("myTag", " delete: Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + id);
@@ -755,5 +886,118 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        stopBGM();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        stopBGM();
+        isActivityActive = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopBGM();
+        isActivityActive = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopBGM();
+        isActivityActive = false;
+    }
+
+
+    public void initStoryChildrens() {
+        if(optograph != null && optograph.getStory() != null && optograph.getStory().getId()!= null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
+            Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
+            List<StoryChild> chldrns = optograph.getStory().getChildren();
+            for(int a=0; a < chldrns.size(); a++){
+                Log.d("MARK","initStoryChildrens getStory_object_media_type = "+chldrns.get(a).getStory_object_media_type());
+                Log.d("MARK","initStoryChildrens getStory_object_media_face = "+chldrns.get(a).getStory_object_media_face());
+                Log.d("MARK","initStoryChildrens getStory_object_media_description = "+chldrns.get(a).getStory_object_media_description());
+                Log.d("MARK","initStoryChildrens getStory_object_media_additional_data = "+chldrns.get(a).getStory_object_media_additional_data());
+                Log.d("MARK","initStoryChildrens getStory_object_position = "+chldrns.get(a).getStory_object_position());
+                Log.d("MARK","initStoryChildrens getStory_object_rotation = "+chldrns.get(a).getStory_object_rotation());
+                Log.d("MARK","initStoryChildrens getStory_object_phi = "+chldrns.get(a).getStory_object_phi());
+                Log.d("MARK","initStoryChildrens getStory_object_theta = "+chldrns.get(a).getStory_object_theta());
+                Log.d("MARK","initStoryChildrens getStory_object_media_filename = "+chldrns.get(a).getStory_object_media_filename());
+                Log.d("MARK","initStoryChildrens getStory_object_media_fileurl = "+chldrns.get(a).getStory_object_media_fileurl());
+
+                Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_type() = "+chldrns.get(a).getStory_object_media_type());
+
+
+                if(chldrns.get(a).getStory_object_media_type().equals("MUS")){
+                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_media_fileurl() = "+chldrns.get(a).getStory_object_media_fileurl());
+                    playBGM(chldrns.get(a).getStory_object_media_fileurl(), chldrns.get(a).getStory_object_media_filename());
+                }else if(chldrns.get(a).getStory_object_media_type().equals("FXTXT")){
+                    showFixTxt(chldrns.get(a).getStory_object_media_additional_data());
+                }else{
+                    SendStoryChild stryChld = new SendStoryChild();
+                    stryChld.setStory_object_media_face(chldrns.get(a).getStory_object_media_face());
+                    stryChld.setStory_object_media_type(chldrns.get(a).getStory_object_media_type());
+//                    stryChld.setStory_object_rotation(chldrns.get(a).getStory_object_rotation());
+//                    stryChld.setStory_object_position(chldrns.get(a).getStory_object_position());
+                    stryChld.setStory_object_rotation(Arrays.asList("0","0","0"));
+                    stryChld.setStory_object_position(Arrays.asList("0","0","0"));
+
+                    stryChld.setStory_object_phi(String.valueOf(chldrns.get(a).getStory_object_phi()));
+                    stryChld.setStory_object_theta(String.valueOf(chldrns.get(a).getStory_object_theta()));
+
+                    stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
+
+//                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
+//                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_rotation() = "+chldrns.get(a).getStory_object_rotation());
+                    binding.optograph2dview.planeSetter(stryChld);
+                }
+            }
+            binding.optograph2dview.setLoadingScreen(binding.loadingScreen, binding.circleCountDownView);
+        }
+    }
+
+    private void playBGM(String mp3Url, String fName){
+        new AudioStreamWorkerTask(this, new AudioStreamWorkerTask.OnCacheCallback() {
+            @Override
+            public void onSuccess(FileInputStream fileInputStream) {
+                Log.i(getClass().getSimpleName() + ".MediaPlayer", "now playing...");
+                if (fileInputStream != null) {
+                    // reset media player here if necessary
+                    mediaPlayer = new MediaPlayer();
+                    try {
+                        mediaPlayer.setDataSource(fileInputStream.getFD());
+                        mediaPlayer.prepare();
+                        mediaPlayer.setVolume(1f, 1f);
+                        mediaPlayer.setLooping(false);
+                        mediaPlayer.start();
+                        mediaPlayer.setLooping(true);
+                        fileInputStream.close();
+                    } catch (IOException | IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e(getClass().getSimpleName() + ".MediaPlayer", "fileDescriptor is not valid");
+                }
+            }
+
+            @Override
+            public void onError() {
+                Log.e(getClass().getSimpleName() + ".MediaPlayer", "Can't play audio file");
+            }
+        }).execute("https://bucket.dscvr.com"+mp3Url);
+    }
+
+    private void stopBGM(){
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+        }
+    }
+
+    private void showFixTxt(String txt){
+        binding.storyFixTxt.setText(txt);
+        binding.storyFixTxt.setVisibility(View.VISIBLE);
     }
 }

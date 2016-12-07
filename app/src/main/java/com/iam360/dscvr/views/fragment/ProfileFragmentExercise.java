@@ -30,10 +30,12 @@ import com.iam360.dscvr.bus.PersonReceivedEvent;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.network.ApiConsumer;
 import com.iam360.dscvr.network.PersonManager;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.DBHelper2;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
 import com.iam360.dscvr.views.activity.MainActivity;
@@ -49,6 +51,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+
 /**
  * Created by Mariel on 6/24/2016.
  */
@@ -62,12 +65,15 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     private boolean isCurrentUser = false;
     private boolean isEditMode = false;
     private ApiConsumer apiConsumer;
+    private Api2Consumer api2Consumer;
     private DBHelper mydb;
 
     private int PICK_IMAGE_REQUEST = 1;
 
     private OptographLocalGridAdapter optographLocalGridAdapter;
     private NetworkProblemDialog networkProblemDialog;
+
+    private boolean isFragmentActive = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         cache = Cache.open();
         String token = cache.getString(cache.USER_TOKEN);
         apiConsumer = new ApiConsumer(token.equals("")?null:token);
+        api2Consumer = new Api2Consumer(null,"");
         mydb = new DBHelper(getContext());
 
         optographLocalGridAdapter = new OptographLocalGridAdapter(getActivity(),OptographLocalGridAdapter.ON_IMAGE);
@@ -144,7 +151,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 super.onScrolled(recyclerView, dx, dy);
                 if (optographLocalGridAdapter.isOnEditMode()) enableScroll(false);
                 View view = binding.optographFeed.getChildAt(1);
-                if (view==null)return;
+                if (view==null) {
+                    binding.toolbarLayout.setVisibility(View.VISIBLE);
+//                    binding.toolbar.setVisibility(View.VISIBLE);
+                    binding.toolbarReplace.setVisibility(View.GONE);
+                    return;
+                }
                 yPos += dy;
                 float top = view.getY();
 //                Log.d("myTag"," header: height01: "+height01+" top: "+top+" top+height="+(top+view.getHeight()));
@@ -206,7 +218,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     }
 
     public void setAvatar(Bitmap bitmap) {
-        optographLocalGridAdapter.avatarUpload(bitmap);
+        optographLocalGridAdapter.setAvatar(bitmap);
     }
 
     public void refreshAfterDelete(String id,boolean isLocal) {
@@ -287,6 +299,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 optographLocalGridAdapter.setEditMode(isEditMode);
                 binding.cancelBtn.setVisibility(View.VISIBLE);
                 binding.homeBtn.setVisibility(View.GONE);
+                optographLocalGridAdapter.cancelUpdate();
                 updateHomeButton();
                 break;
             case R.id.overflow_btn:
@@ -349,15 +362,23 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         Bundle args = getArguments();
         if (args.containsKey("person")) {
             person = args.getParcelable("person");
+//            PersonManager.loadPerson(person.getId());// to get the updated data of person
         } else if (args.containsKey("id")) {
+//            myGetData(args.getString("id"));
+//            PersonManager.loadPerson(args.getString("id"));// to get the updated data of person
             if (!myGetData(args.getString("id"))) {
-                PersonManager.loadPerson(args.getString("id"));
+                PersonManager.loadPerson(args.getString("id"),getContext());
             }
         } else {
             throw new RuntimeException();
         }
     }
 
+    /*
+    * check if user is existing on database
+    * @return false if user is not saved on database or
+     * Person if existing on DB
+    */
     private boolean myGetData(String id) {
         Person person1 = new Person();
         Cursor res = mydb.getData(id,DBHelper.PERSON_TABLE_NAME,"id");
@@ -393,6 +414,10 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
             mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
                     person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
                     person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+        } else {
+            mydb.updatePerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+                    person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+                    person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
         }
     }
 
@@ -418,10 +443,17 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
     public void receivePerson(PersonReceivedEvent personReceivedEvent) {
         person = personReceivedEvent.getPerson();
 
-        if (person != null) {
+        Log.d("myTag", " follower: receivePerson name: " + person.getDisplay_name() + " isFollowed? " + person.is_followed());
+        if (person != null && person.getActivity().equals(getContext().getClass().getSimpleName())) {
             insertPerson(person);
-            binding.executePendingBindings();
-            initializeProfileFeed();
+            Log.d("myTag", " white: person null? " + (person == null));
+            if (person != null) {
+                Log.d("myTag", " white: avatarId: " + person.getAvatar_asset_id());
+//            insertPerson(person);
+                new DBHelper2(getContext()).saveToSQLitePer(person);
+                binding.executePendingBindings();
+                initializeProfileFeed();
+            }
         }
     }
 
@@ -431,7 +463,16 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         BusProvider.getInstance().register(this);
 
         if(person == null) setPerson();
-        else refresh();
+        else {
+            if (!person.getId().equals(cache.getString(Cache.USER_ID)) && getContext() instanceof ProfileActivity)PersonManager.loadPerson(person.getId(),getContext());// to get the updated data of person
+            refresh();
+        }
+        Log.d("myTag"," follower: onResume called. onFollowerTab? "+optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER));
+        // refresh list of followers if the Follower Tab is active
+        if (person!=null && optographLocalGridAdapter.isTab(optographLocalGridAdapter.ON_FOLLOWER)) {
+            optographLocalGridAdapter.updateFollowers();
+            optographLocalGridAdapter.notifyItemRangeChanged(2,optographLocalGridAdapter.getItemCount() - 2);
+        }
 
         if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_NOTIFICATION)) {
             optographLocalGridAdapter.notifyItemRangeChanged(2, optographLocalGridAdapter.getItemCount() - 2);
@@ -580,12 +621,12 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe14");
-                            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+                            api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnCompleted(() -> updateMessage(null))
                                     .onErrorReturn(throwable -> {
-                                        updateMessage(getResources().getString(R.string.profile_net_prob));
+                                        if(getContext()!=null)updateMessage(getResources().getString(R.string.profile_net_prob));
                                         return null;
                                     })
                                     .subscribe(optographLocalGridAdapter::addItem);
@@ -603,7 +644,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        else {
             Log.d("Caching", "initializeFeed cursor null");
         Log.d("myTag"," Subscribe15");
-            apiConsumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
+        api2Consumer.getOptographsFromPerson(person.getId(), ApiConsumer.PROFILE_GRID_LIMIT)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> updateMessage(null))
@@ -638,7 +679,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe17");
-                            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+                            api2Consumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .onErrorReturn(throwable -> {
@@ -658,7 +699,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
         }
 //        else {
         Log.d("myTag"," Subscribe18");
-            apiConsumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
+        api2Consumer.getOptographsFromPerson(person.getId(), optographLocalGridAdapter.getOldest().getCreated_at())
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorReturn(throwable -> {
@@ -687,7 +728,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnCompleted(() -> {
                             Log.d("myTag"," Subscribe20");
-                            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+                            api2Consumer.getOptographsFromPerson(person.getId(), 10)
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .doOnCompleted(() -> updateMessage(null))
@@ -712,7 +753,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 //        else {
             Log.d("Caching", "cursor null or cursor item is zero");
         Log.d("myTag"," Subscribe21");
-            apiConsumer.getOptographsFromPerson(person.getId(), 10)
+        api2Consumer.getOptographsFromPerson(person.getId(), 10)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnCompleted(() -> updateMessage(null))
@@ -738,7 +779,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
                 " item==0? "+(optographLocalGridAdapter.getItemCount()-2==0));
         Log.d("myTag"," setMessage: count: "+optographLocalGridAdapter.getItemCount());
         if (optographLocalGridAdapter.getItemCount()-2==0  && optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
-            optographLocalGridAdapter.setMessage((message==null)?getResources().getString(R.string.profile_no_image):message);
+            optographLocalGridAdapter.setMessage((message==null && getActivity()!=null)?getResources().getString(R.string.profile_no_image):message);
             updateHomeButton();
         } else if (optographLocalGridAdapter.isTab(OptographLocalGridAdapter.ON_IMAGE)) {
             optographLocalGridAdapter.setMessage("");
@@ -842,7 +883,7 @@ public class ProfileFragmentExercise extends Fragment implements View.OnClickLis
 
         Log.d("Caching", "cur2Json");
 //        JSONArray resultSet = new JSONArray();
-        List<Optograph> optographs = new LinkedList<>();
+        List<Optograph> optographs = new LinkedList<Optograph>();
         cursor.moveToFirst();
         String locId = "";
 

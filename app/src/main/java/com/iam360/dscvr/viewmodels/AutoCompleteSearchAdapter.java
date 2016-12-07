@@ -9,13 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.iam360.dscvr.BR;
-import com.iam360.dscvr.ItemAutoCompleteSearchBinding;
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.BR;
 import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.views.activity.ProfileActivity;
 import com.iam360.dscvr.views.activity.SearchActivity;
+import com.iam360.dscvr.ItemAutoCompleteSearchBinding;
 
 import java.util.ArrayList;
 import java.util.List;

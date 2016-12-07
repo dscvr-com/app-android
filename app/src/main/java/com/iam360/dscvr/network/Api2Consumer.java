@@ -3,11 +3,20 @@ package com.iam360.dscvr.network;
 import android.util.Log;
 
 import com.iam360.dscvr.model.Gateway;
+import com.iam360.dscvr.model.LogInReturn;
+import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
+import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.model.SendStory;
+import com.iam360.dscvr.model.SendStoryResponse;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.RFC3339DateFormatter;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 
@@ -16,6 +25,7 @@ import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import rx.Observable;
 import timber.log.Timber;
 
 /**
@@ -23,8 +33,9 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "https://mapi.dscvr.com/api/";
-    private static final String BASE_URL2 = "https://mapi.dscvr.com/";
+    private static final String BASE_URL = "https://noel.dscvr.com/api"; //"https://mapi.dscvr.com/api/"; //
+    private static final String BASE_URL2 = "https://noel.dscvr.com/"; //"https://mapi.dscvr.com/"; //
+    //http://noel.dscvr.com/
 
     private static final int DEFAULT_LIMIT = 5;
     public static final int PROFILE_GRID_LIMIT = 12;
@@ -40,6 +51,11 @@ public class Api2Consumer {
     private boolean flag = false;
     private boolean finish = false;
 
+    /**
+     *
+     * @param token
+     * @param type triggerNotif or any string for @BASE_URL2, empty string or null for @BASE_URL
+     */
     public Api2Consumer(String token, String type) {
 
         Timber.d("Api2Consumer");
@@ -80,7 +96,7 @@ public class Api2Consumer {
         });
 
         String bs_URL = BASE_URL;
-        if(type.equals("triggerNotif")){
+        if(type != null && (type.equals("triggerNotif") || !type.equals(""))){
             bs_URL = BASE_URL2;
         }
 
@@ -114,4 +130,61 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
+    public Observable<Optograph> getStories(int limit, String older_than) {
+        return service.getStories(limit, older_than).flatMap(Observable::from);
+    }
+
+    public void uploadBgm(RequestBody data, Callback<LogInReturn.EmptyResponse> callback) {
+        Call<LogInReturn.EmptyResponse> call = service.uploadBgm(data);
+        call.enqueue(callback);
+    }
+
+    public void deleteStory(String storyId, Callback<MapiResponseObject> callback) {
+        Call<MapiResponseObject> call = service.deleteStory(storyId);
+        call.enqueue(callback);
+    }
+
+    public void sendStories(SendStory sendStory, Callback<SendStoryResponse> callback) {
+        Call<SendStoryResponse> call = service.sendStories(sendStory);
+        call.enqueue(callback);
+    }
+
+    public void updateStories(String storyId, SendStory sendStory, Callback<SendStoryResponse> callback) {
+        Call<SendStoryResponse> call = service.updateStories(storyId, sendStory);
+        call.enqueue(callback);
+    }
+
+    public Observable<Optograph> getStoryFeeds(int limit, String older_than) {
+        Timber.i("get optographs request: %s older than %s", limit, older_than);
+        return service.getStoryFeeds(limit, older_than).flatMap(Observable::from).onErrorResumeNext(Observable.error(new Throwable()));
+    }
+
+    public Observable<Optograph> getStoryFeeds(int limit) {
+        return getStoryFeeds(limit, getNow());
+    }
+
+    public Observable<Optograph> getStoryFeeds() {
+        return getStoryFeeds(DEFAULT_LIMIT, getNow());
+    }
+
+    private String getNow() {
+        return RFC3339DateFormatter.toRFC3339String(DateTime.now());
+    }
+
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit, String older_than) {
+        return service.getStoriesProfile(id, limit, older_than).flatMap(Observable::from);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, String older_than) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, older_than);
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id, int limit) {
+        return getOptographsFromPerson(id, limit, getNow());
+    }
+
+    public Observable<Optograph> getOptographsFromPerson(String id) {
+        return getOptographsFromPerson(id, DEFAULT_LIMIT, getNow());
+    }
 }

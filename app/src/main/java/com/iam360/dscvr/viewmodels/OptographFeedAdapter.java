@@ -41,6 +41,7 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.DBHelper2;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.activity.OptoImagePreviewActivity;
@@ -310,6 +311,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
 
     private void callDetailsPage(Optograph optograph) {
         Intent intent = new Intent(context, OptographDetailsActivity.class);
+        Timber.d("callDetailsPage optograph = "+optograph);
         intent.putExtra("opto", optograph);
         context.startActivity(intent);
     }
@@ -835,7 +837,7 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         }
 
         if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
-            saveToSQLite(optograph);
+            new DBHelper2(context).saveToSQLite(optograph);
         }
         if (optograph.is_local()) optograph = checkToDB(optograph);
         if (optograph==null) {
@@ -886,17 +888,17 @@ public class OptographFeedAdapter extends ToroAdapter<OptographFeedAdapter.Optog
         return this.optographs;
     }
 
-    public void saveToSQLite(Optograph opto) {
-        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-        res.moveToFirst();
-        if (res.getCount()!=0) return;
-        String loc = opto.getLocation()==null?"":opto.getLocation().getId();
-        mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),opto.getLocation()==null?"":opto.getLocation().getId(),
-                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
-                opto.is_private(), opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
-                opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
-                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
-    }
+//    public void saveToSQLite(Optograph opto) {
+//        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+//        res.moveToFirst();
+//        if (res.getCount()!=0) return;
+//        String loc = opto.getLocation()==null?"":opto.getLocation().getId();
+//        mydb.insertOptograph(opto.getId(),opto.getText(),opto.getPerson().getId(),loc,
+//                opto.getCreated_at(),opto.getDeleted_at()==null?"":opto.getDeleted_at(),opto.is_starred(),opto.getStars_count(),opto.is_published(),
+//                opto.is_private(), opto.getStitcher_version(),true,opto.is_on_server(),"",opto.isShould_be_published(), opto.is_local(),
+//                opto.is_place_holder_uploaded(),opto.isPostFacebook(),opto.isPostTwitter(),opto.isPostInstagram(),
+//                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(), opto.getStory().getId());
+//    }
 
     public Optograph checkToDB(Optograph optograph) {
         Cursor res = mydb.getData(optograph.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);

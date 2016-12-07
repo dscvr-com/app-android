@@ -3,6 +3,8 @@ package com.iam360.dscvr.util;
 import android.opengl.GLES20;
 import android.util.Base64;
 
+import com.iam360.dscvr.model.Optograph;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -10,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.iam360.dscvr.model.Optograph;
 import timber.log.Timber;
 
 /**
@@ -56,8 +57,8 @@ public class ImageUrlBuilder {
         if(optograph == null) return null;
         String id = optograph.getId();
         if (!optograph.is_local()) {
-//            http://images.iam360.io/E89S0VsHDDD5cVmeEtLrawAyhfM=/0x0/filters:subface(0,0,1,1024)/resources.staging-iam360.io.s3.amazonaws.com/textures/05353858-493d-46b4-be79-ed759f427e82/l0.jpg
-//            https://images.iam360.io/C501kCsTsnd-WoV_nqT_zApYiYM=/100x100/resources.staging-iam360.io.s3.amazonaws.com/textures/93ab6abc-2e6b-4abb-838e-5efb707699bb/l0.jpg
+//          http://images.iam360.io/E89S0VsHDDD5cVmeEtLrawAyhfM=/0x0/filters:subface(0,0,1,1024)/resources.staging-iam360.io.s3.amazonaws.com/textures/05353858-493d-46b4-be79-ed759f427e82/l0.jpg
+//          https://images.iam360.io/C501kCsTsnd-WoV_nqT_zApYiYM=/100x100/resources.staging-iam360.io.s3.amazonaws.com/textures/93ab6abc-2e6b-4abb-838e-5efb707699bb/l0.jpg
             String sideLetter = isLeftId ? "l" : "r";
             String urlPartToSign = String.format(("100x100/%s/textures/%s/%s%s.jpg"), S3_URL, id, sideLetter, face);
             String signedUrl = getSignedUrl(urlPartToSign);
@@ -78,8 +79,7 @@ public class ImageUrlBuilder {
 //            String signedUrl = getSignedUrl(urlPartToSign);
 //             return signedUrl;
             // this two line for direct call
-            String urlPartToSign = String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
-            return urlPartToSign;
+            return String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
         } else {
             String side = isLeftId ? "left/" : "right/";
             String path = CameraUtils.PERSISTENT_STORAGE_PATH + id + "/" + side + face + ".jpg";

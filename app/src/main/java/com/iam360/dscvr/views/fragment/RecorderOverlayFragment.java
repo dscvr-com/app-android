@@ -2,6 +2,7 @@ package com.iam360.dscvr.views.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +12,13 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.views.activity.RecorderActivity;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class RecorderOverlayFragment extends Fragment {
@@ -42,6 +43,7 @@ public class RecorderOverlayFragment extends Fragment {
     @Bind(R.id.angle) View angle;
     @Bind(R.id.progress_point) View progressPoint;
     @Bind(R.id.arc) View arc;
+    @Bind(R.id.progress) ProgressBar progressLine;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,7 +101,6 @@ public class RecorderOverlayFragment extends Fragment {
     }
 
     public void setAngleRotation(float rotation) {
-
         line.setRotation((float)Math.toDegrees(rotation));
     }
 
@@ -127,8 +128,15 @@ public class RecorderOverlayFragment extends Fragment {
         }
     }
 
+    // sets Max value for progress bar
+    private void setProgressMaxValue() {
+        progressLine.setMax((Math.round((screenWidth - 100))));
+    }
+
     public void setProgress(float progress) {
-        progressPoint.setX((screenWidth - 100) * progress + 50);
+        setProgressMaxValue();
+        progressPoint.setX((screenWidth - 100) * progress + 15);
+        progressLine.setProgress((Math.round((screenWidth - 100) * progress)));
     }
 
     public boolean isPreviewMode() {

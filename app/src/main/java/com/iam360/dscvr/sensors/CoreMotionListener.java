@@ -7,9 +7,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.iam360.dscvr.util.Maths;
 
+import java.util.Arrays;
 import java.util.List;
 
 import timber.log.Timber;
@@ -75,7 +77,7 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             float[] newValues = new float[event.values.length];
             newValues[0] = event.values[0];  // x
             newValues[1] = -event.values[1]; // -y
-            newValues[2] = event.values[2]; // z
+            newValues[2] = event.values[2];  // z
             newValues[3] = event.values[3];  // w
             newValues[4] = event.values[4];  // should not be needed (refer to source code of getRotationMatrixFromVector)
 

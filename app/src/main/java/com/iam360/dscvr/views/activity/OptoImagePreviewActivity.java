@@ -17,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -29,10 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.CallbackManager;
-import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
@@ -40,11 +37,11 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.google.gson.JsonObject;
+import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
-import com.iam360.dscvr.model.FBSignInData;
 import com.iam360.dscvr.model.GeocodeDetails;
 import com.iam360.dscvr.model.GeocodeReverse;
 import com.iam360.dscvr.model.LocationToUpdate;
@@ -61,6 +58,7 @@ import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.util.NotificationSender;
+import com.iam360.dscvr.views.UploaderJob;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.MediaType;
@@ -112,6 +110,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     @Bind(R.id.navigation_buttons) RelativeLayout navigationButtons;
     @Bind(R.id.location_layout) LinearLayout locationLayout;
     @Bind(R.id.add_location_text) TextView addLocText;
+    @Bind(R.id.add_location_icon) ImageButton addLocIcon;
     @Bind(R.id.location_progress) ProgressBar locationProgress;
 
     @Bind(R.id.fb_share) ImageButton fbShareButton;
@@ -478,9 +477,16 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
     }
 
     private boolean createDefaultOptograph(Optograph opto) {
-        return mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
-                opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
-                false, false, "", opto.getOptograph_type());
+        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+        res.moveToFirst();
+        boolean ret = false;
+        if (res.getCount() == 0) {
+            ret = true;
+            mydb.insertOptograph(opto.getId(), "", cache.getString(Cache.USER_ID), "", opto.getCreated_atRFC3339(),
+                    opto.getDeleted_at(), false, 0, false, false, opto.getStitcher_version(), true, false, "", true, true, false, opto.isPostFacebook(), opto.isPostTwitter(), false,
+                    false, false, "", opto.getOptograph_type(), "");
+        }
+        return ret;
     }
 
     private void uploadOptonautData(Optograph optograph) {
@@ -649,6 +655,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                 }
                 Snackbar.make(instaShareButton, "Share to Instagram will soon be available.", Snackbar.LENGTH_SHORT).show();
                 break;
+            case R.id.add_location_icon:
             case R.id.add_location_text:
                 buildAlertMessageNoGps();
                 break;//uncomment when location is active

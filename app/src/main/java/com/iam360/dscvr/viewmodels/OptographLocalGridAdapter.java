@@ -34,7 +34,6 @@ import com.iam360.dscvr.ProfileHeaderBinding;
 import com.iam360.dscvr.ProfileTabBinding;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Follower;
-import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.LocationToUpdate;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.Notification;
@@ -48,6 +47,7 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.DBHelper2;
 import com.iam360.dscvr.util.GeneralUtils;
 import com.iam360.dscvr.util.NotificationSender;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
@@ -125,12 +125,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private boolean isEditMode = false;
     private boolean needSave = false;
     private boolean avatarChange = false;
+    private boolean cancelAvatar = false;
+    private boolean viewAvatarPreview = false;
     private boolean fromCancelEdit = false;
 
     private int onTab;
     private String follow, following;
     private String origPersonName, origPersonDesc;
     private String personName, personDesc;
+    private Bitmap previousAvatarImage;
     private Bitmap avatarImage;
     private String avatarId;
     private String message;
@@ -142,9 +145,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         optographs.add(0, null);
         optographs.add(1, null);
 
-        this.followers = new ArrayList<>();
-//        followers.add(0,null);
-//        followers.add(1,null);
+        this.followers = new ArrayList<Follower>();
+        followers.add(0,null);
+        followers.add(1,null);
 
         this.notifications = new ArrayList<Notification>();
         this.notifications.add(0, null);
@@ -240,6 +243,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                 }
 
+                if (optograph.getDeleted_at()==null) Log.d("myTag"," delete: local not deleted");
+                else if (!optograph.getDeleted_at().isEmpty()) return;
                 if (optograph.is_local()) count += 1;
 
                 Log.d("myTag", " local? " + optograph.is_local() + " isuploading? " + optograph.isIs_uploading());
@@ -303,6 +308,9 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     if (mHolder3.getBinding().getOptograph() != null) {
 
                     }
+                    Log.d("myTag"," delete: server deleted? -"+optograph.getDeleted_at()+"- size? "+optographs.size());
+                    if (optograph.getDeleted_at()==null) Log.d("myTag"," delete: server not deleted");
+                    else if (!optograph.getDeleted_at().isEmpty()) return;
 //                mHolder3.getBinding().optograph2dviewServer.getLayoutParams().height = (ITEM_WIDTH - 30) / 4;
                     mHolder3.getBinding().optograph2dviewServer.getLayoutParams().width = (ITEM_WIDTH - 30) / COLUMNS;
                     mHolder3.getBinding().optograph2dviewServer.requestLayout();
@@ -321,6 +329,8 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
         } else if (onTab == ON_FOLLOWER) {
             Follower follower = followers.get(position);
+            if(follower!=null)Log.d("myTag"," follower: position: "+position+" name: "+follower.getDisplay_name()+
+                    " isFollowed? "+follower.is_followed());
 
             if (follower == null && position == 0) {
                 HeaderOneViewHolder mHolder = (HeaderOneViewHolder) holder;
@@ -330,7 +340,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 initializeHeaderSecond(mHolder1);
             } else {
                 FollowerViewHolder mHolder2 = (FollowerViewHolder) holder;
-                if (!follower.equals(mHolder2.getBinding().getFollower())) {
+//                if (!follower.equals(mHolder2.getBinding().getFollower())) {
                     if (mHolder2.getBinding().getFollower() != null) {
 
                     }
@@ -338,6 +348,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().setVariable(BR.follower, follower);
                     mHolder2.getBinding().executePendingBindings();
 
+                    Log.d("myTag"," follower: name: "+follower.getDisplay_name()+" isFollowed: "+follower.is_followed());
                     if (follower.is_followed())
                         mHolder2.getBinding().followUnfollowBtn.setBackgroundResource(R.drawable.following_btn);
                     else
@@ -348,15 +359,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     mHolder2.getBinding().followUnfollowBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            mHolder2.getBinding().followUnfollowBtn.setClickable(false);
                             if (mHolder2.getBinding().getFollower().is_followed()) {
                                 apiConsumer.unfollow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         if (response.isSuccess()) {
                                             mHolder2.getBinding().getFollower().setIs_followed(false);
                                             mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() - 1);
                                             mHolder2.getBinding().invalidateAll();
-                                            notifyItemChanged(position);
 
                                             Cursor res = mydb.getData(mHolder2.getBinding().getFollower().getId(), DBHelper.PERSON_TABLE_NAME, "id");
                                             res.moveToFirst();
@@ -364,12 +376,15 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                 mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder2.getBinding().getFollower().getId(), "is_followed", false);
                                                 mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder2.getBinding().getFollower().getId(), "followers_count", mHolder2.getBinding().getFollower().getFollowers_count());
                                             }
+                                            notifyItemChanged(position);
+                                            res.close();
                                         }
 
                                     }
 
                                     @Override
                                     public void onFailure(Throwable t) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         Log.d("myTag", "Error unfollow: " + t.getMessage());
                                     }
                                 });
@@ -377,6 +392,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                 apiConsumer.follow(follower.getId(), new Callback<LogInReturn.EmptyResponse>() {
                                     @Override
                                     public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         if (response.isSuccess()) {
                                             mHolder2.getBinding().getFollower().setIs_followed(true);
                                             mHolder2.getBinding().getFollower().setFollowers_count(mHolder2.getBinding().getFollower().getFollowers_count() + 1);
@@ -390,14 +406,25 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "is_followed", true);
                                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", optograph.getPerson().getId(), "followers_count", optograph.getPerson().getFollowers_count());
                                                 }
+                                                notifyItemChanged(position);
+                                                res.close();
+                                            } else {
+                                                Cursor res = mydb.getData(follower.getId(), DBHelper.PERSON_TABLE_NAME, "id");
+                                                res.moveToFirst();
+                                                if (res.getCount() > 0) {
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "is_followed", true);
+                                                    mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", follower.getId(), "followers_count", follower.getFollowers_count());
+                                                }
+                                                notifyItemChanged(position);
+                                                res.close();
                                             }
-                                            notifyItemChanged(position);
                                         }
 
                                     }
 
                                     @Override
                                     public void onFailure(Throwable t) {
+                                        mHolder2.getBinding().followUnfollowBtn.setClickable(true);
                                         Log.d("myTag", "Error follow: " + t.getMessage());
                                     }
                                 });
@@ -411,7 +438,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                             startProfile(follower.getId());
                         }
                     });
-                }
+//                }
             }
         } else {
             Notification notif = notifications.get(position);
@@ -498,21 +525,17 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     private void callDetailsPage(int position, Optograph optograph) {
-
+        Intent intent = new Intent(context, OptographDetailsActivity.class);
         if (optograph == null) {
-            Intent intent = new Intent(context, OptographDetailsActivity.class);
             intent.putParcelableArrayListExtra("opto_list", getNextOptographList(position, 5));
             if (context instanceof ProfileActivity)
                 ((ProfileActivity) context).startActivityForResult(intent, DELETE_IMAGE);
             else if (context instanceof MainActivity)
                 ((MainActivity) context).startActivityForResult(intent, DELETE_IMAGE);
         } else {
-            Intent intent = new Intent(context, OptographDetailsActivity.class);
             intent.putExtra("opto", optograph);
             context.startActivity(intent);
         }
-
-
     }
 
     private ArrayList<Optograph> getNextOptographList(int position, int count) {
@@ -628,6 +651,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                 if (isOnEditMode()) return;
                 onTab = ON_FOLLOWER;
                 setTab(mHolder);
+                notifyDataSetChanged();
 //                followers = new ArrayList<Follower>();
 //                followers.add(0, null);
 //                followers.add(1, null);
@@ -733,10 +757,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     private void initializeHeaderOne(HeaderOneViewHolder mHolder1) {
         mHolder1.getBinding().setVariable(BR.person, person);
         mHolder1.getBinding().executePendingBindings();
-        if (avatarChange) {
+        Log.d("myTag"," initializeOne avatar: "+avatarImage+" change? "+avatarChange+" viewAvatarPreview? "+viewAvatarPreview+"  cancelAvatar? "+cancelAvatar+" editMode? "+isOnEditMode());
+        if(viewAvatarPreview) {
+//            previousAvatarImage = mHolder1.getBinding().personAvatarAsset.getDrawingCache();
+            mHolder1.getBinding().personAvatarAsset.setImageBitmap(avatarImage);
+        } else if (cancelAvatar) {
+            if (previousAvatarImage!=null) mHolder1.getBinding().personAvatarAsset.setImageBitmap(previousAvatarImage);
+        } else if (avatarChange) {
             if (avatarImage != null) {
+                avatarId = UUID.randomUUID().toString();
+                Log.d("myTag"," avatar: "+avatarImage+" id: "+avatarId);
                 mHolder1.getBinding().personAvatarAsset.setImageBitmap(avatarImage);
                 mHolder1.getBinding().getPerson().setAvatar_asset_id(avatarId);
+                previousAvatarImage = null;
+                avatarUpload(avatarImage);
             }
             avatarChange = false;
         }
@@ -850,10 +884,12 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         mHolder1.getBinding().personIsFollowed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mHolder1.getBinding().personIsFollowed.setClickable(false);
                 if (mHolder1.getBinding().getPerson().is_followed()) {
                     apiConsumer.unfollow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             if (response.isSuccess()) {
                                 mHolder1.getBinding().getPerson().setIs_followed(false);
                                 mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() - 1);
@@ -870,6 +906,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
                         @Override
                         public void onFailure(Throwable t) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             Log.d("myTag", "Error unfollow: " + t.getMessage());
                         }
                     });
@@ -877,6 +914,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                     apiConsumer.follow(person.getId(), new Callback<LogInReturn.EmptyResponse>() {
                         @Override
                         public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             if (response.isSuccess()) {
                                 mHolder1.getBinding().getPerson().setIs_followed(true);
                                 mHolder1.getBinding().getPerson().setFollowers_count(mHolder1.getBinding().getPerson().getFollowers_count() + 1);
@@ -889,11 +927,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder1.getBinding().getPerson().getId(), "is_followed", true);
                                     mydb.updateTableColumn(DBHelper.PERSON_TABLE_NAME, "id", mHolder1.getBinding().getPerson().getId(), "followers_count", mHolder1.getBinding().getPerson().getFollowers_count());
                                 }
+                                res.close();
                             }
                         }
 
                         @Override
                         public void onFailure(Throwable t) {
+                            mHolder1.getBinding().personIsFollowed.setClickable(true);
                             Log.d("myTag", "Error follow: " + t.getMessage());
                         }
                     });
@@ -905,6 +945,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             @Override
             public void onClick(View v) {
                 if (isEditMode) {
+                    if(previousAvatarImage==null)previousAvatarImage = mHolder1.getBinding().personAvatarAsset.getDrawingCache();
                     Intent intent = new Intent();
                     // Show only images, no vieos or anything else
                     intent.setType("image/*");
@@ -923,20 +964,30 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         for (Optograph opto : optographs) {
             if (opto != null && opto.getId().equals(id) && opto.is_local() == isLocal) {
                 int position = optographs.indexOf(opto);
-                optographs.remove(opto);
+                opto.setDeleted_at(RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+                optographs.remove(position);
                 notifyItemRemoved(position);
-                notifyItemRangeChanged(position, optographs.size() - position - 1);
+//                notifyItemRangeChanged(position, optographs.size() - position - 1);
+                notifyItemRangeChanged(position, optographs.size());
                 return;
             }
         }
     }
 
-    public void avatarUpload(Bitmap bitmap) {
-        String avatar = UUID.randomUUID().toString();
-        avatarChange = true;
+    public void setAvatar(Bitmap bitmap) {
+        Log.d("myTag"," setAvatar: bitmap: "+bitmap);
+        viewAvatarPreview = true;
+//        avatarChange = true;
         avatarImage = bitmap;
-        avatarId = avatar;
         notifyItemChanged(0);
+    }
+
+    public void avatarUpload(Bitmap bitmap) {
+//        String avatar = UUID.randomUUID().toString();
+//        avatarChange = true;
+        avatarImage = bitmap;
+//        avatarId = avatar;
+//        notifyItemChanged(0);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
@@ -946,15 +997,18 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         RequestBody fbodyMain = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)
                 .addFormDataPart("avatar_asset", "avatar.jpg", fbody)
-                .addFormDataPart("avatar_asset_id", avatar)
+                .addFormDataPart("avatar_asset_id", avatarId)
                 .build();
 
-        Timber.d("Avatar " + avatar);
+        Timber.d("Avatar " + avatarId);
         apiConsumer.uploadAvatar(fbodyMain, new Callback<LogInReturn.EmptyResponse>() {
             @Override
             public void onResponse(Response<LogInReturn.EmptyResponse> response, Retrofit retrofit) {
                 Timber.d("Response : " + response.message());
 //                binding.getPerson().setAvatar_asset_id(avatar);
+                Log.d("myTag"," avatar: success upload? "+response.isSuccess());
+                avatarImage = null;
+                avatarId = null;
             }
 
             @Override
@@ -1034,10 +1088,20 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 
     public void saveUpdate() {
         needSave = true;
-        avatarImage = null;
-        avatarId = null;
+//        avatarImage = null;
+//        avatarId = null;
         isEditMode = false;
+        viewAvatarPreview = false;
+        cancelAvatar = false;
+        avatarChange = true;
         notifyItemChanged(0);
+    }
+
+    public void cancelUpdate() {
+//        if(!avatarChange){return;}
+        viewAvatarPreview = false;
+        cancelAvatar = true;
+        if(!avatarChange)notifyItemChanged(0);
     }
 
     public boolean isOnEditMode() {
@@ -1282,7 +1346,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         Log.d("myTag", "Path: " + CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
         File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + opto.getId());
 
-        List<String> filePathList = new ArrayList<>();
+        List<String> filePathList = new ArrayList<String>();
         filePathList.add(String.valueOf(position));
 
         if (dir.exists()) {// remove the not notation here
@@ -1535,13 +1599,13 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addItem(Optograph optograph) {
-        Log.d("Caching", "addItem " + optograph);
+//        Log.d("Caching", "addItem " + optograph);
 
         if (optograph == null || onTab != ON_IMAGE) {
             return;
         }
-        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
-        Log.d("Caching", "addItem 1");
+//        Log.d("Caching", "addItem " + optograph.is_local() + " " + optograph.isShould_be_published());
+//        Log.d("Caching", "addItem 1");
 
         DateTime created_at = optograph.getCreated_atDateTime();
 
@@ -1549,15 +1613,16 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             return;
         }
 
-        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
+//        Log.d("Caching", " images: optographId: " + optograph.getId() + " local? " + optograph.is_local());
 
-        Log.d("Caching", "addItem 2");
+//        Log.d("Caching", "addItem 2");
 
-        saveToSQLiteFeeds(optograph);
+//        saveToSQLiteFeeds(optograph);
+        new DBHelper2(context).saveToSQLite(optograph);
 //        if (optograph.getPerson().getId().equals(cache.getString(Cache.USER_ID))) {
 //            saveToSQLite(optograph);
 //        }
-        Log.d("Caching", "addItem 3");
+//        Log.d("Caching", "addItem 3");
 
         if (optograph.is_local()) {
             optograph = mydb.checkOptoDetails(optograph);
@@ -1567,11 +1632,11 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         if (optograph == null) {
             return;
         }
-        Log.d("Caching", "addItem 4");
+//        Log.d("Caching", "addItem 4");
 
         if (optograph.getDeleted_at() != null && !optograph.getDeleted_at().isEmpty()) return;
 
-        Log.d("Caching", "addItem notifyItemInserted " + optograph.toString());
+//        Log.d("Caching", "addItem notifyItemInserted " + optograph.toString());
 
         // if list is empty, simply add new optograph
         if (optographs.isEmpty() || optographs.size() == 2) {
@@ -1589,10 +1654,10 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
 //        }
 
         // find correct position of the image
-        Log.d("myTag", " isLocal? " + optograph.is_local());
+//        Log.d("myTag", " isLocal? " + optograph.is_local());
         if (optograph.is_local()) {
             int last = getLastPositionOfLocalImage();
-            Log.d("myTag", " isLocal? last value: " + last + " opto count : " + optographs.size());
+//            Log.d("myTag", " isLocal? last value: " + last + " opto count : " + optographs.size());
 //            Log.d("myTag"," isLocal? last value: "+last+" isBefore? "+created_at.isBefore(optographs.get(last).getCreated_atDateTime()));
             if (last == 0) {
                 optographs.add(2, optograph);
@@ -1605,7 +1670,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
             for (int i = 2; i < last; i++) {
                 Optograph current = optographs.get(i);
-                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
+//                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
                 if (created_at.isAfter(current.getCreated_atDateTime())) {
                     optographs.add(i, optograph);
                     notifyItemInserted(i);
@@ -1616,7 +1681,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             notifyItemInserted(last + 1);
         } else {
             int first = getFirstPositionOfServerImage();
-            Log.d("myTag", " isLocal? first value: " + first + " isBefore? " + created_at.isBefore(getOldest().getCreated_atDateTime()));
+//            Log.d("myTag", " isLocal? first value: " + first + " isBefore? " + created_at.isBefore(getOldest().getCreated_atDateTime()));
             if (first == 0) {
                 optographs.add(optograph);
                 notifyItemInserted(optographs.size());
@@ -1628,7 +1693,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             }
             for (int i = first; i < optographs.size(); i++) {
                 Optograph current = optographs.get(i);
-                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
+//                Log.d("myTag", " isLocal? " + i + " current? " + current.is_local() + " isBefore? " + created_at.isBefore(current.getCreated_atDateTime()) + " isAfter? " + created_at.isAfter(current.getCreated_atDateTime()));
                 if (created_at.isAfter(current.getCreated_atDateTime())) {
                     optographs.add(i, optograph);
                     notifyItemInserted(i);
@@ -1640,7 +1705,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
         // find correct position of optograph
-        // TODO: allow for "breaks" between new optograph and others...
+        //allow for "breaks" between new optograph and others...
 //        for (int i = 2; i < optographs.size(); i++) {
 //            Optograph current = optographs.get(i);
 //              if (current!=null && created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
@@ -1668,176 +1733,195 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
         return 0;
     }
 
-    public void saveToSQLite(Optograph opto) {
-        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-        res.moveToFirst();
-        if (res.getCount() != 0) return;
-        String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
-        mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
-                opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
-                opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
-                opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
-                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
-    }
+//    public void saveToSQLite(Optograph opto) {
+//        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+//        res.moveToFirst();
+//        if (res.getCount() != 0) return;
+//        String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
+//        mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
+//                opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
+//                opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
+//                opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
+//                opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(), opto.getStory().getId());
+//    }
 
-    public void saveToSQLiteFeeds(Optograph opto) {
-        Log.d("Caching", "saveToSQLiteFeeds");
+//    public void saveToSQLiteFeeds(Optograph opto) {
+//        Log.d("Caching", "saveToSQLiteFeeds");
+//        if (opto.getId() == null) return;
+//        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+//        res.moveToFirst();
+//        if (res.getCount() > 0) {
+//            Log.d("Caching", "Updating " + opto.getId());
+//            String id = DBHelper.OPTOGRAPH_ID;
+//            String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
+//            if (opto.getText() != null && !opto.getText().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_text", opto.getText());
+//            }
+//            if (opto.getCreated_at() != null && !opto.getCreated_at().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_created_at", opto.getCreated_at());
+//            }
+//            if (opto.getDeleted_at() != null && !opto.getDeleted_at().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_deleted_at", opto.getDeleted_at());
+//            }
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_starred", opto.is_starred());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_stars_count", opto.getStars_count());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_published", opto.is_published());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_private", opto.is_private());
+//
+//            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_stitcher_version", opto.getStitcher_version());
+//            }
+//            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_data_uploaded", opto.is_data_uploaded());
+//            }
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_should_be_published", opto.isShould_be_published());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_place_holder_uploaded", opto.is_place_holder_uploaded());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "post_facebook", opto.isPostFacebook());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "post_twitter", opto.isPostTwitter());
+//            mydb.updateTableColumn(tb, id, opto.getId(), "post_instagram", opto.isPostInstagram());
+//            if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
+//            }
+//            if (opto.getLocation() != null && opto.getLocation().getId() != null && !opto.getLocation().getId().equals("")) {
+//                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
+//            }
+//            res.close();
+//        } else {
+//            Log.d("Caching", "Inserting " + opto.getId());
+//            mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
+//                    opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
+//                    opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
+//                    opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
+//                    opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type(),opto.getStory().getId());
+//            res.close();
+//        }
+//        String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
+//        String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
+//
+//        if (!per.equals("")) {
+//            res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+//            res.moveToFirst();
+//            if (opto.getPerson().getId() != null) {
+//                Person person = opto.getPerson();
+//                if (res.getCount() > 0) {
+//                    String id = "id";
+//                    String tb = DBHelper.PERSON_TABLE_NAME;
+//                    if (person.getCreated_at() != null && !person.getCreated_at().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "created_at", person.getCreated_at());
+//                    }
+//                    if (person.getDeleted_at() != null && !person.getDeleted_at().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "deleted_at", person.getDeleted_at());
+//                    }
+//                    if (person.getDisplay_name() != null && !person.getDisplay_name().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "display_name", person.getDisplay_name());
+//                    }
+//                    if (person.getUser_name() != null && !person.getUser_name().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "user_name", person.getUser_name());
+//                    }
+//                    if (person.getEmail() != null && !person.getEmail().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "email", person.getEmail());
+//                    }
+//                    if (person.getText() != null && !person.getText().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "text", person.getText());
+//                    }
+//                    if (person.getAvatar_asset_id() != null && !person.getAvatar_asset_id().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "avatar_asset_id", person.getAvatar_asset_id());
+//                    }
+//                    mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", String.valueOf(person.getOptographs_count()));
+//                    mydb.updateTableColumn(tb, id, person.getId(), "followers_count", String.valueOf(person.getFollowers_count()));
+//                    mydb.updateTableColumn(tb, id, person.getId(), "followed_count", String.valueOf(person.getFollowed_count()));
+//                    mydb.updateTableColumn(tb, id, person.getId(), "is_followed", String.valueOf(person.is_followed()));
+//                    if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", String.valueOf(person.getFacebook_user_id()));
+//                    }
+//                    if (person.getFacebook_token() != null && !person.getFacebook_token().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", String.valueOf(person.getFacebook_token()));
+//                    }
+//                    if (person.getTwitter_token() != null && !person.getTwitter_token().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", String.valueOf(person.getTwitter_token()));
+//                    }
+//                    if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals("")) {
+//                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", String.valueOf(person.getTwitter_secret()));
+//                    }
+//                    res.close();
+//                } else {
+//                    mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
+//                            person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
+//                            person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
+//                    res.close();
+//                }
+//            }
+//        }
+//
+//        if (!loc.equals("")) {
+//            res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
+//            res.moveToFirst();
+//            if (opto.getLocation().getId() != null) {
+//                Location locs = opto.getLocation();
+//                if (res.getCount() > 0) {
+//                    String id = "id";
+//                    String tb = DBHelper.LOCATION_TABLE_NAME;
+//                    if (locs.getCreated_at() != null && !locs.getCreated_at().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "created_at", locs.getCreated_at());
+//                    }
+//                    if (locs.getUpdated_at() != null && !locs.getUpdated_at().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "updated_at", locs.getUpdated_at());
+//                    }
+//                    if (locs.getDeleted_at() != null && !locs.getDeleted_at().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "deleted_at", locs.getDeleted_at());
+//                    }
+//                    if (locs.getLatitude() != 0) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "latitude", locs.getLatitude());
+//                    }
+//                    if (locs.getLongitude() != 0) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
+//                    }
+//                    if (locs.getText() != null && !locs.getText().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
+//                    }
+//                    if (locs.getCountry() != null && !locs.getCountry().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "country", locs.getCountry());
+//                    }
+//                    if (locs.getCountry_short() != null && !locs.getCountry_short().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "country_short", locs.getCountry_short());
+//                    }
+//                    if (locs.getPlace() != null && !locs.getPlace().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "place", locs.getPlace());
+//                    }
+//                    if (locs.getRegion() != null && !locs.getRegion().equals("")) {
+//                        mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
+//                    }
+//                    mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
+//                    res.close();
+//                } else {
+////                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
+//                    mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(),
+//                            locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
+//                            locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
+//                    res.close();
+//                }
+//            }
+//        }
+//    }
 
-        if (opto.getId() == null) return;
-        Cursor res = mydb.getData(opto.getId(), DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
-        res.moveToFirst();
-        if (res.getCount() > 0) {
-            Log.d("Caching", "Updating " + opto.getId());
-            String id = DBHelper.OPTOGRAPH_ID;
-            String tb = DBHelper.OPTO_TABLE_NAME_FEEDS;
-            if (opto.getText() != null && !opto.getText().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_text", opto.getText());
-            }
-            if (opto.getCreated_at() != null && !opto.getCreated_at().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_created_at", opto.getCreated_at());
-            }
-            if (opto.getDeleted_at() != null && !opto.getDeleted_at().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_deleted_at", opto.getDeleted_at());
-            }
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_starred", opto.is_starred());
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_stars_count", opto.getStars_count());
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_published", opto.is_published());
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_private", opto.is_private());
-
-            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_stitcher_version", opto.getStitcher_version());
-            }
-            if (opto.getStitcher_version() != null && !opto.getStitcher_version().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_data_uploaded", opto.is_data_uploaded());
-            }
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_should_be_published", opto.isShould_be_published());
-            mydb.updateTableColumn(tb, id, opto.getId(), "optograph_is_place_holder_uploaded", opto.is_place_holder_uploaded());
-            mydb.updateTableColumn(tb, id, opto.getId(), "post_facebook", opto.isPostFacebook());
-            mydb.updateTableColumn(tb, id, opto.getId(), "post_twitter", opto.isPostTwitter());
-            mydb.updateTableColumn(tb, id, opto.getId(), "post_instagram", opto.isPostInstagram());
-            if (opto.getOptograph_type() != null && !opto.getOptograph_type().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_type", opto.getOptograph_type());
-            }
-            if (opto.getLocation() != null && opto.getLocation().getId() != null && !opto.getLocation().getId().equals("")) {
-                mydb.updateTableColumn(tb, id, opto.getId(), "optograph_location_id", opto.getLocation().getId());
-            }
-            res.close();
-        } else {
-            Log.d("Caching", "Inserting " + opto.getId());
-            mydb.insertOptograph(opto.getId(), opto.getText(), opto.getPerson().getId(), opto.getLocation() == null ? "" : opto.getLocation().getId(),
-                    opto.getCreated_at(), opto.getDeleted_at() == null ? "" : opto.getDeleted_at(), opto.is_starred(), opto.getStars_count(), opto.is_published(),
-                    opto.is_private(), opto.getStitcher_version(), true, opto.is_on_server(), "", opto.isShould_be_published(), opto.is_local(),
-                    opto.is_place_holder_uploaded(), opto.isPostFacebook(), opto.isPostTwitter(), opto.isPostInstagram(),
-                    opto.is_data_uploaded(), opto.is_staff_picked(), opto.getShare_alias(), opto.getOptograph_type());
-            res.close();
-        }
-        String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
-        String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
-
-        if (!per.equals("")) {
-            res = mydb.getData(opto.getPerson().getId(), DBHelper.PERSON_TABLE_NAME, "id");
+    /*
+    * update every item on followers from DB
+     */
+    public void updateFollowers() {
+        Cursor res = null;
+        for (int i = 2; i < followers.size(); i++) {
+            Log.d("myTag"," follower: updateFollowers "+i+"<"+followers.size());
+            res = mydb.getData(followers.get(i).getId(), DBHelper.PERSON_TABLE_NAME, DBHelper.PERSON_ID);
             res.moveToFirst();
-            if (opto.getPerson().getId() != null) {
-                Person person = opto.getPerson();
-                if (res.getCount() > 0) {
-                    String id = "id";
-                    String tb = DBHelper.PERSON_TABLE_NAME;
-                    if (person.getCreated_at() != null && !person.getCreated_at().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "created_at", person.getCreated_at());
-                    }
-                    if (person.getDeleted_at() != null && !person.getDeleted_at().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "deleted_at", person.getDeleted_at());
-                    }
-                    if (person.getDisplay_name() != null && !person.getDisplay_name().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "display_name", person.getDisplay_name());
-                    }
-                    if (person.getUser_name() != null && !person.getUser_name().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "user_name", person.getUser_name());
-                    }
-                    if (person.getEmail() != null && !person.getEmail().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "email", person.getEmail());
-                    }
-                    if (person.getText() != null && !person.getText().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "text", person.getText());
-                    }
-                    if (person.getAvatar_asset_id() != null && !person.getAvatar_asset_id().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "avatar_asset_id", person.getAvatar_asset_id());
-                    }
-                    mydb.updateTableColumn(tb, id, person.getId(), "optographs_count", String.valueOf(person.getOptographs_count()));
-                    mydb.updateTableColumn(tb, id, person.getId(), "followers_count", String.valueOf(person.getFollowers_count()));
-                    mydb.updateTableColumn(tb, id, person.getId(), "followed_count", String.valueOf(person.getFollowed_count()));
-                    mydb.updateTableColumn(tb, id, person.getId(), "is_followed", String.valueOf(person.is_followed()));
-                    if (person.getFacebook_user_id() != null && !person.getFacebook_user_id().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_user_id", String.valueOf(person.getFacebook_user_id()));
-                    }
-                    if (person.getFacebook_token() != null && !person.getFacebook_token().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "facebook_token", String.valueOf(person.getFacebook_token()));
-                    }
-                    if (person.getTwitter_token() != null && !person.getTwitter_token().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_token", String.valueOf(person.getTwitter_token()));
-                    }
-                    if (person.getTwitter_secret() != null && !person.getTwitter_secret().equals("")) {
-                        mydb.updateTableColumn(tb, id, person.getId(), "twitter_secret", String.valueOf(person.getTwitter_secret()));
-                    }
-                    res.close();
-                } else {
-                    mydb.insertPerson(person.getId(), person.getCreated_at(), person.getEmail(), person.getDeleted_at(), person.isElite_status(),
-                            person.getDisplay_name(), person.getUser_name(), person.getText(), person.getAvatar_asset_id(), person.getFacebook_user_id(), person.getOptographs_count(),
-                            person.getFollowers_count(), person.getFollowed_count(), person.is_followed(), person.getFacebook_token(), person.getTwitter_token(), person.getTwitter_secret());
-                    res.close();
-                }
+            if (res.getCount() > 0) {
+                Log.d("myTag"," follower: updateFollowers name: "+res.getString(res.getColumnIndex(DBHelper.PERSON_DISPLAY_NAME))
+                        +" isFollowed? "+res.getInt(res.getColumnIndex(DBHelper.PERSON_IS_FOLLOWED)));
+                followers.get(i).setFollowed_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWED_COUNT)));
+                followers.get(i).setFollowers_count(res.getInt(res.getColumnIndex(DBHelper.PERSON_FOLLOWER_COUNT)));
+                followers.get(i).setIs_followed(res.getInt(res.getColumnIndex(DBHelper.PERSON_IS_FOLLOWED))!=0);
             }
         }
-
-        if (!loc.equals("")) {
-            res = mydb.getData(opto.getLocation().getId(), DBHelper.LOCATION_TABLE_NAME, "id");
-            res.moveToFirst();
-            if (opto.getLocation().getId() != null) {
-                Location locs = opto.getLocation();
-                if (res.getCount() > 0) {
-                    String id = "id";
-                    String tb = DBHelper.LOCATION_TABLE_NAME;
-                    if (locs.getCreated_at() != null && !locs.getCreated_at().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "created_at", locs.getCreated_at());
-                    }
-                    if (locs.getUpdated_at() != null && !locs.getUpdated_at().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "updated_at", locs.getUpdated_at());
-                    }
-                    if (locs.getDeleted_at() != null && !locs.getDeleted_at().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "deleted_at", locs.getDeleted_at());
-                    }
-                    if (locs.getLatitude() != 0) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "latitude", locs.getLatitude());
-                    }
-                    if (locs.getLongitude() != 0) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "longitude", locs.getLongitude());
-                    }
-                    if (locs.getText() != null && !locs.getText().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "text", locs.getText());
-                    }
-                    if (locs.getCountry() != null && !locs.getCountry().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "country", locs.getCountry());
-                    }
-                    if (locs.getCountry_short() != null && !locs.getCountry_short().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "country_short", locs.getCountry_short());
-                    }
-                    if (locs.getPlace() != null && !locs.getPlace().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "place", locs.getPlace());
-                    }
-                    if (locs.getRegion() != null && !locs.getRegion().equals("")) {
-                        mydb.updateTableColumn(tb, id, locs.getId(), "region", locs.getRegion());
-                    }
-                    mydb.updateTableColumn(tb, id, locs.getId(), "poi", String.valueOf(locs.isPoi()));
-                    res.close();
-                } else {
-//                    mydb.updateColumnOptograph(opto.getId(),DBHelper.LOCATION_ID,locs.getId());
-                    mydb.insertLocation(locs.getId(), locs.getCreated_at(), locs.getUpdated_at(), locs.getDeleted_at(),
-                            locs.getLatitude(), locs.getLongitude(), locs.getCountry(), locs.getText(),
-                            locs.getCountry_short(), locs.getPlace(), locs.getRegion(), locs.isPoi());
-                    res.close();
-                }
-            }
-        }
+        if(res!=null && res.getCount()>0)res.close();
     }
 
 //    public Optograph checkToDB(Optograph optograph) {

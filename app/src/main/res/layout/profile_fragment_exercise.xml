@@ -181,7 +181,8 @@
                     android:layout_alignParentEnd="true"
                     android:padding="6dp"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/more_settings"/>
+                    android:src="@drawable/more_settings"
+                    android:visibility="gone"/>
             </RelativeLayout>
 
         </LinearLayout>

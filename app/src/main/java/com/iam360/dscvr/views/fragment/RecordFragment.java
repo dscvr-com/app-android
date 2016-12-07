@@ -37,8 +37,11 @@ import com.iam360.dscvr.sensors.CoreMotionListener;
 import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
+import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.util.DeviceName;
 import com.iam360.dscvr.util.DeviceName;
 import com.iam360.dscvr.util.Maths;
 import com.iam360.dscvr.util.MixpanelHelper;
@@ -47,6 +50,12 @@ import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import timber.log.Timber;
 
@@ -88,8 +97,7 @@ public class RecordFragment extends Fragment {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
             if (Recorder.isFinished()) {
-                // sync hack
-                return;
+                return;// sync hack
             }
             assert colorFormat == Bitmap.Config.ARGB_8888;
 
@@ -151,8 +159,6 @@ public class RecordFragment extends Fragment {
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
-            captureWidth = width;
-
             Log.w(TAG, "Pushing data: " + width + "x" + height);
             assert width * height * 4 == data.length;
 
@@ -202,7 +208,6 @@ public class RecordFragment extends Fragment {
             // shading of recorded nodes
             if (Recorder.hasStarted()) {
                 SelectionPoint currentKeyframe = Recorder.lastKeyframe();
-
                 if (lastKeyframe == null) {
                     lastKeyframe = currentKeyframe;
                 } else if (currentKeyframe.getGlobalId() != lastKeyframe.getGlobalId()) {
@@ -234,20 +239,20 @@ public class RecordFragment extends Fragment {
                 Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
                 setupSelectionPoints();
+
             } catch (CameraAccessException e) {
+                Log.d("MARK","CameraAccessException e"+e.getMessage());
                 e.printStackTrace();
             }
         }
 
         @Override
         public void cameraClosed(CameraDevice device) {
-
         }
     };
 
     private void queueFinishRecording() {
         // see: http://stackoverflow.com/a/11125271/1176596
-
         // Get a handler that can be used to post to the main thread
         Handler mainHandler = new Handler(getActivity().getMainLooper());
         mainHandler.post(this::finishRecording);
@@ -280,8 +285,6 @@ public class RecordFragment extends Fragment {
         super.onResume();
         DefaultListeners.register();
         recordPreview.onResume();
-
-
     }
 
     @Override
@@ -313,6 +316,7 @@ public class RecordFragment extends Fragment {
         camera.setPreviewCallback(previewCallback);
 */
         Recorder.setIdle(false);
+        isRecording = true;
     }
 
     private void setupSelectionPoints() {
@@ -320,6 +324,7 @@ public class RecordFragment extends Fragment {
         List<SelectionPoint> points = new LinkedList<>();
         List<SelectionPoint> points2 = new LinkedList<>();
 
+        Log.d("MARK","setupSelectionPoints rawPoints.length = "+rawPoints.length);
         for (SelectionPoint p : rawPoints) {
             points.add(p);
             points2.add(p);
@@ -495,5 +500,4 @@ public class RecordFragment extends Fragment {
 
         return coreMotionMatrix;
     }
-
 }

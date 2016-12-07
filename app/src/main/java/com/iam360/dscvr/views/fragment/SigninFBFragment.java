@@ -26,9 +26,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-
-import java.util.Arrays;
-
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.FBSignInData;
 import com.iam360.dscvr.model.LogInReturn;
@@ -45,7 +42,7 @@ import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.views.activity.SignInActivity;
 import com.iam360.dscvr.views.dialogs.GenericOKDialog;
 
-import org.w3c.dom.Text;
+import java.util.Arrays;
 
 import retrofit.Callback;
 import retrofit.Response;
@@ -129,13 +126,12 @@ public class SigninFBFragment extends Fragment implements View.OnClickListener {
 
 
     private void login(String email, String password) {
-
         Log.d("myTag"," signin: email: "+email+" pass: "+password);
         apiConsumer.logIn(new SignInData(email, password), new Callback<LogInReturn>() {
             @Override
             public void onResponse(Response<LogInReturn> response, Retrofit retrofit) {
                 Log.d("myTag"," signin: success? "+response.isSuccess());
-                Log.d("myTag"," signin: errorbody: "+response.errorBody());
+                Log.d("myTag"," signin: errorbody: "+response.errorBody().toString());
                 Log.d("myTag"," signin: message: "+response.message());
                 if (!response.isSuccess()) {
                     String message = getString(R.string.failed_login);

@@ -45,6 +45,7 @@ public class Person implements Parcelable {
     private String facebook_token;
     private String twitter_token;
     private String twitter_secret;
+    private String activity;// for checking where it needs to load
 
     public Person() {
         id = "";
@@ -65,6 +66,7 @@ public class Person implements Parcelable {
         facebook_token = "";
         twitter_token = "";
         twitter_secret = "";
+        activity = "";
     }
 
     public Person(Parcel source) {
@@ -88,6 +90,7 @@ public class Person implements Parcelable {
         this.facebook_token = source.readString();
         this.twitter_token = source.readString();
         this.twitter_secret = source.readString();
+        this.activity = source.readString();
     }
 
     public String getId() {
@@ -230,6 +233,14 @@ public class Person implements Parcelable {
         this.facebook_user_id = facebook_user_id;
     }
 
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -257,6 +268,7 @@ public class Person implements Parcelable {
         dest.writeString(this.facebook_token);
         dest.writeString(this.twitter_token);
         dest.writeString(this.twitter_secret);
+        dest.writeString(this.activity);
     }
 
     public static final Parcelable.Creator<Person> CREATOR =

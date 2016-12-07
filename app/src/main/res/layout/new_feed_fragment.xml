@@ -476,11 +476,11 @@
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal">
 
-                                    <ImageButton
-                                        android:id="@+id/manual_button"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/manual_inactive_icn"/>
+                                <ImageButton
+                                    android:id="@+id/motor_off_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/motor_off_active_icn"/>
 
                                 </LinearLayout>
 
@@ -489,16 +489,16 @@
                                     android:layout_height="45dp"
                                     android:background="@color/feed_bar" />
 
-                                <TextView
-                                    android:id="@+id/settings_manual"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="15dp"
-                                    android:textColor="@color/text_light"
-                                    android:layout_gravity="center_vertical"
-                                    android:textSize="16sp"
-                                    app:font="@{`bold`}"
-                                    android:text="@string/settings_manual" />
+                            <TextView
+                                android:id="@+id/settings_motor_off"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="15dp"
+                                android:textColor="@color/text_light"
+                                android:layout_gravity="center_vertical"
+                                android:textSize="16sp"
+                                app:font="@{`bold`}"
+                                android:text="@string/settings_motor_off" />
 
                             </LinearLayout>
 
@@ -513,12 +513,12 @@
                                     android:orientation="horizontal"
                                     android:layout_marginTop="4dp">
 
-                                    <ImageButton
-                                        android:id="@+id/motor_button"
-                                        android:layout_width="wrap_content"
-                                        android:layout_toRightOf="@id/manual_button"
-                                        android:layout_height="wrap_content"
-                                        android:background="@drawable/motor_inactive_icn"/>
+                                <ImageButton
+                                    android:id="@+id/motor_on_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_toRightOf="@id/motor_off_button"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/motor_on_inactive_icn"/>
 
                                 </LinearLayout>
 
@@ -527,16 +527,16 @@
                                     android:layout_height="45dp"
                                     android:background="@color/feed_bar" />
 
-                                <TextView
-                                    android:id="@+id/settings_motor"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginLeft="15dp"
-                                    android:textColor="@color/text_light"
-                                    android:layout_gravity="center_vertical"
-                                    android:textSize="16sp"
-                                    app:font="@{`bold`}"
-                                    android:text="@string/settings_motor" />
+                            <TextView
+                                android:id="@+id/settings_motor_on"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="15dp"
+                                android:textColor="@color/text_light"
+                                android:layout_gravity="center_vertical"
+                                android:textSize="16sp"
+                                app:font="@{`bold`}"
+                                android:text="@string/settings_motor_on" />
 
                             </LinearLayout>
 
