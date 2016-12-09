@@ -24,15 +24,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.model.MotorConfig;
+import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.GeneralUtils;
@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import retrofit.Response;
+import retrofit.Retrofit;
 import timber.log.Timber;
 
 public class RingOptionActivity extends AppCompatActivity implements View.OnClickListener {
@@ -62,6 +64,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private ImageButton motorBtn;
 
     private Cache cache;
+    private Api2Consumer api2Consumer;
     private Handler mHandler;
 
     // contains the names of scanned devices for layout rendering
@@ -96,6 +99,8 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         generalUtils.setFont(this, motorTxt, Typeface.BOLD);
 
         cache = Cache.open();
+        String token = cache.getString(Cache.USER_TOKEN);
+        api2Consumer =new Api2Consumer(token.equals("") ? null : token, "triggerNotif");
 
         mHandler = new Handler();
         deviceList = new ArrayList<BluetoothDevice>();
@@ -108,6 +113,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         int mode = cache.getInt(Cache.CAMERA_MODE);
         updateMode((mode == Constants.ONE_RING_MODE) ? true : false);
 
+        setDefMotorConfigs();
     }
 
     @Override
@@ -458,5 +464,50 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                      int status) {}
     };
+
+
+    private void getMotorConfig(){
+        api2Consumer.getMotorConfig(new retrofit.Callback<List<MotorConfig>>() {
+            @Override
+            public void onResponse(Response<List<MotorConfig>> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    List<MotorConfig> motorConfigs = response.body();
+                    for(int a=0; a < motorConfigs.size(); a++){
+                        Timber.d("getMotorConfig getMotor_configuration_mobile_platform : "+motorConfigs.get(a).getMotor_configuration_mobile_platform());
+                        if(motorConfigs.get(a).getMotor_configuration_mobile_platform().equals("Android")){
+                            Timber.d("getMotorConfig getMotor_configuration_rotate_count : "+motorConfigs.get(a).getMotor_configuration_rotate_count());
+                            Timber.d("getMotorConfig getMotor_configuration_bot_count : "+motorConfigs.get(a).getMotor_configuration_bot_count());
+                            Timber.d("getMotorConfig getMotor_configuration_top_count : "+motorConfigs.get(a).getMotor_configuration_top_count());
+                            Timber.d("getMotorConfig getMotor_configuration_pulse_per_second : "+motorConfigs.get(a).getMotor_configuration_pulse_per_second());
+                            Timber.d("getMotorConfig getMotor_configuration_buff_count : "+motorConfigs.get(a).getMotor_configuration_buff_count());
+
+                            cache.save(Cache.BLE_ROT_COUNT, motorConfigs.get(a).getMotor_configuration_rotate_count());
+                            cache.save(Cache.BLE_BOT_COUNT, motorConfigs.get(a).getMotor_configuration_bot_count());
+                            cache.save(Cache.BLE_TOP_COUNT, motorConfigs.get(a).getMotor_configuration_top_count());
+                            cache.save(Cache.BLE_PPS_COUNT, motorConfigs.get(a).getMotor_configuration_pulse_per_second());
+                            cache.save(Cache.BLE_BUF_COUNT, motorConfigs.get(a).getMotor_configuration_buff_count());
+                        }
+                    }
+                }else{
+                    Timber.d("getMotorConfig failed : "+response.message().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Timber.d("getMotorConfig failed : "+t.getMessage().toString());
+            }
+        });
+    }
+
+    private void setDefMotorConfigs(){
+        cache.save(Cache.BLE_ROT_COUNT, 5111);
+        cache.save(Cache.BLE_BOT_COUNT, 61538);
+        cache.save(Cache.BLE_TOP_COUNT, 2000);
+        cache.save(Cache.BLE_PPS_COUNT, 100);
+        cache.save(Cache.BLE_BUF_COUNT, 0);
+
+        getMotorConfig();
+    }
 
 }

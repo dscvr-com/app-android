@@ -10,6 +10,8 @@ import com.iam360.dscvr.R;
 
 import java.util.UUID;
 
+import timber.log.Timber;
+
 public class BLECommands {
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private BluetoothGatt mBluetoothGatt;
@@ -19,6 +21,8 @@ public class BLECommands {
     private UUID mServiceUIID;
     private UUID mWriteUIID;
 
+    private Cache cache;
+
     public BLECommands(BluetoothAdapter mBluetoothAdapter, BluetoothGatt mBluetoothGatt, BluetoothGattService mBluetoothService, Activity mMainActivity){
         this.mBluetoothAdapter = mBluetoothAdapter;
         this.mBluetoothGatt = mBluetoothGatt;
@@ -26,6 +30,8 @@ public class BLECommands {
         this.mMainActivity = mMainActivity;
         this.mServiceUIID = UUID.fromString(mMainActivity.getString(R.string.bluetooth_serviceuuidlong));
         this.mWriteUIID = UUID.fromString(mMainActivity.getString(R.string.bluetooth_characteristic_write));
+
+        cache = Cache.open();
     }
 
     public static char[] bytesToHex(byte[] bytes) {
@@ -39,38 +45,58 @@ public class BLECommands {
     }
 
     public void topRing(){
-        String data = "fe0702000005cd012c00";
-        data += CalculateCheckSum(hexStringToByteArray(data));
-        data += "ffffffffffff";
-//        writeData(hexStringToByteArray(data));
-        writeData(hexStringToByteArray("fe0702000007cf00640041ffffffffffff"));
+//        String data = "fe070200000c12012c00";
+        String data = "fe07";
+        data += "02"; //motor type
+        data += "0000"; //
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_TOP_COUNT)));//"07cf"; //rotate count
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"012c"; //speed
+        data += "00"; //steps
+        data += CalculateCheckSum(hexStringToByteArray(data)); //crc
+        data += "ffffffffffff"; //padding
+
+        Timber.d("topRing = "+data);
+
+//        fe0702000007cf00640041ffffffffffff
+//        fe0702000007cf0012c00affffffffffff
+
+        writeData(hexStringToByteArray(data));
+//        writeData(hexStringToByteArray("fe0702000007cf00640041ffffffffffff"));
     }
     public void bottomRing(){
-        String data = "fe0702fffff060012c00";
+//        String data = "fe0702fffff060012c00";
+
+        String data = "fe07";
+        data += "02"; //motor type
+        data += "ffff"; //
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_BOT_COUNT)));//"f062"; //rotate count
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"012c"; //speed
+        data += "00"; //steps
+
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
-//        writeData(hexStringToByteArray(data));
-        writeData(hexStringToByteArray("fe0702fffff062006400bbffffffffffff"));
+
+        Timber.d("bottomRing = "+data);
+
+        writeData(hexStringToByteArray(data));
+//        writeData(hexStringToByteArray("fe0702fffff062006400bbffffffffffff"));
     }
     public void rotateRight(){
-//                String data = "fe070100001c48012c00"; //012c - 300 speed
-//                String data = "fe070100001c48006400"; // 0064 - 100 speed
-//                String data = "fe0701000013F7006400"; // changed number of steps
-//                String data = "fe0701000013F700c800"; // changed number of steps
-                String data = "fe0701000013ec00c800"; // changed number of steps
-                data += CalculateCheckSum(hexStringToByteArray(data));
-                data += "ffffffffffff";
-                writeData(hexStringToByteArray(data));
+        String data = "fe07";
+        data += "01"; //motor type
+        data += "0000"; //
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT)));//"13f7"; //rotate count
+        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"00c8"; //speed; PPS
+        data += "00"; //steps
+
+        Timber.d("rotateRight = "+convertToHex(200));
+        data += CalculateCheckSum(hexStringToByteArray(data));
+        data += "ffffffffffff";
+        writeData(hexStringToByteArray(data));
+//        writeData(hexStringToByteArray("fe0701000013f700640074ffffffffffff"));
     }
 
     private byte[] hexStringToByteArray(final String s) {
-        mMainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-//                mSendData.setText(s);
-//                mSendDataContainer.setVisibility(View.VISIBLE);
-            }
-        });
 
         int len = s.length();
 
@@ -95,9 +121,8 @@ public class BLECommands {
         }
     }
 
-
-    public String CalculateCheckSum( byte[] bytes ){
-        short CheckSum = 0, i = 0;
+    private String CalculateCheckSum(byte[] bytes){
+        short CheckSum = 0, i;
         for( i = 0; i < bytes.length; i++){
             CheckSum += (short)(bytes[i] & 0xFF);
         }
@@ -108,5 +133,16 @@ public class BLECommands {
         }else{
             return Integer.toHexString(CheckSum);
         }
+    }
+
+    private String convertToHex(int val){
+        String retVal = Integer.toString(val, 16);
+
+        int pad = (4 - retVal.length());
+        for(int i = 1; i <= pad; i++){
+            retVal = "0"+retVal;
+        }
+        Timber.d("convertToHex = "+retVal);
+        return retVal;
     }
 }

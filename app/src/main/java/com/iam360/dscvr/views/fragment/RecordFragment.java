@@ -84,6 +84,8 @@ public class RecordFragment extends Fragment {
     private boolean isRecording = false;
     CustomRotationMatrixSource customRotationMatrixSource;
 
+    private Cache cache;
+
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
@@ -100,18 +102,14 @@ public class RecordFragment extends Fragment {
             if(((RecorderActivity) getActivity()).cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
 //                coreMotionMatrix = moveViaMotor();
 //                float[] coreMotionMatrix;
-                if(((RecorderActivity) getActivity()).dataHasCome){
-                    isRecording = true;
-                }else{
-                    isRecording = false;
-                }
+                isRecording = ((RecorderActivity) getActivity()).dataHasCome;
                 long mediaTime = System.currentTimeMillis();
                 long timeDiff = mediaTime - lastElapsedTime;
                 double elapsedSec = timeDiff / 1000.0;
 
-                int sessionRotateCount = 5100;
-                int sessionBuffCount = 0;
-                int PPS = 200;
+                int sessionRotateCount = Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT));
+                int sessionBuffCount = Integer.parseInt(cache.getString(Cache.BLE_BUF_COUNT));
+                int PPS = Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT));
                 int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
 
                 double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
@@ -146,7 +144,6 @@ public class RecordFragment extends Fragment {
 
                 customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
                 coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
-
             }
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
@@ -270,6 +267,8 @@ public class RecordFragment extends Fragment {
         preview.addView(recorderOverlayView);
 
         MixpanelHelper.trackViewCamera(getContext());
+
+        cache = Cache.open();
 
         return view;
     }
