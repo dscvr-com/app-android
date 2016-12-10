@@ -16,6 +16,7 @@ include $(OPENCV_ANDROID_PATH)
 LOCAL_MODULE    := ndkmodule
 LOCAL_SRC_FILES := online-stitcher/src/common/static_timer.cpp \
                    online-stitcher/src/common/image.cpp \
+                   online-stitcher/src/common/jniHelper.cpp \
                    online-stitcher/src/common/progressCallback.cpp \
                    online-stitcher/src/common/static_counter.cpp \
                    online-stitcher/src/io/checkpointStore.cpp \

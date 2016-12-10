@@ -1,7 +1,8 @@
 #include <jni.h>
-#include <android/log.h>
 #include <android/bitmap.h>
+#include "online-stitcher/src/common/jniHelper.hpp"
 #include "online-stitcher/src/recorder/recorder.hpp"
+#include "online-stitcher/src/common/assert.hpp"
 #include "online-stitcher/src/recorder/recorder2.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
 //#include "online-stitcher/src/recorder/imageSink.hpp"
@@ -20,13 +21,13 @@ Mat intrinsics;
 #error Optimization is disabled.
 #endif
 
-std::shared_ptr<CheckpointStore> leftStore;
-std::shared_ptr<CheckpointStore> rightStore;
-std::shared_ptr<CheckpointStore> postStore;
-std::shared_ptr<StorageImageSink> sink;
+std::unique_ptr<CheckpointStore> leftStore;
+std::unique_ptr<CheckpointStore> rightStore;
+std::unique_ptr<CheckpointStore> postStore;
+std::unique_ptr<StorageImageSink> sink;
 
-std::shared_ptr<Recorder2> recorder;
-std::shared_ptr<MotorControlRecorder> motorRecorder;
+std::unique_ptr<Recorder2> recorder;
+std::unique_ptr<MotorControlRecorder> motorRecorder;
 std::string debugPath;
 std::string path;
 int internalRecordingMode;
@@ -45,6 +46,8 @@ extern "C" {
     jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz);
 
     void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *env, jobject thiz);
+
+    void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *env, jobject thiz);
 
     void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *env, jobject thiz);
 
@@ -80,7 +83,7 @@ extern "C" {
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
 {
-    assert(mat.cols == width && mat.rows == height && mat.type() == CV_64F);
+    Assert(mat.cols == width && mat.rows == height && mat.type() == CV_64F);
     double* doubles = (double*)  mat.data;
     int size = width*height;
     jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(size);
@@ -104,8 +107,10 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
     std::string debugPath = "";//= pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
     path = pathLocal;
 
-    leftStore = std::make_shared<CheckpointStore>(path + "left/", path + "shared/");
-    rightStore = std::make_shared<CheckpointStore>(path + "right/", path + "shared/");
+    optonaut::JniHelper::jni_context = env;
+
+    leftStore = std::unique_ptr<CheckpointStore>(new CheckpointStore(path + "left/", path + "shared/"));
+    rightStore = std::unique_ptr<CheckpointStore>(new CheckpointStore(path + "right/", path + "shared/"));
 
     leftStore->Clear();
     rightStore->Clear();
@@ -138,12 +143,11 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
 
     // 1 -> RecorderGraph::ModeCenter
     if(mode == RecorderGraph::ModeTruncated) {
-        postStore = std::make_shared<CheckpointStore>(path + "post/", path + "shared/");
+        postStore = std::unique_ptr<CheckpointStore>(new CheckpointStore(path + "post/", path + "shared/"));
         postStore->Clear();
-        sink =std::make_shared<StorageImageSink>(*postStore);
-        motorRecorder = std::make_shared<MotorControlRecorder>(androidBase.clone(), zero.clone(), intrinsics, *sink, mode, 1.0, debugPath);
+        motorRecorder = std::unique_ptr<MotorControlRecorder>(new MotorControlRecorder(androidBase.clone(), zero.clone(), intrinsics, *((StorageImageSink*)postStore.get()), mode, 1.0, debugPath));
     } else {
-        recorder = std::make_shared<Recorder2>(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, debugPath);
+        recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, debugPath));
     }
 
 }
@@ -256,17 +260,26 @@ void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *env, jobject thiz)
 
 }
 
+void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *env, jobject thiz)
+{
+    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
+        motorRecorder->Cancel();
+    } else {
+        recorder->Cancel();
+    }
+}
+
 void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *env, jobject thiz)
 {
-    assert(recorder != NULL);
+//    assert(recorder != NULL);
     // Do nothing, except deleting
 //    [[NSFileManager defaultManager] removeItemAtPath:self->tempPath error:nil]; //TODO
 //    recorder->Dispose();
 
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        motorRecorder = NULL;
+        motorRecorder.reset();
     } else {
-        recorder = NULL;
+        recorder.reset();
     }
 }
 
@@ -354,7 +367,7 @@ jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *env, j
 
 jfloatArray Java_com_iam360_dscvr_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
 {
-    assert(false);
+    Assert(false);
 //    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
 }
 
@@ -389,10 +402,10 @@ jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobje
 {
     Mat result;
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        assert(recorder != NULL);
+        Assert(recorder != NULL);
         result = motorRecorder->GetPreviewImage()->image.data;
     } else {
-        assert(recorder != NULL);
+        Assert(recorder != NULL);
         result = recorder->GetPreviewImage()->image.data;
     }
     return matrixToBitmap(env, result);
@@ -401,9 +414,9 @@ jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobje
 jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        assert(motorRecorder != NULL);
+        Assert(motorRecorder != NULL);
     } else {
-        assert(recorder != NULL);
+        Assert(recorder != NULL);
     }
     return true;
 //    return recorder->PreviewAvailable();
