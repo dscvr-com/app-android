@@ -369,6 +369,7 @@ public class RecordFragment extends Fragment {
         recordPreview.setPreviewListener(null);
         recordPreview.stopPreviewFeed();
 
+        // TODO: What is this pause call for?
         recordPreview.onPause();
 
         // start background thread to cancel recorder
