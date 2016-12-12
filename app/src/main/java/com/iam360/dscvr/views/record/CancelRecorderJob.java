@@ -30,8 +30,8 @@ public class CancelRecorderJob extends Job {
     public void onRun() throws Throwable {
 
         Timber.v("finishing Recorder...");
-        Recorder.getPreviewImage();
         try {
+            Recorder.getPreviewImage();
             Recorder.finish();
         } catch (Exception e) {}
         Timber.v("disposing Recorder...");

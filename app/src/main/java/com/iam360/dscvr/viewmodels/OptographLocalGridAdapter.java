@@ -1628,6 +1628,7 @@ public class OptographLocalGridAdapter extends RecyclerView.Adapter<RecyclerView
             optograph = mydb.checkOptoDetails(optograph);
             if (optograph != null) optograph.setPerson(person);
         }
+//        Log.d("Caching", "addItem 3.1 " + optograph);
 
         if (optograph == null) {
             return;

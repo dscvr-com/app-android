@@ -175,7 +175,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         " (id text primary key not null, created_at text not null," +
                         "deleted_at text, display_name text not null, user_name text not null," +
                         "email text not null, text text not null," +
-                        "elite_status boolean not null, avatar_asset_id text not null," +
+                        "elite_status boolean not null, avatar_asset_id text," +
                         "optographs_count integer not null, followers_count integer not null," +
                         "followed_count integer not null, is_followed boolean not null," +
                         "facebook_user_id text not null, facebook_token text not null," +
