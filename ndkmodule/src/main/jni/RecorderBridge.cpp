@@ -402,7 +402,7 @@ jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobje
 {
     Mat result;
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        Assert(recorder != NULL);
+        Assert(motorRecorder != NULL);
         result = motorRecorder->GetPreviewImage()->image.data;
     } else {
         Assert(recorder != NULL);
