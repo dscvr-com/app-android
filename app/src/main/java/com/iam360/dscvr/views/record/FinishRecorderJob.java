@@ -104,7 +104,7 @@ public class FinishRecorderJob extends Job {
         GlobalState.shouldHardRefreshFeed = true;
         Timber.v("finish all job");
 
-//        DscvrApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(id));
+        DscvrApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(id));
 
     }
 

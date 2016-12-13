@@ -189,7 +189,7 @@ public class Api2Consumer {
     public Observable<Optograph> getOptographsFromPerson(String id) {
         return getOptographsFromPerson(id, DEFAULT_LIMIT, getNow());
     }
-}
+
     public void getMotorConfig(Callback<List<MotorConfig>> callback) {
         Call<List<MotorConfig>> call = service.getMotorConfig();
         call.enqueue(callback);
