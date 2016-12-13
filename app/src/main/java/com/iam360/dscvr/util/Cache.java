@@ -47,13 +47,19 @@ public class Cache {
     public static final String ONBOARDING_VERSION = "ONBOARDING_VERSION";
     public static final String NOTIF_COUNT = "NOTIF_COUNT";
     public static final String BLE_DEVICE_ADDRESS = "BLE_DEVICE_ADDRESS";
+    public static final String BLE_ROT_COUNT = "BLE_ROT_COUNT";
+    public static final String BLE_BOT_COUNT = "BLE_BOT_COUNT";
+    public static final String BLE_TOP_COUNT = "BLE_TOP_COUNT";
+    public static final String BLE_PPS_COUNT = "BLE_PPS_COUNT";
+    public static final String BLE_BUF_COUNT = "BLE_BUF_COUNT";
+
 
     public static final String UPLOAD_ON_GOING = "UPLOAD_ON_GOING";
     public static final String BLE_DEVICE_NAME = "BLE_DEVICE_NAME";
     public static final String HORIZONTAL_VIEW_ANGLE = "BLE_DEVICE_NAME";
     public static final String MOTOR_ON = "MOTOR_ON";
 
-    //<ID,<face,6faces(boolean)>>
+    //<ID,<face,6faces(boolean)>>11
     public Map<String,Map<String,List<Boolean>>> upload = new HashMap<>();
 
     private Cache(Context context) {

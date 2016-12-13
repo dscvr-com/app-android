@@ -3,6 +3,7 @@ package com.iam360.dscvr.network;
 import android.util.Log;
 
 import com.iam360.dscvr.model.Gateway;
+import com.iam360.dscvr.model.MotorConfig;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
@@ -19,6 +20,7 @@ import com.squareup.okhttp.RequestBody;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -186,5 +188,10 @@ public class Api2Consumer {
 
     public Observable<Optograph> getOptographsFromPerson(String id) {
         return getOptographsFromPerson(id, DEFAULT_LIMIT, getNow());
+    }
+}
+    public void getMotorConfig(Callback<List<MotorConfig>> callback) {
+        Call<List<MotorConfig>> call = service.getMotorConfig();
+        call.enqueue(callback);
     }
 }

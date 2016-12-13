@@ -20,6 +20,7 @@ public class Recorder {
     public static native void push(byte[] data, int width, int height, double[] extrinsicsData);
     public static native SelectionPoint[] getSelectionPoints();
     public static native void finish();
+    public static native void cancel();
     private static native void dispose();
     public static native float[] getBallPosition();
     public static native boolean isFinished();

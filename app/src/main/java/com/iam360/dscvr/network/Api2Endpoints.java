@@ -1,6 +1,7 @@
 package com.iam360.dscvr.network;
 
 import com.iam360.dscvr.model.Gateway;
+import com.iam360.dscvr.model.MotorConfig;
 import com.iam360.dscvr.model.LogInReturn;
 import com.iam360.dscvr.model.MapiResponseObject;
 import com.iam360.dscvr.model.NotificationTriggerData;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import retrofit.Call;
 import retrofit.http.Body;
+import retrofit.http.GET;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -38,6 +40,9 @@ public interface Api2Endpoints {
 
     @POST("notification/create")
     Call<String> triggerNotif(@Body NotificationTriggerData data);
+
+    @GET("config/motor")
+    Call<List<MotorConfig>> getMotorConfig();
 
 //    https://mapi.dscvr.com/story/merged/7753e6e9-23c6-46ec-9942-35a5ea744ece?feedpage=1&feedsize=5&youpage=1&yousize=5
     @GET("/story/profile")

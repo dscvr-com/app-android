@@ -29,11 +29,8 @@ public class CancelRecorderJob extends Job {
     @Override
     public void onRun() throws Throwable {
 
-        Timber.v("finishing Recorder...");
-        try {
-            Recorder.getPreviewImage();
-            Recorder.finish();
-        } catch (Exception e) {}
+        Timber.v("cancelling Recorder...");
+        Recorder.cancel();
         Timber.v("disposing Recorder...");
         Recorder.disposeRecorder();
 
