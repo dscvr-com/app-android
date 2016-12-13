@@ -1,10 +1,14 @@
 package com.iam360.dscvr.network;
 
 import com.iam360.dscvr.model.Gateway;
+import com.iam360.dscvr.model.MotorConfig;
 import com.iam360.dscvr.model.NotificationTriggerData;
+
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.http.Body;
+import retrofit.http.GET;
 import retrofit.http.POST;
 
 /**
@@ -24,5 +28,8 @@ public interface Api2Endpoints {
 
     @POST("notification/create")
     Call<String> triggerNotif(@Body NotificationTriggerData data);
+
+    @GET("config/motor")
+    Call<List<MotorConfig>> getMotorConfig();
 
 }

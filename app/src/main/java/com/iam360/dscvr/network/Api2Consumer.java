@@ -3,6 +3,7 @@ package com.iam360.dscvr.network;
 import android.util.Log;
 
 import com.iam360.dscvr.model.Gateway;
+import com.iam360.dscvr.model.MotorConfig;
 import com.iam360.dscvr.model.NotificationTriggerData;
 import com.iam360.dscvr.util.Cache;
 import com.squareup.okhttp.Interceptor;
@@ -10,6 +11,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -23,8 +25,8 @@ import timber.log.Timber;
  * @date 2015-11-13
  */
 public class Api2Consumer {
-    private static final String BASE_URL = "https://mapi.dscvr.com/api/";
-    private static final String BASE_URL2 = "https://mapi.dscvr.com/";
+    private static final String BASE_URL = "https://noel.dscvr.com/api/";
+    private static final String BASE_URL2 = "https://noel.dscvr.com/";
 
     private static final int DEFAULT_LIMIT = 5;
     public static final int PROFILE_GRID_LIMIT = 12;
@@ -114,4 +116,8 @@ public class Api2Consumer {
         call.enqueue(callback);
     }
 
+    public void getMotorConfig(Callback<List<MotorConfig>> callback) {
+        Call<List<MotorConfig>> call = service.getMotorConfig();
+        call.enqueue(callback);
+    }
 }
