@@ -587,6 +587,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
                         }
                     } else {
                         updateOptograph(optographGlobal);
+                        DscvrApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(UUID.fromString(optographGlobal.getId())));
                         finish();
                     }
 //                }
