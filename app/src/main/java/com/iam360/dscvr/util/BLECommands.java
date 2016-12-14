@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 
 import com.iam360.dscvr.R;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -48,9 +49,9 @@ public class BLECommands {
 //        String data = "fe070200000c12012c00";
         String data = "fe07";
         data += "02"; //motor type
-        data += "0000"; //
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_TOP_COUNT)));//"07cf"; //rotate count
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"012c"; //speed
+//        data += "0000"; //
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_TOP_COUNT)), true);//"07cf"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"012c"; //speed
         data += "00"; //steps
         data += CalculateCheckSum(hexStringToByteArray(data)); //crc
         data += "ffffffffffff"; //padding
@@ -68,9 +69,9 @@ public class BLECommands {
 
         String data = "fe07";
         data += "02"; //motor type
-        data += "ffff"; //
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_BOT_COUNT)));//"f062"; //rotate count
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"012c"; //speed
+//        data += "ffff"; //
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_BOT_COUNT)), true);//"f062"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"012c"; //speed
         data += "00"; //steps
 
         data += CalculateCheckSum(hexStringToByteArray(data));
@@ -84,22 +85,20 @@ public class BLECommands {
     public void rotateRight(){
         String data = "fe07";
         data += "01"; //motor type
-        data += "0000"; //
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT)));//"13f7"; //rotate count
-        data += convertToHex(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)));//"00c8"; //speed; PPS
+//        data += "0000"; //
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT)), true);//"13f7"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"00c8"; //speed; PPS
         data += "00"; //steps
 
-        Timber.d("rotateRight = "+convertToHex(200));
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
+        Timber.d("rotateRight = "+data);
         writeData(hexStringToByteArray(data));
 //        writeData(hexStringToByteArray("fe0701000013f700640074ffffffffffff"));
     }
 
     private byte[] hexStringToByteArray(final String s) {
-
         int len = s.length();
-
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
@@ -144,5 +143,25 @@ public class BLECommands {
         }
         Timber.d("convertToHex = "+retVal);
         return retVal;
+    }
+
+
+    private String convertToHex2(int val, boolean sub){
+//        String retVal = Integer.toString(val, 16);
+//
+//        int pad = (4 - retVal.length());
+//        for(int i = 1; i <= pad; i++){
+//            retVal = "0"+retVal;
+//        }
+        Timber.d("convertToHex2 val = "+val);
+        String ret =  new String(bytesToHex(ByteBuffer.allocate(4).putInt(val).array()));
+        if (sub){
+            Timber.d("convertToHex2 ret = "+ret);
+            return ret;
+        }else{
+            Timber.d("convertToHex2 ret = "+ret.substring(4));
+            return ret.substring(4);
+
+        }
     }
 }
