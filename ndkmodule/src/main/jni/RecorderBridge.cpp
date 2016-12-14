@@ -79,7 +79,44 @@ extern "C" {
 
     jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz);
 
+
+    jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *env, jobject thiz);
+    jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *env, jobject thiz);
+    jdouble Java_com_iam360_dscvr_record_Recorder_getBotThetaValue(JNIEnv *env, jobject thiz);
+
+
 }
+
+
+jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *env, jobject thiz)
+{
+    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
+       return  motorRecorder->getTopThetaValue();
+    } else {
+       return 0;
+    }
+}
+
+jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *env, jobject thiz)
+{
+    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
+       return  motorRecorder->getCenterThetaValue();
+    } else {
+       return 0;
+    }
+}
+
+jdouble Java_com_iam360_dscvr_record_Recorder_getBotThetaValue(JNIEnv *env, jobject thiz)
+{
+    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
+       return  motorRecorder->getBotThetaValue();
+    } else {
+       return 0;
+    }
+}
+
+
+
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
 {
@@ -402,7 +439,7 @@ jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobje
 {
     Mat result;
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        Assert(recorder != NULL);
+        Assert(motorRecorder != NULL);
         result = motorRecorder->GetPreviewImage()->image.data;
     } else {
         Assert(recorder != NULL);
