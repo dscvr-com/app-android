@@ -59,7 +59,6 @@ public class ImagePickerActivity extends AppCompatActivity {
 
     private Person person;
     private Cache cache;
-    private ApiConsumer apiConsumer;
     private Api2Consumer api2Consumer;
     private DBHelper mydb;
     private OptographListAdapter optographLocalGridAdapter;
@@ -73,6 +72,10 @@ public class ImagePickerActivity extends AppCompatActivity {
 
         MODE = getIntent().getExtras().getInt(PICKER_MODE);
         person = getIntent().getExtras().getParcelable("person");
+        String optoId = "";
+        if(getIntent().getExtras().getString("optoId") != null){
+            optoId = getIntent().getExtras().getString("optoId");
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         TextView title = (TextView) findViewById(R.id.title);
@@ -98,11 +101,10 @@ public class ImagePickerActivity extends AppCompatActivity {
         if(MODE == CREATE_STORY_MODE || MODE == CREATE_STORY_MODE2) {
             cache = Cache.open();
             String token = cache.getString(cache.USER_TOKEN);
-            apiConsumer = new ApiConsumer(token.equals("")?null:token);
             api2Consumer = new Api2Consumer(null,"");
             mydb = new DBHelper(this);
 
-            optographLocalGridAdapter = new OptographListAdapter(this,MODE);
+            optographLocalGridAdapter = new OptographListAdapter(this,MODE, optoId);
 
             if (person != null) {
                 setAdapter(recyclerView);
