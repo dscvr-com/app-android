@@ -138,11 +138,11 @@ public class RecordFragment extends Fragment {
                 if (currentPhi > ( 2 * Math.PI) -0.001) {
                     isRecording = false;
                     if(currentTheta == 0) {
-                        currentTheta = (-DeviceName.getCurrentThetaValue());
+                        currentTheta = (float) Recorder.getBotThetaValue();
                     } else if(currentTheta < 0) {
-                        currentTheta = DeviceName.getCurrentThetaValue();
+                        currentTheta = (float) Recorder.getTopThetaValue();
                     } else if(currentTheta > 0) {
-                        currentTheta = 0;
+                        currentTheta = (float) Recorder.getCenterThetaValue();
                     }
                     currentDegree = 0;
                 }

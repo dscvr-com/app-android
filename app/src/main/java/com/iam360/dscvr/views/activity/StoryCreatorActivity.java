@@ -280,6 +280,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             case R.id.add_image:
                 intent = new Intent(this, ImagePickerActivity.class);
                 intent.putExtra("person",optograph.getPerson());
+                intent.putExtra("optoId",optograph.getId());
                 intent.putExtra(ImagePickerActivity.PICKER_MODE, ImagePickerActivity.CREATE_STORY_MODE2);
                 Log.d("MARK","add_image");
                 startActivityForResult(intent, 11);

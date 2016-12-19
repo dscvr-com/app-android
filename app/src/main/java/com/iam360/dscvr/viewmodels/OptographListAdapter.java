@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.opengl.Cube;
-import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.ImageUrlBuilder;
@@ -39,8 +38,8 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
     private List<Optograph> optographs;
     private Context context;
     private int mode;
-    private Cache cache;
     private DBHelper mydb;
+    private String optoId;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
@@ -64,12 +63,12 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
         notifyItemRemoved(position);
     }
 
-    public OptographListAdapter(Context context, int mode) {
+    public OptographListAdapter(Context context, int mode, String optoId) {
         this.context = context;
         this.mode = mode;
-        this.cache = Cache.open();
         this.optographs = new ArrayList<>();
-        mydb = new DBHelper(context);
+        this.mydb = new DBHelper(context);
+        this.optoId = optoId;
     }
 
     @Override
@@ -119,7 +118,7 @@ public class OptographListAdapter extends RecyclerView.Adapter<OptographListAdap
 
 
     public void addItem(Optograph optograph) {
-        if (optograph == null || optographs.contains(optograph)) {
+        if (optograph == null || optographs.contains(optograph) || optoId.equals(optograph.getId())) {
             return;
         }
 

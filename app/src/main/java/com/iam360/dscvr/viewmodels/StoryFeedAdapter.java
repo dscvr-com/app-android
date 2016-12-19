@@ -109,6 +109,10 @@ public class StoryFeedAdapter extends RecyclerView.Adapter<StoryFeedAdapter.Stor
             return;
         }
 
+        if(optograph.getStory() == null || optograph.getStory().getId() == null){
+            return;
+        }
+
         new DBHelper2(context).saveToSQLite(optograph);
         optographs.add(optograph);
         notifyItemInserted(getItemCount());
