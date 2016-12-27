@@ -952,7 +952,10 @@ public class OptographDetailsActivity extends AppCompatActivity implements Senso
 
 //                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_position() = "+chldrns.get(a).getStory_object_position());
 //                    Log.d("MARK","initStoryChildrens  chldrns.get(a).getStory_object_rotation() = "+chldrns.get(a).getStory_object_rotation());
-                    binding.optograph2dview.planeSetter(stryChld);
+
+                    if(chldrns.get(a).getStory_object_phi() != null  && chldrns.get(a).getStory_object_theta() != null  && !String.valueOf(chldrns.get(a).getStory_object_phi()).equals("") && !String.valueOf(chldrns.get(a).getStory_object_theta()).equals("")){
+                        binding.optograph2dview.planeSetter(stryChld);
+                    }
                 }
             }
             binding.optograph2dview.setLoadingScreen(binding.loadingScreen, binding.circleCountDownView);
