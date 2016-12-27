@@ -274,7 +274,11 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     binding.markerTextEdittxt.setVisibility(View.GONE);
                 }else{
                     binding.markerTextEdittxt.setVisibility(View.VISIBLE);
+                    binding.markerTextEdittxt.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(binding.markerTextEdittxt, InputMethodManager.SHOW_IMPLICIT);
                 }
+                binding.markerTextEdittxt.setText("");
                 binding.markerText.setText("");
                 break;
             case R.id.add_image:
@@ -290,6 +294,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
                     binding.staticTextEdittxt.setVisibility(View.GONE);
                 }else{
                     binding.staticTextEdittxt.setVisibility(View.VISIBLE);
+                    binding.staticTextEdittxt.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(binding.staticTextEdittxt, InputMethodManager.SHOW_IMPLICIT);
                 }
                 break;
             case R.id.done_add:
