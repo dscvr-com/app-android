@@ -24,7 +24,6 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.gcm.GCMRegistrationIntentService;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
-import com.iam360.dscvr.sensors.CoreMotionListener;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
@@ -146,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
                         adapterViewPager.sharingFragment.updateOptograph();
                         break;
                     case STORY_MODE:
+                        if(cache.getString(Cache.USER_TOKEN).equals("")){
+                            viewPager.setCurrentItem(FEED_MODE, false);
+                        }
                         break;
                 }
             }

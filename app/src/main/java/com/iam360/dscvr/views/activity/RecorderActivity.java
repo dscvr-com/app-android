@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class RecorderActivity extends AppCompatActivity {
 
@@ -64,6 +66,8 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean useBLE = false;
     public boolean dataHasCome = false;
 
+    RecorderActivity act;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +78,8 @@ public class RecorderActivity extends AppCompatActivity {
         bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
         recordFragment = new RecordFragment();
         recordFragment.setArguments(bundle);
+
+        act = this;
 
 //      Bundle bundle = new Bundle();
 //      bundle.putInt("mode", Constants.MODE_CENTER);
@@ -273,22 +279,52 @@ public class RecorderActivity extends AppCompatActivity {
             Log.d("MARK","motorRingType  == "+motorRingType);
             Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
             if(motorRingType == 2) {
-                Log.d("MARK2","motorRingType = "+System.currentTimeMillis() / 1000.0);
                 dataHasCome = false;
                 bleCommands.topRing();
                 motorRingType = 3;
             }else if(motorRingType == 3){
-                dataHasCome = true;
-                bleCommands.rotateRight();
-                motorRingType = 4;
+//                dataHasCome = true;
+//                bleCommands.rotateRight();
+//                motorRingType = 4;
+
+                act.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataHasCome = true;
+                                bleCommands.rotateRight();
+                                motorRingType = 4;
+
+                                Timber.d("onCharacteristicChanged motorRingType 3");
+                            }
+                        }, 2000);
+                    }
+                });
             }else if(motorRingType == 4){
                 dataHasCome = false;
                 bleCommands.bottomRing();
                 motorRingType = 5;
             }else if(motorRingType == 5){
-                dataHasCome = true;
-                bleCommands.rotateRight();
-                motorRingType = 6;
+//                dataHasCome = true;
+//                bleCommands.rotateRight();
+//                motorRingType = 6;
+                act.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataHasCome = true;
+                                bleCommands.rotateRight();
+                                motorRingType = 6;
+
+                                Timber.d("onCharacteristicChanged motorRingType 5");
+                            }
+                        }, 2000);
+                    }
+                });
             }else if(motorRingType == 6){
                 dataHasCome = false;
                 bleCommands.topRing();

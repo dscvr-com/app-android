@@ -35,8 +35,10 @@ public class PersonManager {
                 @Override
                 public void onResponse(Response<Person> response, Retrofit retrofit) {
                     Person person = response.body();
-                    person.setActivity(context.getClass().getSimpleName());
-                    BusProvider.getInstance().post(new PersonReceivedEvent(person));
+                    if(person != null){
+                        person.setActivity(context.getClass().getSimpleName());
+                        BusProvider.getInstance().post(new PersonReceivedEvent(person));
+                    }
                 }
 
                 @Override

@@ -220,7 +220,7 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
     }
 
     public void initStoryChildrens() {
-        if(optograph.getStory() != null && !optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
+        if(optograph.getStory() != null && optograph.getStory().getId() != null &&!optograph.getStory().getId().equals("") && optograph.getStory().getChildren().size() > 0){
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getChildren().size() = "+optograph.getStory().getChildren().size());
             Log.d("MARK","initStoryChildrens  optograph.getStory().getId = "+optograph.getStory().getId());
@@ -246,7 +246,9 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
 
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
-                    binding.optograph2dview.planeSetter(stryChld);
+                    if(chldrns.get(a).getStory_object_phi() != null  && chldrns.get(a).getStory_object_theta() != null  && !String.valueOf(chldrns.get(a).getStory_object_phi()).equals("") && !String.valueOf(chldrns.get(a).getStory_object_theta()).equals("")){
+                        binding.optograph2dview.planeSetter(stryChld);
+                    }
                 }
             }
 //            binding.optograph2dview.setLoadingScreen(binding.loadingScreen);
@@ -549,12 +551,14 @@ public class StoryCreatorActivity extends AppCompatActivity implements SensorEve
             }
         });
     }
+
+
     private void updateStory(SendStory stry){
         apiConsumer.updateStories(optograph.getStory().getId(), stry, new Callback<SendStoryResponse>() {
             @Override
             public void onResponse(Response<SendStoryResponse> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
-                    Log.d("MARK","createStory response.isSuccess = "+response.errorBody());
+                    Log.d("MARK","updateStory response.isSuccess = "+response.errorBody());
                     return;
                 }
                 SendStoryResponse response1 = response.body();

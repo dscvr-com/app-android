@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Joven on 10/28/2016.
@@ -44,6 +45,10 @@ public class DBHelper2 {
         String loc = opto.getLocation() == null ? "" : opto.getLocation().getId();
         String per = opto.getPerson() == null ? "" : opto.getPerson().getId();
         String stry = opto.getStory() == null ? "" : opto.getStory().getId();
+
+        Timber.d("saveToSQLite loc = "+loc);
+        Timber.d("saveToSQLite per = "+per);
+        Timber.d("saveToSQLite stry = "+stry);
 
         if (!DBHelper.nullChecker(per).equals("")) {
             saveToSQLitePer(opto.getPerson());
@@ -225,36 +230,41 @@ public class DBHelper2 {
         Cursor res = mydb.getData(stry.getId(), DBHelper.STORY_TABLE_NAME, "id");
         res.moveToFirst();
         if (stry.getId() != null) {
-            Story story = stry;
             if (res.getCount() > 0) {
-                Log.d("StoryFeedAdapter", "Updating story " + story.getId());
+                Log.d("StoryFeedAdapter", "Updating story " + stry.getId());
                 String id = "id";
                 String tb = DBHelper.STORY_TABLE_NAME;
-                if (story.getCreated_at() != null && !story.getCreated_at().equals("")) {
-                    mydb.updateTableColumn(tb, id, story.getId(), "created_at", story.getCreated_at());
+                if (stry.getCreated_at() != null && !stry.getCreated_at().equals("")) {
+                    mydb.updateTableColumn(tb, id, stry.getId(), "created_at", stry.getCreated_at());
                 }
-                if (story.getUpdated_at() != null && !story.getUpdated_at().equals("")) {
-                    mydb.updateTableColumn(tb, id, story.getId(), "updated_at", story.getUpdated_at());
+                if (stry.getUpdated_at() != null && !stry.getUpdated_at().equals("")) {
+                    mydb.updateTableColumn(tb, id, stry.getId(), "updated_at", stry.getUpdated_at());
                 }
-                if (story.getDeleted_at() != null && !story.getDeleted_at().equals("")) {
-                    mydb.updateTableColumn(tb, id, story.getId(), "deleted_at", story.getDeleted_at());
+                if (stry.getDeleted_at() != null && !stry.getDeleted_at().equals("")) {
+                    mydb.updateTableColumn(tb, id, stry.getId(), "deleted_at", stry.getDeleted_at());
                 }
-                if (story.getOptograph_id() != null && !story.getOptograph_id().equals("")) {
-                    mydb.updateTableColumn(tb, id, story.getId(), "optograph_id", story.getOptograph_id());
+                if (stry.getOptograph_id() != null && !stry.getOptograph_id().equals("")) {
+                    mydb.updateTableColumn(tb, id, stry.getId(), "optograph_id", stry.getOptograph_id());
                 }
-                if (story.getPerson_id() != null && !story.getPerson_id().equals("")) {
-                    mydb.updateTableColumn(tb, id, story.getId(), "person_id", story.getPerson_id());
+                if (stry.getPerson_id() != null && !stry.getPerson_id().equals("")) {
+                    mydb.updateTableColumn(tb, id, stry.getId(), "person_id", stry.getPerson_id());
                 }
                 List<String> childrenIds = new LinkedList<>();
-                if(story.getChildren().size() > 0){
+                if(stry.getChildren().size() > 0){
                     List<StoryChild> chldrn = stry.getChildren();
                     String id2 = "story_object_id";
-                    Log.d("StoryFeedAdapter", "Updating story chld.size = " + chldrn.size());
+                    Log.d("saveToSQLiteStry", "Updating story chld.size = " + chldrn.size());
                     for (int z=0; z < chldrn.size(); z++){
                         String tb2 = DBHelper.STORY_CHILDREN_TABLE_NAME;
                         StoryChild chld = chldrn.get(z);
                         res = mydb.getData(chld.getStory_object_id(), tb2, "story_object_id");
                         res.moveToFirst();
+                        if (res.getCount() == 0) {
+                            mydb.insertStoryChildren(chld.getStory_object_id(), chld.getStory_object_story_id(), chld.getStory_object_media_type(), chld.getStory_object_media_face(),
+                                    chld.getStory_object_media_description(), chld.getStory_object_media_additional_data(), TextUtils.join(",", chld.getStory_object_position()), TextUtils.join(",", chld.getStory_object_rotation()),
+                                    chld.getStory_object_phi(), chld.getStory_object_theta(),
+                                    chld.getStory_object_created_at(), chld.getStory_object_updated_at(), chld.getStory_object_deleted_at(), chld.getStory_object_media_filename(), chld.getStory_object_media_fileurl());
+                        }
                         if(chld.getStory_object_id() != null){
                             Log.d("saveToSQLiteStry","chld.getStory_object_id() = "+chld.getStory_object_id());
                             Log.d("saveToSQLiteStry","chld.getStory_object_story_id() = "+chld.getStory_object_story_id());
@@ -299,12 +309,12 @@ public class DBHelper2 {
                         childrenIds.add(chldrn.get(z).getStory_object_id());
                     }
                 }
-                mydb.updateTableColumn(tb, id, story.getId(), "story_object_id", TextUtils.join(",", childrenIds));
+                mydb.updateTableColumn(tb, id, stry.getId(), "story_object_id", TextUtils.join(",", childrenIds));
 
                 res.close();
             }else{
                 List<String> childrenIds = new LinkedList<>();
-                if(story.getChildren().size() > 0){
+                if(stry.getChildren().size() > 0){
                     List<StoryChild> chldrn = stry.getChildren();
                     Log.d("StoryFeedAdapter", "Inserting story chld chldrn.size() = " + chldrn.size());
 
@@ -318,10 +328,10 @@ public class DBHelper2 {
                         childrenIds.add(chldrn.get(z).getStory_object_id());
                     }
                 }
-                Log.d("StoryFeedAdapter", "Inserting story " + story.getId());
-                Log.d("StoryFeedAdapter", "Inserting story.getPerson_id() " +story.getPerson_id());
+                Log.d("StoryFeedAdapter", "Inserting story " + stry.getId());
+                Log.d("StoryFeedAdapter", "Inserting story.getPerson_id() " + stry.getPerson_id());
 
-                mydb.insertStory(story.getId(),story.getCreated_at(),story.getUpdated_at(),story.getDeleted_at(), story.getOptograph_id(), story.getPerson_id(), TextUtils.join(",", childrenIds));
+                mydb.insertStory(stry.getId(), stry.getCreated_at(), stry.getUpdated_at(), stry.getDeleted_at(), stry.getOptograph_id(), stry.getPerson_id(), TextUtils.join(",", childrenIds));
                 res.close();
             }
         }
@@ -339,8 +349,10 @@ public class DBHelper2 {
                 Cursor res = mydb.getData(optoId, DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID);
                 res.moveToFirst();
                 Optograph opto = createOptoFromCursor(res);
-                opto.setStory(story);
-                optographs.add(opto);
+                if(opto != null){
+                    opto.setStory(story);
+                    optographs.add(opto);
+                }
             }else{ //optographs
                 Optograph opto = createOptoFromCursor(cursor);
                 String storyId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STORY_ID));
@@ -362,7 +374,7 @@ public class DBHelper2 {
         return Observable.from(optographs);
     }
 
-    public Optograph createOptoFromCursor(Cursor res){
+    private Optograph createOptoFromCursor(Cursor res){
         Optograph opto = null;
         Log.d("DBHelper2","createOptoFromCursor res.getCount() = "+res.getCount());
         if (res.getCount() > 0) {
@@ -394,7 +406,7 @@ public class DBHelper2 {
         return opto;
     }
 
-    public Person createPersonFromCursor(Cursor res){
+    private Person createPersonFromCursor(Cursor res){
         Person person = new Person();
         res.moveToFirst();
         if (res.getCount()!= 0) {
@@ -419,7 +431,7 @@ public class DBHelper2 {
         return person;
     }
 
-    public Location createLocationFromCursor(Cursor res){
+    private Location createLocationFromCursor(Cursor res){
         Location location = new Location();
         res.moveToFirst();
         if (res.getCount()!= 0) {
@@ -437,7 +449,7 @@ public class DBHelper2 {
         return location;
     }
 
-    public Story createStoryFromCursor(Cursor res){
+    private Story createStoryFromCursor(Cursor res){
         Story story = new Story();
         res.moveToFirst();
         if (res.getCount() >  0) {
@@ -455,7 +467,7 @@ public class DBHelper2 {
         return story;
     }
 
-    public ArrayList<StoryChild> createStoryChildrenFromCursor(Cursor res){
+    private ArrayList<StoryChild> createStoryChildrenFromCursor(Cursor res){
         ArrayList<StoryChild> storyChldren = new ArrayList<StoryChild>();
         res.moveToFirst();
 
