@@ -126,7 +126,6 @@ public class RecorderActivity extends AppCompatActivity {
             mScanFilters.add(builder.build());
             beginBT();
         }
-
     }
 
     public void startRecording() {

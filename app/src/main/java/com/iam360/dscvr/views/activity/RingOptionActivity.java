@@ -473,13 +473,13 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 if (response.isSuccess()) {
                     List<MotorConfig> motorConfigs = response.body();
                     for(int a=0; a < motorConfigs.size(); a++){
-                        Timber.d("getMotorConfig getMotor_configuration_mobile_platform : "+motorConfigs.get(a).getMotor_configuration_mobile_platform());
+//                        Timber.d("getMotorConfig getMotor_configuration_mobile_platform : "+motorConfigs.get(a).getMotor_configuration_mobile_platform());
                         if(motorConfigs.get(a).getMotor_configuration_mobile_platform().equals("Android")){
-                            Timber.d("getMotorConfig getMotor_configuration_rotate_count : "+motorConfigs.get(a).getMotor_configuration_rotate_count());
-                            Timber.d("getMotorConfig getMotor_configuration_bot_count : "+motorConfigs.get(a).getMotor_configuration_bot_count());
-                            Timber.d("getMotorConfig getMotor_configuration_top_count : "+motorConfigs.get(a).getMotor_configuration_top_count());
-                            Timber.d("getMotorConfig getMotor_configuration_pulse_per_second : "+motorConfigs.get(a).getMotor_configuration_pulse_per_second());
-                            Timber.d("getMotorConfig getMotor_configuration_buff_count : "+motorConfigs.get(a).getMotor_configuration_buff_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_rotate_count : "+motorConfigs.get(a).getMotor_configuration_rotate_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_bot_count : "+motorConfigs.get(a).getMotor_configuration_bot_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_top_count : "+motorConfigs.get(a).getMotor_configuration_top_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_pulse_per_second : "+motorConfigs.get(a).getMotor_configuration_pulse_per_second());
+//                            Timber.d("getMotorConfig getMotor_configuration_buff_count : "+motorConfigs.get(a).getMotor_configuration_buff_count());
 
                             cache.save(Cache.BLE_ROT_COUNT, motorConfigs.get(a).getMotor_configuration_rotate_count());
                             cache.save(Cache.BLE_BOT_COUNT, motorConfigs.get(a).getMotor_configuration_bot_count());
@@ -501,13 +501,12 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setDefMotorConfigs(){
-        cache.save(Cache.BLE_ROT_COUNT, 5111);
-        cache.save(Cache.BLE_BOT_COUNT, 61538);
-        cache.save(Cache.BLE_TOP_COUNT, 2000);
-        cache.save(Cache.BLE_PPS_COUNT, 100);
-        cache.save(Cache.BLE_BUF_COUNT, 0);
+        cache.save(Cache.BLE_ROT_COUNT, "5111");
+        cache.save(Cache.BLE_BOT_COUNT, "61538");
+        cache.save(Cache.BLE_TOP_COUNT, "2000");
+        cache.save(Cache.BLE_PPS_COUNT, "100");
+        cache.save(Cache.BLE_BUF_COUNT, "0");
 
         getMotorConfig();
     }
-
 }
