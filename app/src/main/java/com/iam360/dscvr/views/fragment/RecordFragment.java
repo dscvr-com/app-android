@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.camera2.CameraAccessException;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SizeF;
 import android.view.LayoutInflater;
@@ -254,7 +256,6 @@ public class RecordFragment extends Fragment {
         Handler mainHandler = new Handler(getActivity().getMainLooper());
         mainHandler.post(this::finishRecording);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

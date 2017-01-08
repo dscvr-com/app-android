@@ -379,6 +379,9 @@ public class RecorderPreviewView extends AutoFitTextureView {
             cameraOpenCloseLock.release();
             cameraDevice.close();
             RecorderPreviewView.this.cameraDevice = null;
+
+            // TODO: Fail hard for now. Pleace replace with something proper.
+            throw new RuntimeException("Camera Open failed: " + error);
         }
 
     };

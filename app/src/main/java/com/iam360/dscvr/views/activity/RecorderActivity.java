@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.activity;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,6 +23,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,11 +71,8 @@ public class RecorderActivity extends AppCompatActivity {
 
     RecorderActivity act;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recorder);
-
+    void initializeWithPermission() {
+        Timber.d("Initing camera.");
         cache = Cache.open();
         Bundle bundle = new Bundle();
         bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
@@ -126,6 +126,14 @@ public class RecorderActivity extends AppCompatActivity {
             mScanFilters.add(builder.build());
             beginBT();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recorder);
+        initializeWithPermission();
+
     }
 
     public void startRecording() {

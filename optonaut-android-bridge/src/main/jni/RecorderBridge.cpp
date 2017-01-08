@@ -125,8 +125,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     int size = width*height;
     jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(size);
 
-    jboolean dummy = false;
-    jfloat *body = env->GetFloatArrayElements(javaFloats, &dummy);
+    jfloat *body = env->GetFloatArrayElements(javaFloats, NULL);
 
     for (int i = 0; i < size; ++i)
     {
@@ -422,8 +421,7 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
 
     jintArray pixels = env->NewIntArray(mat.cols * mat.rows);
 
-    jboolean dummy = false;
-    jint *body = env->GetIntArrayElements(pixels, &dummy);
+    jint *body = env->GetIntArrayElements(pixels, NULL);
 
     cv::cvtColor(
             mat,
