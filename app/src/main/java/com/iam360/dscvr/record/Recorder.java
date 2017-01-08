@@ -11,7 +11,7 @@ import timber.log.Timber;
  */
 public class Recorder {
     static {
-        System.loadLibrary("ndkmodule");
+        System.loadLibrary("optonaut-android-bridge");
     }
 
     public static boolean isInitialized = false;

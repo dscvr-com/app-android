@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
  */
 public class Stitcher {
     static {
-        System.loadLibrary("ndkmodule");
+        System.loadLibrary("optonaut-android-bridge");
     }
 
     public static native Bitmap[] getResult(String path, String sharedPath, int mode);
