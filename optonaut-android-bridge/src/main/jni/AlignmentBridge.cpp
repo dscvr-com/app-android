@@ -24,7 +24,7 @@ void Java_com_iam360_iam360_record_Alignment_clear(JNIEnv *env, jobject thiz, js
 
 
 
-void Java_com_iam360_iam360_record_Alignment_align(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath)
+void Java_com_iam360_iam360_record_Alignment_align(JNIEnv *, jobject, jstring, jstring, jstring)
 {
 
 //    const char *cPath = env->GetStringUTFChars(path, NULL);
@@ -45,7 +45,7 @@ void Java_com_iam360_iam360_record_Alignment_align(JNIEnv *env, jobject thiz, js
 
 }
 
-void Java_com_iam360_iam360_record_Alignment_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_iam360_record_Alignment_clear(JNIEnv *, jobject, jstring, jstring)
 {
 //    const char *cPath = env->GetStringUTFChars(path, NULL);
 //    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);

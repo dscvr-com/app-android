@@ -1,2 +1,2 @@
-include ':app', ':ndkmodule', ':library'
+include ':app', ':optonaut-android-bridge', ':library'
 project(':library').projectDir = new File('AndroidSwipeLayout/library')
