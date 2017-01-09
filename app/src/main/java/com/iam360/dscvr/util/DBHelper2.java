@@ -339,8 +339,10 @@ public class DBHelper2 {
                 Cursor res = mydb.getData(optoId, DBHelper.OPTO_TABLE_NAME_FEEDS,DBHelper.OPTOGRAPH_ID);
                 res.moveToFirst();
                 Optograph opto = createOptoFromCursor(res);
-                opto.setStory(story);
-                optographs.add(opto);
+                if(opto != null) {
+                    opto.setStory(story);
+                    optographs.add(opto);
+                }
             }else{ //optographs
                 Optograph opto = createOptoFromCursor(cursor);
                 String storyId = cursor.getString(cursor.getColumnIndex(DBHelper.OPTOGRAPH_STORY_ID));

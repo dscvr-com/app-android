@@ -65,6 +65,9 @@ public class RecorderPreviewView extends AutoFitTextureView {
         super(ctx);
         this.textureView = this;
         this.videoSize = new Size(1280, 960); //Size we want for stitcher input
+//        this.videoSize = new Size(960, 1280); //Size we want for stitcher input
+//        this.videoSize = new Size(1280, 720); //Size we want for stitcher input
+//        this.videoSize = new Size(720, 1280); //Size we want for stitcher input
     }
 
     // To be called from parent activity
@@ -95,7 +98,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
         this.decoderHandler = new Handler(decoderThread.getLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.w(TAG, "Message tag: " + msg.what);
+//                Log.w(TAG, "Message tag: " + msg.what);
                 if(msg.what == START_DECODER) {
                     createDecoderSurface();
                     // So I have no idea what we wait for. So we just wait.
@@ -251,6 +254,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
         // Pick the smallest of those, assuming we found any
         if (bigEnough.size() > 0) {
+            Timber.d("Picking the smallest size : " + Collections.min(bigEnough, new CompareSizesByArea()));
             return Collections.min(bigEnough, new CompareSizesByArea());
         } else {
             Log.e(TAG, "Couldn't find any suitable preview size");
@@ -271,6 +275,13 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
             previewBuilder.addTarget(previewSurface);
             previewBuilder.addTarget(surface.getSurface());
+
+            Timber.d("T Height : " + textureView.getHeight());
+            Timber.d("T Width : " + textureView.getWidth());
+
+            Timber.d("P Height : " + previewSize.getHeight());
+            Timber.d("P Width : " + previewSize.getWidth());
+
             cameraDevice.createCaptureSession(Arrays.asList(previewSurface, surface.getSurface()), new CameraCaptureSession.StateCallback() {
 
                 @Override

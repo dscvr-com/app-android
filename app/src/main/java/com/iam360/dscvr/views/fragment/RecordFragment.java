@@ -271,6 +271,13 @@ public class RecordFragment extends Fragment {
         preview.addView(recordPreview);
         preview.addView(recorderOverlayView);
 
+
+//        if (null == savedInstanceState) {
+//            getChildFragmentManager().beginTransaction()
+//                    .replace(R.id.record_preview, CameraPreviewFragment.newInstance())
+//                    .commit();
+//        }
+
         MixpanelHelper.trackViewCamera(getContext());
 
         cache = Cache.open();

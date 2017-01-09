@@ -53,16 +53,17 @@ public class AutoFitTextureView extends SurfaceView implements SurfaceHolder.Cal
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
-        Log.w(TAG, "Re-layouting with aspect: " + mRatioWidth + "x" + mRatioHeight + ", Size: " + width + "x" + height);
+        Log.w(TAG, "Re-layouting with aspect: " + mRatioWidth + "x" + mRatioHeight + ", Size: " + width + "x" + height); //1440x1080, Size: 1080x1845
         if (0 == mRatioWidth || 0 == mRatioHeight) {
             setMeasuredDimension(width, height);
         } else {
             if (width > (height * mRatioWidth) / mRatioHeight) {
-                Log.w(TAG, "Re-layouting result: " + width + "x" + (width * mRatioHeight) / mRatioWidth);
+                Log.w(TAG, "Re-layouting result1: " + width + "x" + (width * mRatioHeight) / mRatioWidth);
                 setMeasuredDimension(width, (width * mRatioHeight) / mRatioWidth);
             } else {
-                Log.w(TAG, "Re-layouting result: " + (height * mRatioHeight) / mRatioWidth + "x" + height);
-                setMeasuredDimension((height * mRatioHeight) / mRatioWidth, height);
+                Log.w(TAG, "Re-layouting result2: " + (height * mRatioHeight) / mRatioWidth + "x" + height);
+                setMeasuredDimension(height * mRatioWidth / mRatioHeight, height); //1383x1845
+//                setMeasuredDimension((height * mRatioHeight) / mRatioWidth, height);
             }
         }
     }

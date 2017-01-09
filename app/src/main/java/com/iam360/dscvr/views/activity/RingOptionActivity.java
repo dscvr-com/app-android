@@ -36,6 +36,7 @@ import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.GeneralUtils;
+import com.iam360.dscvr.views.fragment.CameraPreviewFragment;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private boolean mScanning;
 
     // background camera view
-    private RecorderPreviewView recordPreview;
+//    private RecorderPreviewView recordPreview;
 
     private TextView manualTxt;
     private TextView motorTxt;
@@ -84,10 +85,16 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_option);
+//
+//        recordPreview = new RecorderPreviewView(this);
+//        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
+//        preview.addView(recordPreview);
 
-        recordPreview = new RecorderPreviewView(this);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
-        preview.addView(recordPreview);
+        if (null == savedInstanceState) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.record_preview, CameraPreviewFragment.newInstance())
+                    .commit();
+        }
 
         manualTxt = (TextView) findViewById(R.id.manual_text);
         motorTxt = (TextView) findViewById(R.id.motor_text);
@@ -119,13 +126,13 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onResume() {
         super.onResume();
-        recordPreview.onResume();
+//        recordPreview.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        recordPreview.onPause();
+//        recordPreview.onPause();
     }
 
     @Override

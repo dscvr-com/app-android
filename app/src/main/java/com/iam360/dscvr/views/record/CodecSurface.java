@@ -38,7 +38,7 @@ public class CodecSurface
     private Surface mSurface;
     private static final String TAG = "CodecSurface";
     private static final boolean VERBOSE = true;
-    static final Bitmap.Config colorFormat = Bitmap.Config.ARGB_8888;
+    public static final Bitmap.Config colorFormat = Bitmap.Config.ARGB_8888;
 
     private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
     private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
@@ -321,5 +321,23 @@ public class CodecSurface
             throw new RuntimeException(msg + ": EGL error: 0x" + Integer.toHexString(error));
         }
     }
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public void setWidth(int mWidth) {
+        this.mWidth = mWidth;
+    }
+
+    public int getmHeight() {
+        return mHeight;
+    }
+
+    public void setmHeight(int mHeight) {
+        this.mHeight = mHeight;
+    }
+
+
 }
 

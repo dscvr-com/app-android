@@ -30,14 +30,17 @@ android {
             storePassword 'ZGM0MWY2OTJmMmY1'
         }
     }
+
+    def minSdk = hasProperty('minSdk') ? minSdk : 19
+
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion '25'
     defaultConfig {
         applicationId "com.iam360.dscvr"
-        minSdkVersion 19
+        minSdkVersion minSdk
         targetSdkVersion 22
-        versionCode 20161012
-        versionName "0.854"
+        versionCode 20161221
+        versionName "0.9"
         multiDexEnabled true
     }
 //    dexOptions { javaMaxHeapSize "4g" }
