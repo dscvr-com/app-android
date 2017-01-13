@@ -168,8 +168,8 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onPause() {
-        super.onPause();
         recordPreview.onPause();
+        super.onPause();
     }
 
     @Override

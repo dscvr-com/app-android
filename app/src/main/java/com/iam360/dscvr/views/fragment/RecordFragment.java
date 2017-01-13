@@ -233,7 +233,8 @@ public class RecordFragment extends Fragment {
                 CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(device.getId());
                 // initialize recorder
                 SizeF size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0];
+                // Add some margin to the focal length, to avoid too short focal lengths.
+                float focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0]  * 1.5f;
                 Timber.d("Initializing recorder with f: " + focalLength + " sx: " + size.getWidth() + " sy: " + size.getHeight());
                 Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
 
@@ -289,8 +290,8 @@ public class RecordFragment extends Fragment {
 
     @Override
     public void onPause() {
-        super.onPause();
         recordPreview.onPause();
+        super.onPause();
         DefaultListeners.unregister();
         fromPause = true;
     }
