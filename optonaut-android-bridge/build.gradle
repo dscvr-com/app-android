@@ -17,6 +17,16 @@ android {
             jniLibs.srcDirs = ['src/main/libs']
             jni.srcDirs = [] //disable automatic ndk-build call
         }
+
+        externalNativeBuild {
+            cmake {
+                // Sets arguments
+                arguments "-DOpenCV_DIR=$System.env.OPENCV_ANDROID_PATH",
+                        "-DANDROID_ARM_MODE=arm",
+                        "-DANDROID_ARM_NEON=true",
+                        "-DANDROID_CPP_FEATURES=exceptions"
+            }
+        }
     }
 
     buildTypes {
@@ -26,19 +36,15 @@ android {
         }
     }
 
+    externalNativeBuild {
 
-    // call regular ndk-build(.cmd) script from app directory
-    task ndkBuild(type: Exec) {
-        // start in directory file('src/main/jni').absolutePath
-        // have gradle.properties in same directory as this file with following lines
-        // ndk_build_path=/home/transcendent/android-ndk/ndk-build
-        // ndk_module_path=NDK_MODULE_PATH=/home/transcendent/projects/Optonaut/ndkmodule
-        commandLine ndk_build_path, '-C', file('src/main/jni').absolutePath, 'NDK_DEBUG=0'
+        // Encapsulates your CMake build configurations.
+        cmake {
+            // Provides a relative path to your CMake build script.
+            path "src/main/jni/CMakeLists.txt"
+        }
     }
 
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
-    }
 }
 
 dependencies {

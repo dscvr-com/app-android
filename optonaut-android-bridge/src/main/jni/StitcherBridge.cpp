@@ -105,7 +105,7 @@ jobject matToBitmap(JNIEnv *env, const Mat& mat)
 
     jintArray pixels = env->NewIntArray(mat.cols * mat.rows);
 
-    jint *body = env->GetIntArrayElements(pixels, false);
+    jint *body = env->GetIntArrayElements(pixels, NULL);
 
     cv::cvtColor(
             mat,
@@ -121,7 +121,7 @@ jobject matToBitmap(JNIEnv *env, const Mat& mat)
 }
 
 
-jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode)
+jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject, jstring path, jstring sharedPath, jint mode)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -139,7 +139,7 @@ jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobjec
     jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
     jobjectArray bitmaps = (jobjectArray) env->NewObjectArray(result.size(), bitmapClass, 0);
 
-    for(int i = 0; i < result.size(); ++i)
+    for(size_t i = 0; i < result.size(); ++i)
     {
         env->SetObjectArrayElement(bitmaps, i, matToBitmap(env, result[i]));
     }
@@ -147,7 +147,7 @@ jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobjec
     return bitmaps;
 }
 
-jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode)
+jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject, jstring path, jstring sharedPath, jint mode)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -163,7 +163,7 @@ jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject t
     return matToBitmap(env, result);
 }
 
-void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
@@ -172,7 +172,7 @@ void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstr
     store.Clear();
 }
 
-jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);

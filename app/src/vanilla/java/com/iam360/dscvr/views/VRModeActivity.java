@@ -318,7 +318,10 @@ public class VRModeActivity extends CardboardActivity implements SensorEventList
 
                     stryChld.setStory_object_media_additional_data(chldrns.get(a).getStory_object_media_additional_data());
 
-                    cardboardRenderer.planeSetter(stryChld);
+
+                    if(chldrns.get(a).getStory_object_phi() != null  && chldrns.get(a).getStory_object_theta() != null  && !String.valueOf(chldrns.get(a).getStory_object_phi()).equals("") && !String.valueOf(chldrns.get(a).getStory_object_theta()).equals("")){
+                        cardboardRenderer.planeSetter(stryChld);
+                    }
                 }
             }
             cardboardRenderer.setLoadingScreen(loadingScreen_L, loadingScreen_R, circleCountDownView_L, circleCountDownView_R);

@@ -88,7 +88,7 @@ extern "C" {
 }
 
 
-jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *env, jobject thiz)
+jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
        return  motorRecorder->getTopThetaValue();
@@ -97,7 +97,7 @@ jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *env, jobj
     }
 }
 
-jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *env, jobject thiz)
+jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
        return  motorRecorder->getCenterThetaValue();
@@ -106,7 +106,7 @@ jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *env, j
     }
 }
 
-jdouble Java_com_iam360_dscvr_record_Recorder_getBotThetaValue(JNIEnv *env, jobject thiz)
+jdouble Java_com_iam360_dscvr_record_Recorder_getBotThetaValue(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
        return  motorRecorder->getBotThetaValue();
@@ -125,7 +125,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     int size = width*height;
     jfloatArray javaFloats = (jfloatArray) env->NewFloatArray(size);
 
-    jfloat *body = env->GetFloatArrayElements(javaFloats, false);
+    jfloat *body = env->GetFloatArrayElements(javaFloats, NULL);
 
     for (int i = 0; i < size; ++i)
     {
@@ -137,11 +137,12 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     return javaFloats;
 }
 
-void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
+void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
-    std::string debugPath = "";//= pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
+    std::string debugPath = "";
+    //std::string debugPath = pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
     path = pathLocal;
 
     optonaut::JniHelper::jni_context = env;
@@ -189,7 +190,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thi
 
 }
 
-void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
+void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
 
     char *pixels = (char *)env->GetByteArrayElements(bitmap, NULL);
 
@@ -218,7 +219,7 @@ void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyte
     env->ReleaseByteArrayElements(bitmap, (jbyte *) pixels, 0);
 }
 
-void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle)
+void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *, jobject, jboolean idle)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         motorRecorder->SetIdle(idle);
@@ -227,7 +228,7 @@ void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jb
     }
 }
 
-jobjectArray Java_com_iam360_dscvr_record_Recorder_getSelectionPoints(JNIEnv *env, jobject thiz) {
+jobjectArray Java_com_iam360_dscvr_record_Recorder_getSelectionPoints(JNIEnv *env, jobject) {
     std::vector<SelectionPoint> selectionPoints;
 
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
@@ -242,7 +243,7 @@ jobjectArray Java_com_iam360_dscvr_record_Recorder_getSelectionPoints(JNIEnv *en
     // [F for float array, III for three ints
     jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
 
-    for(int i = 0; i < selectionPoints.size(); ++i)
+    for(size_t i = 0; i < selectionPoints.size(); ++i)
     {
         jobject current_point =  env->NewObject(java_selection_point_class, java_selection_point_init,
                                                 matToJFloatArray(env, selectionPoints[i].extrinsics, 4, 4),
@@ -257,7 +258,7 @@ jobjectArray Java_com_iam360_dscvr_record_Recorder_getSelectionPoints(JNIEnv *en
     return javaSelectionPoints;
 }
 
-jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject thiz) {
+jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject) {
 
 //    assert(recorder != NULL);
 //    SelectionPoint* selectionPoint = ConvertSelectionPoint(env, recorder->GetCurrentKeyframe().closestPoint);
@@ -281,7 +282,7 @@ jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject 
 
 }
 
-void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *env, jobject thiz)
+void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         motorRecorder->Finish();
@@ -297,7 +298,7 @@ void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *env, jobject thiz)
 
 }
 
-void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *env, jobject thiz)
+void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         motorRecorder->Cancel();
@@ -306,7 +307,7 @@ void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *env, jobject thiz)
     }
 }
 
-void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *env, jobject thiz)
+void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *, jobject )
 {
 //    assert(recorder != NULL);
     // Do nothing, except deleting
@@ -320,7 +321,7 @@ void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *env, jobject thiz)
     }
 }
 
-jfloatArray Java_com_iam360_dscvr_record_Recorder_getBallPosition(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_dscvr_record_Recorder_getBallPosition(JNIEnv *env, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return matToJFloatArray(env ,motorRecorder->GetBallPosition(), 4, 4);
@@ -329,7 +330,7 @@ jfloatArray Java_com_iam360_dscvr_record_Recorder_getBallPosition(JNIEnv *env, j
     }
 }
 
-jboolean Java_com_iam360_dscvr_record_Recorder_isFinished(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_dscvr_record_Recorder_isFinished(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->IsFinished();
@@ -338,7 +339,7 @@ jboolean Java_com_iam360_dscvr_record_Recorder_isFinished(JNIEnv *env, jobject t
     }
 }
 
-jdouble Java_com_iam360_dscvr_record_Recorder_getDistanceToBall(JNIEnv *env, jobject thiz)
+jdouble Java_com_iam360_dscvr_record_Recorder_getDistanceToBall(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->GetDistanceToBall();
@@ -347,16 +348,16 @@ jdouble Java_com_iam360_dscvr_record_Recorder_getDistanceToBall(JNIEnv *env, job
     }
 }
 
-jfloatArray Java_com_iam360_dscvr_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_dscvr_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-        matToJFloatArray(env, motorRecorder->GetAngularDistanceToBall(), 1, 3);
+        return matToJFloatArray(env, motorRecorder->GetAngularDistanceToBall(), 1, 3);
     } else {
-        matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
+        return matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
     }
 }
 
-jboolean Java_com_iam360_dscvr_record_Recorder_hasStarted(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_dscvr_record_Recorder_hasStarted(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->HasStarted();
@@ -365,7 +366,7 @@ jboolean Java_com_iam360_dscvr_record_Recorder_hasStarted(JNIEnv *env, jobject t
     }
 }
 
-jboolean Java_com_iam360_dscvr_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_dscvr_record_Recorder_isIdle(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->IsIdle();
@@ -374,19 +375,19 @@ jboolean Java_com_iam360_dscvr_record_Recorder_isIdle(JNIEnv *env, jobject thiz)
     }
 }
 
-void Java_com_iam360_dscvr_record_Recorder_enableDebug(JNIEnv *env, jobject thiz, jstring storagePath)
+void Java_com_iam360_dscvr_record_Recorder_enableDebug(JNIEnv *env, jobject, jstring storagePath)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string path(cString);
     debugPath = path + "debug/";
 }
 
-void Java_com_iam360_dscvr_record_Recorder_disableDebug(JNIEnv *env, jobject thiz)
+void Java_com_iam360_dscvr_record_Recorder_disableDebug(JNIEnv *, jobject)
 {
     debugPath = "";
 }
 
-jint Java_com_iam360_dscvr_record_Recorder_getRecordedImagesCount(JNIEnv *env, jobject thiz) {
+jint Java_com_iam360_dscvr_record_Recorder_getRecordedImagesCount(JNIEnv *, jobject) {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->GetRecordedImagesCount();
     } else {
@@ -394,7 +395,7 @@ jint Java_com_iam360_dscvr_record_Recorder_getRecordedImagesCount(JNIEnv *env, j
     }
 }
 
-jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *env, jobject thiz) {
+jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *, jobject) {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         return motorRecorder->GetImagesToRecordCount();
     } else {
@@ -402,10 +403,10 @@ jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *env, j
     }
 }
 
-jfloatArray Java_com_iam360_dscvr_record_Recorder_getCurrentRotation(JNIEnv *env, jobject thiz)
+jfloatArray Java_com_iam360_dscvr_record_Recorder_getCurrentRotation(JNIEnv *, jobject)
 {
     Assert(false);
-//    return matToJFloatArray(env ,recorder->GetCurrentRotation(), 4, 4);
+    return NULL;
 }
 
 jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
@@ -420,7 +421,7 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
 
     jintArray pixels = env->NewIntArray(mat.cols * mat.rows);
 
-    jint *body = env->GetIntArrayElements(pixels, false);
+    jint *body = env->GetIntArrayElements(pixels, NULL);
 
     cv::cvtColor(
             mat,
@@ -435,7 +436,7 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
     return bitmapObj;
 }
 
-jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobject thiz)
+jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobject)
 {
     Mat result;
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
@@ -448,7 +449,7 @@ jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobje
     return matrixToBitmap(env, result);
 }
 
-jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *env, jobject thiz)
+jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *, jobject)
 {
     if(internalRecordingMode == RecorderGraph::ModeTruncated) {
         Assert(motorRecorder != NULL);

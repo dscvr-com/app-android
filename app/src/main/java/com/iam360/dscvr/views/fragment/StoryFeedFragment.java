@@ -113,41 +113,42 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
     }
 
     public void refreshFeed() {
-        Log.d("MARK", "refreshFeed person.getId() = " + person.getId());
-        Cursor cursor = mydb.getUserStories(person.getId(), DBHelper.STORY_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
-        Log.d("MARK", "refreshFeed cursor = " + cursor);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            Log.d("MARK", "refreshStoryFeed cursor.getCount() = " + cursor.getCount());
-            if (cursor.getCount() != 0) {
-                new DBHelper2(getContext()).getOptographs(cursor, "story")
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnCompleted(() -> {
-                            Timber.d("refreshStoryFeed Count : " + storyFeedAdapter.getItemCount());
-                            api2Consumer.getStories(100, "")
-                                    .subscribeOn(Schedulers.newThread())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .doOnCompleted(() -> {
-                                        Timber.d("Count : " + storyFeedAdapter.getItemCount());
-                                    })
-                                    .onErrorReturn(throwable -> {
-                                        throwable.printStackTrace();
-                                        return null;
-                                    })
-                                    .subscribe(storyFeedAdapter::addItem);
-                        })
-                        .onErrorReturn(throwable -> {
-                            Log.d("myTag", "refreshStoryFeed Error: message: " + throwable.getMessage());
-                            if (!networkProblemDialog.isAdded())
-                                networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
-                            return null;
-                        })
-                        .subscribe(storyFeedAdapter::addItem);
-            }else{
-                storyFeedAdapter.clearData();
+        if(person != null){
+            Log.d("MARK", "refreshFeed person.getId() = " + person.getId());
+            Cursor cursor = mydb.getUserStories(person.getId(), DBHelper.STORY_TABLE_NAME, ApiConsumer.PROFILE_GRID_LIMIT);
+            Log.d("MARK", "refreshFeed cursor = " + cursor);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                Log.d("MARK", "refreshStoryFeed cursor.getCount() = " + cursor.getCount());
+                if (cursor.getCount() != 0) {
+                    new DBHelper2(getContext()).getOptographs(cursor, "story")
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnCompleted(() -> {
+                                Timber.d("refreshStoryFeed Count : " + storyFeedAdapter.getItemCount());
+                                api2Consumer.getStories(100, "")
+                                        .subscribeOn(Schedulers.newThread())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .doOnCompleted(() -> {
+                                            Timber.d("Count : " + storyFeedAdapter.getItemCount());
+                                        })
+                                        .onErrorReturn(throwable -> {
+                                            throwable.printStackTrace();
+                                            return null;
+                                        })
+                                        .subscribe(storyFeedAdapter::addItem);
+                            })
+                            .onErrorReturn(throwable -> {
+                                Log.d("myTag", "refreshStoryFeed Error: message: " + throwable.getMessage());
+                                if (!networkProblemDialog.isAdded())
+                                    networkProblemDialog.show(getFragmentManager(), "networkProblemDialog");
+                                return null;
+                            })
+                            .subscribe(storyFeedAdapter::addItem);
+                }else{
+                    storyFeedAdapter.clearData();
+                }
             }
-        }
             api2Consumer.getStories(100, "")
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -160,6 +161,7 @@ public class StoryFeedFragment extends Fragment implements View.OnClickListener 
                     })
                     .subscribe(storyFeedAdapter::addItem);
 //        }
+        }
     }
 
     public void loadMore() {

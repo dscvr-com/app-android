@@ -1,3 +1,4 @@
+
 #include <jni.h>
 #include <android/log.h>
 #include "online-stitcher/src/stitcher/convertToStereo.hpp"

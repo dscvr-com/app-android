@@ -20,6 +20,8 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -50,6 +52,7 @@ import timber.log.Timber;
 
 public class RingOptionActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    private final int PERMISSION_REQUEST_CAMERA = 2;
     private static final int REQUEST_ENABLE_BT = 1;
 
     // Bluetooth scan timeout
@@ -81,11 +84,51 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private UUID mResponesUIID;
     private UUID mNotifUUID;
 
+
+    // Todo - please clean that code up.
+    public void checkPermissionAndInitialize() {
+        Timber.d("Checking permission.");
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Timber.d("Please show explaination.");
+                throw new RuntimeException("Not implemented!");
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                Timber.d("Requesting permission.");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        PERMISSION_REQUEST_CAMERA);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            Timber.d("Permission granted.");
+            initializeWithPermission();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_option);
-//
+        checkPermissionAndInitialize();
+    }
+
+    void initializeWithPermission() {
 //        recordPreview = new RecorderPreviewView(this);
 //        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
 //        preview.addView(recordPreview);
@@ -274,6 +317,20 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                     });
                     builder.show();
                 }
+            }
+            case PERMISSION_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Timber.d("Permission granted.");
+                    initializeWithPermission();
+
+                } else {
+                    Timber.d("Permission not granted.");
+                    throw new RuntimeException("Need Camera!");
+                }
+                return;
             }
         }
     }
@@ -480,13 +537,13 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 if (response.isSuccess()) {
                     List<MotorConfig> motorConfigs = response.body();
                     for(int a=0; a < motorConfigs.size(); a++){
-                        Timber.d("getMotorConfig getMotor_configuration_mobile_platform : "+motorConfigs.get(a).getMotor_configuration_mobile_platform());
+//                        Timber.d("getMotorConfig getMotor_configuration_mobile_platform : "+motorConfigs.get(a).getMotor_configuration_mobile_platform());
                         if(motorConfigs.get(a).getMotor_configuration_mobile_platform().equals("Android")){
-                            Timber.d("getMotorConfig getMotor_configuration_rotate_count : "+motorConfigs.get(a).getMotor_configuration_rotate_count());
-                            Timber.d("getMotorConfig getMotor_configuration_bot_count : "+motorConfigs.get(a).getMotor_configuration_bot_count());
-                            Timber.d("getMotorConfig getMotor_configuration_top_count : "+motorConfigs.get(a).getMotor_configuration_top_count());
-                            Timber.d("getMotorConfig getMotor_configuration_pulse_per_second : "+motorConfigs.get(a).getMotor_configuration_pulse_per_second());
-                            Timber.d("getMotorConfig getMotor_configuration_buff_count : "+motorConfigs.get(a).getMotor_configuration_buff_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_rotate_count : "+motorConfigs.get(a).getMotor_configuration_rotate_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_bot_count : "+motorConfigs.get(a).getMotor_configuration_bot_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_top_count : "+motorConfigs.get(a).getMotor_configuration_top_count());
+//                            Timber.d("getMotorConfig getMotor_configuration_pulse_per_second : "+motorConfigs.get(a).getMotor_configuration_pulse_per_second());
+//                            Timber.d("getMotorConfig getMotor_configuration_buff_count : "+motorConfigs.get(a).getMotor_configuration_buff_count());
 
                             cache.save(Cache.BLE_ROT_COUNT, motorConfigs.get(a).getMotor_configuration_rotate_count());
                             cache.save(Cache.BLE_BOT_COUNT, motorConfigs.get(a).getMotor_configuration_bot_count());
@@ -508,13 +565,12 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void setDefMotorConfigs(){
-        cache.save(Cache.BLE_ROT_COUNT, 5111);
-        cache.save(Cache.BLE_BOT_COUNT, 61538);
-        cache.save(Cache.BLE_TOP_COUNT, 2000);
-        cache.save(Cache.BLE_PPS_COUNT, 100);
-        cache.save(Cache.BLE_BUF_COUNT, 0);
+        cache.save(Cache.BLE_ROT_COUNT, "5111");
+        cache.save(Cache.BLE_BOT_COUNT, "61538");
+        cache.save(Cache.BLE_TOP_COUNT, "2000");
+        cache.save(Cache.BLE_PPS_COUNT, "100");
+        cache.save(Cache.BLE_BUF_COUNT, "0");
 
         getMotorConfig();
     }
-
 }

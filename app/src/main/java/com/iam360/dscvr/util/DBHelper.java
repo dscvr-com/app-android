@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import com.iam360.dscvr.model.Follower;
 import com.iam360.dscvr.model.Location;
 import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
@@ -365,9 +364,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean updateLocation(String id, String created_at, String updated_at, String deleted_at, double latitude,
-                                double longitude, String country, String text, String country_short, String place,
-                                  String region, boolean poi){
+    private boolean updateLocation(String id, String created_at, String updated_at, String deleted_at, double latitude,
+                                   double longitude, String country, String text, String country_short, String place,
+                                   String region, boolean poi){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", id);

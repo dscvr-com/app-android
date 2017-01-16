@@ -49,28 +49,26 @@ public class BLECommands {
 //        String data = "fe070200000c12012c00";
         String data = "fe07";
         data += "02"; //motor type
-//        data += "0000"; //
-        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_TOP_COUNT)), true);//"07cf"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_TOP_COUNT)), true);//"000007cf"; //rotate count
+//        data += convertToHex2(2235, true);//"000007cf"; //rotate count
         data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"012c"; //speed
         data += "00"; //steps
+        Timber.d("topRing = "+data);
         data += CalculateCheckSum(hexStringToByteArray(data)); //crc
         data += "ffffffffffff"; //padding
-
         Timber.d("topRing = "+data);
 
 //        fe0702000007cf00640041ffffffffffff
 //        fe0702000007cf0012c00affffffffffff
 
         writeData(hexStringToByteArray(data));
-//        writeData(hexStringToByteArray("fe0702000007cf00640041ffffffffffff"));
     }
     public void bottomRing(){
 //        String data = "fe0702fffff060012c00";
-
         String data = "fe07";
         data += "02"; //motor type
-//        data += "ffff"; //
-        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_BOT_COUNT)), true);//"f062"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_BOT_COUNT)), true);//"fffff062"; //rotate count
+//        data += convertToHex2(-4470, true);//"fffff062"; //rotate count
         data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"012c"; //speed
         data += "00"; //steps
 
@@ -85,15 +83,18 @@ public class BLECommands {
     public void rotateRight(){
         String data = "fe07";
         data += "01"; //motor type
-//        data += "0000"; //
-        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT)), true);//"13f7"; //rotate count
+        data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT)), true);//"000013f7"; //rotate count
         data += convertToHex2(Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT)), false);//"00c8"; //speed; PPS
         data += "00"; //steps
-
+        Timber.d("rotateRight = "+data);
         data += CalculateCheckSum(hexStringToByteArray(data));
         data += "ffffffffffff";
         Timber.d("rotateRight = "+data);
-        writeData(hexStringToByteArray(data));
+        String finalData = data;
+        writeData(hexStringToByteArray(finalData));
+
+
+
 //        writeData(hexStringToByteArray("fe0701000013f700640074ffffffffffff"));
     }
 
@@ -127,7 +128,8 @@ public class BLECommands {
         }
 
         CheckSum = (short) ( CheckSum & 0xff);
-        if(CheckSum < 9){
+        String intSum = Integer.toHexString(CheckSum);
+        if(intSum.length() < 2){
             return "0"+Integer.toHexString(CheckSum);
         }else{
             return Integer.toHexString(CheckSum);

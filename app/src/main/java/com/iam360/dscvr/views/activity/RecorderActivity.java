@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.activity;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,6 +23,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -37,6 +40,8 @@ import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import timber.log.Timber;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class RecorderActivity extends AppCompatActivity {
@@ -64,16 +69,17 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean useBLE = false;
     public boolean dataHasCome = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recorder);
+    RecorderActivity act;
 
+    void initializeWithPermission() {
+        Timber.d("Initing camera.");
         cache = Cache.open();
         Bundle bundle = new Bundle();
         bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
         recordFragment = new RecordFragment();
         recordFragment.setArguments(bundle);
+
+        act = this;
 
 //      Bundle bundle = new Bundle();
 //      bundle.putInt("mode", Constants.MODE_CENTER);
@@ -120,6 +126,13 @@ public class RecorderActivity extends AppCompatActivity {
             mScanFilters.add(builder.build());
             beginBT();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recorder);
+        initializeWithPermission();
 
     }
 
@@ -273,22 +286,52 @@ public class RecorderActivity extends AppCompatActivity {
             Log.d("MARK","motorRingType  == "+motorRingType);
             Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
             if(motorRingType == 2) {
-                Log.d("MARK2","motorRingType = "+System.currentTimeMillis() / 1000.0);
                 dataHasCome = false;
                 bleCommands.topRing();
                 motorRingType = 3;
             }else if(motorRingType == 3){
-                dataHasCome = true;
-                bleCommands.rotateRight();
-                motorRingType = 4;
+//                dataHasCome = true;
+//                bleCommands.rotateRight();
+//                motorRingType = 4;
+
+                act.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataHasCome = true;
+                                bleCommands.rotateRight();
+                                motorRingType = 4;
+
+                                Timber.d("onCharacteristicChanged motorRingType 3");
+                            }
+                        }, 2000);
+                    }
+                });
             }else if(motorRingType == 4){
                 dataHasCome = false;
                 bleCommands.bottomRing();
                 motorRingType = 5;
             }else if(motorRingType == 5){
-                dataHasCome = true;
-                bleCommands.rotateRight();
-                motorRingType = 6;
+//                dataHasCome = true;
+//                bleCommands.rotateRight();
+//                motorRingType = 6;
+                act.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataHasCome = true;
+                                bleCommands.rotateRight();
+                                motorRingType = 6;
+
+                                Timber.d("onCharacteristicChanged motorRingType 5");
+                            }
+                        }, 2000);
+                    }
+                });
             }else if(motorRingType == 6){
                 dataHasCome = false;
                 bleCommands.topRing();
