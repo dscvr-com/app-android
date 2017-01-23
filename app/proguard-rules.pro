@@ -70,7 +70,7 @@
 
 # Classes that will be serialized/deserialized over Gson
 # http://stackoverflow.com/a/7112371/56285
--keep class com.iam360.iam360.model.** { *; }
+-keep class com.iam360.dscvr.model.** { *; }
 
 ##---------------End: proguard configuration for Gson  ----------
 

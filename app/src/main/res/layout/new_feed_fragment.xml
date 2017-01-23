@@ -185,14 +185,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:paddingLeft="70dp"
-                            android:layout_below="@id/version">
+                            android:layout_below="@+id/version">
 
                         <TextView
                             android:id="@+id/settings_vr_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/text_dark"
-                            android:layout_below="@+id/version"
                             android:layout_marginTop="10dp"
                             app:font="@{`bold`}"
                             android:text="@string/settings_vr_image" />

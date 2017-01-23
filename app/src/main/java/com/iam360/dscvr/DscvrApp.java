@@ -46,6 +46,7 @@ public class DscvrApp extends Application {
             Timber.plant(new Timber.DebugTree());
             Fabric.with(this, new Crashlytics());
         } else {
+            Timber.plant(new Timber.DebugTree());
             Fabric.with(this, new Crashlytics());
             Timber.plant(new CrashReportingTree());
         }
