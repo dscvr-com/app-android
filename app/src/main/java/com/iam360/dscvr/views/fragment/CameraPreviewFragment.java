@@ -744,7 +744,7 @@ public class CameraPreviewFragment extends Fragment
     }
 
     private void fetchFrame() {
-        if(mImageReader.getSurface() == null) {
+        if(mImageReader != null && mImageReader.getSurface() == null) {
             return;
         }
         try {

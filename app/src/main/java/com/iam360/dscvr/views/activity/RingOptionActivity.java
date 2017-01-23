@@ -125,10 +125,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_option);
-        checkPermissionAndInitialize();
-    }
 
-    void initializeWithPermission() {
 //        recordPreview = new RecorderPreviewView(this);
 //        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
 //        preview.addView(recordPreview);
@@ -138,6 +135,11 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                     .replace(R.id.record_preview, CameraPreviewFragment.newInstance())
                     .commit();
         }
+
+        checkPermissionAndInitialize();
+    }
+
+    void initializeWithPermission() {
 
         manualTxt = (TextView) findViewById(R.id.manual_text);
         motorTxt = (TextView) findViewById(R.id.motor_text);
