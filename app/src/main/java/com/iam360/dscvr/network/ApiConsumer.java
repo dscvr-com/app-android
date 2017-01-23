@@ -133,6 +133,9 @@ public class ApiConsumer {
             return buffer.readUtf8();
         } catch (final IOException e) {
             return "did not work";
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return "Body empty";
         }
     }
 

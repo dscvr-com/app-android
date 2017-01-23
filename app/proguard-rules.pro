@@ -127,3 +127,5 @@
 -dontwarn twitter4j.**
 -dontwarn org.slf4j.**
 -dontwarn android.os.PowerManager
+
+-keep public class com.iam360.dscvr.record.SelectionPoint { *; }

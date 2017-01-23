@@ -155,7 +155,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             // Do nothing
         }
 
-        decoderHandler.obtainMessage(FETCH_FRAME).sendToTarget();
+        if(decoderThread.isAlive()) decoderHandler.obtainMessage(FETCH_FRAME).sendToTarget();
     }
 
     // To be called from parent activity
