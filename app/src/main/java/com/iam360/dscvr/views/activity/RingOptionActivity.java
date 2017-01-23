@@ -20,6 +20,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -66,6 +67,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private TextView motorTxt;
     private ImageButton manualBtn;
     private ImageButton motorBtn;
+    private ImageButton recordButton;
 
     private Cache cache;
     private Api2Consumer api2Consumer;
@@ -145,6 +147,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         motorTxt = (TextView) findViewById(R.id.motor_text);
         manualBtn = (ImageButton) findViewById(R.id.manual_button);
         motorBtn = (ImageButton) findViewById(R.id.motor_button);
+        recordButton = (ImageButton) findViewById(R.id.record_button);
 
         GeneralUtils generalUtils = new GeneralUtils();
         generalUtils.setFont(this, manualTxt, Typeface.BOLD);
@@ -203,9 +206,11 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 updateMode(true);
                 break;
             case R.id.motor_button:
-                updateMode(false);
-                boolean permissionOK = checkBluetoothPermission();
-                if(permissionOK) enableBluetooth();
+                Snackbar.make(recordButton, "Motor mode available soon.", Snackbar.LENGTH_SHORT).show();
+                //TODO activate
+//                updateMode(false);
+//                boolean permissionOK = checkBluetoothPermission();
+//                if(permissionOK) enableBluetooth();
                 break;
             case R.id.record_button:
                 Intent intent;
