@@ -20,7 +20,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,6 @@ import com.iam360.dscvr.network.Api2Consumer;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.GeneralUtils;
-import com.iam360.dscvr.views.fragment.CameraPreviewFragment;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
 
 import java.util.ArrayList;
@@ -61,7 +59,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private boolean mScanning;
 
     // background camera view
-//    private RecorderPreviewView recordPreview;
+    private RecorderPreviewView recordPreview;
 
     private TextView manualTxt;
     private TextView motorTxt;
@@ -174,13 +172,13 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onResume() {
         super.onResume();
-//        recordPreview.onResume();
+        recordPreview.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        recordPreview.onPause();
+        recordPreview.onPause();
     }
 
     @Override
@@ -206,11 +204,9 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 updateMode(true);
                 break;
             case R.id.motor_button:
-                Snackbar.make(recordButton, "Motor mode available soon.", Snackbar.LENGTH_SHORT).show();
-                //TODO activate
-//                updateMode(false);
-//                boolean permissionOK = checkBluetoothPermission();
-//                if(permissionOK) enableBluetooth();
+                updateMode(false);
+                boolean permissionOK = checkBluetoothPermission();
+                if(permissionOK) enableBluetooth();
                 break;
             case R.id.record_button:
                 Intent intent;
