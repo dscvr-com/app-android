@@ -61,7 +61,7 @@
         >
 
         <activity
-            android:name=".views.activity.SplashActivity"
+            android:name=".removed_social.views.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -75,6 +75,30 @@
                 <data
                     android:scheme="dscvr" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".removed_social.views.activity.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".removed_social.views.activity.RecorderActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".removed_social.views.activity.RingOptionActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".removed_social.views.activity.OptoImagePreviewActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".views.activity.MainActivity"

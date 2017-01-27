@@ -33,7 +33,7 @@ android {
 
     def minSdk = hasProperty('minSdk') ? minSdk : 19
 
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '25'
     defaultConfig {
         applicationId "com.iam360.dscvr"
@@ -127,7 +127,7 @@ dependencies {
     }
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile "com.android.support:recyclerview-v7:24.2.0"
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
