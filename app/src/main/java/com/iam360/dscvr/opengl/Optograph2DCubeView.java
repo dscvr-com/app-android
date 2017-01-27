@@ -17,7 +17,6 @@ import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.util.Cache;
-import com.iam360.dscvr.util.CircleCountDownView;
 import com.iam360.dscvr.util.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 
@@ -115,8 +114,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
 
         // this view is set with the same optograph - abort
         optograph2DCubeRenderer.setType(optograph.getOptograph_type());
-
-        optograph2DCubeRenderer.setWithStory(optograph.isWithStory());
         if (optograph.equals(this.optograph)) {
             return;
         }
@@ -129,8 +126,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
         // actually set optograph
         this.optograph = optograph;
         initializeTextures();
-
-        optograph2DCubeRenderer.setOriginalOpto(optograph);
 
     }
 
@@ -188,80 +183,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
         };
     }
 
-    public void toggleZoom() {
-        if(mScaleFactor == MIN_ZOOM) {
-            mScaleFactor = MAX_ZOOM;
-        } else {
-            mScaleFactor = MIN_ZOOM;
-        }
-
-        optograph2DCubeRenderer.setScaleFactor(mScaleFactor);
-    }
-
-
-    public void addMarker(SendStoryChild chld) {
-        optograph2DCubeRenderer.addStoryChildren(chld);
-    }
-
-    public void planeSetter(SendStoryChild stryChld) {
-        optograph2DCubeRenderer.planeSetter(stryChld);
-    }
-
-    public void setLoadingScreen(RelativeLayout loadingScreen, CircleCountDownView countDownView){
-        optograph2DCubeRenderer.setLoadingScreen(loadingScreen, countDownView);
-    }
-
-    public boolean isSurfaceCreated() {
-        return optograph2DCubeRenderer.isSurfaceCreated();
-    }
-
-    public void setMarker(boolean type){
-        optograph2DCubeRenderer.setMarkerShown(type);
-    }
-
-    public void setBubbleText(TextView bubbleText) {
-        queueEvent(new Runnable(){
-            @Override
-            public void run() {
-                optograph2DCubeRenderer.setBubbleText(bubbleText);
-            }});
-
-    }
-    public void setBubbleTextLayout(LinearLayout bubbleTextLayout) {
-        queueEvent(new Runnable(){
-            @Override
-            public void run() {
-                optograph2DCubeRenderer.setBubbleTextLayout(bubbleTextLayout);
-            }
-        });
-    }
-
-    public void setStoryType(String storyType) {
-        this.storyType = storyType;
-        queueEvent(new Runnable(){
-            @Override
-            public void run() {
-                if(storyType.equals("create")) {
-                    optograph2DCubeRenderer.setStoryType(0);
-                }else if(storyType.equals("view")){
-                    optograph2DCubeRenderer.setStoryType(1);
-                }else if(storyType.equals("edit")){
-                    optograph2DCubeRenderer.setStoryType(2);
-                }
-            }});
-    }
-     public void setDeleteStoryMarkerImage(ImageButton imgBtn){
-         queueEvent(new Runnable(){
-             @Override
-             public void run() {
-                 optograph2DCubeRenderer.setDeleteStoryMarkerImage(imgBtn);
-             }});
-     }
-
-    public void removeMarker() {
-        optograph2DCubeRenderer.removePin();
-    }
-
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -273,23 +194,4 @@ public class Optograph2DCubeView extends GLSurfaceView {
         }
     }
 
-    public SendStory getSendStory(){
-        Cache cache = Cache.open();
-        SendStory stry = optograph2DCubeRenderer.getMyStory();
-        stry.setStory_optograph_id(optograph.getId());
-        stry.setStory_person_id(cache.getString(Cache.USER_ID));
-        return stry;
-    }
-
-    public String getStoryType() {
-        return storyType;
-    }
-
-    public void setMyAct(Activity myAct) {
-        queueEvent(new Runnable(){
-            @Override
-            public void run() {
-                optograph2DCubeRenderer.setActvty(myAct);
-            }});
-    }
 }

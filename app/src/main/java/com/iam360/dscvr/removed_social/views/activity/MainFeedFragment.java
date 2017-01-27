@@ -12,7 +12,7 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.record.GlobalState;
-import com.iam360.dscvr.viewmodels.LocalOptographManager;
+import com.iam360.dscvr.removed_social.viewmodels.LocalOptographManager;
 import com.squareup.otto.Subscribe;
 
 import rx.android.schedulers.AndroidSchedulers;

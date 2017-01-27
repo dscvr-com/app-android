@@ -1,4 +1,4 @@
-package com.iam360.dscvr.viewmodels;
+package com.iam360.dscvr.removed_social.viewmodels;
 
 import java.io.File;
 import java.util.LinkedList;

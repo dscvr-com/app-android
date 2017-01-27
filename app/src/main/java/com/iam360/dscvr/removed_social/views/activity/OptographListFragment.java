@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import com.iam360.dscvr.AAFeedBinding;
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.removed_social.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.removed_social.viewmodels.OptographVideoFeedAdapter;
 import com.iam360.dscvr.util.Cache;
-import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
 
 import im.ene.lab.toro.Toro;
 import timber.log.Timber;

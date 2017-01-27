@@ -14,7 +14,6 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
-import com.iam360.dscvr.views.UploaderJob;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.path.android.jobqueue.RetryConstraint;
@@ -102,8 +101,6 @@ public class FinishRecorderJob extends Job {
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
         Timber.v("finish all job");
-
-        DscvrApp.getInstance().getJobManager().addJobInBackground(new UploaderJob(id));
 
     }
 

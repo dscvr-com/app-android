@@ -19,7 +19,6 @@ import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
-import com.iam360.dscvr.viewmodels.SnappyRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
     private static final float ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
     private static final float DENSITY = Constants.getInstance().getDisplayMetrics().density;
     private List<Optograph> optographs;
-    private SnappyRecyclerView snappyRecyclerView;
 
     private Cache cache;
     private Context context;

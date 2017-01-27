@@ -13,7 +13,6 @@ import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.model.Person;
 import com.iam360.dscvr.model.SignInData;
 import com.iam360.dscvr.model.SignUpReturn;
-import com.iam360.dscvr.views.fragment.SharingFragment;
 import com.squareup.okhttp.RequestBody;
 
 import java.util.List;
@@ -134,8 +133,8 @@ public interface ApiEndpoints {
     @GET("persons/followers")
     Call<List<Follower>> getFollowersCall();
 
-    @POST("optographs/share_facebook")
-    Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
+//    @POST("optographs/share_facebook")
+//    Call<LogInReturn.EmptyResponse> shareFB(@Body SharingFragment.ShareFBData data);
 
     @GET("activities")
     Call<List<Notification>> getNotifications();

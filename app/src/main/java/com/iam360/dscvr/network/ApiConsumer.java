@@ -17,7 +17,6 @@ import com.iam360.dscvr.model.SignInData;
 import com.iam360.dscvr.model.SignUpReturn;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
-import com.iam360.dscvr.views.fragment.SharingFragment;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -351,10 +350,10 @@ public class ApiConsumer {
         call.enqueue(callback);
     }
 
-    public void shareFB(SharingFragment.ShareFBData data, Callback<LogInReturn.EmptyResponse> callback) {
-        Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
-        call.enqueue(callback);
-    }
+//    public void shareFB(SharingFragment.ShareFBData data, Callback<LogInReturn.EmptyResponse> callback) {
+//        Call<LogInReturn.EmptyResponse> call = service.shareFB(data);
+//        call.enqueue(callback);
+//    }
 
     public void getNotifications(Callback<List<Notification>> callback) {
         Call<List<Notification>> call = service.getNotifications();

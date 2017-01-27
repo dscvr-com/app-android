@@ -11,7 +11,6 @@ import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
-import com.iam360.dscvr.viewmodels.OptographLocalGridAdapter;
 
 import timber.log.Timber;
 
@@ -60,19 +59,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == OptographLocalGridAdapter.DELETE_IMAGE && resultCode == RESULT_OK && data != null) {
-            //TODO for delete
-//        for (Fragment frag : adapterViewPager.profileRootFragment.getFragmentManager().getFragments()) {
-//            if (frag instanceof ProfileFragmentExercise) {
-//                String id = data.getStringExtra("id");
-//                boolean local = data.getBooleanExtra("local",false);
-//                ((ProfileFragmentExercise) frag).refreshAfterDelete(id,local);
-//            } else if (frag instanceof MainFeedFragment) {
-//                String id = data.getStringExtra("id");
-//                boolean local = data.getBooleanExtra("local",false);
-//                ((MainFeedFragment) frag).refreshAfterDelete(id,local);
-//            }
-        }
     }
 
     @Override

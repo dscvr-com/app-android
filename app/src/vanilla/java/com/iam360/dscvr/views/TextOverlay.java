@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.util.BubbleDrawable;
 
 import timber.log.Timber;
 
@@ -117,10 +116,6 @@ public class TextOverlay extends LinearLayout {
             textView.setText(text);
             textView.setX(deptOffset);
             textView.setLayoutParams(params);
-            BubbleDrawable myBubble = new BubbleDrawable(BubbleDrawable.CENTER);
-            myBubble.setCornerRadius(20);
-//            myBubble.setPadding(25, 25, 25, 25);
-            textView.setBackgroundDrawable(myBubble);
 
 //            LinearLayout mainParent = new LinearLayout(context);
 //            mainParent.setGravity(Gravity.CENTER);
