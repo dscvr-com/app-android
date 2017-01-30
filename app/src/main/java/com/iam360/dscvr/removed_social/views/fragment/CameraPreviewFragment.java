@@ -506,10 +506,10 @@ public class CameraPreviewFragment extends Fragment
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                ErrorDialog.newInstance(getString(R.string.com_facebook_internet_permission_error_message))
-                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
-            }
+//            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+//                ErrorDialog.newInstance(getString(R.string.com_facebook_internet_permission_error_message))
+//                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+//            }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }

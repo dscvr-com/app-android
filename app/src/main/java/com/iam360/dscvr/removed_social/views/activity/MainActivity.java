@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.facebook.stetho.Stetho;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.GestureDetectors;
@@ -21,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
         initializeComponents();
 
         setContentView(R.layout.a_activity_main);

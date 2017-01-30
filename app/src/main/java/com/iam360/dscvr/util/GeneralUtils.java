@@ -11,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import me.leolin.shortcutbadger.ShortcutBadger;
 import timber.log.Timber;
 
 public class GeneralUtils {
@@ -137,12 +136,6 @@ public class GeneralUtils {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    public void decrementBadgeCount(Cache cache, Context context) {
-        int badgeCount = cache.getInt(Cache.NOTIF_COUNT);
-        ShortcutBadger.applyCount(context, --badgeCount);
-        cache.save(Cache.NOTIF_COUNT, badgeCount);
     }
 
 

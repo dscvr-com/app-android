@@ -6,14 +6,10 @@ import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.danikula.videocache.HttpProxyCacheServer;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
 
-import im.ene.lab.toro.Toro;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
@@ -37,10 +33,6 @@ public class DscvrApp extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        Toro.init(this);
-
-        ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(this);
-        ImageLoader.getInstance().init(config.build());
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -92,17 +84,6 @@ public class DscvrApp extends Application {
                 .consumerKeepAlive(120)//wait 2 minute
                 .build();
         jobManager = new JobManager(this, configuration);
-    }
-
-    private HttpProxyCacheServer proxy;
-
-    public static HttpProxyCacheServer getProxy(Context context) {
-        DscvrApp app = (DscvrApp) context.getApplicationContext();
-        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
-    }
-
-    private HttpProxyCacheServer newProxy() {
-        return new HttpProxyCacheServer(this);
     }
 
     /** A tree which logs important information for crash reporting. */

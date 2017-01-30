@@ -16,9 +16,6 @@ import com.iam360.dscvr.removed_social.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.removed_social.viewmodels.OptographVideoFeedAdapter;
 import com.iam360.dscvr.util.Cache;
 
-import im.ene.lab.toro.Toro;
-import timber.log.Timber;
-
 public abstract class OptographListFragment extends Fragment {
     protected OptographVideoFeedAdapter optographFeedAdapter;
     protected Cache cache;
@@ -90,12 +87,10 @@ public abstract class OptographListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Toro.register(binding.optographFeed);
     }
 
     @Override
     public void onPause() {
-        Toro.unregister(binding.optographFeed);
         super.onPause();
     }
 
