@@ -197,48 +197,6 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/post_later_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="40dp"
-                android:layout_toRightOf="@+id/upload_layout">
-
-                <TextView
-                    android:id="@+id/post_later_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="@string/preview_post_later"
-                    android:textAllCaps="true"
-                    android:textSize="12sp" />
-
-                <Button
-                    android:id="@+id/post_later_button"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_above="@id/post_later_label"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/upload_later_icn_gray"
-                    android:clickable="false"
-                    android:visibility="invisible" />
-
-                <ProgressBar
-                    android:id="@+id/post_later_progress"
-                    style="@android:style/Widget.ProgressBar.Small.Inverse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/post_later_label"
-                    android:layout_centerHorizontal="true"
-                    android:clickable="true"
-                    android:padding="14dp" />
-
-            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout
