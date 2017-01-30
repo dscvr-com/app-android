@@ -16,6 +16,7 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity {
     private Cache cache;
     private MainFeedFragment mainFeedFragment;
+    public boolean isFullScreenMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toggleFeedFullScreen() {
-        mainFeedFragment.toggleFullScreen();
+        isFullScreenMode = mainFeedFragment.toggleFullScreen(isFullScreenMode);
     }
 
 }

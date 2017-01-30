@@ -2,13 +2,17 @@ package com.iam360.dscvr.removed_social.viewmodels;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.iam360.dscvr.AAFeedItemBinding;
 import com.iam360.dscvr.BR;
@@ -18,10 +22,14 @@ import com.iam360.dscvr.removed_social.views.activity.MainActivity;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.util.RFC3339DateFormatter;
 
 import org.joda.time.DateTime;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +43,14 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
     private Cache cache;
     private Context context;
+    private DBHelper mydb;
 
     public OptographVideoFeedAdapter(Context context) {
         this.context = context;
         this.optographs = new ArrayList<>();
 
         cache = Cache.open();
+        mydb = new DBHelper(context);
     }
 
     @Override
@@ -61,13 +71,8 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
     @Override
     public void onBindViewHolder(OptographHolder holder, int position) {
-//        super.onBindViewHolder(holder, position);
         Optograph optograph = optographs.get(position);
-        Timber.d("onBindViewHolder " + optograph.getId());
 
-//        int height = (int)((ITEM_WIDTH / 1.405) + (5 * DENSITY));
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
-//        holder.itemView.setLayoutParams(params);
 
         holder.bindingHeader.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         holder.bindingHeader.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
@@ -75,19 +80,48 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
             public boolean onTouch(View v, MotionEvent event) {
 
                 if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                    if(context instanceof MainActivity)
+                    if(context instanceof MainActivity) {
+
+                        toggleFullScreen(holder, ((MainActivity) context).isFullScreenMode);
                         ((MainActivity) context).toggleFeedFullScreen();
+                    }
                 }
 
                 return holder.bindingHeader.optograph2dview.getOnTouchListener().onTouch(v, event);
             }
         });
 
+        holder.bindingHeader.moreButton.setOnClickListener(v -> showDelete(holder, position));
+
 //            holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph, position));
 
             holder.getBinding().setVariable(BR.optograph, optograph);
             holder.getBinding().executePendingBindings();
 
+    }
+
+    private void showDelete(OptographHolder holder, int position) {
+
+        PopupMenu popup = new PopupMenu(context, holder.bindingHeader.moreButton);
+        popup.getMenuInflater().inflate(R.menu.opto_menu, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                deleteOptograph(optographs.get(position));
+                return true;
+            }
+        });
+
+        popup.show();//showing popup menu
+    }
+
+    private void toggleFullScreen(OptographHolder holder, boolean isFullScreenMode) {
+
+        if(isFullScreenMode) {
+            holder.bindingHeader.profileBar.setVisibility(View.VISIBLE);
+        } else {
+            holder.bindingHeader.profileBar.setVisibility(View.GONE);
+        }
     }
 
     private ArrayList<Optograph> getNextOptographList(int position, int count) {
@@ -144,6 +178,35 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         }
     }
 
+    private void deleteOptograph(Optograph optograph) {
+        deleteOptographFromPhone(optograph.getId());
+        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_DELETED_AT, RFC3339DateFormatter.toRFC3339String(DateTime.now()));
+        mydb.updateColumnOptograph(optograph.getId(), DBHelper.OPTOGRAPH_TEXT, "deleted");
+
+        deleteOptographFromPhone(optograph.getId());
+        refreshAfterDelete(optograph.getId());
+    }
+
+    private void deleteOptographFromPhone(String id) {
+        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH + id);
+
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    for (File file1: file.listFiles()) {
+                        boolean result = file1.delete();
+                    }
+                    boolean result = file.delete();
+                } else {
+                    // ignore
+                }
+            }
+            boolean result = dir.delete();
+        }
+    }
+
     public Optograph get(int position) {
         return optographs.get(position);
     }
@@ -160,14 +223,13 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         return this.optographs;
     }
 
-    public void refreshAfterDelete(String id, boolean isLocal) {
+    public void refreshAfterDelete(String id) {
 
         for (Optograph opto:optographs) {
-            if (opto!=null && opto.getId().equals(id) && opto.is_local()==isLocal) {
+            if (opto!=null && opto.getId().equals(id)) {
                 int position = optographs.indexOf(opto);
                 optographs.remove(opto);
                 notifyItemRemoved(position);
-                Timber.d("refreshAfterDelete optoremoved");
                 return;
             }
         }

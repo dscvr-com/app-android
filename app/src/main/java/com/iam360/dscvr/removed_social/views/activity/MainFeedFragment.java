@@ -21,7 +21,6 @@ import timber.log.Timber;
 
 public class MainFeedFragment extends OptographListFragment implements View.OnClickListener {
 
-    private boolean isFullScreenMode = false;
     private DBHelper mydb;
 
     @Override
@@ -137,13 +136,13 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         initializeFeed();
     }
 
-    public void toggleFullScreen() {
+    public boolean toggleFullScreen(boolean isFullScreenMode) {
         if(isFullScreenMode) {
             binding.overlayLayout.setVisibility(View.VISIBLE);
-            isFullScreenMode = false;
+            return false;
         } else {
             binding.overlayLayout.setVisibility(View.GONE);
-            isFullScreenMode = true;
+            return true;
         }
     }
 
