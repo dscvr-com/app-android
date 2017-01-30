@@ -13,6 +13,7 @@ import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.removed_social.viewmodels.LocalOptographManager;
+import com.iam360.dscvr.util.DBHelper;
 import com.squareup.otto.Subscribe;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -21,11 +22,14 @@ import timber.log.Timber;
 public class MainFeedFragment extends OptographListFragment implements View.OnClickListener {
 
     private boolean isFullScreenMode = false;
+    private DBHelper mydb;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mydb = new DBHelper(getContext());
     }
 
     @Override
@@ -72,27 +76,27 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     @Override
     public void initializeFeed() {
-        LocalOptographManager.getOptographs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
+        loadLocalOptographs();
         GlobalState.shouldHardRefreshFeed = false;
     }
 
     @Override
     public void loadMore() {
-        LocalOptographManager.getOptographs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
+        loadLocalOptographs();
     }
 
     @Override
     public void refresh() {
-        LocalOptographManager.getOptographs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
-
+        loadLocalOptographs();
         binding.swipeRefreshLayout.setRefreshing(false);
 
+    }
+
+    private void loadLocalOptographs() {
+        LocalOptographManager.getOptographs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(e -> mydb.inInLocalDB(e.getId()))
+                .subscribe(optographFeedAdapter::addItem);
     }
 
     @Override

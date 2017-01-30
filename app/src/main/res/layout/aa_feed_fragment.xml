@@ -57,6 +57,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     style="@android:style/Widget.ProgressBar.Large.Inverse"
+                    android:paddingBottom="@dimen/fab_margin"
                     android:visibility="visible"/>
 
             </RelativeLayout>

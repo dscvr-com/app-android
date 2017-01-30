@@ -670,6 +670,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 new String[] { id });
     }
 
+    public boolean inInLocalDB(String id) {
+        Cursor res = getData(id, DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
+            if (res == null || res.getCount() <= 0) {
+                res.close();
+                return false;
+            }
+        res.close();
+
+        return true;
+    }
+
     public boolean checkIfAllImagesUploaded(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery( "select * from "+FACES_TABLE_NAME+" where "+FACES_ID+"=\'"+id+"\'", null );

@@ -20,6 +20,8 @@ import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,14 +113,35 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         if (optograph == null) {
             return;
         }
-
         // skip if optograph is already in list
         if (optographs.contains(optograph)) {
             return;
         }
 
-        optographs.add(optographs.size(), optograph);
-        notifyItemInserted(optographs.size() - 1);
+        DateTime created_at = optograph.getCreated_atDateTime();
+
+        if (optographs.isEmpty()) {
+            optographs.add(optographs.size(), optograph);
+            notifyItemInserted(optographs.size() - 1);
+            return;
+        }
+
+        // if optograph is oldest, simply append to list
+        if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
+            optographs.add(optograph);
+            notifyDataSetChanged();
+            return;
+        }
+
+        // find correct position of optograph
+        for (int i = 0; i < optographs.size(); i++) {
+            Optograph current = optographs.get(i);
+            if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
+                optographs.add(i, optograph);
+                notifyItemInserted(i);
+                return;
+            }
+        }
     }
 
     public Optograph get(int position) {

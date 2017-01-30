@@ -181,7 +181,7 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         previewImage.setImageBitmap(recordFinishedPreviewEvent.getPreviewImage());
 
         createDefaultOptograph(optographGlobal);
-        //TODO activate OK button
+        enableButtons();
 
     }
 
