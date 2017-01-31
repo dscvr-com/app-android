@@ -1,8 +1,7 @@
-package com.iam360.dscvr.removed_social.views.record;
+package com.iam360.dscvr.views.record;
 
 import android.graphics.Bitmap;
 
-import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;

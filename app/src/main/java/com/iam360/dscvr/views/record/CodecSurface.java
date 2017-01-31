@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.record;
+package com.iam360.dscvr.views.record;
 
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;

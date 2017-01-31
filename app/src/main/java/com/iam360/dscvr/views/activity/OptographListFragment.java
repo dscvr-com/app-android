@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.activity;
+package com.iam360.dscvr.views.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 
 import com.iam360.dscvr.AAFeedBinding;
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.removed_social.viewmodels.InfiniteScrollListener;
-import com.iam360.dscvr.removed_social.viewmodels.OptographVideoFeedAdapter;
+import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
+import com.iam360.dscvr.viewmodels.OptographVideoFeedAdapter;
 import com.iam360.dscvr.util.Cache;
 
 public abstract class OptographListFragment extends Fragment {

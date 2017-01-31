@@ -1,6 +1,11 @@
-package com.iam360.dscvr.removed_social.views.activity;
+package com.iam360.dscvr.views.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,23 +17,34 @@ import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.record.GlobalState;
-import com.iam360.dscvr.removed_social.viewmodels.LocalOptographManager;
+import com.iam360.dscvr.viewmodels.LocalOptographManager;
+import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
+import com.iam360.dscvr.views.VRModeActivity;
 import com.squareup.otto.Subscribe;
+
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
-public class MainFeedFragment extends OptographListFragment implements View.OnClickListener {
+public class MainFeedFragment extends OptographListFragment implements View.OnClickListener, SensorEventListener {
 
+    private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
     private DBHelper mydb;
+    private DateTime inVRPositionSince = null;
+    private SensorManager sensorManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mydb = new DBHelper(getContext());
+
     }
 
     @Override
@@ -55,12 +71,14 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     public void onPause() {
         super.onPause();
+        unregisterAccelerationListener();
         BusProvider.getInstance().unregister(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        registerAccelerationListener();
 
         if(GlobalState.isAnyJobRunning) {
             binding.cameraBtn.setEnabled(false);
@@ -94,7 +112,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private void loadLocalOptographs() {
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(e -> mydb.inInLocalDB(e.getId()))
+//                .filter(e -> mydb.inInLocalDB(e.getId()))
                 .subscribe(optographFeedAdapter::addItem);
     }
 
@@ -146,4 +164,56 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         }
     }
 
+    public void switchToVRMode() {
+
+        if(optographFeedAdapter.getItemCount() > 0) {
+            Intent intent = new Intent(getActivity(), VRModeActivity.class);
+            intent.putParcelableArrayListExtra("opto_list", optographFeedAdapter.getNextOptographList(firstVisible, 5));
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        // only listen for Accelerometer if we did not yet start VR-activity and if we got an optograph
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // fire VRModeActivity if phone was turned
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            float length = (float) Math.sqrt(x*x + y*y);
+            if (length < Constants.MINIMUM_AXIS_LENGTH) {
+                inVRPositionSince = null;
+
+                return;
+            }
+            if (x > y + Constants.ACCELERATION_EPSILON) {
+                if (inVRPositionSince == null) {
+                    inVRPositionSince = DateTime.now();
+                }
+                Interval timePassed = new Interval(inVRPositionSince, DateTime.now());
+                Duration duration = timePassed.toDuration();
+                long milliseconds = duration.getMillis();
+                if (milliseconds > MILLISECONDS_THRESHOLD_FOR_SWITCH) {
+                    switchToVRMode();
+                }
+            }
+        }
+
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    private void registerAccelerationListener() {
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    private void unregisterAccelerationListener() {
+        sensorManager.unregisterListener(this);
+    }
 }

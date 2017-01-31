@@ -671,12 +671,15 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public boolean inInLocalDB(String id) {
+        Timber.d("inInLocalDB : " + id);
         Cursor res = getData(id, DBHelper.OPTO_TABLE_NAME_FEEDS, DBHelper.OPTOGRAPH_ID);
             if (res == null || res.getCount() <= 0) {
                 res.close();
+                Timber.d("inInLocalDB : " + false);
                 return false;
             }
         res.close();
+        Timber.d("inInLocalDB : " + true);
 
         return true;
     }

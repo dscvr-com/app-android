@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.activity;
+package com.iam360.dscvr.views.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,8 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.model.MotorConfig;
-import com.iam360.dscvr.removed_social.views.fragment.CameraPreviewFragment;
+import com.iam360.dscvr.views.fragment.CameraPreviewFragment;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.GeneralUtils;
@@ -44,8 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import retrofit.Response;
-import retrofit.Retrofit;
 import timber.log.Timber;
 
 public class RingOptionActivity extends AppCompatActivity implements View.OnClickListener {

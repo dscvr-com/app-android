@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.iam360.dscvr.removed_social.views.fragment;
+package com.iam360.dscvr.views.fragment;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -63,7 +63,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.removed_social.views.record.CodecSurface;
+import com.iam360.dscvr.views.record.CodecSurface;
 import com.iam360.dscvr.util.AutoFitTextureCameraView;
 
 import java.io.File;

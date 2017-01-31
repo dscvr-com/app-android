@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.fragment;
+package com.iam360.dscvr.views.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.record.GlobalState;
-import com.iam360.dscvr.removed_social.views.activity.RecorderActivity;
+import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.util.Constants;
 
 import butterknife.Bind;

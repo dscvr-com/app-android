@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.activity;
+package com.iam360.dscvr.views.activity;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -28,8 +28,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.removed_social.views.fragment.RecordFragment;
-import com.iam360.dscvr.removed_social.views.fragment.RecorderOverlayFragment;
+import com.iam360.dscvr.views.fragment.RecordFragment;
+import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
 import com.iam360.dscvr.util.BLECommands;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;

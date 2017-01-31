@@ -1,8 +1,9 @@
-package com.iam360.dscvr.removed_social.viewmodels;
+package com.iam360.dscvr.viewmodels;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
@@ -12,13 +13,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.iam360.dscvr.AAFeedItemBinding;
 import com.iam360.dscvr.BR;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.removed_social.views.activity.MainActivity;
+import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
@@ -32,8 +32,6 @@ import org.joda.time.DateTime;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import timber.log.Timber;
 
 public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVideoFeedAdapter.OptographHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
@@ -81,7 +79,6 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
                 if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
                     if(context instanceof MainActivity) {
-
                         toggleFullScreen(holder, ((MainActivity) context).isFullScreenMode);
                         ((MainActivity) context).toggleFeedFullScreen();
                     }
@@ -92,12 +89,29 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         });
 
         holder.bindingHeader.moreButton.setOnClickListener(v -> showDelete(holder, position));
+        holder.bindingHeader.vrButton.setOnClickListener(v -> startVRMode());
 
-//            holder.getBinding().frame.setOnClickListener(v -> callDetailsPage(optograph, position));
+        holder.getBinding().setVariable(BR.optograph, optograph);
+        holder.getBinding().executePendingBindings();
 
-            holder.getBinding().setVariable(BR.optograph, optograph);
-            holder.getBinding().executePendingBindings();
+    }
 
+    private void startVRMode() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(context.getResources().getString(R.string.dialog_vrmode_explanation));
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void showDelete(OptographHolder holder, int position) {
@@ -124,7 +138,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         }
     }
 
-    private ArrayList<Optograph> getNextOptographList(int position, int count) {
+    public ArrayList<Optograph> getNextOptographList(int position, int count) {
         int optoListCount = optographs.size();
         count = (count < optoListCount) ? count : optoListCount;
 

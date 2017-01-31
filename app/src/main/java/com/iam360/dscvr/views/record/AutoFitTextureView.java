@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.record;
+package com.iam360.dscvr.views.record;
 
 import android.content.Context;
 import android.util.AttributeSet;

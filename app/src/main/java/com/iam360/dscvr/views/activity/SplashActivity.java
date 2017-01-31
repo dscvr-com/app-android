@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.activity;
+package com.iam360.dscvr.views.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

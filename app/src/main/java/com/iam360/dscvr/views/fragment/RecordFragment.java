@@ -1,4 +1,4 @@
-package com.iam360.dscvr.removed_social.views.fragment;
+package com.iam360.dscvr.views.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,10 +26,10 @@ import com.iam360.dscvr.record.LineNode;
 import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
-import com.iam360.dscvr.removed_social.views.activity.RecorderActivity;
-import com.iam360.dscvr.removed_social.views.record.CancelRecorderJob;
-import com.iam360.dscvr.removed_social.views.record.FinishRecorderJob;
-import com.iam360.dscvr.removed_social.views.record.RecorderPreviewView;
+import com.iam360.dscvr.views.activity.RecorderActivity;
+import com.iam360.dscvr.views.record.CancelRecorderJob;
+import com.iam360.dscvr.views.record.FinishRecorderJob;
+import com.iam360.dscvr.views.record.RecorderPreviewView;
 import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.util.Cache;

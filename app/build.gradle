@@ -50,9 +50,17 @@ android {
     }
     buildTypes {
         release {
+            ndk {
+                abiFilters "armeabi-v7a", "armeabi" // includes ARM SO files only, so no x86 SO file
+            }
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+        }
+        debug {
+            ndk {
+                abiFilters "armeabi-v7a", "armeabi" // includes ARM SO files only, so no x86 SO file
+            }
         }
     }
     productFlavors {
