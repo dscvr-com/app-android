@@ -39,8 +39,8 @@ android {
         applicationId "com.iam360.dscvr"
         minSdkVersion minSdk
         targetSdkVersion 22
-        versionCode 20170123
-        versionName "1.0"
+        versionCode 20170214
+        versionName "1.1"
         multiDexEnabled true
     }
 //    dexOptions { javaMaxHeapSize "4g" }
