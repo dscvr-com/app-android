@@ -1,15 +1,31 @@
 package com.iam360.dscvr.views.activity;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.MixpanelHelper;
+import com.iam360.dscvr.views.fragment.MainFeedFragment;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import timber.log.Timber;
 
@@ -17,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
     private Cache cache;
     private MainFeedFragment mainFeedFragment;
     public boolean isFullScreenMode = false;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +48,14 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.container, mainFeedFragment).commit();
 
         MixpanelHelper.trackAppLaunch(this);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void initializeComponents() {
 
-        if(!Cache.cacheInitialized){
+        if (!Cache.cacheInitialized) {
             cache = Cache.getInstance(this);
         }
         cache = Cache.open();
@@ -41,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         DefaultListeners.initialize(this);
 
         mainFeedFragment = new MainFeedFragment();
+
+//        copyAssets();
 
     }
 
@@ -87,5 +113,82 @@ public class MainActivity extends AppCompatActivity {
 
     public void switchToVRMode() {
         mainFeedFragment.switchToVRMode();
+    }
+
+    private void copyAssets() {
+        Timber.d("copyAssets");
+
+        String filename = "logo-text.png";
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = getAssets().open(filename);
+            File outFile = new File(getExternalFilesDir(null), filename);
+            out = new FileOutputStream(outFile);
+            copyFile(in, out);
+            Timber.d("File : " + outFile.getAbsolutePath());
+        } catch(IOException e) {
+            Timber.d("ioxception");
+        }
+        finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // NOOP
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    // NOOP
+                }
+            }
+        }
+
+    }
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

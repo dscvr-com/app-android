@@ -120,6 +120,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
+    compile 'com.google.android.gms:play-services-appindexing:9.0.2'
 }
 
 configurations {

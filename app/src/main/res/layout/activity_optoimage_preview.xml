@@ -151,7 +151,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     android:paddingBottom="8dp"
-                    android:text="UPLOAD NOW"
+                    android:text="SAVE"
                     android:textSize="12sp" />
 
                 <RelativeLayout

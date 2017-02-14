@@ -1,4 +1,4 @@
-package com.iam360.dscvr.views.activity;
+package com.iam360.dscvr.views.fragment;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;

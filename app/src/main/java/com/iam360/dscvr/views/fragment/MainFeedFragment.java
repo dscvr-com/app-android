@@ -1,4 +1,4 @@
-package com.iam360.dscvr.views.activity;
+package com.iam360.dscvr.views.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,7 @@ import com.iam360.dscvr.viewmodels.LocalOptographManager;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.views.VRModeActivity;
+import com.iam360.dscvr.views.activity.RingOptionActivity;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
@@ -202,7 +203,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         }
 
     }
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
