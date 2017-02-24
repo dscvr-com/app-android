@@ -13,4 +13,6 @@
     <dimen name="snackbar_padding_horizontal">12dp</dimen>
     <dimen name="snackbar_padding_vertical">14dp</dimen>
     <dimen name="snackbar_padding_vertical_2lines">24dp</dimen>
+
+    <bool name="isTablet">false</bool>
 </resources>
