@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.iam360.dscvr.R;
 import com.iam360.dscvr.util.Maths;
 
 import java.util.Arrays;
@@ -51,6 +52,8 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         Timber.w("Device/Man: " + deviceModel + "/" + deviceMan);
         Timber.w("Sensor/Man: " + sensorName + "/" + sensorVendor);
 
+        POSTCORRECTION = baseCorrection;
+
         if(deviceModel.equals("Nexus 6P") && deviceMan.equals("Huawei") && sensorVendor.equals("Bosch") && sensorName.equals("BMI160 accelerometer")) {
             final float rotationFixInDegrees = -3f;
             PRECORRECTION = Maths.buildRotationMatrix(new float[]{ rotationFixInDegrees, 0, 0, 1 });
@@ -60,7 +63,23 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
             PRECORRECTION = new float[16];
             Matrix.setIdentityM(PRECORRECTION, 0);
         }
-        POSTCORRECTION = baseCorrection;
+
+        // TODO - check if isTablet actually works
+        // It might be necessary to check for the device type
+        // as done above.
+        if(context.getResources().getBoolean(R.bool.isTablet)) {
+            float[] swapXY = new float[] {
+                0, 1, 0, 0,
+                1, 0, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            };
+            // Take care of the mat order. 
+            float[] temp = Arrays.copyOf(PRECORRECTION, 16);
+            Matrix.multiplyMM(PRECORRECTION, 0, swapXY, 0, temp, 0);
+            temp = Arrays.copyOf(POSTCORRECTION, 16);
+            Matrix.multiplyMM(POSTCORRECTION, 0, temp, 0, swapXY, 0);
+        }
     }
 
     @Override
