@@ -198,10 +198,10 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 updateMode(true);
                 break;
             case R.id.motor_button:
-                Snackbar.make(recordButton, "Motor mode available soon.", Snackbar.LENGTH_SHORT).show();
-//                updateMode(false);
-//                boolean permissionOK = checkBluetoothPermission();
-//                if(permissionOK) enableBluetooth();
+//                Snackbar.make(recordButton, "Motor mode available soon.", Snackbar.LENGTH_SHORT).show();
+                updateMode(false);
+                boolean permissionOK = checkBluetoothPermission();
+                if(permissionOK) enableBluetooth();
                 break;
             case R.id.record_button:
                 Intent intent;
@@ -298,39 +298,41 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         Timber.d("onRequestPermissionsResult");
 
-        switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Functionality limited");
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                        }
-
-                    });
-                    builder.show();
-                }
-            }
-            case PERMISSION_REQUEST_CAMERA: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    Timber.d("Permission granted.");
-                    initializeWithPermission();
-
-                } else {
-                    Timber.d("Permission not granted.");
-                    throw new RuntimeException("Need Camera!");
-                }
-                return;
-            }
-        }
+        initializeWithPermission();
+//        switch (requestCode) {
+//            case PERMISSION_REQUEST_COARSE_LOCATION: {
+//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                } else {
+//                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setTitle("Functionality limited");
+//                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+//                    builder.setPositiveButton(android.R.string.ok, null);
+//                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//
+//                        @Override
+//                        public void onDismiss(DialogInterface dialog) {
+//                        }
+//
+//                    });
+//                    builder.show();
+//                }
+//            }
+//            case PERMISSION_REQUEST_CAMERA: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//
+//                    Timber.d("Permission granted.");
+//                    initializeWithPermission();
+//
+//                } else {
+//                    Timber.d("Permission not granted.");
+//                    throw new RuntimeException("Need Camera!");
+//                }
+//                return;
+//            }
+//        }
     }
 
     private void scanLeDevice(final boolean enable) {
