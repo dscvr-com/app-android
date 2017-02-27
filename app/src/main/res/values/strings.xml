@@ -33,13 +33,13 @@
     <string name="bluetooth_searching">Searching...</string>
     <string name="bluetooth_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>
 
-    <string name="bluetooth_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>
-    <string name="bluetooth_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>
-    <string name="bluetooth_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>
+    <!--<string name="bluetooth_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>-->
+    <!--<string name="bluetooth_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>-->
+    <!--<string name="bluetooth_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>-->
 
-    <!--<string name="bluetooth_serviceuuidlong">69400001-B5A3-F393-E0A9-E50E24DCCA99</string>-->
-    <!--<string name="bluetooth_characteristic_write">69400002-B5A3-F393-E0A9-E50E24DCCA99</string>-->
-    <!--<string name="bluetooth_characteristic_response">69400003-B5A3-F393-E0A9-E50E24DCCA99</string>-->
+    <string name="bluetooth_serviceuuidlong">69400001-B5A3-F393-E0A9-E50E24DCCA99</string>
+    <string name="bluetooth_characteristic_write">69400002-B5A3-F393-E0A9-E50E24DCCA99</string>
+    <string name="bluetooth_characteristic_response">69400003-B5A3-F393-E0A9-E50E24DCCA99</string>
 
     <!--let BLEServiceUUID = CBUUID(string: "69400001-B5A3-F393-E0A9-E50E24DCCA99")-->
     <!--let PositionCharUUID = CBUUID(string: "69400002-B5A3-F393-E0A9-E50E24DCCA99")-->

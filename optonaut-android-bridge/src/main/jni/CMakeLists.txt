@@ -13,7 +13,7 @@ add_subdirectory(online-stitcher/src)
 
 add_library(optonaut-android-bridge
              SHARED
-             AlignmentBridge.cpp StitcherBridge RecorderBridge)
+             AlignmentBridge.cpp StitcherBridge RecorderBridge ConvertToStereoBridge)
 
 
 target_link_libraries(optonaut-android-bridge optonaut-lib)

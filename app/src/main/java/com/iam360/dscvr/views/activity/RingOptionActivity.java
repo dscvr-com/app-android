@@ -121,10 +121,6 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_option);
 
-//        recordPreview = new RecorderPreviewView(this);
-//        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
-//        preview.addView(recordPreview);
-
         if (null == savedInstanceState) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.record_preview, CameraPreviewFragment.newInstance())
@@ -166,13 +162,11 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onResume() {
         super.onResume();
-//        recordPreview.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        recordPreview.onPause();
     }
 
     @Override
@@ -255,7 +249,6 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                 builder.show();
             } else {
                 Timber.d("Permission granted.");
-                permission = true;
             }
         }
 
@@ -263,8 +256,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "Not supported." , Toast.LENGTH_SHORT).show();
-            permission = false;
-        } else permission = true;
+        }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
@@ -338,7 +330,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private void scanLeDevice(final boolean enable) {
 
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-// If there are paired devices
+        // If there are paired devices
         if (pairedDevices.size() > 0) {
             // Loop through paired devices
             for (BluetoothDevice device : pairedDevices) {

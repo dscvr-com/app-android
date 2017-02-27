@@ -17,11 +17,14 @@ extern "C" {
 
 };
 
-void Java_com_iam360_dscvr_record_ConvertToStereo_convert(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jstring storagePath)
+void Java_com_iam360_dscvr_record_ConvertToStereo_convert(JNIEnv *env, jobject, jstring path, jstring sharedPath, jstring storagePath)
 {
 
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
+
+    Log << "cPath " << cPath;
+    Log << "cSharedPath " << cSharedPath;
 
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string s_path(cString);
@@ -38,7 +41,7 @@ void Java_com_iam360_dscvr_record_ConvertToStereo_convert(JNIEnv *env, jobject t
 
 }
 
-void Java_com_iam360_dscvr_record_ConvertToStereo_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath)
+void Java_com_iam360_dscvr_record_ConvertToStereo_clear(JNIEnv *env, jobject, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
