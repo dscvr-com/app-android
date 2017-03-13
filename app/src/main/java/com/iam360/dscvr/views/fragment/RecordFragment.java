@@ -110,18 +110,26 @@ public class RecordFragment extends Fragment {
                 int PPS = Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT));
                 int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
 
-                double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
-                double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+                double degreeIncrMicro = (0.036 / ( (double) rotatePlusBuff / (double) PPS ));
+                double degreeIncr = (elapsedSec / 0.0001) * ((0.036 / ( (double) rotatePlusBuff / (double) PPS )));
 
                 lastElapsedTime = System.currentTimeMillis();
                 if(isRecording){
                     currentDegree += degreeIncr;
+                    Log.d("MARK","degreeIncr = "+degreeIncr + " datahascome:" + ((RecorderActivity) getActivity()).dataHasCome + " TIME : " + mediaTime);
+
+//                    Timber.d("BUFFERCOUNT : TD:" + timeDiff + " ES:" + elapsedSec + " SRC:" + sessionRotateCount
+//                            + " SBC:" + sessionBuffCount + " PPS:" + PPS + " RPB:" + rotatePlusBuff + " DIM:" + degreeIncrMicro
+//                            + " DI:" + degreeIncr + " CD:" + currentDegree + " MT:" + mediaTime);
+
+                    Timber.d("BUFFERCOUNT : " + timeDiff + ":" + elapsedSec + ":" + sessionRotateCount
+                            + ":" + sessionBuffCount + ":" + PPS + ":" + rotatePlusBuff + ":" + degreeIncrMicro
+                            + ":" + degreeIncr + ":" + currentDegree + ":" + mediaTime);
                 }
 
 //                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
 //                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
 
-                Log.d("MARK","degreeIncr = "+degreeIncr + " datahascome:" + ((RecorderActivity) getActivity()).dataHasCome);
 
                 currentPhi = (float) Math.toRadians(currentDegree);
 

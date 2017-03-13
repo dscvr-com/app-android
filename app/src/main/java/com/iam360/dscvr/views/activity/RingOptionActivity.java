@@ -12,9 +12,11 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -79,43 +81,6 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private UUID mResponesUIID;
     private UUID mNotifUUID;
 
-
-    // Todo - please clean that code up.
-    public void checkPermissionAndInitialize() {
-        Timber.d("Checking permission.");
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                Timber.d("Please show explaination.");
-                throw new RuntimeException("Not implemented!");
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                Timber.d("Requesting permission.");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},
-                        PERMISSION_REQUEST_CAMERA);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        } else {
-            Timber.d("Permission granted.");
-            initializeWithPermission();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +92,44 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                     .commit();
         }
 
+        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
+        IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        IntentFilter filter3 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        this.registerReceiver(mReceiver, filter1);
+        this.registerReceiver(mReceiver, filter2);
+        this.registerReceiver(mReceiver, filter3);
+
         checkPermissionAndInitialize();
+    }
+
+    // Todo - please clean that code up.
+    public void checkPermissionAndInitialize() {
+        Timber.d("Checking permission.");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Timber.d("Please show explaination.");
+                throw new RuntimeException("Not implemented!");
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                Timber.d("Requesting permission.");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            Timber.d("Permission granted.");
+            initializeWithPermission();
+        }
     }
 
     void initializeWithPermission() {
@@ -195,13 +197,24 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 //                Snackbar.make(recordButton, "Motor mode available soon.", Snackbar.LENGTH_SHORT).show();
                 updateMode(false);
                 boolean permissionOK = checkBluetoothPermission();
-                if(permissionOK) enableBluetooth();
+                if(permissionOK)
+                    enableBluetooth();
                 break;
             case R.id.record_button:
                 Intent intent;
                 intent = new Intent(RingOptionActivity.this, RecorderActivity.class);
                 startActivity(intent);
                 finish();
+
+//                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+//                Timber.d("Bluetooth : " + pairedDevices.size());
+//                // If there are paired devices
+//                if (pairedDevices.size() > 0) {
+//                    // Loop through paired devices
+//                    for (BluetoothDevice device : pairedDevices) {
+//                        Timber.d("Bluetooth : " + device.getAddress());
+//                    }
+//                }
                 break;
         }
     }
@@ -230,27 +243,27 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         Timber.d("checkBluetoothPermission");
         boolean permission = false;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Android M Permission check
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Timber.d("Permission not granted");
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("This app needs location access");
-                builder.setMessage("Please grant location access so this app can detect beacons.");
-                builder.setPositiveButton(android.R.string.ok, null);
-                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    public void onDismiss(DialogInterface dialog) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-                        }
-                    }
-                });
-                builder.show();
-            } else {
-                Timber.d("Permission granted.");
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            // Android M Permission check
+//            if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                Timber.d("Permission not granted");
+//
+//                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                builder.setTitle("This app needs location access");
+//                builder.setMessage("Please grant location access so this app can detect beacons.");
+//                builder.setPositiveButton(android.R.string.ok, null);
+//                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    public void onDismiss(DialogInterface dialog) {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+//                        }
+//                    }
+//                });
+//                builder.show();
+//            } else {
+//                Timber.d("Permission granted.");
+//            }
+//        }
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -556,12 +569,50 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 //    }
 
     private void setDefMotorConfigs(){
+//        cache.save(Cache.BLE_ROT_COUNT, "5111");
+//        cache.save(Cache.BLE_BOT_COUNT, "61538");
+//        cache.save(Cache.BLE_TOP_COUNT, "2000");
+//        cache.save(Cache.BLE_PPS_COUNT, "100");
+//        cache.save(Cache.BLE_BUF_COUNT, "0");
+
         cache.save(Cache.BLE_ROT_COUNT, "5111");
-        cache.save(Cache.BLE_BOT_COUNT, "61538");
-        cache.save(Cache.BLE_TOP_COUNT, "2000");
-        cache.save(Cache.BLE_PPS_COUNT, "100");
-        cache.save(Cache.BLE_BUF_COUNT, "0");
+        cache.save(Cache.BLE_BOT_COUNT, "-3998");
+        cache.save(Cache.BLE_TOP_COUNT, "1999");
+        cache.save(Cache.BLE_PPS_COUNT, "250");
+
+        // 5111 / 250 = 20.44
+//        x = 5111 - (19.981 * 250)
+        cache.save(Cache.BLE_BUF_COUNT, "20");
+
+        // pps buf
+        // 100 0
+        // 125 50
+
+//        Defaults[.SessionPPS] = 250
+//        Defaults[.SessionRotateCount] = 5111
+//        Defaults[.SessionTopCount] = 1999
+//        Defaults[.SessionBotCount] = -3998
+//        Defaults[.SessionBuffCount] = 20
 
 //        getMotorConfig();
     }
+
+    //The BroadcastReceiver that listens for bluetooth broadcasts
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Timber.d("onReceive : " + intent.getAction());
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                //Do something if connected
+                Toast.makeText(getApplicationContext(), "BT Connected", Toast.LENGTH_SHORT).show();
+            } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                //Do something if disconnected
+                Toast.makeText(getApplicationContext(), "BT Disconnected", Toast.LENGTH_SHORT).show();
+            }
+            //else if...
+        }
+    };
 }

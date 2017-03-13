@@ -47,6 +47,15 @@ public class RecorderActivity extends AppCompatActivity {
     private RecorderOverlayFragment recorderOverlayFragment;
     public Cache cache;
 
+    //motorRing type = (0:stop, 1:1st ring rotate, 2:toTop 2nd, 3:3rd ring rotate, 4:toBot, 5:toBot, 6:last)
+    private final int MOTOR_RING_STOP_0 = 0;
+    private final int MOTOR_RING_1ST_RING_ROTATE_1 = 1;
+    private final int MOTOR_RING_TO_TOP_2 = 2;
+    private final int MOTOR_RING_2ND_RING_ROTATE_3 = 3;
+    private final int MOTOR_RING_TO_BOTTOM_4 = 4;
+    private final int MOTOR_RING_3RD_RING_ROTATE_5 = 5;
+    private final int MOTOR_RING_LAST_6 = 6;
+
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_BLE_LIST = 1000;
     private BluetoothAdapter mBluetoothAdapter;
@@ -62,7 +71,7 @@ public class RecorderActivity extends AppCompatActivity {
     private UUID mNotifUUID;
 
     private boolean m3ringFlag = true;
-    private int motorRingType = 1;
+    private int motorRingType = MOTOR_RING_1ST_RING_ROTATE_1;
     public boolean useBLE = false;
     public boolean dataHasCome = false;
 
@@ -137,6 +146,8 @@ public class RecorderActivity extends AppCompatActivity {
         recordFragment.startRecording();
 
         if(cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE){
+
+            Timber.d("BUFFERCOUNT click : " + System.currentTimeMillis());
             bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
             Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
             Handler handler = new Handler();
@@ -147,7 +158,7 @@ public class RecorderActivity extends AppCompatActivity {
                     bleCommands.rotateRight();
                 }
             }, 2000);
-            motorRingType = 2; //top ring
+            motorRingType = MOTOR_RING_TO_TOP_2; //top ring
         }
     }
 
@@ -221,15 +232,19 @@ public class RecorderActivity extends AppCompatActivity {
     };
 
     public void connectToDevice(BluetoothDevice device) {
+        Timber.d("connectToDevice");
         if (mBluetoothGatt == null) {
+            Timber.d("connectToDevice NULL");
             mBluetoothGatt = device.connectGatt(this, false, gattCallback);
             stopLeScan();
-        }
+        } else
+            Timber.d("connectToDevice NOT NULL");
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            Timber.d("onConnectionStateChange : " + newState);
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
                     gatt.discoverServices();
@@ -243,6 +258,8 @@ public class RecorderActivity extends AppCompatActivity {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Timber.d("onServicesDiscovered");
+
             List<BluetoothGattService> services = gatt.getServices();
             // Hardcoded for now, uuid filtering not working
             for(int a=0; a < services.size(); a++){
@@ -263,12 +280,13 @@ public class RecorderActivity extends AppCompatActivity {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Timber.d("onCharacteristicRead");
             gatt.disconnect();
         }
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            final BluetoothGattCharacteristic characteristic) {
-            Log.d("MARK","onCharacteristicChanged characteristic = "+characteristic.getUuid());
+        public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+            Timber.d("onCharacteristicChanged characteristic = "+characteristic.getUuid());
+            Timber.d("motorRingType : " + motorRingType);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -279,14 +297,14 @@ public class RecorderActivity extends AppCompatActivity {
             byte[] responseValue = characteristic.getValue();
             char[] charArr = bleCommands.bytesToHex(responseValue);
             String yPos = String.valueOf(""+charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
-            Log.d("MARK","yPos  == "+yPos);
+            Timber.d("yPos  == "+yPos);
             Log.d("MARK","motorRingType  == "+motorRingType);
-            Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
-            if(motorRingType == 2) {
+            Timber.d("onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
+            if(motorRingType == MOTOR_RING_TO_TOP_2) {
                 dataHasCome = false;
                 bleCommands.topRing();
-                motorRingType = 3;
-            }else if(motorRingType == 3){
+                motorRingType = MOTOR_RING_2ND_RING_ROTATE_3;
+            }else if(motorRingType == MOTOR_RING_2ND_RING_ROTATE_3){
 //                dataHasCome = true;
 //                bleCommands.rotateRight();
 //                motorRingType = 4;
@@ -299,18 +317,19 @@ public class RecorderActivity extends AppCompatActivity {
                             public void run() {
                                 dataHasCome = true;
                                 bleCommands.rotateRight();
-                                motorRingType = 4;
+                                motorRingType = MOTOR_RING_TO_BOTTOM_4;
 
                                 Timber.d("onCharacteristicChanged motorRingType 3");
                             }
                         }, 2000);
                     }
                 });
-            }else if(motorRingType == 4){
+            } else if(motorRingType == MOTOR_RING_TO_BOTTOM_4) {
+                Timber.d("onCharacteristicChanged motorRingType 4");
                 dataHasCome = false;
                 bleCommands.bottomRing();
-                motorRingType = 5;
-            }else if(motorRingType == 5){
+                motorRingType = MOTOR_RING_3RD_RING_ROTATE_5;
+            }else if(motorRingType == MOTOR_RING_3RD_RING_ROTATE_5){
 //                dataHasCome = true;
 //                bleCommands.rotateRight();
 //                motorRingType = 6;
@@ -322,25 +341,26 @@ public class RecorderActivity extends AppCompatActivity {
                             public void run() {
                                 dataHasCome = true;
                                 bleCommands.rotateRight();
-                                motorRingType = 6;
+                                motorRingType = MOTOR_RING_LAST_6;
 
                                 Timber.d("onCharacteristicChanged motorRingType 5");
                             }
                         }, 2000);
                     }
                 });
-            }else if(motorRingType == 6){
+            }else if(motorRingType == MOTOR_RING_LAST_6){
+                Timber.d("onCharacteristicChanged motorRingType 6");
                 dataHasCome = false;
                 bleCommands.topRing();
-                motorRingType = 0;
+                motorRingType = MOTOR_RING_STOP_0;
             }
         }
         @Override
-        public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                     int status) {}
+        public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {}
     };
 
     private void beginBT() {
+        Timber.d("beginBT");
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             // Request to Enable BT
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -363,6 +383,7 @@ public class RecorderActivity extends AppCompatActivity {
     }
 
     private void startLeScan() {
+        Timber.d("startLeScan");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mLEScanner.startScan(mScanFilters, mScanSettings, mScanCallback);
         }
