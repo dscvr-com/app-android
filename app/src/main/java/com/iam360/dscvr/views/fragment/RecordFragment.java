@@ -98,58 +98,7 @@ public class RecordFragment extends Fragment {
 
             // motor part
             if(((RecorderActivity) getActivity()).cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
-//                coreMotionMatrix = moveViaMotor();
-//                float[] coreMotionMatrix;
-                isRecording = ((RecorderActivity) getActivity()).dataHasCome;
-                long mediaTime = System.currentTimeMillis();
-                long timeDiff = mediaTime - lastElapsedTime;
-                double elapsedSec = timeDiff / 1000.0;
-
-                int sessionRotateCount = Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT));
-                int sessionBuffCount = Integer.parseInt(cache.getString(Cache.BLE_BUF_COUNT));
-                int PPS = Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT));
-                int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
-
-                double degreeIncrMicro = (0.036 / ( (double) rotatePlusBuff / (double) PPS ));
-                double degreeIncr = (elapsedSec / 0.0001) * ((0.036 / ( (double) rotatePlusBuff / (double) PPS )));
-
-                lastElapsedTime = System.currentTimeMillis();
-                if(isRecording){
-                    currentDegree += degreeIncr;
-                    Log.d("MARK","degreeIncr = "+degreeIncr + " datahascome:" + ((RecorderActivity) getActivity()).dataHasCome + " TIME : " + mediaTime);
-
-//                    Timber.d("BUFFERCOUNT : TD:" + timeDiff + " ES:" + elapsedSec + " SRC:" + sessionRotateCount
-//                            + " SBC:" + sessionBuffCount + " PPS:" + PPS + " RPB:" + rotatePlusBuff + " DIM:" + degreeIncrMicro
-//                            + " DI:" + degreeIncr + " CD:" + currentDegree + " MT:" + mediaTime);
-
-                    Timber.d("BUFFERCOUNT : " + timeDiff + ":" + elapsedSec + ":" + sessionRotateCount
-                            + ":" + sessionBuffCount + ":" + PPS + ":" + rotatePlusBuff + ":" + degreeIncrMicro
-                            + ":" + degreeIncr + ":" + currentDegree + ":" + mediaTime);
-                }
-
-//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
-//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
-
-
-                currentPhi = (float) Math.toRadians(currentDegree);
-
-                if (currentPhi > ( 2 * Math.PI) -0.001) {
-                    isRecording = false;
-                    if(currentTheta == 0) {
-                        currentTheta = (float) Recorder.getBotThetaValue();
-                    } else if(currentTheta < 0) {
-                        currentTheta = (float) Recorder.getTopThetaValue();
-                    } else if(currentTheta > 0) {
-                        currentTheta = (float) Recorder.getCenterThetaValue();
-                    }
-                    currentDegree = 0;
-                }
-                Log.d("MARK","currentDegree = "+currentDegree);
-                Log.d("MARK","currentTheta = "+currentTheta);
-                Log.d("MARK","currentPhi = "+currentPhi);
-
-                customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
-                coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
+                coreMotionMatrix = moveViaMotor();
             }
 
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
@@ -460,45 +409,37 @@ public class RecordFragment extends Fragment {
 
     private float[] moveViaMotor() {
         float[] coreMotionMatrix;
+        isRecording = ((RecorderActivity) getActivity()).dataHasCome;
         long mediaTime = System.currentTimeMillis();
         long timeDiff = mediaTime - lastElapsedTime;
         double elapsedSec = timeDiff / 1000.0;
 
-        int sessionRotateCount = 7200;
-        int sessionBuffCount = 200;
-        int PPS = 300;
+        int sessionRotateCount = Integer.parseInt(cache.getString(Cache.BLE_ROT_COUNT));
+        int sessionBuffCount = Integer.parseInt(cache.getString(Cache.BLE_BUF_COUNT));
+        int PPS = Integer.parseInt(cache.getString(Cache.BLE_PPS_COUNT));
         int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
 
-        double degreeIncrMicro = (0.036 / ( rotatePlusBuff / PPS ));
-        double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
+        double degreeIncrMicro = (0.036 / ( (double) rotatePlusBuff / (double) PPS ));
+        double degreeIncr = (elapsedSec / 0.0001) * ((0.036 / ( (double) rotatePlusBuff / (double) PPS )));
 
         lastElapsedTime = System.currentTimeMillis();
         if(isRecording){
             currentDegree += degreeIncr;
         }
 
-//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
-//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
-
-        if(((RecorderActivity) getActivity()).dataHasCome){
-            isRecording = true;
-        }
-        Log.d("MARK","degreeIncr = "+degreeIncr);
-
         currentPhi = (float) Math.toRadians(currentDegree);
 
         if (currentPhi > ( 2 * Math.PI) -0.001) {
             isRecording = false;
             if(currentTheta == 0) {
-                currentTheta = (-DeviceName.getCurrentThetaValue());
+                currentTheta = (float) Recorder.getBotThetaValue();
             } else if(currentTheta < 0) {
-                currentTheta = DeviceName.getCurrentThetaValue();
+                currentTheta = (float) Recorder.getTopThetaValue();
             } else if(currentTheta > 0) {
-                currentTheta = 0;
+                currentTheta = (float) Recorder.getCenterThetaValue();
             }
             currentDegree = 0;
         }
-        Log.d("MARK","currentDegree = "+currentDegree);
 
         customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
         coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
