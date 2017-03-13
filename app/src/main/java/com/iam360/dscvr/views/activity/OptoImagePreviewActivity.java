@@ -71,13 +71,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
 
         ButterKnife.bind(this, this);
 
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            Timber.v("kitkat");
-            statusbar.setVisibility(View.VISIBLE);
-        } else {
-            statusbar.setVisibility(View.GONE);
-        }
-
         uploadButton.setOnClickListener(this);
         exitButton.setOnClickListener(this);
 
