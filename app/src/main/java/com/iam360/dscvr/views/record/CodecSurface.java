@@ -238,7 +238,7 @@ public class CodecSurface
     // SurfaceTexture callback
     @Override
     public void onFrameAvailable(SurfaceTexture st) {
-//        if (VERBOSE) Log.d(TAG, "new frame available");
+        if (VERBOSE) Log.d(TAG, "new frame available");
         synchronized (mFrameSyncObject) {
             if (mFrameAvailable) {
                 Timber.e("mFrameAvailable already set, frame could be dropped");

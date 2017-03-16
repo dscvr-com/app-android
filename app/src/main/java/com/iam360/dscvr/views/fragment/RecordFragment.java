@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.camera2.CameraAccessException;
@@ -10,7 +11,6 @@ import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SizeF;
 import android.view.LayoutInflater;
@@ -27,6 +27,7 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.views.activity.RecorderActivity;
+import com.iam360.dscvr.views.record.CameraPreviewView;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
@@ -56,6 +57,7 @@ import timber.log.Timber;
 public class RecordFragment extends Fragment {
     private String TAG = RecordFragment.class.getSimpleName();
     private RecorderPreviewView recordPreview;
+//    private CameraPreviewView cameraPreviewView;
     private RecorderOverlayView recorderOverlayView;
     private Vector3 ballPosition = new Vector3();
     private Vector3 ballSpeed = new Vector3();
@@ -164,7 +166,7 @@ public class RecordFragment extends Fragment {
 
             if (Recorder.isFinished()) {
                 // TODO: change mode to POST_RECORD
-                Snackbar.make(recordPreview, "Recording is finished, please wait for the result!", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(recordPreview, "Recording is finished, please wait for the result!", Snackbar.LENGTH_LONG).show();
 
                 // queue finishing on main thread
                 queueFinishRecording();
@@ -214,18 +216,22 @@ public class RecordFragment extends Fragment {
         recordPreview = new RecorderPreviewView(getActivity());
         recordPreview.setPreviewListener(previewListener);
         recorderOverlayView = new RecorderOverlayView(getActivity());
-        FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
-        preview.addView(recordPreview);
-        preview.addView(recorderOverlayView);
 
+//        cameraPreviewView = new CameraPreviewView(getActivity());
+//        cameraPreviewView.setPreviewListener(previewListener);
+
+        FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
+        preview.addView(recorderOverlayView);
+        preview.addView(recordPreview);
 
 //        if (null == savedInstanceState) {
 //            getChildFragmentManager().beginTransaction()
-//                    .replace(R.id.record_preview, CameraPreviewFragment.newInstance())
+//                    .add(R.id.record_preview, cameraPreviewFragment)
 //                    .commit();
 //        }
 
-        MixpanelHelper.trackViewCamera(getContext());
+
+        MixpanelHelper.trackViewCamera(getActivity());
 
         cache = Cache.open();
 
@@ -254,7 +260,7 @@ public class RecordFragment extends Fragment {
     public void startRecording() {
         Timber.v("Starting recording...");
 
-        MixpanelHelper.trackCameraStartRecording(getContext());
+        MixpanelHelper.trackCameraStartRecording(getActivity());
 
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
         recordPreview.lockExposure();
@@ -306,12 +312,12 @@ public class RecordFragment extends Fragment {
 
     public void finishRecording() {
 
-        MixpanelHelper.trackCameraFinishRecording(getContext());
+        MixpanelHelper.trackCameraFinishRecording(getActivity());
         GlobalState.isAnyJobRunning = true;
         UUID id = UUID.randomUUID();
 
         recordPreview.setPreviewListener(null);
-        recordPreview.stopPreviewFeed();
+//        cameraPreviewView.stopPreviewFeed();
 
         // start a background thread to finish recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
@@ -322,12 +328,12 @@ public class RecordFragment extends Fragment {
 
     public void cancelRecording() {
         recordPreview.setPreviewListener(null);
-        recordPreview.stopPreviewFeed();
+//        cameraPreviewView.stopPreviewFeed();
 
         // TODO: What is this pause call for?
-        recordPreview.onPause();
+//        recordPreview.onPause();
 
-        MixpanelHelper.trackCameraCancelRecording(getContext());
+        MixpanelHelper.trackCameraCancelRecording(getActivity());
         GlobalState.isAnyJobRunning = true;
 
         // start background thread to cancel recorder
