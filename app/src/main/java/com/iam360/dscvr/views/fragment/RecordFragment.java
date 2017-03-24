@@ -221,7 +221,7 @@ public class RecordFragment extends Fragment {
 
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
         preview.addView(recorderOverlayView);
-     //   preview.addView(recordPreview);
+        preview.addView(recordPreview);
 
 //        if (null == savedInstanceState) {
 //            getChildFragmentManager().beginTransaction()
