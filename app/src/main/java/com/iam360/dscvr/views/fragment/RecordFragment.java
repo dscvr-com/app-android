@@ -27,7 +27,6 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.views.activity.RecorderActivity;
-import com.iam360.dscvr.views.record.CameraPreviewView;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
@@ -222,7 +221,7 @@ public class RecordFragment extends Fragment {
 
         FrameLayout preview = (FrameLayout) view.findViewById(R.id.record_preview);
         preview.addView(recorderOverlayView);
-        preview.addView(recordPreview);
+     //   preview.addView(recordPreview);
 
 //        if (null == savedInstanceState) {
 //            getChildFragmentManager().beginTransaction()

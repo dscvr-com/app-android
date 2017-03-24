@@ -1,10 +1,5 @@
 #include <jni.h>
-#include <android/log.h>
 #include "online-stitcher/src/stitcher/stitcher.hpp"
-//#include "online-stitcher/src/stitcher/globalAlignment.hpp"
-#include "online-stitcher/src/io/checkpointStore.hpp"
-#include "online-stitcher/src/math/projection.hpp"
-#include "online-stitcher/src/imgproc/panoramaBlur.hpp"
 
 using namespace optonaut;
 

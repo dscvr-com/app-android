@@ -69,9 +69,9 @@ public class CoreMotionListener extends RotationMatrixProvider implements Sensor
         // as done above.
         if(context.getResources().getBoolean(R.bool.isTablet)) {
             float[] swapXY = new float[] {
-                0, 1, 0, 0,
                 1, 0, 0, 0,
                 0, 0, 1, 0,
+                0, 1, 0, 0,
                 0, 0, 0, 1
             };
             // Take care of the mat order. 

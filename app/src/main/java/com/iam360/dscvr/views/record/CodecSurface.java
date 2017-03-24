@@ -2,12 +2,7 @@ package com.iam360.dscvr.views.record;
 
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
-import android.opengl.EGL14;
-import android.opengl.EGLConfig;
-import android.opengl.EGLContext;
-import android.opengl.EGLDisplay;
-import android.opengl.EGLSurface;
-import android.opengl.GLES20;
+import android.opengl.*;
 import android.util.Log;
 import android.view.Surface;
 
@@ -16,10 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import timber.log.Timber;
-
-
 /**
  * Holds state associated with a Surface used for MediaCodec decoder output.
  * <p>
@@ -33,23 +24,29 @@ import timber.log.Timber;
  */
 public class CodecSurface
         implements SurfaceTexture.OnFrameAvailableListener {
+    public static final Bitmap.Config colorFormat = Bitmap.Config.ARGB_8888;
+    private static final String TAG = "CodecSurface";
+    private static final boolean VERBOSE = true;
+    int mWidth;
+    int mHeight;
     private SurfaceRenderer mTextureRender;
     private SurfaceTexture mSurfaceTexture;
     private Surface mSurface;
-    private static final String TAG = "CodecSurface";
-    private static final boolean VERBOSE = true;
-    public static final Bitmap.Config colorFormat = Bitmap.Config.ARGB_8888;
-
     private EGLDisplay mEGLDisplay = EGL14.EGL_NO_DISPLAY;
     private EGLContext mEGLContext = EGL14.EGL_NO_CONTEXT;
     private EGLSurface mEGLSurface = EGL14.EGL_NO_SURFACE;
-    int mWidth;
-    int mHeight;
-
     private Object mFrameSyncObject = new Object();     // guards mFrameAvailable
     private boolean mFrameAvailable = false;
-
     private ByteBuffer mPixelBuf;                       // used by saveFrame()
+    private int sizeOfImageInRGBA;
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
 
     /**
      * Creates a CodecOutputSurface backed by a pbuffer with the specified dimensions.  The
@@ -62,23 +59,20 @@ public class CodecSurface
         }
         mWidth = width;
         mHeight = height;
-
+        sizeOfImageInRGBA = mWidth * mHeight * 4;
         eglSetup();
         makeCurrent();
         setup();
         if (VERBOSE) Log.d(TAG, "Codec Surface Setup");
     }
-
     /**
      * Creates interconnected instances of TextureRender, SurfaceTexture, and Surface.
      */
     private void setup() {
         mTextureRender = new SurfaceRenderer();
         mTextureRender.surfaceCreated();
-
         if (VERBOSE) Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
         mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
-
         // This doesn't work if this object is created on the thread that CTS started for
         // these test cases.
         //
@@ -93,11 +87,9 @@ public class CodecSurface
         mSurfaceTexture.setOnFrameAvailableListener(this);
         mSurfaceTexture.setDefaultBufferSize(mWidth, mHeight);
         mSurface = new Surface(mSurfaceTexture);
-
-        mPixelBuf = ByteBuffer.allocateDirect(mWidth * mHeight * 4);
+        mPixelBuf = ByteBuffer.allocateDirect(sizeOfImageInRGBA);
         mPixelBuf.order(ByteOrder.LITTLE_ENDIAN);
     }
-
     /**
      * Prepares EGL.  We want a GLES 2.0 context and a surface that supports pbuffer.
      */
@@ -111,7 +103,6 @@ public class CodecSurface
             mEGLDisplay = null;
             throw new RuntimeException("unable to initialize EGL14");
         }
-
         // Configure EGL for pbuffer and OpenGL ES 2.0, 24-bit RGB.
         int[] attribList = {
                 EGL14.EGL_RED_SIZE, 8,
@@ -128,7 +119,6 @@ public class CodecSurface
                 numConfigs, 0)) {
             throw new RuntimeException("unable to find RGB888+recordable ES2 EGL config");
         }
-
         // Configure context for OpenGL ES 2.0.
         int[] attrib_list = {
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
@@ -140,7 +130,6 @@ public class CodecSurface
         if (mEGLContext == null) {
             throw new RuntimeException("null context");
         }
-
         // Create a pbuffer surface.
         int[] surfaceAttribs = {
                 EGL14.EGL_WIDTH, mWidth,
@@ -153,7 +142,6 @@ public class CodecSurface
             throw new RuntimeException("surface was null");
         }
     }
-
     /**
      * Discard all resources held by this class, notably the EGL context.
      */
@@ -167,18 +155,14 @@ public class CodecSurface
         mEGLDisplay = EGL14.EGL_NO_DISPLAY;
         mEGLContext = EGL14.EGL_NO_CONTEXT;
         mEGLSurface = EGL14.EGL_NO_SURFACE;
-
         mSurface.release();
-
         // this causes a bunch of warnings that appear harmless but might confuse someone:
         //  W BufferQueue: [unnamed-3997-2] cancelBuffer: BufferQueue has been abandoned!
         //mSurfaceTexture.release();
-
         mTextureRender = null;
         mSurface = null;
         mSurfaceTexture = null;
     }
-
     /**
      * Makes our EGL context and surface current.
      */
@@ -187,14 +171,12 @@ public class CodecSurface
             throw new RuntimeException("eglMakeCurrent failed");
         }
     }
-
     /**
      * Returns the Surface.
      */
     public Surface getSurface() {
         return mSurface;
     }
-
     /**
      * Latches the next buffer into the texture.  Must be called from the thread that created
      * the CodecOutputSurface object.  (More specifically, it must be called on the thread
@@ -202,7 +184,6 @@ public class CodecSurface
      */
     public boolean awaitNewImage() {
         final int TIMEOUT_MS = 100;
-
         synchronized (mFrameSyncObject) {
             while (!mFrameAvailable) {
                 try {
@@ -219,13 +200,11 @@ public class CodecSurface
             }
             mFrameAvailable = false;
         }
-
         // Latch the data.
         mTextureRender.checkGlError("before updateTexImage");
         mSurfaceTexture.updateTexImage();
         return true;
     }
-
     /**
      * Draws the data from SurfaceTexture onto the current EGL surface.
      *
@@ -234,28 +213,26 @@ public class CodecSurface
     public void drawImage(boolean invert) {
         mTextureRender.drawFrame(mSurfaceTexture, invert);
     }
-
     // SurfaceTexture callback
     @Override
     public void onFrameAvailable(SurfaceTexture st) {
-        if (VERBOSE) Log.d(TAG, "new frame available");
+        if (VERBOSE)
         synchronized (mFrameSyncObject) {
             if (mFrameAvailable) {
-                Timber.e("mFrameAvailable already set, frame could be dropped");
+                Log.e(TAG, "mFrameAvailable already set, frame could be dropped");
             }
             mFrameAvailable = true;
             mFrameSyncObject.notifyAll();
         }
     }
-
     public byte[] fetchPixels() {
         mPixelBuf.rewind();
         GLES20.glReadPixels(0, 0, mWidth, mHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
                 mPixelBuf);
-
-        return mPixelBuf.array();
+        byte[] result = new byte[sizeOfImageInRGBA];
+        mPixelBuf.get(result,0, sizeOfImageInRGBA);
+        return result;
     }
-
     /**
      * Saves the current frame to disk as a PNG image.
      */
@@ -291,11 +268,9 @@ public class CodecSurface
         // Allocating large buffers is expensive, so we really want mPixelBuf to be
         // allocated ahead of time if possible.  We still get some allocations from the
         // Bitmap / PNG creation.
-
         mPixelBuf.rewind();
         GLES20.glReadPixels(0, 0, mWidth, mHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
                 mPixelBuf);
-
         BufferedOutputStream bos = null;
         try {
             bos = new BufferedOutputStream(new FileOutputStream(filename));
@@ -311,7 +286,6 @@ public class CodecSurface
             Log.d(TAG, "Saved " + mWidth + "x" + mHeight + " frame as '" + filename + "'");
         }
     }
-
     /**
      * Checks for EGL errors.
      */
@@ -321,23 +295,4 @@ public class CodecSurface
             throw new RuntimeException(msg + ": EGL error: 0x" + Integer.toHexString(error));
         }
     }
-
-    public int getWidth() {
-        return mWidth;
-    }
-
-    public void setWidth(int mWidth) {
-        this.mWidth = mWidth;
-    }
-
-    public int getmHeight() {
-        return mHeight;
-    }
-
-    public void setmHeight(int mHeight) {
-        this.mHeight = mHeight;
-    }
-
-
 }
-

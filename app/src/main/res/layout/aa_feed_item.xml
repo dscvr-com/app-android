@@ -44,7 +44,7 @@
                 android:layout_alignParentEnd="true"
                 android:background="@color/transparentOverlay"
                 android:padding="8dp"
-                android:src="@drawable/ic_more_vert_white_24dp" />
+                android:src="@drawable/vr_icon" />
 
         </RelativeLayout>
 

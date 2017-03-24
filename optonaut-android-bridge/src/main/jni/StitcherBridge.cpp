@@ -1,9 +1,6 @@
 #include <jni.h>
-#include <android/log.h>
 
 #include "online-stitcher/src/stitcher/stitcher.hpp"
-#include "online-stitcher/src/io/checkpointStore.hpp"
-#include "online-stitcher/src/math/projection.hpp"
 #include "online-stitcher/src/imgproc/panoramaBlur.hpp"
 
 using namespace optonaut;
@@ -16,8 +13,6 @@ extern "C" {
     void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
     jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
 };
-
-
 
 std::vector<Mat> getCubeFaces(const Mat& sphere)
 {
@@ -53,7 +48,7 @@ std::vector<Mat> getResult(const std::string& path, const std::string& sharedPat
 std::vector<Mat> getResultThreeRing(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
+    optonaut::Stitcher stitcher(store);
     Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
@@ -83,7 +78,7 @@ Mat getEQResult(const std::string& path, const std::string& sharedPath)
 Mat getEQResultThreeRing(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
+    optonaut::Stitcher stitcher(store);
     Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));

@@ -5,7 +5,6 @@
 #include "online-stitcher/src/common/assert.hpp"
 #include "online-stitcher/src/recorder/recorder2.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
-//#include "online-stitcher/src/recorder/imageSink.hpp"
 #include "online-stitcher/src/recorder/recorderGraph.hpp"
 #include "online-stitcher/src/recorder/motorControlRecorder.hpp"
 
