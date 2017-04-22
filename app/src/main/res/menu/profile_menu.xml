@@ -1,7 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/file"
-          android:title="@string/licenses" >
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+    <item
+        android:id="@+id/action_signout"
+        android:orderInCategory="100"
+        android:title="@string/profile_sign_out"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="200"
+        android:title="Save"
+        app:showAsAction="always"
+        android:visible="false"
+        android:icon="@drawable/save"/>
 
-    </item>
+    <item android:id="@+id/cancel_edit"
+        android:orderInCategory="150"
+        android:title="Cancel"
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>

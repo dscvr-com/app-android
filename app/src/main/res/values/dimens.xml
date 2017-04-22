@@ -3,4 +3,16 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="item_offset">3dp</dimen>
+
+
+    <dimen name="snackbar_min_width">-1px</dimen>
+    <dimen name="snackbar_max_width">-1px</dimen>
+    <dimen name="snackbar_elevation">2dp</dimen>
+    <dimen name="snackbar_background_corner_radius">0dp</dimen>
+    <dimen name="snackbar_padding_horizontal">12dp</dimen>
+    <dimen name="snackbar_padding_vertical">14dp</dimen>
+    <dimen name="snackbar_padding_vertical_2lines">24dp</dimen>
+
+    <bool name="isTablet">false</bool>
 </resources>

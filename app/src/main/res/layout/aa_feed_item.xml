@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class=".AAFeedItemBinding">
+        <import type="com.iam360.dscvr.model.Optograph" />
+        <variable
+            name="optograph"
+            type="Optograph" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bar">
+
+        <com.iam360.dscvr.opengl.Optograph2DCubeView
+            android:id="@+id/optograph2dview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/transparentOverlay"
+            app:optograph="@{optograph}" />
+
+        <RelativeLayout
+            android:id="@+id/profile_bar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:background="@color/feed_bar_new" >
+
+            <ImageButton
+                android:id="@+id/vr_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/vr_icon"/>
+
+            <ImageButton
+                android:id="@+id/more_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@color/transparentOverlay"
+                android:padding="8dp"
+                android:src="@drawable/ic_more_vert_white_24dp" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</layout> 

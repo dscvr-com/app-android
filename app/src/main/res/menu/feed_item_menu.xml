@@ -4,6 +4,11 @@
           android:title="@string/share" >
     </item>
     <item android:id="@+id/report_item"
-          android:title="@string/report" >
+          android:title="@string/report"
+        android:visible="false">
+    </item>
+    <item android:id="@+id/delete_item"
+        android:title="@string/delete"
+        android:visible="false">
     </item>
 </menu>

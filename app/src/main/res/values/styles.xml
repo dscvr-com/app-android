@@ -10,6 +10,10 @@
 
     <style name="AppTheme" parent="AppTheme.Base"></style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -20,8 +24,9 @@
         <item name="elevation">0dp</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
         <item name="tabMaxWidth">0dp</item>
@@ -29,6 +34,7 @@
         <item name="android:background">@color/optonautMain</item>
         <item name="tabTextAppearance">@style/MyCustomTabTextAppearance</item>
     </style>
+
     <style name="MyCustomTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>

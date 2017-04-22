@@ -2,11 +2,8 @@
 Android App Repository
 
 # Requirements
-## Build
- * In `ndkmodule`, add file `gradle.properties` and set `ndk_build_path` to your `ndk-build`:
-    `ndk_build_path=/path/to/android-ndk/ndk-build`
- * Set `OPENCV_ANDROID_PATH` to OpenCV.mk of the OpenCV-Android-SDK:
-    `export OPENCV_ANDROID_PATH=/path/to/opencv-android-sdk/sdk/native/jni/OpenCV.mk`
+1) Please install NDK Tools, CMake and LLDB via the SDK Manager (Tools > Android > SDK-Manager)
+2) Set the OPENCV_ANDROID_PATH command line variable properly to the opencv android sdk *directory* containing the mk files.
+3) Git pull
+4) Launch android studio and compile, make sure the variable is set in OSX (for example by starting android studio using the terminal, calling`/Applications/Android\ Studio.app/Contents/MacOS/studio`. Do not use the open command to open android studio.)
 
-## Release
- * Setup your keystore with the correct signing keys. (TODO: use environment variable `OPTONAUT_KEYSTORE_PATH`)

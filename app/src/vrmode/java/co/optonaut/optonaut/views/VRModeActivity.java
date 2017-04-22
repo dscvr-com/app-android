@@ -1,11 +1,11 @@
-package co.optonaut.optonaut.views;
+package com.iam360.dscvr.views;
 
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import co.optonaut.optonaut.R;
+import com.iam360.dscvr.R;
 
 /**
  * @author Nilan Marktanner

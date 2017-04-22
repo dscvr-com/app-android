@@ -1,7 +1,12 @@
 <resources>
     <!-- General -->
-    <string name="app_name">Optonaut</string>
+    <string name="app_name">DSCVR</string>
     <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">221219334902804</string>
+    <string name="google_api_key">AIzaSyAz5HCNfeJwm52pVx_XFK3ZZb-JVfVQVAY</string>
+    <string name="twitter_consumer_key">U7QqNijP0dOXO7cc0s4mp7G6R</string>
+    <string name="twitter_consumer_secret">PQylWTM0m84WIdTRojU0AqWYGFXO7xDoRCTcCGyroPkw4nlwQd</string>
+    <string name="twitter_callback_url">com.optonaut.optonaut://callback</string>
 
     <!-- Menu -->
     <string name="licenses">Licenses</string>
@@ -11,12 +16,26 @@
     <string name="heart_count">%1$d %2$s</string>
     <!-- Feed Menu -->
     <string name="report">Report</string>
+    <string name="delete">Delete</string>
     <string name="share">Share link</string>
     <!-- Share Intent -->
-    <string name="share_subject_web_viewer">Check out this awesome Optonaut moment!</string>
-    <string name="share_body_web_viewer">Check out this awesome Optonaut moment: %1$s</string>
+    <string name="share_subject_web_viewer">Check out this awesome 360 moment!</string>
+    <string name="share_body_web_viewer">Check out this awesome 360 moment: %1$s</string>
     <string name="share_via">Share via</string>
 
+    <!-- Record -->
+    <string name="capture">Capture</string>
+    <string name="cancel_label">Cancel</string>
+
+    <!-- Ring Option -->
+    <string name="manual_mode">MANUAL MODE</string>
+    <string name="motor_mode">MOTOR MODE</string>
+    <string name="bluetooth_searching">Searching...</string>
+    <string name="bluetooth_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>
+    <string name="bluetooth_not_supported">Bluetooth not supported.</string>
 
     <!-- Dialog -->
     <string name="feature_next_version">This feature will be added in the next version!</string>
@@ -27,6 +46,31 @@
     <string name="dialog_vrmode_explanation">Tilt your phone by 90° to the left to enter VR mode!</string>
     <string name="dialog_fire">OK</string>
     <string name="dialog_network_retry">There was a network problem. Please try again later!</string>
+    <string name="dialog_cancel_recording">Cancel recording? This will delete the current recording progress.</string>
+    <string name="dialog_sign_in">In order to see this tab you need to login or signup.</string>
+    <string name="dialog_sign_in_button">Sign In</string>
+    <string name="dialog_later">Later</string>
+    <string name="dialog_dont_cancel">No</string>
+    <string name="dialog_cancel">Yes</string>
+    <string name="dialog_wait_on_record_finish">Wait for the recording process to finish before starting another record session!</string>
+    <string name="dialog_choose_recording_mode">Choose Recording Mode</string>
+    <string name="dialog_choose_recording_mode_1">1 Ring</string>
+    <string name="dialog_choose_recording_mode_3">3 Rings</string>
+    <string name="dialog_retry_recording">If you go back now, the current recording will be discarded.</string>
+    <string name="dialog_exit_from_preview">If you go back now, the recording will be discarded.</string>
+    <string name="dialog_keep">Keep</string>
+    <string name="dialog_discard">Discard</string>
+    <string name="dialog_retry">Retry</string>
+    <string name="dialog_login_needed">Login Needed</string>
+    <string name="dialog_share_not_login">In order to share your comment you need to create an account. Your image won\'t be lost and can be shared afterwards.</string>
+    <string name="dialog_continue">Continue</string>
+    <string name="dialog_fb_title">Facebook</string>
+    <string name="dialog_fb_text">Say something about this 360 photo</string>
+    <string name="dialog_fb_success">360 photo posted successfully.</string>
+    <string name="dialog_tap_to_hide">Tap to hide</string>
+    <string name="dialog_loading_dscvr">Loading DSCVR..</string>
+    <string name="dialog_logout_ongoing_upload_title">Are you sure want to logout?</string>
+    <string name="dialog_logout_ongoing_upload_msg">Some optographs are still not uploaded and will be deleted if you logout.</string>
 
     <!-- Search -->
     <string name="search_hint">Sightseeing #London</string>
@@ -35,8 +79,145 @@
     <string name="home_label">Home</string>
     <string name="profile_label">Profile</string>
 
+    <!-- Record Overlay -->
+    <string name="record_instruction_press">Press button below\r\nto start recording</string>
+    <string name="record_instruction_follow">Follow the orange dot</string>
+
     <!-- Preferences -->
     <string name="preference_upperboundary">co.optonaut.optonaut.feed.upperboundary</string>
     <string name="preference_lowerboundary">co.optonaut.optonaut.feed.lowerboundary</string>
     <string name="preference_file">co.optonaut.optonaut.PREFERENCE_FILE</string>
+
+    <!-- Sign In -->
+    <string name="action_back">Back</string>
+    <string name="sign_in_use_existing"><u>Use Existing Account</u></string>
+    <string name="log_in">LOGIN</string>
+    <string name="email_address_or_username">Email Address or username</string>
+    <string name="password">Password</string>
+    <string name="failed_login">Failed to log in.</string>
+    <string name="login_failed_message">Your entered data wasn\'t correct. Please try again.</string>
+
+    <!-- Sign Up -->
+    <string name="ok">OK</string>
+    <string name="sign_up">SIGNUP</string>
+    <string name="email_address">Email Address</string>
+    <string name="choose_password">Choose a password</string>
+    <string name="forgot_password_text">Forgot your password?</string>
+    <string name="failed_signup">Failed signing up.</string>
+
+    <!-- Profile -->
+    <string name="profile_follow">Follow</string>
+    <string name="profile_following">Following</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_edit">Edit</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_my_profile">My Profile</string>
+    <string name="profile_text">Profile</string>
+    <string name="profile_login_first">Please login first.</string>
+    <string name="profile_login_again">Login failed. Please try to login again.</string>
+    <string name="profile_delete_message">Are you sure you want to delete this 360 image?</string>
+    <string name="story_delete_message">Are you sure you want to delete this Story?</string>
+    <string name="profile_export_message">Are you sure you want to export this 360 image?</string>
+    <string name="profile_upload">UPLOAD</string>
+    <string name="profile_uploading">UPLOADING...</string>
+    <string name="profile_header_image">DSCVR Images</string>
+    <string name="profile_header_follower">Followers</string>
+    <string name="profile_header_notif">Notifications</string>
+    <string name="profile_notif_star_text">liked your photo.</string>
+    <string name="profile_notif_follow_text">started following you.</string>
+    <string name="profile_add_desc">Add description...</string>
+    <string name="profile_no_image">No images.</string>
+    <string name="profile_no_notif">You have no notification.</string>
+    <string name="profile_no_follower">You have no follower.</string>
+    <string name="profile_net_prob">Network Problem!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- Preview -->
+    <string name="preview_retry">Retry</string>
+    <string name="preview_post_later">Post Later</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="image_uploaded">Image uploaded successfully.</string>
+
+    <!-- Sharing -->
+    <string name="share_title">Share</string>
+    <string name="share_text">Share this 360 image:</string>
+    <string name="share_copy_to_clipboard">Link copied to clipboard.</string>
+    <string name="share_email_error">There are no email clients installed.</string>
+    <string name="share_fb_cancel">CANCEL</string>
+    <string name="share_fb_post">POST</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_vr_image">VR IMAGE VIEW STYLE</string>
+    <string name="settings_view_iam_360_in">VIEW 360 IMAGE IN</string>
+    <string name="settings_feed_default">FEED DEFAULT DISPLAY</string>
+    <string name="settings_gyro">GYRO</string>
+    <string name="settings_little_planet">LITTLE PLANET</string>
+    <string name="settings_capture_mode">CAPTURE MODE</string>
+    <string name="settings_one_ring">ONE RING</string>
+    <string name="settings_three_ring">THREE RING</string>
+    <string name="settings_capture_type">CAPTURE TYPE</string>
+    <string name="settings_motor_on">MOTOR ON</string>
+    <string name="settings_motor_off">MOTOR OFF</string>
+    <string name="settings_manual">MANUAL</string>
+    <string name="settings_motor">MOTOR</string>
+    <string name="settings_share_auto">AUTO SHARE IMAGE ON:</string>
+
+    <!-- Mailing List Invite -->
+    <string name="mailing_type_invite">Super Secret Code:</string>
+    <string name="mailing_get_invite">Get a Super Secret Code:</string>
+    <string name="mailing_or">or</string>
+    <string name="mailing_go">GO</string>
+    <string name="mailing_send">SEND</string>
+    <string name="mailing_email">E-mail</string>
+    <string name="mailing_reach_us">Reach us at</string>
+    <string name="mailing_app_email">TEAM@DSCVR.COM</string>
+
+    <!-- Create User Name -->
+    <string name="create_username_text">Create your username:</string>
+    <string name="create_username_hint">Username</string>
+    <string name="create_username_symbol">\@</string>
+    <string name="create_username_taken">Username is taken</string>
+    <string name="create_username_available">Username is available</string>
+    <string name="create_username_create">CREATE USERNAME</string>
+    <string name="create_username_sucessful">User successfully created.</string>
+    <string name="create_username_failed">Error in creatting username. Please try again.</string>
+    <string name="create_username_min_char">Username must be 5-12 characters</string>
+
+
+    <string name="btle_serviceuuid_notification">00002902-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_serviceuuidlong">00001000-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_characteristic_write">00001001-0000-1000-8000-00805f9b34fb</string>
+    <string name="btle_characteristic_response">00001002-0000-1000-8000-00805f9b34fb</string>
+    <string name="error_btle_notsupport">Sorry, your devices does not support Bluetooth LE</string>
+    <string name="error_btle_notfound">No device found</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <!-- Story Feeds -->
+    <string name="story_you">YOUR STORIES</string>
+    <string name="story_header">Stories</string>
+
+    <!-- Image Picker -->
+    <string name="image_picker_all_images">360 Images</string>
+    <string name="image_picker_your_images">Your 360 Images</string>
+
 </resources>

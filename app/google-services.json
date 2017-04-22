@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "444350171684",
+    "project_id": "iam360-1296"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444350171684:android:263b5cf771884828",
+        "android_client_info": {
+          "package_name": "com.iam360.iam360"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyQDqKLR8esrJYnR86nVNzG1sB2oFy8V0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

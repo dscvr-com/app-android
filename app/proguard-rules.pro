@@ -70,7 +70,7 @@
 
 # Classes that will be serialized/deserialized over Gson
 # http://stackoverflow.com/a/7112371/56285
--keep class co.optonaut.optonaut.model.** { *; }
+-keep class com.iam360.dscvr.model.** { *; }
 
 ##---------------End: proguard configuration for Gson  ----------
 
@@ -107,3 +107,25 @@
 
 # Cardboard Sdk
 -keep class com.google.vrtoolkit.cardboard.** { *; }
+
+##------------------Begin: Butterknife------------
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+##---------------------End: Butterknife -------------
+
+
+##------
+-dontwarn twitter4j.**
+-dontwarn org.slf4j.**
+-dontwarn android.os.PowerManager
+
+-keep public class com.iam360.dscvr.record.SelectionPoint { *; }

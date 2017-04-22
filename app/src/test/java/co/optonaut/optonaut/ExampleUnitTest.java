@@ -1,4 +1,4 @@
-package co.optonaut.optonaut;
+package com.iam360.dscvr;
 
 import org.junit.Test;
 
