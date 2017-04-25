@@ -56,6 +56,13 @@ public class RecorderOverlayFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+    }
+
     private void initializeNavigationButtons(View view) {
 
         recordButton.setOnClickListener(new View.OnClickListener() {

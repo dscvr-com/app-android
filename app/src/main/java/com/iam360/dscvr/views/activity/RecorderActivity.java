@@ -89,8 +89,6 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
 
     private void initalizeOverlay() {
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recorderOverlayFragment).commit();
-        recorderOverlayFragment.getView().setFocusableInTouchMode(true);
-        recorderOverlayFragment.getView().requestFocus();
 
     }
 
@@ -186,184 +184,127 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
 
         AlertDialog dialog = builder.create();
         dialog.show();
-//        super.onBackPressed();
     }
 
-    private ScanCallback mScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            BluetoothDevice btDevice = result.getDevice();
-            connectToDevice(btDevice);
-        }
 
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            Log.d("MARK", "onBatchScanResults = " + results);
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            Log.e("MARK", "Scan Failed Error Code: " + errorCode);
-        }
-    };
-
-    public void connectToDevice(BluetoothDevice device) {
-        if (mBluetoothGatt == null) {
-            mBluetoothGatt = device.connectGatt(this, false, gattCallback);
-            stopLeScan();
-        }
-    }
-
-    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            switch (newState) {
-                case BluetoothProfile.STATE_CONNECTED:
-                    gatt.discoverServices();
-                    break;
-                case BluetoothProfile.STATE_DISCONNECTED:
-                    break;
-                default:
-                    Log.e("gattCallback", "Unknown State: " + newState);
-            }
-        }
-
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            List<BluetoothGattService> services = gatt.getServices();
-            // Hardcoded for now, uuid filtering not working
-            for (int a = 0; a < services.size(); a++) {
-                if (services.get(a).getUuid().equals(mServiceUIID)) {
-                    mBluetoothService = services.get(a);
-                    for (int b = 0; b < mBluetoothService.getCharacteristics().size(); b++) {
-                        if (mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)) {
-                            BluetoothGattCharacteristic characteristic = mBluetoothService.getCharacteristics().get(b);
-                            mBluetoothGatt.setCharacteristicNotification(characteristic, true);
-                            BluetoothGattDescriptor d = characteristic.getDescriptor(mNotifUUID);
-                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[]{0x00, 0x00});
-                            mBluetoothGatt.writeDescriptor(d);
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            gatt.disconnect();
-        }
-
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            final BluetoothGattCharacteristic characteristic) {
-            Log.d("MARK", "onCharacteristicChanged characteristic = " + characteristic.getUuid());
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                    mResponseData.setText(new String(bytesToHex(characteristic.getValue())));
-                }
-            });
-            //motorRing type = (0:stop, 1:1st ring rotate, 2:toTop 2nd, 3:3rd ring rotate, 4:toBot, 5:toBot, 6:last)
-            byte[] responseValue = characteristic.getValue();
-            char[] charArr = bleCommands.bytesToHex(responseValue);
-            String yPos = String.valueOf("" + charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
-            Log.d("MARK", "yPos  == " + yPos);
-            Log.d("MARK", "motorRingType  == " + motorRingType);
-            Log.d("MARK", "onCharacteristicChanged characteristic.getValue() = " + new String(bleCommands.bytesToHex(characteristic.getValue())));
-            if (motorRingType == 2) {
-                dataHasCome = false;
-                bleCommands.topRing();
-                motorRingType = 3;
-            } else if (motorRingType == 3) {
-//                dataHasCome = true;
-//                bleCommands.rotateRight();
-//                motorRingType = 4;
-
-                act.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dataHasCome = true;
-                                bleCommands.rotateRight();
-                                motorRingType = 4;
-
-                                Timber.d("onCharacteristicChanged motorRingType 3");
-                            }
-                        }, 2000);
-                    }
-                });
-            } else if (motorRingType == 4) {
-                dataHasCome = false;
-                bleCommands.bottomRing();
-                motorRingType = 5;
-            } else if (motorRingType == 5) {
-//                dataHasCome = true;
-//                bleCommands.rotateRight();
-//                motorRingType = 6;
-                act.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dataHasCome = true;
-                                bleCommands.rotateRight();
-                                motorRingType = 6;
-
-                                Timber.d("onCharacteristicChanged motorRingType 5");
-                            }
-                        }, 2000);
-                    }
-                });
-            } else if (motorRingType == 6) {
-                dataHasCome = false;
-                bleCommands.topRing();
-                motorRingType = 0;
-            }
-        }
-
-        @Override
-        public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                     int status) {
-        }
-    };
-
-    private void beginBT() {
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            // Request to Enable BT
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        } else {
-            startLeScan();
-        }
-    }
-
-    private void endBT() {
-        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothGatt != null) {
-                mBluetoothGatt.disconnect();
-                mBluetoothGatt.close();
-                mBluetoothGatt = null;
-                mBluetoothService = null;
-            }
-            stopLeScan();
-        }
-    }
-
-    private void startLeScan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mLEScanner.startScan(mScanFilters, mScanSettings, mScanCallback);
-        }
-    }
-
-    private void stopLeScan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mLEScanner.stopScan(mScanCallback);
-        }
-    }
-
+//
+//    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+//        @Override
+//        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+//            switch (newState) {
+//                case BluetoothProfile.STATE_CONNECTED:
+//                    gatt.discoverServices();
+//                    break;
+//                case BluetoothProfile.STATE_DISCONNECTED:
+//                    break;
+//                default:
+//                    Log.e("gattCallback", "Unknown State: " + newState);
+//            }
+//        }
+//
+//        @Override
+//        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+//            List<BluetoothGattService> services = gatt.getServices();
+//            // Hardcoded for now, uuid filtering not working
+//            for (int a = 0; a < services.size(); a++) {
+//                if (services.get(a).getUuid().equals(mServiceUIID)) {
+//                    mBluetoothService = services.get(a);
+//                    for (int b = 0; b < mBluetoothService.getCharacteristics().size(); b++) {
+//                        if (mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)) {
+//                            BluetoothGattCharacteristic characteristic = mBluetoothService.getCharacteristics().get(b);
+//                            mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+//                            BluetoothGattDescriptor d = characteristic.getDescriptor(mNotifUUID);
+//                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[]{0x00, 0x00});
+//                            mBluetoothGatt.writeDescriptor(d);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+//            gatt.disconnect();
+//        }
+//
+//        @Override
+//                public void onCharacteristicChanged(BluetoothGatt gatt,
+//                final BluetoothGattCharacteristic characteristic) {
+//                    Log.d("MARK", "onCharacteristicChanged characteristic = " + characteristic.getUuid());
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                    mResponseData.setText(new String(bytesToHex(characteristic.getValue())));
+//                        }
+//                    });
+//                    //motorRing type = (0:stop, 1:1st ring rotate, 2:toTop 2nd, 3:3rd ring rotate, 4:toBot, 5:toBot, 6:last)
+//                    byte[] responseValue = characteristic.getValue();
+//                    char[] charArr = bleCommands.bytesToHex(responseValue);
+//                    String yPos = String.valueOf("" + charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
+//                    Log.d("MARK", "yPos  == " + yPos);
+//                    Log.d("MARK", "motorRingType  == " + motorRingType);
+//                    Log.d("MARK", "onCharacteristicChanged characteristic.getValue() = " + new String(bleCommands.bytesToHex(characteristic.getValue())));
+//                    if (motorRingType == 2) {
+//                        dataHasCome = false;
+//                        bleCommands.topRing();
+//                        motorRingType = 3;
+//                    } else if (motorRingType == 3) {
+////                dataHasCome = true;
+////                bleCommands.rotateRight();
+////                motorRingType = 4;
+//
+//                        act.runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                dataHasCome = true;
+//                                bleCommands.rotateRight();
+//                                motorRingType = 4;
+//
+//                                Timber.d("onCharacteristicChanged motorRingType 3");
+//                            }
+//                        }, 2000);
+//                    }
+//                });
+//            } else if (motorRingType == 4) {
+//                dataHasCome = false;
+//                bleCommands.bottomRing();
+//                motorRingType = 5;
+//            } else if (motorRingType == 5) {
+////                dataHasCome = true;
+////                bleCommands.rotateRight();
+////                motorRingType = 6;
+//                act.runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                dataHasCome = true;
+//                                bleCommands.rotateRight();
+//                                motorRingType = 6;
+//
+//                                Timber.d("onCharacteristicChanged motorRingType 5");
+//                            }
+//                        }, 2000);
+//                    }
+//                });
+//            } else if (motorRingType == 6) {
+//                dataHasCome = false;
+//                bleCommands.topRing();
+//                motorRingType = 0;
+//            }
+//        }
+//
+//        @Override
+//        public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
+//                                     int status) {
+//        }
+//    };
+//
+//
     @Override
     public void finishSettingModeForRecording() {
         getSupportFragmentManager().beginTransaction().remove(ringOptionFragment).commit();
