@@ -33,6 +33,7 @@ import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
 import com.iam360.dscvr.util.BLECommands;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.views.fragment.RingOptionFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,20 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean dataHasCome = false;
 
     RecorderActivity act;
+    private RingOptionFragment ringOptionFragment;
+
+    private void initialzeRingOptions() {
+        Timber.d("Initing camera.");
+        cache = Cache.open();
+        Bundle bundle = new Bundle();
+        bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
+        recordFragment = new RecordFragment();
+
+        ringOptionFragment = new RingOptionFragment();
+
+        getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recordFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, ringOptionFragment).commit();
+    }
 
     void initializeWithPermission() {
         Timber.d("Initing camera.");
@@ -87,7 +102,7 @@ public class RecorderActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recorderOverlayFragment).commit();
 
 
-        if(cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE){
+        if (cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
             useBLE = true;
             mServiceUIID = UUID.fromString(getString(R.string.bluetooth_serviceuuidlong));
             mResponesUIID = UUID.fromString(getString(R.string.bluetooth_characteristic_response));
@@ -136,9 +151,9 @@ public class RecorderActivity extends AppCompatActivity {
     public void startRecording() {
         recordFragment.startRecording();
 
-        if(cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE){
+        if (cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
             bleCommands = new BLECommands(mBluetoothAdapter, mBluetoothGatt, mBluetoothService, RecorderActivity.this);
-            Log.d("MARK2","startRot = "+System.currentTimeMillis() / 1000.0);
+            Log.d("MARK2", "startRot = " + System.currentTimeMillis() / 1000.0);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -155,6 +170,7 @@ public class RecorderActivity extends AppCompatActivity {
         recordFragment.cancelRecording();
         finish();
     }
+
     public void startPreview(UUID id) {
         Intent intent = new Intent(this, OptoImagePreviewActivity.class);
         intent.putExtra("id", id.toString());
@@ -211,7 +227,7 @@ public class RecorderActivity extends AppCompatActivity {
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
-            Log.d("MARK","onBatchScanResults = "+results);
+            Log.d("MARK", "onBatchScanResults = " + results);
         }
 
         @Override
@@ -245,15 +261,15 @@ public class RecorderActivity extends AppCompatActivity {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             List<BluetoothGattService> services = gatt.getServices();
             // Hardcoded for now, uuid filtering not working
-            for(int a=0; a < services.size(); a++){
-                if(services.get(a).getUuid().equals(mServiceUIID)){
+            for (int a = 0; a < services.size(); a++) {
+                if (services.get(a).getUuid().equals(mServiceUIID)) {
                     mBluetoothService = services.get(a);
-                    for (int b=0; b<mBluetoothService.getCharacteristics().size(); b++){
-                        if(mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)){
+                    for (int b = 0; b < mBluetoothService.getCharacteristics().size(); b++) {
+                        if (mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)) {
                             BluetoothGattCharacteristic characteristic = mBluetoothService.getCharacteristics().get(b);
                             mBluetoothGatt.setCharacteristicNotification(characteristic, true);
                             BluetoothGattDescriptor d = characteristic.getDescriptor(mNotifUUID);
-                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[] { 0x00, 0x00 });
+                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[]{0x00, 0x00});
                             mBluetoothGatt.writeDescriptor(d);
                         }
                     }
@@ -265,10 +281,11 @@ public class RecorderActivity extends AppCompatActivity {
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             gatt.disconnect();
         }
+
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             final BluetoothGattCharacteristic characteristic) {
-            Log.d("MARK","onCharacteristicChanged characteristic = "+characteristic.getUuid());
+            Log.d("MARK", "onCharacteristicChanged characteristic = " + characteristic.getUuid());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -278,15 +295,15 @@ public class RecorderActivity extends AppCompatActivity {
             //motorRing type = (0:stop, 1:1st ring rotate, 2:toTop 2nd, 3:3rd ring rotate, 4:toBot, 5:toBot, 6:last)
             byte[] responseValue = characteristic.getValue();
             char[] charArr = bleCommands.bytesToHex(responseValue);
-            String yPos = String.valueOf(""+charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
-            Log.d("MARK","yPos  == "+yPos);
-            Log.d("MARK","motorRingType  == "+motorRingType);
-            Log.d("MARK","onCharacteristicChanged characteristic.getValue() = "+new String(bleCommands.bytesToHex(characteristic.getValue())));
-            if(motorRingType == 2) {
+            String yPos = String.valueOf("" + charArr[14] + charArr[15] + charArr[16] + charArr[17] + charArr[18] + charArr[19] + charArr[20] + charArr[21]);
+            Log.d("MARK", "yPos  == " + yPos);
+            Log.d("MARK", "motorRingType  == " + motorRingType);
+            Log.d("MARK", "onCharacteristicChanged characteristic.getValue() = " + new String(bleCommands.bytesToHex(characteristic.getValue())));
+            if (motorRingType == 2) {
                 dataHasCome = false;
                 bleCommands.topRing();
                 motorRingType = 3;
-            }else if(motorRingType == 3){
+            } else if (motorRingType == 3) {
 //                dataHasCome = true;
 //                bleCommands.rotateRight();
 //                motorRingType = 4;
@@ -306,11 +323,11 @@ public class RecorderActivity extends AppCompatActivity {
                         }, 2000);
                     }
                 });
-            }else if(motorRingType == 4){
+            } else if (motorRingType == 4) {
                 dataHasCome = false;
                 bleCommands.bottomRing();
                 motorRingType = 5;
-            }else if(motorRingType == 5){
+            } else if (motorRingType == 5) {
 //                dataHasCome = true;
 //                bleCommands.rotateRight();
 //                motorRingType = 6;
@@ -329,15 +346,17 @@ public class RecorderActivity extends AppCompatActivity {
                         }, 2000);
                     }
                 });
-            }else if(motorRingType == 6){
+            } else if (motorRingType == 6) {
                 dataHasCome = false;
                 bleCommands.topRing();
                 motorRingType = 0;
             }
         }
+
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                     int status) {}
+                                     int status) {
+        }
     };
 
     private void beginBT() {

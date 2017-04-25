@@ -130,9 +130,9 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_margin="14dp"
+            android:background="@color/transparentOverlay"
             android:progress="0"
-            android:progressDrawable="@drawable/record_progress_bg"
-            android:background="@color/transparentOverlay" />
+            android:progressDrawable="@drawable/record_progress_bg" />
 
         <View
             android:id="@+id/progress_point"

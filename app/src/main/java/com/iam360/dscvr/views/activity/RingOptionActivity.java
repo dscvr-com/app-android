@@ -80,50 +80,26 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     private UUID mNotifUUID;
 
 
-    // Todo - please clean that code up.
     public void checkPermissionAndInitialize() {
         Timber.d("Checking permission.");
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                Timber.d("Please show explaination.");
-                throw new RuntimeException("Not implemented!");
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                Timber.d("Requesting permission.");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},
-                        PERMISSION_REQUEST_CAMERA);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
+            Timber.d("Requesting permission.");
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST_CAMERA);
         } else {
             Timber.d("Permission granted.");
             initializeWithPermission();
         }
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_option);
-
-//        recordPreview = new RecorderPreviewView(this);
-//        FrameLayout preview = (FrameLayout) findViewById(R.id.record_preview);
-//        preview.addView(recordPreview);
 
         if (null == savedInstanceState) {
             getFragmentManager().beginTransaction()
@@ -151,7 +127,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 
         mHandler = new Handler();
         deviceList = new ArrayList<BluetoothDevice>();
-        arrayAdapter = new ArrayAdapter<String>( RingOptionActivity.this, android.R.layout.select_dialog_item);
+        arrayAdapter = new ArrayAdapter<String>(RingOptionActivity.this, android.R.layout.select_dialog_item);
 
         mServiceUIID = UUID.fromString(getString(R.string.bluetooth_serviceuuidlong));
         mResponesUIID = UUID.fromString(getString(R.string.bluetooth_characteristic_response));
@@ -214,10 +190,11 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 
     /**
      * Updates 1 or 3 ring on layout and cache
+     *
      * @param isManualMode
      */
     private void updateMode(boolean isManualMode) {
-        if(isManualMode) {
+        if (isManualMode) {
             manualBtn.setBackground(getResources().getDrawable(R.drawable.manual_icon_orange));
             motorBtn.setBackground(getResources().getDrawable(R.drawable.motor_icon));
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
@@ -229,7 +206,6 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
     }
 
     /**
-     *
      * @return true if connected to bluetooth, false if not
      */
     private boolean checkBluetoothPermission() {
@@ -262,7 +238,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "Not supported." , Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Not supported.", Toast.LENGTH_SHORT).show();
             permission = false;
         } else permission = true;
 
@@ -378,8 +354,8 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                         public void run() {
                             Timber.d("Scanner Device : " + device.getName() + " " + device.getBondState());
                             // check if device is already on the list
-                            if(device.getName() != null) {
-                                if(arrayAdapter.getPosition(device.getName()) < 0) {
+                            if (device.getName() != null) {
+                                if (arrayAdapter.getPosition(device.getName()) < 0) {
                                     arrayAdapter.add(device.getName());
                                     arrayAdapter.notifyDataSetChanged();
                                     deviceList.add(device);
@@ -388,7 +364,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
                 }
-    };
+            };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -463,15 +439,15 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             List<BluetoothGattService> services = gatt.getServices();
             // Hardcoded for now, uuid filtering not working
-            for(int a=0; a < services.size(); a++){
-                if(services.get(a).getUuid().equals(mServiceUIID)){
+            for (int a = 0; a < services.size(); a++) {
+                if (services.get(a).getUuid().equals(mServiceUIID)) {
                     mBluetoothService = services.get(a);
-                    for (int b=0; b<mBluetoothService.getCharacteristics().size(); b++){
-                        if(mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)){
+                    for (int b = 0; b < mBluetoothService.getCharacteristics().size(); b++) {
+                        if (mBluetoothService.getCharacteristics().get(b).getUuid().equals(mResponesUIID)) {
                             BluetoothGattCharacteristic characteristic = mBluetoothService.getCharacteristics().get(b);
                             mBluetoothGatt.setCharacteristicNotification(characteristic, true);
                             BluetoothGattDescriptor d = characteristic.getDescriptor(mNotifUUID);
-                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[] { 0x00, 0x00 });
+                            d.setValue(true ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : new byte[]{0x00, 0x00});
                             mBluetoothGatt.writeDescriptor(d);
                         }
                     }
@@ -483,9 +459,10 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             gatt.disconnect();
         }
+
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            Timber.d("onCharacteristicChanged characteristic = "+characteristic.getUuid());
+            Timber.d("onCharacteristicChanged characteristic = " + characteristic.getUuid());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -522,9 +499,11 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 //                motorRingType = 0;
 //            }
         }
+
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                     int status) {}
+                                     int status) {
+        }
     };
 
 //    private void getMotorConfig(){
@@ -561,7 +540,7 @@ public class RingOptionActivity extends AppCompatActivity implements View.OnClic
 //        });
 //    }
 
-    private void setDefMotorConfigs(){
+    private void setDefMotorConfigs() {
         cache.save(Cache.BLE_ROT_COUNT, "5111");
         cache.save(Cache.BLE_BOT_COUNT, "61538");
         cache.save(Cache.BLE_TOP_COUNT, "2000");
