@@ -249,8 +249,8 @@ public class RecordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        this.mode = getArguments().getInt("mode");
+        cache = Cache.open();
+        this.mode = cache.getInt(Cache.CAMERA_MODE);
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
         // Create our Preview view and set it as the content of our activity.
@@ -269,9 +269,6 @@ public class RecordFragment extends Fragment {
 //        }
 
         MixpanelHelper.trackViewCamera(getContext());
-
-        cache = Cache.open();
-
         return view;
     }
 

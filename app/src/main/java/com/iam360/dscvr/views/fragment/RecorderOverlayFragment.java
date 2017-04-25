@@ -75,12 +75,10 @@ public class RecorderOverlayFragment extends Fragment {
 
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
 
         getView().setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {

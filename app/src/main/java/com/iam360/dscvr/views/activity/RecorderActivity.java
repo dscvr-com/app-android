@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.activity;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,6 +23,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -42,10 +45,13 @@ import java.util.UUID;
 import timber.log.Timber;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class RecorderActivity extends AppCompatActivity {
+public class RecorderActivity extends AppCompatActivity implements RingOptionFragment.OnModeFinished {
+
+    private final int PERMISSION_REQUEST_CAMERA = 2;
 
     private RecordFragment recordFragment;
     private RecorderOverlayFragment recorderOverlayFragment;
+    private RingOptionFragment ringOptionFragment;
     public Cache cache;
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -68,83 +74,48 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean dataHasCome = false;
 
     RecorderActivity act;
-    private RingOptionFragment ringOptionFragment;
 
     private void initialzeRingOptions() {
         Timber.d("Initing camera.");
-        cache = Cache.open();
+
         Bundle bundle = new Bundle();
         bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
         recordFragment = new RecordFragment();
-
         ringOptionFragment = new RingOptionFragment();
-
+        recorderOverlayFragment = new RecorderOverlayFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recordFragment).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, ringOptionFragment).commit();
     }
 
-    void initializeWithPermission() {
-        Timber.d("Initing camera.");
-        cache = Cache.open();
-        Bundle bundle = new Bundle();
-        bundle.putInt("mode", cache.getInt(Cache.CAMERA_MODE));
-        recordFragment = new RecordFragment();
-        recordFragment.setArguments(bundle);
-
-        act = this;
-
-//      Bundle bundle = new Bundle();
-//      bundle.putInt("mode", Constants.MODE_CENTER);
-        recorderOverlayFragment = new RecorderOverlayFragment();
-//      recordFragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recordFragment).commit();
+    private void initalizeOverlay() {
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recorderOverlayFragment).commit();
+        recorderOverlayFragment.getView().setFocusableInTouchMode(true);
+        recorderOverlayFragment.getView().requestFocus();
 
-
-        if (cache.getInt(Cache.CAMERA_MODE) == Constants.THREE_RING_MODE) {
-            useBLE = true;
-            mServiceUIID = UUID.fromString(getString(R.string.bluetooth_serviceuuidlong));
-            mResponesUIID = UUID.fromString(getString(R.string.bluetooth_characteristic_response));
-            mNotifUUID = UUID.fromString(getString(R.string.bluetooth_serviceuuid_notification));
-
-            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                Toast.makeText(this, R.string.bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
-            // Initializes Bluetooth adapter.
-            final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
-                mScanSettings = new ScanSettings.Builder()
-                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build();
-                mScanFilters = new ArrayList<ScanFilter>();
-            }
-
-//            String devName = data.getStringExtra("DEVICE_NAME");
-//            String devAddrss = data.getStringExtra("DEVICE_ADDRESS");
-//            String devAddrss = "44:A6:E5:03:88:4F";
-            String devAddrss = cache.getString(Cache.BLE_DEVICE_ADDRESS);
-//            if(cache.getString(Cache.BLE_DEVICE_ADDRESS).equals("")){
-//                devAddrss = Cache.BLE_DEVICE_ADDRESS;
-//            }
-            endBT();
-            ScanFilter.Builder builder = new ScanFilter.Builder();
-            builder.setDeviceAddress(devAddrss);
-            mScanFilters.add(builder.build());
-            beginBT();
-        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorder);
-        initializeWithPermission();
+        cache = Cache.open();
+        checkPermissionAndInitialize();
+
+    }
+
+    public void checkPermissionAndInitialize() {
+        Timber.d("Checking permission.");
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            Timber.d("Requesting permission.");
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST_CAMERA);
+        } else {
+            Timber.d("Permission granted.");
+            initialzeRingOptions();
+        }
 
     }
 
@@ -390,6 +361,33 @@ public class RecorderActivity extends AppCompatActivity {
     private void stopLeScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mLEScanner.stopScan(mScanCallback);
+        }
+    }
+
+    @Override
+    public void finishSettingModeForRecording() {
+        getSupportFragmentManager().beginTransaction().remove(ringOptionFragment).commit();
+        initalizeOverlay();
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Timber.d("onRequestPermissionsResult");
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Timber.d("Permission granted.");
+                    initialzeRingOptions();
+
+                } else {
+                    Timber.d("Permission not granted.");
+                    throw new RuntimeException("Need Camera!");
+                }
+                return;
+            }
         }
     }
 }

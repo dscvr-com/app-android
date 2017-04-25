@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,9 @@ public abstract class OptographListFragment extends Fragment {
 
     public OptographListFragment() {
     }
+
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -21,6 +21,7 @@ import com.iam360.dscvr.viewmodels.LocalOptographManager;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.views.VRModeActivity;
+import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.activity.RingOptionActivity;
 import com.squareup.otto.Subscribe;
 
@@ -130,7 +131,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                     return;
                 }
 
-                Intent intent = new Intent(getActivity(), RingOptionActivity.class);
+                Intent intent = new Intent(getActivity(), RecorderActivity.class);
                 startActivity(intent);
 
                 break;
