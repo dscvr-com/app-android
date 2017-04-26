@@ -30,6 +30,7 @@ public class BluetoothEngineControlService {
     private static final String TAG = "MotorControl";
     private static final double STEPS_FOR_ONE_ROUND_X = 5111;
     private static final double STEPS_FOR_ONE_ROUND_Y = 15000;
+    private static final int STEP_FOR_360 = (int) ((STEPS_FOR_ONE_ROUND_X / 360f) *380f);
 
 
     private BluetoothGattService bluetoothService;
@@ -38,7 +39,7 @@ public class BluetoothEngineControlService {
     private BluetoothEngineMatrixProvider providerInstanz;
     private double yTeta = 0;
     private long start360;
-    public static final int SPEED = 450;
+    public static final int SPEED = 500;
     private static final double SPEED_IN_RAD = (((float)SPEED)/ ((float)STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
 
     public BluetoothEngineControlService() {
@@ -98,7 +99,7 @@ public class BluetoothEngineControlService {
 
     public void goCompleteAround(float speed) {
 
-        moveXY(new EngineCommandPoint((float) STEPS_FOR_ONE_ROUND_X * (-1), 0f), new EngineCommandPoint(speed, speed));
+        moveXY(new EngineCommandPoint((float) STEP_FOR_360 * (-1), 0f), new EngineCommandPoint(speed, speed));
         start360 = System.currentTimeMillis();
     }
 

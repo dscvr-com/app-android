@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraManager;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -94,6 +95,7 @@ public class RecordFragment extends Fragment {
 
     private SizeF size;
     private float focalLength;
+    private long currentTime = 0;
 
     //FIXME: don't use a bool
     private boolean isRecorderReady = false;
@@ -110,7 +112,7 @@ public class RecordFragment extends Fragment {
             assert colorFormat == Bitmap.Config.ARGB_8888;
 
             // build extrinsics
-            float[] coreMotionMatrix = ((DscvrApp)getActivity().getApplicationContext()).getMatrixProvider().getRotationMatrix();
+            float[] coreMotionMatrix = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider().getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
             Log.w(TAG, "Pushing data: " + width + "x" + height);
@@ -179,6 +181,9 @@ public class RecordFragment extends Fragment {
                 // queue finishing on main thread
                 queueFinishRecording();
             }
+            long dif = System.currentTimeMillis() - currentTime;
+            currentTime = System.currentTimeMillis();
+            Timber.d("imgRecievedAfter: " + dif);
         }
 
         @Override
@@ -231,7 +236,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(!cache.getBoolean(Cache.MOTOR_ON)) {
+        if (!cache.getBoolean(Cache.MOTOR_ON)) {
             DefaultListeners.register();
         }
 
@@ -242,7 +247,7 @@ public class RecordFragment extends Fragment {
     public void onPause() {
         recordPreview.onPause();
         super.onPause();
-        if(!cache.getBoolean(Cache.MOTOR_ON)) {
+        if (!cache.getBoolean(Cache.MOTOR_ON)) {
             DefaultListeners.unregister();
         }
         fromPause = true;
@@ -256,9 +261,9 @@ public class RecordFragment extends Fragment {
         Timber.d("Initializing recorder with f: " + focalLength + " sx: " + size.getWidth() + " sy: " + size.getHeight());
         Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
         // be shure for manual Mode:
-        if(!cache.getBoolean(Cache.MOTOR_ON)) {
+        if (!cache.getBoolean(Cache.MOTOR_ON)) {
             DefaultListeners.register();
-        }else{
+        } else {
             DefaultListeners.unregister();
         }
 
@@ -284,14 +289,14 @@ public class RecordFragment extends Fragment {
                         Recorder.setIdle(false);
                     }
                 }, 300);
-                first  = false;
+                first = false;
             } else {
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
                         bluetoothService.move360withDeg(statingPoint);
                     }
-                },1500);
+                }, 1500);
             }
         }
         isRecording = true;
