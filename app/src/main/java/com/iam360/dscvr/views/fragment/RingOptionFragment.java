@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
@@ -21,6 +23,9 @@ import com.iam360.dscvr.bluetooth.BluetoothConnectionReciever;
 import com.iam360.dscvr.bluetooth.BluetoothConnector;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -144,12 +149,19 @@ public class RingOptionFragment extends Fragment {
         Timber.d("stop bt loading");
         ((DscvrApp) (getContext().getApplicationContext())).setBTGatt(gatt);
         isNotCloseable = false;
-
+        Snackbar.make(getView(),"Motor found. ", Snackbar.LENGTH_LONG);
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
 }
 
     private void showLoading() {
-
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(loading.getVisibility() == View.VISIBLE){
+                    Toast.makeText(getContext(),"No Motor found.", Toast.LENGTH_LONG);
+                }
+            }
+        }, 1500);
          loading.setVisibility(View.VISIBLE);
     }
 
