@@ -61,15 +61,6 @@
         android:visibility="invisible" >
 
         <View
-            android:id="@+id/angle_shade"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:background="@drawable/angle_shade"
-            android:layout_gravity="center"
-            android:visibility="invisible">
-        </View>
-
-        <View
             android:id="@+id/arrow"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -133,6 +124,14 @@
             android:progress="0"
             android:progressDrawable="@drawable/record_progress_bg"
             android:background="@color/transparentOverlay" />
+
+        <View
+            android:id="@+id/angle_shade"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@drawable/angle_shade"
+            android:visibility="invisible"></View>
 
         <View
             android:id="@+id/progress_point"

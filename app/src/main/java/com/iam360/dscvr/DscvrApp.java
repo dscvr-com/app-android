@@ -1,11 +1,13 @@
 package com.iam360.dscvr;
 
 import android.app.Application;
+import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.iam360.dscvr.bluetooth.BluetoothEngineControlService;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -20,9 +22,19 @@ import timber.log.Timber;
 public class DscvrApp extends Application {
     private static DscvrApp instance;
     private JobManager jobManager;
+    private BluetoothEngineControlService controlService;
 
     public DscvrApp() {
         instance = this;
+    }
+
+    public void setBTGatt(BluetoothGatt gatt) {
+        controlService = new BluetoothEngineControlService();
+        controlService.setBluetoothGatt(gatt);
+    }
+
+    public void removeBTGatt(){
+        controlService = null;
     }
 
     @Override
@@ -31,7 +43,8 @@ public class DscvrApp extends Application {
         MultiDex.install(this);
     }
 
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
@@ -58,6 +71,7 @@ public class DscvrApp extends Application {
         Configuration configuration = new Configuration.Builder(this)
                 .customLogger(new CustomLogger() {
                     private static final String TAG = "JOBS";
+
                     @Override
                     public boolean isDebugEnabled() {
                         return true;
@@ -86,9 +100,12 @@ public class DscvrApp extends Application {
         jobManager = new JobManager(this, configuration);
     }
 
-    /** A tree which logs important information for crash reporting. */
+    /**
+     * A tree which logs important information for crash reporting.
+     */
     private static class CrashReportingTree extends Timber.Tree {
-        @Override protected void log(int priority, String tag, String message, Throwable t) {
+        @Override
+        protected void log(int priority, String tag, String message, Throwable t) {
             if (priority == Log.VERBOSE || priority == Log.DEBUG) {
                 return;
             }

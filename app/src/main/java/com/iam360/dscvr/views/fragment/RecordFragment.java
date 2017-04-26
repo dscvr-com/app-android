@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.bluetooth.BluetoothConnectionReciever;
 import com.iam360.dscvr.record.Edge;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.record.LineNode;
@@ -66,6 +67,8 @@ public class RecordFragment extends Fragment {
     private long time = -1;
     private int captureWidth;
     private int mode;
+
+    private BluetoothConnectionReciever bluetoothConnectionReciever = new BluetoothConnectionReciever();
 
     private boolean fromPause = false;
 
