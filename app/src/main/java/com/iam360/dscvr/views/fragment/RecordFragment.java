@@ -276,7 +276,14 @@ public class RecordFragment extends Fragment {
             //FIXME to hacky
             Timber.d("startingPoints: " + statingPoint);
             if (first) {
-                bluetoothService.move360withDeg(statingPoint);
+                bluetoothService.goToDeg(statingPoint);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        bluetoothService.goCompleteAround(BluetoothEngineControlService.SPEED);
+                        Recorder.setIdle(false);
+                    }
+                }, 300);
                 first  = false;
             } else {
                 timer.schedule(new TimerTask() {
@@ -284,10 +291,9 @@ public class RecordFragment extends Fragment {
                     public void run() {
                         bluetoothService.move360withDeg(statingPoint);
                     }
-                },1800);
+                },1500);
             }
         }
-Recorder.setIdle(false);
         isRecording = true;
     }
 
