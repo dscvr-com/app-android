@@ -30,13 +30,13 @@
             android:textSize="9dp"/>
 
         <ProgressBar
-            android:id="@+id/record_progress"
+            android:id="@+id/bt_record_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             style="@android:style/Widget.ProgressBar.Small.Inverse"
-            android:visibility="gone"/>
+            android:visibility="invisible"/>
 
     </RelativeLayout>
 
@@ -62,7 +62,7 @@
                     android:onClick="onClick" />
 
                 <TextView
-                    android:id="@+id/frag:_manual_text"
+                    android:id="@+id/frag_manual_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -84,6 +84,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/motor_icon"
                     android:onClick="onClick" />
+
+
 
                 <TextView
                     android:id="@+id/frag_motor_text"

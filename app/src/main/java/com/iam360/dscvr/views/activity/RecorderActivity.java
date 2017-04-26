@@ -72,9 +72,6 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
     private int motorRingType = 1;
     public boolean useBLE = false;
     public boolean dataHasCome = false;
-
-    RecorderActivity act;
-
     private void initialzeRingOptions() {
         Timber.d("Initing camera.");
 

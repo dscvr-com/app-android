@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.iam360.dscvr.bluetooth.BluetoothEngineControlService;
+import com.iam360.dscvr.sensors.DefaultListeners;
+import com.iam360.dscvr.sensors.RotationMatrixProvider;
+import com.iam360.dscvr.util.Cache;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -98,6 +101,18 @@ public class DscvrApp extends Application {
                 .consumerKeepAlive(120)//wait 2 minute
                 .build();
         jobManager = new JobManager(this, configuration);
+    }
+
+    public BluetoothEngineControlService getBluetoothService() {
+        return controlService;
+    }
+
+    public RotationMatrixProvider getMatrixProvider(){
+        if(getBluetoothService()!= null && getBluetoothService().hasBluetoothService()){
+            return  getBluetoothService().getBluetoothEngineMatrixProviderForGatt();
+        }   else{
+            return DefaultListeners.getInstance();
+        }
     }
 
     /**

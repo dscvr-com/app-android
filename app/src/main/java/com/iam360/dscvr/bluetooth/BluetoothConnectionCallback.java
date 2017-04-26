@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.iam360.dscvr.DscvrApp;
 
+import timber.log.Timber;
+
 /**
  * Created by Charlotte on 17.03.2017.
  */
@@ -35,22 +37,22 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
         Log.i("onConnectionStateChange", "Status: " + status);
         switch (newState) {
             case BluetoothProfile.STATE_CONNECTED:
-                Log.i("gattCallback", "STATE_CONNECTED");
+                Timber.d("STATE_CONNECTED");
                 gatt.discoverServices();
                 break;
             case BluetoothProfile.STATE_DISCONNECTED:
-                Log.e("gattCallback", "STATE_DISCONNECTED");
-                context.sendBroadcast(new Intent(BluetoothConnectionReciever.DISCONNECTED));
+                Timber.e("STATE_DISCONNECTED");
                 break;
             default:
-                Log.e("gattCallback", "STATE_OTHER");
+                Timber.e("STATE_OTHER");
     }
     }
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-        context.sendBroadcast(new Intent(BluetoothConnectionReciever.CONNECTED));
+        Timber.d("service discovered");
         listener.endLoading(gatt);
     }
+
 
 }

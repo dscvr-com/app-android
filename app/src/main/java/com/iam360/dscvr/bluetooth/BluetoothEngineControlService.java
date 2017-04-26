@@ -6,8 +6,16 @@ import android.bluetooth.BluetoothGattService;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import com.iam360.dscvr.sensors.RotationMatrixProvider;
+import com.iam360.dscvr.util.Maths;
+
+
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+
+import timber.log.Timber;
 
 /**
  * Class to control Motor.
@@ -26,8 +34,13 @@ public class BluetoothEngineControlService {
     private BluetoothGattService bluetoothService;
     private BluetoothGatt gatt;
     private EngineCommandPoint movedSteps = new EngineCommandPoint(0, 0);
+    private BluetoothEngineMatrixProvider providerInstanz;
+    private double yTeta = 0;
+    private long start360;
+    private static final int SPEED = 400;
+    private static final double SPEED_IN_RAD = (SPEED / STEPS_FOR_ONE_ROUND_X) * 2 * Math.PI;
 
-    public BluetoothEngineControlService(){
+    public BluetoothEngineControlService() {
     }
 
     public boolean setBluetoothGatt(BluetoothGatt gatt) {
@@ -61,7 +74,7 @@ public class BluetoothEngineControlService {
     }
 
     public boolean hasBluetoothService() {
-        return bluetoothService != null;
+        return bluetoothService != null && gatt != null;
     }
 
     private void sendCommand(EngineCommand command) {
@@ -70,7 +83,6 @@ public class BluetoothEngineControlService {
                 (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) > 0);
         characteristic.setValue(command.getValue());
         gatt.writeCharacteristic(characteristic);
-
     }
 
 
@@ -81,9 +93,52 @@ public class BluetoothEngineControlService {
 
     }
 
+    public void move360withDeg(float deg) {
+        goToDeg(deg);
+        //do we need to wait?
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                goCompleteAround(500);
+            }
+        }, 500);
+    }
+
+    private void goCompleteAround(float speed) {
+
+        moveXY(new EngineCommandPoint((float) STEPS_FOR_ONE_ROUND_X * (-1), 0f), new EngineCommandPoint(speed, speed));
+        start360 = System.currentTimeMillis();
+    }
+
+    private void goToDeg(float deg) {
+        float ySteps = (float) ((STEPS_FOR_ONE_ROUND_Y / 360) * deg);
+        yTeta = deg + Math.toDegrees(Math.PI);
+        moveXY(new EngineCommandPoint(0, ySteps), new EngineCommandPoint(0, SPEED));
+    }
+
     private void stop() {
         sendCommand(EngineCommand.stop());
     }
 
+    public BluetoothEngineMatrixProvider getBluetoothEngineMatrixProviderForGatt() {
+        if (gatt != null) {
+            if (providerInstanz == null) {
+                providerInstanz = new BluetoothEngineMatrixProvider();
+            }
+            return providerInstanz;
+        }
+        return null;
+    }
 
+    public class BluetoothEngineMatrixProvider extends RotationMatrixProvider {
+        @Override
+        public void getRotationMatrix(float[] target) {
+            double xPhi = (-1) *(SPEED_IN_RAD * (System.currentTimeMillis() - start360)) / 1000f;
+            Timber.d("xPhi: " + xPhi);
+            float[] rotationX = {(float) yTeta, 1, 0, 0};
+            float[] rotationY = {(float) -Math.toDegrees(xPhi), 0, 1, 0};
+            float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
+            System.arraycopy(result, 0, target, 0, 16);
+        }
+    }
 }

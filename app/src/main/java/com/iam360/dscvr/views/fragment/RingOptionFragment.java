@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.iam360.dscvr.DscvrApp;
@@ -23,6 +24,7 @@ import com.iam360.dscvr.util.Constants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
@@ -43,9 +45,10 @@ public class RingOptionFragment extends Fragment {
     ImageButton motorBtn;
     @Bind(R.id.frag_option_record_button)
     ImageButton recordButton;
+    @Bind(R.id.bt_record_progress)
+    ProgressBar loading;
 
     BluetoothConnector connector;
-    BluetoothConnectionReciever reciever;
 
     private boolean isNotCloseable = false;
 
@@ -73,7 +76,7 @@ public class RingOptionFragment extends Fragment {
     }
 
     private void initButtonListeners() {
-        updateMode((cache.getInt(Cache.CAMERA_MODE) == Constants.ONE_RING_MODE) ? true : false);
+        updateMode(!cache.getBoolean(Cache.MOTOR_ON));
         manualBtn.setOnClickListener(v -> updateMode(true));
         motorBtn.setOnClickListener(v -> updateMode(false));
         recordButton.setOnClickListener(v -> finishSettingMode());
@@ -95,25 +98,27 @@ public class RingOptionFragment extends Fragment {
     }
 
     /**
-     * Updates 1 or 3 ring on layout and cache
+     * update engine or manual mode
      *
      * @param isManualMode
      */
     private void updateMode(boolean isManualMode) {
+        if(isNotCloseable){
+            return;
+        }
         if (isManualMode) {
             manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
             motorBtn.setBackgroundResource(R.drawable.motor_icon);
-            cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+            cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
+            cache.save(Cache.MOTOR_ON, !isManualMode);
         } else {
-            if(isNotCloseable){
-                return;
-            }
             isNotCloseable = true;
             startToSearchEngine();
             showLoading();
+            cache.save(Cache.MOTOR_ON, !isManualMode);
             manualBtn.setBackgroundResource(R.drawable.manual_icon);
             motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);
-            cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
+            cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE); // FIXME remove this later
         }
     }
 
@@ -136,13 +141,16 @@ public class RingOptionFragment extends Fragment {
     }
 
     private void stopLoading(BluetoothGatt gatt) {
+        Timber.d("stop bt loading");
         ((DscvrApp) (getContext().getApplicationContext())).setBTGatt(gatt);
         isNotCloseable = false;
-        //todo
-    }
+
+        getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
+}
 
     private void showLoading() {
-        //todo
+
+         loading.setVisibility(View.VISIBLE);
     }
 
     @Override

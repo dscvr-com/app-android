@@ -5,6 +5,8 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import com.iam360.dscvr.DscvrApp;
+
 /**
  * @author Nilan Marktanner
  * @date 2016-02-10
@@ -32,7 +34,7 @@ public class RecorderOverlayView extends GLSurfaceView {
         // not sure why we need this, but without it we can't get transparency!
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 
-        recorderOverlayRenderer = new RecorderOverlayRenderer();
+        recorderOverlayRenderer = new RecorderOverlayRenderer((DscvrApp) getContext().getApplicationContext());
         setRenderer(recorderOverlayRenderer);
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }

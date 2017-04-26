@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.opengl.Sphere;
 import com.iam360.dscvr.sensors.CoreMotionListener;
 import com.iam360.dscvr.sensors.DefaultListeners;
@@ -23,6 +24,7 @@ import timber.log.Timber;
  * @date 2016-02-10
  */
 public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
+    private final DscvrApp appContext;
     private List<LineNode> lineNodes;
 
     // Map globalIds of the edge's selection points : LineNode
@@ -45,7 +47,8 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     private boolean shouldRender;
 
 
-    public RecorderOverlayRenderer() {
+    public RecorderOverlayRenderer(DscvrApp appContext) {
+        this.appContext = appContext;
         lineNodes = new LinkedList<>();
         addedNewLineNode = false;
         shouldRender = false;
@@ -109,7 +112,9 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
         float[] cmDiff = new float[16];
         float[] smoothRotation = new float[16];
 
-        Matrix.multiplyMM(cmDiff, 0, DefaultListeners.getInstance().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
+        //FIXME
+        //inverse
+        Matrix.multiplyMM(cmDiff, 0, appContext.getMatrixProvider().getRotationMatrixInverse(), 0, lastCmMatrix, 0);
 
         Matrix.multiplyMM(smoothRotation, 0, cmDiff, 0, rotationMatrix, 0);
 
@@ -166,7 +171,7 @@ public class RecorderOverlayRenderer implements GLSurfaceView.Renderer {
     public void setRotationMatrix(float[] rotationMatrix) {
         //System.arraycopy(rotationMatrix, 0, this.rotationMatrix, 0, 16);
         Matrix.transposeM(this.rotationMatrix, 0, rotationMatrix, 0);
-        DefaultListeners.getInstance().getRotationMatrix(this.lastCmMatrix);
+        appContext.getMatrixProvider().getRotationMatrix(this.lastCmMatrix);
         //Timber.w("Set rotation matrix: " + GeneralUtils.mToString(this.rotationMatrix));
     }
 
