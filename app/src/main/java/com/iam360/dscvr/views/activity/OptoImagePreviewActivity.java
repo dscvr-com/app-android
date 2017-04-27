@@ -153,26 +153,6 @@ public class OptoImagePreviewActivity extends AppCompatActivity implements View.
         builder.create().show();
     }
 
-    private void retryDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.dialog_retry_recording)
-                .setPositiveButton(getResources().getString(R.string.dialog_retry), (dialog, which) -> {
-                }).setNegativeButton(getResources().getString(R.string.dialog_keep), (dialog, which) -> {
-            dialog.dismiss();
-        });
-        builder.create().show();
-    }
-
-    private void sharedNotLoginDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(R.string.dialog_login_needed)
-                .setMessage(R.string.dialog_share_not_login)
-                .setNegativeButton(getResources().getString(R.string.dialog_continue), (dialog, which) -> {
-                    dialog.dismiss();
-                });
-        builder.create().show();
-    }
-
     @Subscribe
     public void receivePreviewImage(RecordFinishedPreviewEvent recordFinishedPreviewEvent) {
         Timber.d("receivePreviewImage");

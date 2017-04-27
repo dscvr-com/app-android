@@ -2,14 +2,10 @@ package com.iam360.dscvr.bluetooth;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
-
-import com.iam360.dscvr.DscvrApp;
 
 import timber.log.Timber;
 
@@ -21,9 +17,13 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
 
     private static final String BLUETOOTH_GATT = "bluetoothGatt";
     private final Context context;
+    private final ButtonValueListener bottomButton;
+    private final ButtonValueListener topButton;
     private BluetoothConnector.BluetoothLoadingListener listener;
 
-    public BluetoothConnectionCallback(Context context, BluetoothConnector.BluetoothLoadingListener listener) {
+    public BluetoothConnectionCallback(Context context, BluetoothConnector.BluetoothLoadingListener listener, ButtonValueListener bottomButton, ButtonValueListener topButton) {
+        this.topButton = topButton;
+        this.bottomButton = bottomButton;
         this.context = context;
         this.listener = listener;
     }
@@ -45,7 +45,18 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
                 break;
             default:
                 Timber.e("STATE_OTHER");
+        }
     }
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        if (characteristic.getUuid().equals(BluetoothEngineControlService.RESPONSE_UUID)) {
+            if (characteristic.getValue().equals(BluetoothEngineControlService.BOTTOMBUTTON)) {
+                    bottomButton.buttomPressed();
+            }else if(characteristic.getValue().equals(BluetoothEngineControlService.TOPBUTTON)){
+                    topButton.buttomPressed();
+            }
+        }
     }
 
     @Override
@@ -54,5 +65,7 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
         listener.endLoading(gatt);
     }
 
-
+    interface ButtonValueListener {
+        void buttomPressed();
+    }
 }

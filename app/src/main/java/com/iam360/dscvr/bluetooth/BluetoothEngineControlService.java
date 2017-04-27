@@ -10,7 +10,6 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
 import com.iam360.dscvr.util.Maths;
 
-
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,10 +26,13 @@ public class BluetoothEngineControlService {
 
     public static final ParcelUuid SERVICE_UUID = ParcelUuid.fromString("69400001-B5A3-F393-E0A9-E50E24DCCA99");
     public static final UUID CHARACTERISTIC_UUID = UUID.fromString("69400002-B5A3-F393-E0A9-E50E24DCCA99");
+    public static final UUID RESPONSE_UUID = UUID.fromString("69400003-B5A3-F393-E0A9-E50E24DCCA99");
+    public static final byte[] TOPBUTTON = new byte[]{(byte) 0xFE, (byte) 0x01, (byte) 0x08, (byte) 0x01, (byte) 0x08, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    public static final byte[] BOTTOMBUTTON = UUID.fromString("FE01080007FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     private static final String TAG = "MotorControl";
     private static final double STEPS_FOR_ONE_ROUND_X = 5111;
     private static final double STEPS_FOR_ONE_ROUND_Y = 15000;
-    private static final int STEP_FOR_360 = (int) ((STEPS_FOR_ONE_ROUND_X / 360f) *380f);
+    private static final int STEP_FOR_360 = (int) ((STEPS_FOR_ONE_ROUND_X / 360f) * 380f);
 
 
     private BluetoothGattService bluetoothService;
@@ -40,7 +42,7 @@ public class BluetoothEngineControlService {
     private double yTeta = 0;
     private long start360;
     public static final int SPEED = 500;
-    private static final double SPEED_IN_RAD = (((float)SPEED)/ ((float)STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
+    private static final double SPEED_IN_RAD = (((float) SPEED) / ((float) STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
 
     public BluetoothEngineControlService() {
     }
@@ -71,6 +73,8 @@ public class BluetoothEngineControlService {
         } else {
             this.gatt = gatt;
             this.bluetoothService = correctService;
+
+            BluetoothGattCharacteristic characteristic = bluetoothService.getCharacteristic(RESPONSE_UUID);
             return true;
         }
     }
@@ -96,14 +100,13 @@ public class BluetoothEngineControlService {
     }
 
 
-
     public void goCompleteAround(float speed) {
 
         moveXY(new EngineCommandPoint((float) STEP_FOR_360 * (-1), 0f), new EngineCommandPoint(speed, speed));
         start360 = System.currentTimeMillis();
     }
 
-    public  void goToDeg(float deg) {
+    public void goToDeg(float deg) {
         float ySteps = (float) ((STEPS_FOR_ONE_ROUND_Y / 360) * deg);
         yTeta = deg + Math.toDegrees(Math.PI);
         moveXY(new EngineCommandPoint(0, ySteps), new EngineCommandPoint(0, SPEED));
@@ -138,9 +141,9 @@ public class BluetoothEngineControlService {
     public class BluetoothEngineMatrixProvider extends RotationMatrixProvider {
         @Override
         public void getRotationMatrix(float[] target) {
-            double xPhi =  (SPEED_IN_RAD * (System.currentTimeMillis() - start360)) / 1000f;
+            double xPhi = (SPEED_IN_RAD * (System.currentTimeMillis() - start360)) / 1000f;
             Timber.d("xPhi: " + xPhi);
-            float[] rotationX = {(float) yTeta+180, 1, 0, 0};
+            float[] rotationX = {(float) yTeta + 180, 1, 0, 0};
             float[] rotationY = {(float) -Math.toDegrees(xPhi), 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
             System.arraycopy(result, 0, target, 0, 16);

@@ -1,19 +1,17 @@
 package com.iam360.dscvr.util;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.iam360.dscvr.DscvrApp;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -24,49 +22,12 @@ public class CameraUtils {
     public static final String PERSISTENT_STORAGE_PATH = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_PICTURES).getPath().concat("/").concat("DSCVR").concat("/");
 
-    public static Camera getCameraInstance(){
-        Camera camera = null;
-        try {
-            camera = Camera.open(0);
-        } catch (Exception e){
-            Timber.e(e, "Camera not available at the moment.");
-            Crashlytics.log(Log.ERROR, "Optonaut", "Camera was accessed but not available.");
-
-            // TODO - handle cleanly
-        }
-
-        Camera.Size[] sizes = camera.getParameters().getSupportedPreviewSizes().toArray(new Camera.Size[0]);
-        Camera.Size size = null;
-
-        // Find smallest HD camera.
-        for(int i = 1; i < sizes.length; i++) {
-            if(sizes[i].width == 1280 && sizes[i].height == 720) {
-                size = sizes[i];
-            }
-            Timber.v("size: [%s, %s]", sizes[i].width, sizes[i].height);
-        }
-
-        if (size == null) {
-            throw new RuntimeException("No suitable camera size found!");
-        }
-
-        Camera.Parameters params = camera.getParameters();
-        params.setPreviewSize(size.width, size.height);
-        params.setVideoStabilization(true); //improves during capture
-        params.setAutoWhiteBalanceLock(true); //improves quality of capture
-
-
-        camera.setParameters(params);
-
-        // returns null if camera is unavailable
-        return camera;
-    }
-
     public static void saveBitmapToLocation(Bitmap bitmap, String filename) {
         FileOutputStream out = null;
+        File parent = null;
         try {
             File file = new File(filename);
-            File parent = file.getParentFile();
+            parent = file.getParentFile();
             parent.mkdirs();
             out = new FileOutputStream(filename);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
@@ -76,11 +37,15 @@ public class CameraUtils {
             try {
                 if (out != null) {
                     out.close();
+                    if(parent != null){
+                        DscvrApp.getInstance().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(parent.getAbsolutePath())));
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     public static void saveBitmapToLocationEQ(Bitmap bitmap, String filename) {
@@ -112,34 +77,6 @@ public class CameraUtils {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static float[] getCameraResolution(Context context, int camNum) {
-        // those are sizes obtained with the OnePlus One phone...
-        //float[] size = {4.6541333f, 3.4623966f};
-
-        //Hard-code fix for Image size and FOV
-        //float[] size = {7.81538f, 5.86153f};
-        float[] size = {4f, 3f};
-
-        //uncomment if gba is applied
-        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-
-            CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-            try {
-                String[] cameraIds = manager.getCameraIdList();
-                if (cameraIds.length > camNum) {
-                    CameraCharacteristics character = manager.getCameraCharacteristics(cameraIds[camNum]);
-                    SizeF sizeF = character.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-                    size[0] = sizeF.getWidth();
-                    size[1] = sizeF.getHeight();
-                }
-            } catch (CameraAccessException e) {
-                Timber.e("YourLogString", e.getMessage(), e);
-            }
-            Timber.v("size: [%s, %s]", size[0], size[1]);
-        }*/
-        return size;
     }
 
     /**
