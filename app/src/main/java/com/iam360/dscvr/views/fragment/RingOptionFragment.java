@@ -131,12 +131,14 @@ public class RingOptionFragment extends Fragment {
         if (BluetoothAdapter.getDefaultAdapter() == null || !BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
         }
 
         if (checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
                     PERMISSION_LOCATION);
+            return;
 
         }
         connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(),getContext());
@@ -149,7 +151,7 @@ public class RingOptionFragment extends Fragment {
         Timber.d("stop bt loading");
         ((DscvrApp) (getContext().getApplicationContext())).setBTGatt(gatt);
         isNotCloseable = false;
-        Snackbar.make(getView(),"Motor found. ", Snackbar.LENGTH_LONG);
+        Snackbar.make(getView(),"Motor found. ", Snackbar.LENGTH_SHORT).show();
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
 }
 
@@ -158,10 +160,10 @@ public class RingOptionFragment extends Fragment {
             @Override
             public void run() {
                 if(loading.getVisibility() == View.VISIBLE){
-                    Toast.makeText(getContext(),"No Motor found.", Toast.LENGTH_LONG);
+                    Snackbar.make(getView(),"No Motor found.", Snackbar.LENGTH_LONG).show();
                 }
             }
-        }, 1500);
+        }, 10000);
          loading.setVisibility(View.VISIBLE);
     }
 

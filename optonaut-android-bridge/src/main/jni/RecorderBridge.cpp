@@ -184,7 +184,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
         postStore->Clear();
         motorRecorder = std::unique_ptr<MotorControlRecorder>(new MotorControlRecorder(androidBase.clone(), zero.clone(), intrinsics, *((StorageImageSink*)postStore.get()), mode, 1.0, debugPath));
     } else {
-        recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 5.0, debugPath));
+        recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath));
     }
 
 }

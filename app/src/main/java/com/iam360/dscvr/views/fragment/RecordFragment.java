@@ -29,6 +29,7 @@ import com.iam360.dscvr.record.LineNode;
 import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
+import com.iam360.dscvr.sensors.RotationMatrixProvider;
 import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
@@ -54,6 +55,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import timber.log.Timber;
+
 
 /**
  * @author Nilan Marktanner
@@ -90,7 +92,9 @@ public class RecordFragment extends Fragment {
     private float currentPhi = (float) 0.0;
     private boolean isRecording = false;
     CustomRotationMatrixSource customRotationMatrixSource;
-
+    RotationMatrixProvider provider;
+    private float[] unit = {0, 0, 1, 0};
+    private float[] currentHeading = new float[4];
     private Cache cache;
 
     private SizeF size;
@@ -103,16 +107,13 @@ public class RecordFragment extends Fragment {
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
-            if (!isRecorderReady) {
+            if (!isRecorderReady || Recorder.isFinished()) {
                 return;
-            }
-            if (Recorder.isFinished()) {
-                return;// sync hack
             }
             assert colorFormat == Bitmap.Config.ARGB_8888;
 
             // build extrinsics
-            float[] coreMotionMatrix = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider().getRotationMatrix();
+            float[] coreMotionMatrix = provider.getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 
             Log.w(TAG, "Pushing data: " + width + "x" + height);
@@ -127,15 +128,11 @@ public class RecordFragment extends Fragment {
             float angle = Recorder.getAngularDistanceToBall()[2];
             ((RecorderActivity) getActivity()).setAngleRotation(angle);
 
-            float[] unit = {0, 0, 1, 0};
             Vector3 ballHeading = new Vector3(ballPosition);
             ballHeading.normalize();
 
-//            float[] currentRotation = Recorder.getCurrentRotation();
             recorderOverlayView.getRecorderOverlayRenderer().setRotationMatrix(coreMotionMatrix);
 
-
-            float[] currentHeading = new float[4];
             Matrix.multiplyMV(currentHeading, 0, coreMotionMatrix, 0, unit, 0);
             Vector3 currentHeadingVec = new Vector3(currentHeading[0], currentHeading[1], currentHeading[2]);
 
@@ -154,8 +151,8 @@ public class RecordFragment extends Fragment {
             new Handler(getActivity().getMainLooper()).post(new Runnable() {
                 public void run() {
                     ((RecorderActivity) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
-                    ((RecorderActivity) getActivity()).setArrowVisible(distXY > 0.15 ? true : false);
-                    ((RecorderActivity) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15) ? true : false);
+                    ((RecorderActivity) getActivity()).setArrowVisible(distXY > 0.15);
+                    ((RecorderActivity) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15));
                 }
             });
 
@@ -181,9 +178,6 @@ public class RecordFragment extends Fragment {
                 // queue finishing on main thread
                 queueFinishRecording();
             }
-            long dif = System.currentTimeMillis() - currentTime;
-            currentTime = System.currentTimeMillis();
-            Timber.d("imgRecievedAfter: " + dif);
         }
 
         @Override
@@ -276,6 +270,7 @@ public class RecordFragment extends Fragment {
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
         recordPreview.lockExposure();
         BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getBluetoothService();
+        provider = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider();
         boolean first = true;
         for (Float statingPoint : getStartingPoints()) {
             //FIXME to hacky
@@ -287,6 +282,8 @@ public class RecordFragment extends Fragment {
                     public void run() {
                         bluetoothService.goCompleteAround(BluetoothEngineControlService.SPEED);
                         Recorder.setIdle(false);
+                        isRecording = true;
+
                     }
                 }, 300);
                 first = false;
@@ -299,7 +296,7 @@ public class RecordFragment extends Fragment {
                 }, 1500);
             }
         }
-        isRecording = true;
+
     }
 
     public ArrayList<Float> getStartingPoints() {
@@ -383,6 +380,7 @@ public class RecordFragment extends Fragment {
 
         MixpanelHelper.trackCameraCancelRecording(getContext());
         GlobalState.isAnyJobRunning = true;
+
 
         // start background thread to cancel recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new CancelRecorderJob());
