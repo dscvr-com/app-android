@@ -9,7 +9,6 @@ import android.hardware.camera2.CameraManager;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,7 +20,6 @@ import android.widget.FrameLayout;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.bluetooth.BluetoothConnectionReciever;
 import com.iam360.dscvr.bluetooth.BluetoothEngineControlService;
 import com.iam360.dscvr.record.Edge;
 import com.iam360.dscvr.record.GlobalState;
@@ -29,20 +27,18 @@ import com.iam360.dscvr.record.LineNode;
 import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
+import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
+import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
+import com.iam360.dscvr.util.Cache;
+import com.iam360.dscvr.util.CameraUtils;
+import com.iam360.dscvr.util.Maths;
+import com.iam360.dscvr.util.MixpanelHelper;
+import com.iam360.dscvr.util.Vector3;
 import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
-import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
-import com.iam360.dscvr.sensors.DefaultListeners;
-import com.iam360.dscvr.util.Cache;
-import com.iam360.dscvr.util.CameraUtils;
-import com.iam360.dscvr.util.Constants;
-import com.iam360.dscvr.util.DeviceName;
-import com.iam360.dscvr.util.Maths;
-import com.iam360.dscvr.util.MixpanelHelper;
-import com.iam360.dscvr.util.Vector3;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -90,6 +86,8 @@ public class RecordFragment extends Fragment {
     private long lastElapsedTime = System.currentTimeMillis();
     private float currentTheta = (float) 0.0;
     private float currentPhi = (float) 0.0;
+    float[] vectorBallPos = {0, 0, 0.9f, 0};
+    float[] newPositionOfBall = new float[4];
     private boolean isRecording = false;
     CustomRotationMatrixSource customRotationMatrixSource;
     RotationMatrixProvider provider;
@@ -103,6 +101,7 @@ public class RecordFragment extends Fragment {
 
     //FIXME: don't use a bool
     private boolean isRecorderReady = false;
+    private long endOfLast;
 
     private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
         @Override
@@ -110,14 +109,13 @@ public class RecordFragment extends Fragment {
             if (!isRecorderReady || Recorder.isFinished()) {
                 return;
             }
-            assert colorFormat == Bitmap.Config.ARGB_8888;
-
+            Timber.d("imageDataCall after: "+(System.currentTimeMillis()-endOfLast));
+            endOfLast = System.currentTimeMillis();
+            //assert colorFormat == Bitmap.Config.ARGB_8888;
             // build extrinsics
             float[] coreMotionMatrix = provider.getRotationMatrix();
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
-
-            Log.w(TAG, "Pushing data: " + width + "x" + height);
-            assert width * height * 4 == data.length;
+//assert width * height * 4 == data.length;
 
             Recorder.push(data, width, height, extrinsicsData);
 
@@ -178,6 +176,8 @@ public class RecordFragment extends Fragment {
                 // queue finishing on main thread
                 queueFinishRecording();
             }
+            Timber.d("imageDataCall duration: "+(System.currentTimeMillis()-endOfLast));
+            endOfLast = System.currentTimeMillis();
         }
 
         @Override
@@ -387,11 +387,9 @@ public class RecordFragment extends Fragment {
     }
 
     private void updateBallPosition() {
-        float[] vector = {0, 0, 0.9f, 0};
-        float[] newPosition = new float[4];
-        Matrix.multiplyMV(newPosition, 0, Recorder.getBallPosition(), 0, vector, 0);
+        Matrix.multiplyMV(newPositionOfBall, 0, Recorder.getBallPosition(), 0, vectorBallPos, 0);
 
-        ballPosition = smoothenBall(ballPosition, newPosition);
+        ballPosition = smoothenBall(ballPosition, newPositionOfBall);
 //        ballPosition.set(newPosition[0], newPosition[1], newPosition[2]);
 
         // use ball position
@@ -457,53 +455,5 @@ public class RecordFragment extends Fragment {
         time = newTime;
         return ballPos;
 
-    }
-
-    private float[] moveViaMotor() {
-        float[] coreMotionMatrix;
-        long mediaTime = System.currentTimeMillis();
-        long timeDiff = mediaTime - lastElapsedTime;
-        double elapsedSec = timeDiff / 1000.0;
-
-        int sessionRotateCount = 7200;
-        int sessionBuffCount = 200;
-        int PPS = 300;
-        int rotatePlusBuff = sessionRotateCount + sessionBuffCount;
-
-        double degreeIncrMicro = (0.036 / (rotatePlusBuff / PPS));
-        double degreeIncr = (elapsedSec / 0.0001) * degreeIncrMicro;
-
-        lastElapsedTime = System.currentTimeMillis();
-        if (isRecording) {
-            currentDegree += degreeIncr;
-        }
-
-//                float[] rotation = {(float) -Math.toDegrees(currentDegree), 0, 1, 0};
-//                float[] curRotation = Maths.buildRotationMatrix(baseCorrection, rotation);
-
-        if (((RecorderActivity) getActivity()).dataHasCome) {
-            isRecording = true;
-        }
-        Log.d("MARK", "degreeIncr = " + degreeIncr);
-
-        currentPhi = (float) Math.toRadians(currentDegree);
-
-        if (currentPhi > (2 * Math.PI) - 0.001) {
-            isRecording = false;
-            if (currentTheta == 0) {
-                currentTheta = (-DeviceName.getCurrentThetaValue());
-            } else if (currentTheta < 0) {
-                currentTheta = DeviceName.getCurrentThetaValue();
-            } else if (currentTheta > 0) {
-                currentTheta = 0;
-            }
-            currentDegree = 0;
-        }
-        Log.d("MARK", "currentDegree = " + currentDegree);
-
-        customRotationMatrixSource = new CustomRotationMatrixSource(currentTheta, currentPhi);
-        coreMotionMatrix = customRotationMatrixSource.getRotationMatrix();
-
-        return coreMotionMatrix;
     }
 }

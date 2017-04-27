@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/transparentOverlay">
@@ -12,12 +11,15 @@
 
         <ImageButton
             android:id="@+id/frag_option_record_button"
-            android:textColor="@color/bright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:adjustViewBounds="false"
             android:background="@drawable/camera_selector"
-            android:layout_centerVertical="true"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:textSize="33dp"/>
+            android:textColor="@color/bright"
+            android:textSize="33dp" />
 
         <TextView
             android:layout_below="@+id/record_button"
@@ -29,18 +31,18 @@
             android:layout_height="wrap_content"
             android:textSize="9dp"/>
 
+
         <ProgressBar
             android:id="@+id/bt_record_progress"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            style="@android:style/Widget.ProgressBar.Small.Inverse"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
     </RelativeLayout>
-
-        <LinearLayout
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -98,4 +100,6 @@
             </LinearLayout>
 
         </LinearLayout>
+
+
 </FrameLayout>

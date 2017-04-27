@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.util.Range;
 import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -58,6 +59,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
     private RecorderPreviewListener
             dataListener;
+    private Range<Integer> bestFramerate;
 
     public RecorderPreviewView(Context ctx) {
         super(ctx);
@@ -97,15 +99,16 @@ public class RecorderPreviewView extends AutoFitTextureView {
             @Override
             public void handleMessage(Message msg) {
 //                Log.w(TAG, "Message tag: " + msg.what);
-                if(msg.what == START_DECODER) {
+                if (msg.what == START_DECODER) {
                     createDecoderSurface();
                     // So I have no idea what we wait for. So we just wait.
                     try {
                         Thread.sleep(2500, 0);
-                    } catch (InterruptedException e) { }
-                } else if(msg.what == FETCH_FRAME) {
+                    } catch (InterruptedException e) {
+                    }
+                } else if (msg.what == FETCH_FRAME) {
                     fetchFrame();
-                } else if(msg.what == EXIT_DECODER) {
+                } else if (msg.what == EXIT_DECODER) {
                     destroyDecoderSurface();
                 }
 
@@ -118,7 +121,9 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
     public interface RecorderPreviewListener {
         void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat);
+
         void cameraOpened(CameraDevice device);
+
         void cameraClosed(CameraDevice device);
     }
 
@@ -133,12 +138,12 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     private void fetchFrame() {
-        if(surface == null) {
+        if (surface == null) {
             return;
         }
         try {
-            if(dataListener != null) {
-                if(surface.awaitNewImage()) {
+            if (dataListener != null) {
+                if (surface.awaitNewImage()) {
                     surface.drawImage(false);
 //                    Timber.d("Fetch frame success");
                     dataListener.imageDataReady(surface.fetchPixels(), surface.mWidth, surface.mHeight, surface.colorFormat);
@@ -153,7 +158,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             // Do nothing
         }
 
-        if(decoderThread.isAlive()) decoderHandler.obtainMessage(FETCH_FRAME).sendToTarget();
+        if (decoderThread.isAlive()) decoderHandler.obtainMessage(FETCH_FRAME).sendToTarget();
     }
 
     // To be called from parent activity
@@ -168,7 +173,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     private void stopBackgroundThread() {
-        if(backgroundThread == null)
+        if (backgroundThread == null)
             return;
         backgroundThread.quitSafely();
         try {
@@ -205,21 +210,19 @@ public class RecorderPreviewView extends AutoFitTextureView {
     }
 
     private void openCamera(int width, int height) {
-        // Todo - open camera
-        CameraManager manager = (CameraManager)getContext().getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
         try {
-//            Log.d(TAG, "tryAcquire");
             if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
-            for (String cameraId : manager.getCameraIdList()){
+            for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-                if(characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT){
+                if (characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT) {
                     continue;
                 }
                 StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-
+                bestFramerate = getBest(characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES));
                 previewSize = chooseOptimalPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height, videoSize);
                 textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 configureTransform(width, height);
@@ -227,14 +230,31 @@ public class RecorderPreviewView extends AutoFitTextureView {
                 break;
             }
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            Timber.e(e, "no Camera Access");
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            e.printStackTrace();
+            Timber.e("this device doesn't support camera2.");
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.");
         }
+    }
+
+    private Range<Integer> getBest(Range<Integer>[] ranges) {
+        Range<Integer> currentHigh = null;
+        for (Range<Integer> range : ranges) {
+            if (currentHigh == null) {
+                currentHigh = range;
+            } else {
+                if(currentHigh.getUpper()<range.getUpper()){
+                   currentHigh = range;
+                } else if(currentHigh.getUpper() == range.getUpper() && currentHigh.getLower() <= range.getLower()){
+                    currentHigh = range;
+                }
+            }
+        }
+        Timber.d("fps: " + currentHigh.toString());
+        return currentHigh;
     }
 
     private static Size chooseOptimalPreviewSize(Size[] choices, int width, int height, Size aspectRatio) {
@@ -268,7 +288,8 @@ public class RecorderPreviewView extends AutoFitTextureView {
         }
         try {
             closePreviewSession();
-            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            previewBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, bestFramerate);//FIXME
             Surface previewSurface = textureView.getHolder().getSurface();
 
             previewBuilder.addTarget(previewSurface);
@@ -290,7 +311,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
 
                 @Override
                 public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-                    Log.e(TAG, "Camera configure failed.");
+                    Log.e(TAG, "Camera config  failed");
                 }
             }, backgroundHandler);
         } catch (CameraAccessException e) {
@@ -368,7 +389,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             if (null != textureView) {
                 configureTransform(textureView.getWidth(), textureView.getHeight());
             }
-            if(null != dataListener) {
+            if (null != dataListener) {
                 dataListener.cameraOpened(cameraDevice);
             }
         }
@@ -378,7 +399,7 @@ public class RecorderPreviewView extends AutoFitTextureView {
             cameraOpenCloseLock.release();
             cameraDevice.close();
             RecorderPreviewView.this.cameraDevice = null;
-            if(null != dataListener) {
+            if (null != dataListener) {
                 dataListener.cameraClosed(cameraDevice);
             }
         }

@@ -3,23 +3,20 @@ package com.iam360.dscvr.views.fragment;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
-import com.iam360.dscvr.bluetooth.BluetoothConnectionReciever;
 import com.iam360.dscvr.bluetooth.BluetoothConnector;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.Constants;
@@ -34,7 +31,6 @@ import timber.log.Timber;
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
- *
  * <p>
  * Fragment to decide which Mode should be used.
  * Created by Lotti on 4/25/2017.
@@ -89,7 +85,7 @@ public class RingOptionFragment extends Fragment {
     }
 
     private void finishSettingMode() {
-        if(!isNotCloseable){
+        if (!isNotCloseable) {
             callBackListener.finishSettingModeForRecording();
         }
     }
@@ -108,7 +104,7 @@ public class RingOptionFragment extends Fragment {
      * @param isManualMode
      */
     private void updateMode(boolean isManualMode) {
-        if(isNotCloseable){
+        if (isNotCloseable) {
             return;
         }
         if (isManualMode) {
@@ -117,9 +113,12 @@ public class RingOptionFragment extends Fragment {
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
             cache.save(Cache.MOTOR_ON, !isManualMode);
         } else {
-            isNotCloseable = true;
-            startToSearchEngine();
-            showLoading();
+
+            if (DscvrApp.getInstance().getBluetoothService() == null || !DscvrApp.getInstance().getBluetoothService().hasBluetoothService()) {
+                startToSearchEngine();
+                showLoading();
+                isNotCloseable = true;
+            }
             cache.save(Cache.MOTOR_ON, !isManualMode);
             manualBtn.setBackgroundResource(R.drawable.manual_icon);
             motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);
@@ -134,14 +133,14 @@ public class RingOptionFragment extends Fragment {
             return;
         }
 
-        if (checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
                     PERMISSION_LOCATION);
             return;
 
         }
-        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(),getContext());
+        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext());
         connector.setListener((gatt) -> stopLoading(gatt));
         connector.connect();
 
@@ -151,27 +150,27 @@ public class RingOptionFragment extends Fragment {
         Timber.d("stop bt loading");
         ((DscvrApp) (getContext().getApplicationContext())).setBTGatt(gatt);
         isNotCloseable = false;
-        Snackbar.make(getView(),"Motor found. ", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
-}
+    }
 
     private void showLoading() {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if(loading.getVisibility() == View.VISIBLE){
-                    Snackbar.make(getView(),"No Motor found.", Snackbar.LENGTH_LONG).show();
+                if (loading.getVisibility() == View.VISIBLE) {
+                    Snackbar.make(getView(), "No Motor found.", Snackbar.LENGTH_LONG).show();
                 }
             }
         }, 10000);
-         loading.setVisibility(View.VISIBLE);
+        loading.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_ENABLE_BT:
-                if(resultCode ==  PackageManager.PERMISSION_GRANTED){
+                if (resultCode == PackageManager.PERMISSION_GRANTED) {
                     startToSearchEngine();
                 }
         }
@@ -180,14 +179,12 @@ public class RingOptionFragment extends Fragment {
     }
 
 
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case PERMISSION_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startToSearchEngine();
                 }
         }
