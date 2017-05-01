@@ -269,7 +269,7 @@ public class RecordFragment extends Fragment {
 
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
         recordPreview.lockExposure();
-        BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getBluetoothService();
+        BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
         provider = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider();
         boolean first = true;
         for (Float statingPoint : getStartingPoints()) {

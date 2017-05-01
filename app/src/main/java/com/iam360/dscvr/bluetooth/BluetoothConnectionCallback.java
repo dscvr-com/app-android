@@ -28,10 +28,6 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
         this.listener = listener;
     }
 
-    public void setListener(BluetoothConnector.BluetoothLoadingListener listener) {
-        this.listener = listener;
-    }
-
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         Log.i("onConnectionStateChange", "Status: " + status);
@@ -65,7 +61,7 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
         listener.endLoading(gatt);
     }
 
-    interface ButtonValueListener {
+    public interface ButtonValueListener {
         void buttomPressed();
     }
 }

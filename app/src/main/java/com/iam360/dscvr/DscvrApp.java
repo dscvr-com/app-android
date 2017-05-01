@@ -1,16 +1,14 @@
 package com.iam360.dscvr;
 
 import android.app.Application;
-import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.iam360.dscvr.bluetooth.BluetoothEngineControlService;
+import com.iam360.dscvr.bluetooth.BluetoothConnector;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
-import com.iam360.dscvr.util.Cache;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -25,19 +23,18 @@ import timber.log.Timber;
 public class DscvrApp extends Application {
     private static DscvrApp instance;
     private JobManager jobManager;
-    private BluetoothEngineControlService controlService;
+    private BluetoothConnector connector;
 
     public DscvrApp() {
         instance = this;
     }
 
-    public void setBTGatt(BluetoothGatt gatt) {
-        controlService = new BluetoothEngineControlService();
-        controlService.setBluetoothGatt(gatt);
+    public void setConnector(BluetoothConnector connector){
+        this.connector = connector;
     }
 
-    public void removeBTGatt(){
-        controlService = null;
+    public BluetoothConnector getConnector(){
+        return connector;
     }
 
     @Override
@@ -103,16 +100,16 @@ public class DscvrApp extends Application {
         jobManager = new JobManager(this, configuration);
     }
 
-    public BluetoothEngineControlService getBluetoothService() {
-        return controlService;
-    }
-
     public RotationMatrixProvider getMatrixProvider(){
-        if(getBluetoothService()!= null && getBluetoothService().hasBluetoothService()){
-            return  getBluetoothService().getBluetoothEngineMatrixProviderForGatt();
+        if(connector.isConnected()){
+            return  connector.getBluetoothService().getBluetoothEngineMatrixProviderForGatt();
         }   else{
             return DefaultListeners.getInstance();
         }
+    }
+
+    public boolean hasConnection() {
+        return connector != null && connector.isConnected();
     }
 
     /**

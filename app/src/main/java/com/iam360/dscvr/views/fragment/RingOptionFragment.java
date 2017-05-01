@@ -114,7 +114,7 @@ public class RingOptionFragment extends Fragment {
             cache.save(Cache.MOTOR_ON, !isManualMode);
         } else {
 
-            if (DscvrApp.getInstance().getBluetoothService() == null || !DscvrApp.getInstance().getBluetoothService().hasBluetoothService()) {
+            if (!DscvrApp.getInstance().hasConnection()) {
                 startToSearchEngine();
                 showLoading();
                 isNotCloseable = true;
@@ -140,15 +140,24 @@ public class RingOptionFragment extends Fragment {
             return;
 
         }
-        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext());
-        connector.setListener((gatt) -> stopLoading(gatt));
+        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext(), gatt -> stopLoading(gatt), () -> reactForUpperButton(),() -> reactForLowerButton());
+        DscvrApp.getInstance().setConnector(connector);
         connector.connect();
 
     }
 
+    private void reactForLowerButton() {
+        Timber.d("lowerBotton");
+        //TODO
+    }
+
+    private void reactForUpperButton() {
+        Timber.d("upperBotton");
+        //TODO
+    }
+
     private void stopLoading(BluetoothGatt gatt) {
         Timber.d("stop bt loading");
-        ((DscvrApp) (getContext().getApplicationContext())).setBTGatt(gatt);
         isNotCloseable = false;
         Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));

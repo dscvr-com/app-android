@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.iam360.dscvr.bluetooth.BluetoothConnectionReciever.CONNECTED;
-import static com.iam360.dscvr.bluetooth.BluetoothConnectionReciever.DISCONNECTED;
 
 
 /**
@@ -25,17 +23,28 @@ import static com.iam360.dscvr.bluetooth.BluetoothConnectionReciever.DISCONNECTE
  */
 public class BluetoothConnector extends BroadcastReceiver {
 
+
+    public static final String CONNECTED = "com.iam360.bluetooth.BLUETOOTH_CONNECTED";
+    public static final String DISCONNECTED = "com.iam360.bluetooth.BLUETOOTH_DISCONNECTED";
+
     private static final long SCAN_PERIOD = 10000000;//very long time
     private final BluetoothAdapter adapter;
     private final Context context;
     private final Handler stopScanHandler = new Handler();
+    private final BluetoothConnectionCallback.ButtonValueListener upperButtomListener;
+    private final BluetoothConnectionCallback.ButtonValueListener lowerButtonListener;
     private BluetoothLoadingListener listener;
     private List<BluetoothDevice> nextDevice = new ArrayList<>();
     private boolean currentlyConnecting = false;
+    private BluetoothEngineControlService controlService = new BluetoothEngineControlService();
 
-    public BluetoothConnector(BluetoothAdapter adapter, Context context) {
+    public BluetoothConnector(BluetoothAdapter adapter, Context context, BluetoothLoadingListener listener, BluetoothConnectionCallback.ButtonValueListener upperButtomListener, BluetoothConnectionCallback.ButtonValueListener lowerButtonListener) {
         this.adapter = adapter;
         this.context = context;
+        this.listener = listener;
+        this.upperButtomListener = upperButtomListener;
+        this.lowerButtonListener = lowerButtonListener;
+
     }
 
     public void connect() {
@@ -64,7 +73,7 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     private void addDeviceFromScan(BluetoothDevice device) {
         nextDevice.add(device);
-        if(!currentlyConnecting){
+        if (!currentlyConnecting) {
             if (nextDevice.size() > 0) {
                 connect(nextDevice.get(0));
                 nextDevice.remove(0);
@@ -79,11 +88,11 @@ public class BluetoothConnector extends BroadcastReceiver {
     private List<BluetoothDevice> searchBondedDevices() {
         Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
         List<BluetoothDevice> contactableList = new ArrayList<>();
-        if(bondedDevices.isEmpty()){
+        if (bondedDevices.isEmpty()) {
             return new ArrayList<>();
         }
         for (BluetoothDevice device : bondedDevices) {
-            if(device.getUuids() == null){
+            if (device.getUuids() == null) {
                 continue;
             }
             for (ParcelUuid uuid : device.getUuids()) {
@@ -98,9 +107,14 @@ public class BluetoothConnector extends BroadcastReceiver {
     }
 
     private void connect(BluetoothDevice device) {
-        currentlyConnecting =true;
-        device.connectGatt(context, true, new BluetoothConnectionCallback(context, listener));
+        currentlyConnecting = true;
+        device.connectGatt(context, true, new BluetoothConnectionCallback(context, gatt -> afterConnecting(gatt), lowerButtonListener, upperButtomListener));
 
+    }
+
+    private void afterConnecting(BluetoothGatt gatt){
+        controlService.setBluetoothGatt(gatt);
+        listener.endLoading(gatt);
     }
 
     @Override
@@ -122,10 +136,18 @@ public class BluetoothConnector extends BroadcastReceiver {
     }
 
     public boolean hasDevices() {
-        if(nextDevice.size() == 0 && !currentlyConnecting){
+        if (nextDevice.size() == 0 && !currentlyConnecting) {
             return false;
         }
         return true;
+    }
+
+    public boolean isConnected() {
+        return controlService.hasBluetoothService();
+    }
+
+    public BluetoothEngineControlService getBluetoothService() {
+        return controlService;
     }
 
     public interface BluetoothLoadingListener {
