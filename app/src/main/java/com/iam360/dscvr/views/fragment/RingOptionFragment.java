@@ -152,8 +152,10 @@ public class RingOptionFragment extends Fragment {
     }
 
     private void reactForUpperButton() {
-        Timber.d("upperBotton");
-        //TODO
+        if(!isNotCloseable){
+            updateMode(false);
+            callBackListener.directlyStartToRecord();
+        }
     }
 
     private void stopLoading(BluetoothGatt gatt) {
@@ -201,5 +203,7 @@ public class RingOptionFragment extends Fragment {
 
     public interface OnModeFinished {
         public void finishSettingModeForRecording();
+
+        public void directlyStartToRecord();
     }
 }

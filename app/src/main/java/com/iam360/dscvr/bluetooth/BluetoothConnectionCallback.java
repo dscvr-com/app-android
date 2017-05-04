@@ -4,8 +4,9 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
-import android.content.Context;
 import android.util.Log;
+
+import java.util.Arrays;
 
 import timber.log.Timber;
 
@@ -14,17 +15,13 @@ import timber.log.Timber;
  */
 public class BluetoothConnectionCallback extends BluetoothGattCallback {
 
-
-    private static final String BLUETOOTH_GATT = "bluetoothGatt";
-    private final Context context;
     private final ButtonValueListener bottomButton;
     private final ButtonValueListener topButton;
     private BluetoothConnector.BluetoothLoadingListener listener;
 
-    public BluetoothConnectionCallback(Context context, BluetoothConnector.BluetoothLoadingListener listener, ButtonValueListener bottomButton, ButtonValueListener topButton) {
+    public BluetoothConnectionCallback(BluetoothConnector.BluetoothLoadingListener listener, ButtonValueListener bottomButton, ButtonValueListener topButton) {
         this.topButton = topButton;
         this.bottomButton = bottomButton;
-        this.context = context;
         this.listener = listener;
     }
 
@@ -46,10 +43,11 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Timber.d("characteristic changed");
         if (characteristic.getUuid().equals(BluetoothEngineControlService.RESPONSE_UUID)) {
-            if (characteristic.getValue().equals(BluetoothEngineControlService.BOTTOMBUTTON)) {
+            if (Arrays.equals(characteristic.getValue(),BluetoothEngineControlService.BOTTOMBUTTON)) {
                     bottomButton.buttomPressed();
-            }else if(characteristic.getValue().equals(BluetoothEngineControlService.TOPBUTTON)){
+            }else if(Arrays.equals(characteristic.getValue(), BluetoothEngineControlService.TOPBUTTON)){
                     topButton.buttomPressed();
             }
         }

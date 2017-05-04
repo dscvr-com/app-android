@@ -108,7 +108,7 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     private void connect(BluetoothDevice device) {
         currentlyConnecting = true;
-        device.connectGatt(context, true, new BluetoothConnectionCallback(context, gatt -> afterConnecting(gatt), lowerButtonListener, upperButtomListener));
+        device.connectGatt(context, true, new BluetoothConnectionCallback(gatt -> afterConnecting(gatt), lowerButtonListener, upperButtomListener));
 
     }
 

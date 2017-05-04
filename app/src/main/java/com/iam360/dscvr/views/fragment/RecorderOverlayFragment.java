@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.record.GlobalState;
-import com.iam360.dscvr.views.activity.RecorderActivity;
 import com.iam360.dscvr.util.Constants;
+import com.iam360.dscvr.views.activity.RecorderActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,18 +31,29 @@ public class RecorderOverlayFragment extends Fragment {
 
     private int PICK_IMAGE_REQUEST = 1;
 
-    @Bind(R.id.record_button) ImageButton recordButton;
-    @Bind(R.id.record_progress) ProgressBar recordProgress;
+    @Bind(R.id.record_button)
+    ImageButton recordButton;
+    @Bind(R.id.record_progress)
+    ProgressBar recordProgress;
 
-    @Bind(R.id.camera_overlay) FrameLayout cameraOverlay;
-    @Bind(R.id.instruction) TextView instruction;
-    @Bind(R.id.crosshair) View crosshair;
-    @Bind(R.id.arrow) View arrow;
-    @Bind(R.id.line) View line;
-    @Bind(R.id.angle) View angle;
-    @Bind(R.id.progress_point) View progressPoint;
-    @Bind(R.id.arc) View arc;
-    @Bind(R.id.progress) ProgressBar progressLine;
+    @Bind(R.id.camera_overlay)
+    FrameLayout cameraOverlay;
+    @Bind(R.id.instruction)
+    TextView instruction;
+    @Bind(R.id.crosshair)
+    View crosshair;
+    @Bind(R.id.arrow)
+    View arrow;
+    @Bind(R.id.line)
+    View line;
+    @Bind(R.id.angle)
+    View angle;
+    @Bind(R.id.progress_point)
+    View progressPoint;
+    @Bind(R.id.arc)
+    View arc;
+    @Bind(R.id.progress)
+    ProgressBar progressLine;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,7 +72,9 @@ public class RecorderOverlayFragment extends Fragment {
         super.onStart();
         getView().setFocusableInTouchMode(true);
         getView().requestFocus();
+        ((RecorderActivity)getActivity()).overlayInitialised();
     }
+
 
     private void initializeNavigationButtons(View view) {
 
@@ -69,17 +82,22 @@ public class RecorderOverlayFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Timber.d("initializeNavigationButtons recordButtonClick");
-                MODE = RECORDING_MODE;
-                recordButton.setVisibility(View.INVISIBLE);
-                cameraOverlay.setVisibility(View.VISIBLE);
-                instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
-
-                ((RecorderActivity) getActivity()).startRecording();
+                startRecording();
 
             }
         });
 
+    }
+
+
+    public void startRecording() {
+        Timber.d("initializeNavigationButtons recordButtonClick");
+        MODE = RECORDING_MODE;
+        recordButton.setVisibility(View.INVISIBLE);
+        cameraOverlay.setVisibility(View.VISIBLE);
+        instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
+
+        ((RecorderActivity) getActivity()).startRecording();
     }
 
 
@@ -99,17 +117,18 @@ public class RecorderOverlayFragment extends Fragment {
         });
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
 
     public void setAngleRotation(float rotation) {
-        line.setRotation((float)Math.toDegrees(rotation));
+        line.setRotation((float) Math.toDegrees(rotation));
     }
 
     public void setArrowRotation(float rotation) {
-        arrow.setRotation((float)Math.toDegrees(rotation));
+        arrow.setRotation((float) Math.toDegrees(rotation));
     }
 
     public void setArrowVisible(boolean visible) {
@@ -123,7 +142,7 @@ public class RecorderOverlayFragment extends Fragment {
     }
 
     public void setGuideLinesVisible(boolean visible) {
-        if(visible) {
+        if (visible) {
             line.setVisibility(View.VISIBLE);
             angle.setVisibility(View.VISIBLE);
         } else {
@@ -144,7 +163,7 @@ public class RecorderOverlayFragment extends Fragment {
     }
 
     public boolean isPreviewMode() {
-        if(MODE == PREVIEW_RECORD) return true;
+        if (MODE == PREVIEW_RECORD) return true;
         else return false;
     }
 
