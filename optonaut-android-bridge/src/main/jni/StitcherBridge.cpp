@@ -53,7 +53,7 @@ std::vector<Mat> getResult(const std::string& path, const std::string& sharedPat
 std::vector<Mat> getResultThreeRing(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
+    optonaut::Stitcher stitcher(store);
     Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
@@ -83,7 +83,7 @@ Mat getEQResult(const std::string& path, const std::string& sharedPath)
 Mat getEQResultThreeRing(const std::string& path, const std::string& sharedPath)
 {
     CheckpointStore store(path, sharedPath);
-    Stitcher stitcher(store);
+    optonaut::Stitcher stitcher(store);
     Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
     Mat blurred;
     optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
