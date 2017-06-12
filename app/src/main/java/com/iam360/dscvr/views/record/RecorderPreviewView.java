@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Size;
@@ -43,6 +42,20 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
     protected Size calculatePreviewSize(StreamConfigurationMap map, Size[] supportedPreviewSizes, Size viewSize) {
         // Sizing is actually simple - the stream has the max resolution/aspect, and we choose by setting the size of our surface.
         // We take the smallest size that fits our aspect and is larger than our preview
+        //FIXME highspeedCheck
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Size[] highSpeedVideoSizes = map.getHighSpeedVideoSizes();
+//            ArrayList<Size> newSizes = new ArrayList<>();
+//            for (Size size : supportedPreviewSizes) {
+//                for (Size highspeedSize : highSpeedVideoSizes) {
+//                    if (size.equals(highspeedSize)) {
+//                        newSizes.add(size);
+//                    }
+//                }
+//            }
+//            return chooseOptimalPreviewSize((Size[]) newSizes.toArray(), Math.max(viewSize.getHeight(), viewSize.getWidth()), Math.min(viewSize.getHeight(), viewSize.getWidth()), 4, 3);
+//
+//        }
         return chooseOptimalPreviewSize(supportedPreviewSizes, Math.max(viewSize.getHeight(), viewSize.getWidth()), Math.min(viewSize.getHeight(), viewSize.getWidth()), 4, 3);
     }
 
@@ -120,7 +133,7 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
         try {
             inMemoryRecorder.stopBackgroundThread();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // Nope: not relevant, Backgroungthread isn't running
         }
     }
 
@@ -138,10 +151,10 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
 
     @Override
     protected void createCaptureSession(List<Surface> sessionSurfaces, CameraCaptureSession.StateCallback callback, CameraDevice cameraDevice, Handler backgroundHandler) throws CameraAccessException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraDevice.createConstrainedHighSpeedCaptureSession(sessionSurfaces, callback, backgroundHandler);
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            cameraDevice.createConstrainedHighSpeedCaptureSession(sessionSurfaces, callback, backgroundHandler);
+//        } else {
             super.createCaptureSession(sessionSurfaces, callback, cameraDevice, backgroundHandler);
-        }
+//        }
     }
 }
