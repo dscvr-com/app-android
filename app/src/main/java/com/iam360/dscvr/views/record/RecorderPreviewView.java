@@ -7,9 +7,13 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
+
+import java.util.List;
 
 import iam360.com.orbit360media.InMemoryImageProvider;
 import iam360.com.orbit360media.RecorderPreviewViewBase;
@@ -28,6 +32,7 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
             dataListener;
 
     private static int DETECTOR_IMAGE_SIZE = 240;
+
     public RecorderPreviewView(Activity context) {
         super(context);
         inMemoryRecorder = new InMemoryImageProvider();
@@ -44,7 +49,7 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
     @Override
     protected boolean canUseCamera(CameraCharacteristics characteristics) {
         // Odd comparison because of odd terminology
-        return(characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK);
+        return (characteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK);
     }
 
     @Override
@@ -52,9 +57,8 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
 
         Log.d(TAG, Thread.currentThread().getName());
         Log.d(TAG, "createSurfaceProviders");
-        return new SurfaceProvider[] { inMemoryRecorder };
+        return new SurfaceProvider[]{inMemoryRecorder};
     }
-
 
 
     @Override
@@ -123,13 +127,21 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
     @Override
     protected void initializeExternalSurfaceProvider(Size optimalSize, SurfaceProvider target, SurfaceProvider.SurfaceProviderCallback externalSurfaceCallback) {
         Log.w(TAG, "Vendor: " + android.os.Build.MANUFACTURER);
-        if(target == inMemoryRecorder /*&& android.os.Build.MANUFACTURER.equals("Huawei")*/) {
-            float aspect = (float)optimalSize.getWidth() / (float)optimalSize.getHeight();
-            super.initializeExternalSurfaceProvider(new Size((int)(DETECTOR_IMAGE_SIZE * Math.min(1, aspect)), (int)(DETECTOR_IMAGE_SIZE * Math.min(1, 1.f / aspect))), target, externalSurfaceCallback);
+        if (target == inMemoryRecorder /*&& android.os.Build.MANUFACTURER.equals("Huawei")*/) {
+            float aspect = (float) optimalSize.getWidth() / (float) optimalSize.getHeight();
+            super.initializeExternalSurfaceProvider(new Size((int) (DETECTOR_IMAGE_SIZE * Math.min(1, aspect)), (int) (DETECTOR_IMAGE_SIZE * Math.min(1, 1.f / aspect))), target, externalSurfaceCallback);
         } else {
             super.initializeExternalSurfaceProvider(optimalSize, target, externalSurfaceCallback);
         }
 
     }
 
+    @Override
+    protected void createCaptureSession(List<Surface> sessionSurfaces, CameraCaptureSession.StateCallback callback, CameraDevice cameraDevice, Handler backgroundHandler) throws CameraAccessException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cameraDevice.createConstrainedHighSpeedCaptureSession(sessionSurfaces, callback, backgroundHandler);
+        } else {
+            super.createCaptureSession(sessionSurfaces, callback, cameraDevice, backgroundHandler);
+        }
+    }
 }
