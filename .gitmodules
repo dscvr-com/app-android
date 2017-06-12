@@ -1,3 +1,5 @@
 [submodule "oribit360media"]
 	path = oribit360media
 	url = git@gitlab.com:Sisa241995/oribit360media.git
+[submodule "Submod"]
+	url = git@gitlab.com:orbit360/oribit360media.git
