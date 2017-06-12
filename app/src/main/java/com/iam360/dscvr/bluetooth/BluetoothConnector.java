@@ -81,10 +81,6 @@ public class BluetoothConnector extends BroadcastReceiver {
         }
     }
 
-    public void setListener(BluetoothLoadingListener listener) {
-        this.listener = listener;
-    }
-
     private List<BluetoothDevice> searchBondedDevices() {
         Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
         List<BluetoothDevice> contactableList = new ArrayList<>();

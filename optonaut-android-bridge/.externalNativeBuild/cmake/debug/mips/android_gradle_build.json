@@ -1,0 +1,481 @@
+
+{
+	"buildFiles" : 
+	[
+		"C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/CMakeLists.txt",
+		"C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/CMakeLists.txt",
+		"C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"IlmImf-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "IlmImf",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/libIlmImf.a",
+			"toolchain" : "3152858797"
+		},
+		"async-queue-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "async-queue-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target async-queue-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -IC:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -IC:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/asyncQueueTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/async-queue-test",
+			"toolchain" : "3152858797"
+		},
+		"graph-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "graph-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target graph-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/graphTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/graph-test",
+			"toolchain" : "3152858797"
+		},
+		"libjasper-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "libjasper",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/liblibjasper.a",
+			"toolchain" : "3152858797"
+		},
+		"libjpeg-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "libjpeg",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/liblibjpeg.a",
+			"toolchain" : "3152858797"
+		},
+		"libpng-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "libpng",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/liblibpng.a",
+			"toolchain" : "3152858797"
+		},
+		"libtiff-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "libtiff",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/liblibtiff.a",
+			"toolchain" : "3152858797"
+		},
+		"libwebp-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "libwebp",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/liblibwebp.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_calib3d-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_calib3d",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_calib3d.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_core-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_core",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_core.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_features2d-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_features2d",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_features2d.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_flann-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_flann",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_flann.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_highgui-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_highgui",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_highgui.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_imgcodecs-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_imgcodecs",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_imgcodecs.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_imgproc-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_imgproc",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_imgproc.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_java-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_java",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_java3.so",
+			"toolchain" : "3152858797"
+		},
+		"opencv_ml-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_ml",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_ml.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_objdetect-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_objdetect",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_objdetect.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_photo-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_photo",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_photo.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_shape-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_shape",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_shape.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_stitching-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_stitching",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_stitching.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_superres-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_superres",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_superres.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_video-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_video",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_video.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_videoio-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_videoio",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_videoio.a",
+			"toolchain" : "3152858797"
+		},
+		"opencv_videostab-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "opencv_videostab",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/libs/mips/libopencv_videostab.a",
+			"toolchain" : "3152858797"
+		},
+		"optonaut-android-bridge-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "optonaut-android-bridge",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target optonaut-android-bridge",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips  -Doptonaut_android_bridge_EXPORTS -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/AlignmentBridge.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips  -Doptonaut_android_bridge_EXPORTS -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/StitcherBridge.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips  -Doptonaut_android_bridge_EXPORTS -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/RecorderBridge.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/build/intermediates/cmake/debug/obj/mips/liboptonaut-android-bridge.so",
+			"toolchain" : "3152858797"
+		},
+		"optonaut-lib-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "optonaut-lib",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target optonaut-lib",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/common/image.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/common/progressCallback.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/common/static_timer.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/common/static_counter.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/common/jniHelper.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/io/checkpointStore.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/io/inputImage.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/io/io.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/math/quat.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/math/support.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/recorder/recorder.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stereo/monoStitcher.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/dynamicSeamer.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/multiringStitcher.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/ringStitcher.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/flowBlender.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/simpleSphereStitcher.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/stitcher/simplePlaneStitcher.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				},
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/debug/debugHook.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/liboptonaut-lib.a",
+			"toolchain" : "3152858797"
+		},
+		"processor-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "processor-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target processor-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/processorTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/processor-test",
+			"toolchain" : "3152858797"
+		},
+		"quat-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "quat-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target quat-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/quatTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/quat-test",
+			"toolchain" : "3152858797"
+		},
+		"slerp-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "slerp-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target slerp-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/slerpTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/slerp-test",
+			"toolchain" : "3152858797"
+		},
+		"stat-test-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "stat-test",
+			"buildCommand" : "C:\\Users\\Lotti\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Users\\Lotti\\Documents\\app-android\\optonaut-android-bridge\\.externalNativeBuild\\cmake\\debug\\mips --target stat-test",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=mipsel-none-linux-android --gcc-toolchain=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/mips64el-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-mips   -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include\\opencv -isystem C:\\Users\\Lotti\\Documents\\orbit360FacetrackingAndroid\\OpenCV-android-sdk\\sdk\\native\\jni\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem C:\\Users\\Lotti\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions  -W -Wall -Wunreachable-code -std=c++1y -O3 -g -fverbose-asm -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIE    -c ",
+					"src" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/src/main/jni/online-stitcher/src/test/statTest.cpp",
+					"workingDirectory" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips"
+				}
+			],
+			"output" : "C:/Users/Lotti/Documents/app-android/optonaut-android-bridge/.externalNativeBuild/cmake/debug/mips/online-stitcher/src/test/stat-test",
+			"toolchain" : "3152858797"
+		},
+		"tbb-Debug-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "tbb",
+			"buildType" : "debug",
+			"output" : "C:/Users/Lotti/Documents/orbit360FacetrackingAndroid/OpenCV-android-sdk/sdk/native/3rdparty/libs/mips/libtbb.a",
+			"toolchain" : "3152858797"
+		}
+	},
+	"toolchains" : 
+	{
+		"3152858797" : 
+		{
+			"cCompilerExecutable" : "C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/Lotti/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

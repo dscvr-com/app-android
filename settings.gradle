@@ -1,1 +1,2 @@
-include ':app', ':optonaut-android-bridge'
+include ':app', ':optonaut-android-bridge', ':media'
+project(':media').projectDir = new File('oribit360media/media')
