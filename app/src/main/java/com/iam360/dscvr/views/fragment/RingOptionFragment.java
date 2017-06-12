@@ -109,7 +109,7 @@ public class RingOptionFragment extends Fragment {
         }
         if (isManualMode) {
             manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
-            motorBtn.setBackgroundResource(R.drawable.motor_icon);
+            motorBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
             cache.save(Cache.MOTOR_ON, !isManualMode);
         } else {
@@ -121,7 +121,7 @@ public class RingOptionFragment extends Fragment {
             }
             cache.save(Cache.MOTOR_ON, !isManualMode);
             manualBtn.setBackgroundResource(R.drawable.manual_icon);
-            motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);
+            motorBtn.setBackgroundResource(R.drawable.one_ring_active_icn);
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE); // FIXME remove this later
         }
     }
