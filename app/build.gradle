@@ -95,6 +95,7 @@ dependencies {
     }
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':optonaut-android-bridge')
+    compile project(':media')
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile "com.android.support:recyclerview-v7:25.0.0"

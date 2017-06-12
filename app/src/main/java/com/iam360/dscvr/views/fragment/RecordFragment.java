@@ -50,6 +50,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import iam360.com.record.RecorderPreviewListener;
 import timber.log.Timber;
 
 
@@ -103,7 +104,8 @@ public class RecordFragment extends Fragment {
     private boolean isRecorderReady = false;
     private long endOfLast;
 
-    private RecorderPreviewView.RecorderPreviewListener previewListener = new RecorderPreviewView.RecorderPreviewListener() {
+
+    private RecorderPreviewListener previewListener = new RecorderPreviewListener() {
         @Override
         public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
             if (!isRecorderReady || Recorder.isFinished()) {
@@ -267,8 +269,9 @@ public class RecordFragment extends Fragment {
 
         MixpanelHelper.trackCameraStartRecording(getContext());
 
+
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
-        recordPreview.lockExposure();
+        //recordPreview.lockExposure();//FIXME
         BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
         provider = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider();
         boolean first = true;
@@ -362,7 +365,7 @@ public class RecordFragment extends Fragment {
         UUID id = UUID.randomUUID();
 
         recordPreview.setPreviewListener(null);
-        recordPreview.stopPreviewFeed();
+        recordPreview.onPause();
 
         // start a background thread to finish recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
@@ -373,9 +376,6 @@ public class RecordFragment extends Fragment {
 
     public void cancelRecording() {
         recordPreview.setPreviewListener(null);
-        recordPreview.stopPreviewFeed();
-
-        // TODO: What is this pause call for?
         recordPreview.onPause();
 
         MixpanelHelper.trackCameraCancelRecording(getContext());
