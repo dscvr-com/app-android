@@ -1,6 +1,8 @@
 package com.iam360.dscvr.views.fragment;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -9,7 +11,9 @@ import android.hardware.camera2.CameraManager;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SizeF;
@@ -59,6 +63,7 @@ import timber.log.Timber;
  * @date 2016-02-08
  */
 public class RecordFragment extends Fragment {
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
     private String TAG = RecordFragment.class.getSimpleName();
     private RecorderPreviewView recordPreview;
     private RecorderOverlayView recorderOverlayView;
@@ -98,9 +103,6 @@ public class RecordFragment extends Fragment {
 
     private SizeF size;
     private float focalLength;
-    private long currentTime = 0;
-
-    //FIXME: don't use a bool
     private boolean isRecorderReady = false;
     private long endOfLast;
 
@@ -216,8 +218,24 @@ public class RecordFragment extends Fragment {
         cache = Cache.open();
         this.mode = cache.getInt(Cache.CAMERA_MODE);
         View view = inflater.inflate(R.layout.fragment_record, container, false);
+        checkPermissions(view);
 
-        // Create our Preview view and set it as the content of our activity.
+
+        return view;
+    }
+
+    public void checkPermissions(View view) {
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED ){
+            createRecorderPreviewView(view);
+        }else{
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CAMERA},
+                    REQUEST_CAMERA_PERMISSION);
+        }
+    }
+
+    public void createRecorderPreviewView(View view) {
         recordPreview = new RecorderPreviewView(getActivity());
         recordPreview.setPreviewListener(previewListener);
         recorderOverlayView = new RecorderOverlayView(getActivity());
@@ -225,7 +243,6 @@ public class RecordFragment extends Fragment {
         preview.addView(recordPreview);
         preview.addView(recorderOverlayView);
         MixpanelHelper.trackViewCamera(getContext());
-        return view;
     }
 
 
@@ -241,7 +258,7 @@ public class RecordFragment extends Fragment {
 
     @Override
     public void onPause() {
-        recordPreview.onPause();
+        if(recordPreview!= null)recordPreview.onPause();
         super.onPause();
         if (!cache.getBoolean(Cache.MOTOR_ON)) {
             DefaultListeners.unregister();
@@ -455,5 +472,12 @@ public class RecordFragment extends Fragment {
         time = newTime;
         return ballPos;
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+
+        checkPermissions(getView());
     }
 }
