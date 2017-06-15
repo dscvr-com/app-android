@@ -101,7 +101,7 @@ public class DscvrApp extends Application {
     }
 
     public RotationMatrixProvider getMatrixProvider(){
-        if(connector.isConnected()){
+        if(connector!= null && connector.isConnected()){
             return  connector.getBluetoothService().getBluetoothEngineMatrixProviderForGatt();
         }   else{
             return DefaultListeners.getInstance();

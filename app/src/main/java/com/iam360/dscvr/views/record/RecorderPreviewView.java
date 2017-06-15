@@ -80,7 +80,6 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
         Log.d(TAG, Thread.currentThread().getName());
         Log.d(TAG, "setupPreviewSession");
         CaptureRequest.Builder builder = super.setupPreviewSession(device, previewSurface);
-        //builder.addTarget(videoRecorder.getSurface());
         builder.addTarget(inMemoryRecorder.getSurface());
         return builder;
     }

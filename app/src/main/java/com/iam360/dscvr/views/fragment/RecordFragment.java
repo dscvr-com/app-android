@@ -285,12 +285,21 @@ public class RecordFragment extends Fragment {
         Timber.v("Starting recording...");
 
         MixpanelHelper.trackCameraStartRecording(getContext());
-
-
         recorderOverlayView.getRecorderOverlayRenderer().startRendering();
-        //recordPreview.lockExposure();//FIXME
-        BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
         provider = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider();
+
+
+        if(cache.getBoolean(Cache.MOTOR_ON)){
+            BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
+            moveEngine(bluetoothService);
+        }else{
+            Recorder.setIdle(false);
+            isRecording = true;
+        }
+
+    }
+
+    public void moveEngine(BluetoothEngineControlService bluetoothService) {
         boolean first = true;
         for (Float statingPoint : getStartingPoints()) {
             //FIXME to hacky
@@ -316,7 +325,6 @@ public class RecordFragment extends Fragment {
                 }, 1500);
             }
         }
-
     }
 
     public ArrayList<Float> getStartingPoints() {
@@ -382,7 +390,6 @@ public class RecordFragment extends Fragment {
         UUID id = UUID.randomUUID();
 
         recordPreview.setPreviewListener(null);
-        recordPreview.onPause();
 
         // start a background thread to finish recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
