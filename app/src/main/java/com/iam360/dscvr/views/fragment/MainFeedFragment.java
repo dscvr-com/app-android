@@ -113,7 +113,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private void loadLocalOptographs() {
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
-//                .filter(e -> mydb.inInLocalDB(e.getId()))
                 .subscribe(optographFeedAdapter::addItem);
     }
 

@@ -353,15 +353,6 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
     return bitmapObj;
 }
 
-jobject Java_com_iam360_dscvr_record_Recorder_getPreviewImage(JNIEnv *env, jobject)
-{
-    Mat result;
-    Assert(recorder != NULL);
-    result = recorder->GetPreviewImage()->image.data;
-
-    return matrixToBitmap(env, result);
-}
-
 jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *, jobject)
 {
     Assert(recorder != NULL);

@@ -86,8 +86,8 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
         finish();
     }
 
-    public void startPreview(UUID id) {
-        Intent intent = new Intent(this, OptoImagePreviewActivity.class);
+    public void showLoading(UUID id) {
+        Intent intent = new Intent(this, LoadingActivity.class);
         intent.putExtra("id", id.toString());
         startActivity(intent);
         finish();
