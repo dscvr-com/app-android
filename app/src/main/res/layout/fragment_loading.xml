@@ -7,12 +7,12 @@
     tools:context="com.iam360.dscvr.views.activity.LoadingFragment"
     tools:showIn="@layout/activity_loading">
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
+    <ImageButton
+        style="?android:attr/imageButtonStyle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:id="@+id/progressBar"
-        android:progressDrawable="@drawable/circular_progress_bar"
+        android:progressDrawable="@drawable/ic_azure"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"

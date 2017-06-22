@@ -394,7 +394,6 @@ public class RecordFragment extends Fragment {
         // start a background thread to finish recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new FinishRecorderJob(id));
 
-//        ((MainActivityRedesign) getActivity()).backToFeed(false);//original
         ((RecorderActivity) getActivity()).showLoading(id);
     }
 

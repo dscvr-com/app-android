@@ -11,8 +11,8 @@ int counter = 0;
 
 Mat intrinsics;
 
-#ifndef __OPTIMIZE__
-//#error "Optimization is off :("
+#ifndef __ANDROID__
+#error "android flag is not set"
 #endif
 
 std::unique_ptr<CheckpointStore> leftStore;
