@@ -24,6 +24,10 @@ public class LoadingActivity extends AppCompatActivity {
     public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("receiveFinishedImage");
         BusProvider.getInstance().unregister(this);
+        finishedRecievingImage();
+    }
+
+    public void finishedRecievingImage() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -31,9 +35,10 @@ public class LoadingActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if(GlobalState.isAnyJobRunning == true){
-            receiveFinishedImage(null);
-            return;
+        if(!GlobalState.isAnyJobRunning){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            super.onResume();
         }
         BusProvider.getInstance().register(this);
         super.onResume();

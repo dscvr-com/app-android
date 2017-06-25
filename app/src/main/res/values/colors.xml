@@ -29,6 +29,8 @@
 
     <color name="transparentOverlay">#00777777</color>
     <color name="semiTransparentOverlay">#DDFFFFFF</color>
+    <color name="semiTransparentOverlayGrey">#758e8e8d</color>
+    <color name="semiTransparentOverlayBlack">#a8000000</color>
 
     <color name="crosshair">#FFFFFF</color>
 

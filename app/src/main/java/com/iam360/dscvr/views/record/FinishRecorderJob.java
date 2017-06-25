@@ -48,19 +48,6 @@ public class FinishRecorderJob extends Job {
     public void onRun() throws Throwable {
 
         MixpanelHelper.trackStitchingStart(getApplicationContext());
-
-//TODO        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
-        Bitmap previewBitmap = null;
-        if(Recorder.previewAvailable()) {
-            previewBitmap = Recorder.getPreviewImage();
-            BusProvider.getInstance().post(new RecordFinishedPreviewEvent(previewBitmap));
-            Timber.v("post of placeholder");
-        }
-
-        if(previewBitmap != null)
-            CameraUtils.saveBitmapToLocation(previewBitmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "/preview/placeholder.jpg");
-        Timber.v("after save of placeholder");
-
         Timber.v("finishing Recorder...");
         Recorder.finish();
         Timber.v("Sending event");
@@ -70,7 +57,7 @@ public class FinishRecorderJob extends Job {
         Timber.v("Stitcher is getting result...");
 
 //        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
-        if(mode == Constants.THREE_RING_MODE)
+        if (mode == Constants.THREE_RING_MODE)
             ConvertToStereo.convert(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
 
         Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
@@ -100,6 +87,10 @@ public class FinishRecorderJob extends Job {
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
         Timber.v("finish all job");
+        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
+        BusProvider.getInstance().post(new RecordFinishedPreviewEvent());
+
+
 
     }
 

@@ -1,8 +1,5 @@
 package com.iam360.dscvr.record;
 
-import android.graphics.Bitmap;
-import android.util.Log;
-
 import timber.log.Timber;
 
 /**
@@ -35,8 +32,6 @@ public class Recorder {
     public static native int getRecordedImagesCount();
     public static native int getImagesToRecordCount();
     public static native float[] getCurrentRotation();
-    public static native Bitmap getPreviewImage();
-    public static native boolean previewAvailable();
     public static native double getTopThetaValue();
     public static native double getCenterThetaValue();
     public static native double getBotThetaValue();

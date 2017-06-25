@@ -18,8 +18,6 @@ import com.iam360.dscvr.views.fragment.RecordFragment;
 import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
 import com.iam360.dscvr.views.fragment.RingOptionFragment;
 
-import java.util.UUID;
-
 import timber.log.Timber;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -86,9 +84,8 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
         finish();
     }
 
-    public void showLoading(UUID id) {
+    public void showLoading() {
         Intent intent = new Intent(this, LoadingActivity.class);
-        intent.putExtra("id", id.toString());
         startActivity(intent);
         finish();
     }
