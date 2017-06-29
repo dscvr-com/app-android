@@ -1,5 +1,7 @@
 package com.iam360.dscvr.record;
 
+import java.nio.ByteBuffer;
+
 import timber.log.Timber;
 
 /**
@@ -14,7 +16,7 @@ public class Recorder {
     public static boolean isInitialized = false;
 
     private static native void initRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode);
-    public static native void push(byte[] data, int width, int height, double[] extrinsicsData);
+    public static native void push(ByteBuffer data, int width, int height, double[] extrinsicsData);
     public static native SelectionPoint[] getSelectionPoints();
     public static native void finish();
     public static native void cancel();

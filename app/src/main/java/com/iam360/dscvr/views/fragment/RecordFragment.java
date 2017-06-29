@@ -44,6 +44,7 @@ import com.iam360.dscvr.views.record.CancelRecorderJob;
 import com.iam360.dscvr.views.record.FinishRecorderJob;
 import com.iam360.dscvr.views.record.RecorderPreviewView;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -109,11 +110,12 @@ public class RecordFragment extends Fragment {
 
     private RecorderPreviewListener previewListener = new RecorderPreviewListener() {
         @Override
-        public void imageDataReady(byte[] data, int width, int height, Bitmap.Config colorFormat) {
+        public void imageDataReady(ByteBuffer data, int width, int height, Bitmap.Config colorFormat) {
             if (!isRecorderReady || Recorder.isFinished()) {
                 return;
             }
-            Timber.d("imageDataCall after: "+(System.currentTimeMillis()-endOfLast));
+
+            //Timber.d("imageDataCall after: "+(System.currentTimeMillis()-endOfLast));
             endOfLast = System.currentTimeMillis();
             //assert colorFormat == Bitmap.Config.ARGB_8888;
             // build extrinsics

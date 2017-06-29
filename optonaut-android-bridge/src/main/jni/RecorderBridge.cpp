@@ -28,8 +28,7 @@ extern "C" {
     // storagePath should end on "/"!
     void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
 
-    void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData);
-//    void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jdoubleArray extrinsicsData);
+    void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData);
 
     void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *env, jobject thiz, jboolean idle);
 
@@ -130,7 +129,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
     std::string debugPath = "";
-//    std::string debugPath = pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
+    //std::string debugPath = pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
     path = pathLocal;
 
     optonaut::JniHelper::jni_context = env;
@@ -170,9 +169,9 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
     recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath));
 }
 
-void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jbyteArray bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
+void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
 
-    char *pixels = (char *)env->GetByteArrayElements(bitmap, NULL);
+    void *pixels = (env)->GetDirectBufferAddress(bitmap);
 
     // Now you can use the pixel array 'pixels', which is in RGBA format
     double *temp = (double *) (env)->GetDoubleArrayElements(extrinsicsData, NULL);
@@ -193,7 +192,6 @@ void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jbyteArray
     recorder->Push(image);
 
     env->ReleaseDoubleArrayElements(extrinsicsData, (jdouble *) temp, 0);
-    env->ReleaseByteArrayElements(bitmap, (jbyte *) pixels, 0);
 }
 
 void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *, jobject, jboolean idle)
