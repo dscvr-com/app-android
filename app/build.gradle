@@ -93,8 +93,6 @@ dependencies {
         transitive = true;
     }
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.7'
-
     compile project(':optonaut-android-bridge')
     compile project(':media')
     compile 'com.android.support:appcompat-v7:25.3.1'
