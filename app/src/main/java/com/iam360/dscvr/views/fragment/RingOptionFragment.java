@@ -104,14 +104,15 @@ public class RingOptionFragment extends Fragment {
      * @param isManualMode
      */
     private void updateMode(boolean isManualMode) {
-        if (isNotCloseable) {
-            return;
-        }
         if (isManualMode) {
+            stopLoading(null);
             manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
             motorBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
             cache.save(Cache.MOTOR_ON, !isManualMode);
+            if (isNotCloseable || DscvrApp.getInstance().hasConnection()) {
+                connector.stop();
+            }
         } else {
 
             if (!DscvrApp.getInstance().hasConnection()) {
@@ -140,7 +141,7 @@ public class RingOptionFragment extends Fragment {
             return;
 
         }
-        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext(), gatt -> stopLoading(gatt), () -> reactForUpperButton(),() -> reactForLowerButton());
+        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext(), gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
         DscvrApp.getInstance().setConnector(connector);
         connector.connect();
 
@@ -152,7 +153,7 @@ public class RingOptionFragment extends Fragment {
     }
 
     private void reactForUpperButton() {
-        if(!isNotCloseable){
+        if (!isNotCloseable) {
             updateMode(false);
             callBackListener.directlyStartToRecord();
         }
@@ -161,7 +162,9 @@ public class RingOptionFragment extends Fragment {
     private void stopLoading(BluetoothGatt gatt) {
         Timber.d("stop bt loading");
         isNotCloseable = false;
-        Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
+        if (gatt != null) {
+            Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
+        }
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
     }
 

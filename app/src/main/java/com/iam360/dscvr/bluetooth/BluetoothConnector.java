@@ -37,6 +37,7 @@ public class BluetoothConnector extends BroadcastReceiver {
     private List<BluetoothDevice> nextDevice = new ArrayList<>();
     private boolean currentlyConnecting = false;
     private BluetoothEngineControlService controlService = new BluetoothEngineControlService();
+    private BluetoothLeScanCallback bluetoothLeScanCallback = new BluetoothLeScanCallback((device -> addDeviceFromScan(device)));
 
     public BluetoothConnector(BluetoothAdapter adapter, Context context, BluetoothLoadingListener listener, BluetoothConnectionCallback.ButtonValueListener upperButtomListener, BluetoothConnectionCallback.ButtonValueListener lowerButtonListener) {
         this.adapter = adapter;
@@ -61,14 +62,13 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     private void findLeDevice() {
 
-        final BluetoothLeScanCallback scanCallback = new BluetoothLeScanCallback((device -> addDeviceFromScan(device)));
-        stopScanHandler.postDelayed(() -> adapter.getBluetoothLeScanner().stopScan(scanCallback), SCAN_PERIOD);
+        stopScanHandler.postDelayed(() -> adapter.getBluetoothLeScanner().stopScan(bluetoothLeScanCallback), SCAN_PERIOD);
         ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build();
         ArrayList<ScanFilter> filters = new ArrayList<>();
         filters.add(new ScanFilter.Builder().setServiceUuid(BluetoothEngineControlService.SERVICE_UUID).build());
-        adapter.getBluetoothLeScanner().startScan(filters, settings, scanCallback);
+        adapter.getBluetoothLeScanner().startScan(filters, settings, bluetoothLeScanCallback);
     }
 
     private void addDeviceFromScan(BluetoothDevice device) {
@@ -144,6 +144,11 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     public BluetoothEngineControlService getBluetoothService() {
         return controlService;
+    }
+
+    public void stop() {
+        adapter.cancelDiscovery();
+        adapter.getBluetoothLeScanner().stopScan(bluetoothLeScanCallback);
     }
 
     public interface BluetoothLoadingListener {

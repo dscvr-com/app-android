@@ -23,7 +23,6 @@ public class LoadingActivity extends AppCompatActivity {
     @Subscribe
     public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("receiveFinishedImage");
-        BusProvider.getInstance().unregister(this);
         finishedRecievingImage();
     }
 

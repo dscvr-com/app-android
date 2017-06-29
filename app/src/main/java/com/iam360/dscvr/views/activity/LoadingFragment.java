@@ -28,7 +28,8 @@ public class LoadingFragment extends Fragment {
 
         final String mimeType = "text/html";
         final String encoding = "utf-8";
-        final String html = "<p><object type=\"image/svg+xml\" data=\"file:///azure.svg\" height=\""+wv.getHeight()+"px\" width=\""+wv.getWidth()+"px /></p>";
+        final String html = "<p><object type=\"image/svg+xml\" data=\"file:///azure.svg\"" +
+                " /></p>";
 
         wv.loadDataWithBaseURL("fake://not/needed", html, mimeType, encoding, "");
         return view;
