@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
-import com.iam360.dscvr.bus.RecordFinishedPreviewEvent;
 import com.iam360.dscvr.record.ConvertToStereo;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.record.Recorder;
@@ -78,17 +77,14 @@ public class FinishRecorderJob extends Job {
 
         MixpanelHelper.trackStitchingFinish(getApplicationContext());
         Timber.v("FinishRecorderJob finished");
-        Stitcher.clear(CameraUtils.CACHE_PATH + "preview/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
         Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
 
-        // TODO: fire event or otherwise handle refresh
-        BusProvider.getInstance().post(new RecordFinishedEvent());
+
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
+        BusProvider.getInstance().post(new RecordFinishedEvent());
         Timber.v("finish all job");
-        http://stackoverflow.com/questions/15431768/how-to-send-event-from-service-to-activity-with-otto-event-bus
-        BusProvider.getInstance().post(new RecordFinishedPreviewEvent());
 
 
 
