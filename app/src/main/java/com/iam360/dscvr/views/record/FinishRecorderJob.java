@@ -1,6 +1,7 @@
 package com.iam360.dscvr.views.record;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
@@ -28,6 +29,7 @@ public class FinishRecorderJob extends Job {
 
     private UUID id;
     private Cache cache;
+    private static final String TAG = FinishRecorderJob.class.getSimpleName();
     int mode;
 
     public FinishRecorderJob(UUID uuid) {
@@ -83,7 +85,7 @@ public class FinishRecorderJob extends Job {
 
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
-        BusProvider.getInstance().post(new RecordFinishedEvent());
+        BusProvider.getInstance().post(new RecordFinishedEvent(true));
         Timber.v("finish all job");
 
 
@@ -93,6 +95,8 @@ public class FinishRecorderJob extends Job {
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
                                                      int maxRunCount) {
+        Log.e(TAG,"error while Finishing", throwable);
+        BusProvider.getInstance().post(new RecordFinishedEvent(false));
         // An error occurred in onRun.
         // Return value determines whether this job should retry or cancel. You can further
         // specifcy a backoff strategy or change the job's priority. You can also apply the

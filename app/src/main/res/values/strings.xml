@@ -220,5 +220,6 @@
     <string name="image_picker_all_images">360 Images</string>
     <string name="image_picker_your_images">Your 360 Images</string>
     <string name="title_activity_loading">LoadingActivity</string>
+    <string name="error">Error!</string>
 
 </resources>

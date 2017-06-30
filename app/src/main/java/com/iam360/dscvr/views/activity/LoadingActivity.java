@@ -3,6 +3,7 @@ package com.iam360.dscvr.views.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
@@ -23,6 +24,9 @@ public class LoadingActivity extends AppCompatActivity {
     @Subscribe
     public void receiveFinishedImage(RecordFinishedEvent recordFinishedEvent) {
         Timber.d("receiveFinishedImage");
+        if(!recordFinishedEvent.wasSuccesful()){
+            Toast.makeText(this,getString(R.string.error), Toast.LENGTH_SHORT).show();
+        }
         finishedRecievingImage();
     }
 

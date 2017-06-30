@@ -29,7 +29,9 @@ public class LoadingFragment extends Fragment {
 
         final String mimeType = "text/html";
         final String encoding = "utf-8";
-        final String html = "<html><body  bgcolor=\"#fafafa\"><svg width=\"200px\"  height=\"200px\"  xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"xMidYMid\" class=\"lds-blank\">\n" +
+        final String html = "<html><body  bgcolor=\"#fafafa\" class=\"centered-wrapper\">"+
+        "<div class=\"centered-content\">"+
+                "<svg width=\"200px\"  height=\"200px\"  xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"xMidYMid\" class=\"lds-blank\">\n" +
                 "    <circle cx=\"50\" cy=\"50\" fill=\"none\" ng-attr-r=\"{{config.r3}}\" ng-attr-stroke=\"{{config.c3}}\" ng-attr-stroke-width=\"{{config.width}}\" r=\"46\" stroke=\"#ff7200\" stroke-width=\"5\">\n" +
                 "      <animate attributeName=\"stroke-dasharray\" calcMode=\"linear\" values=\"0 0 0 144.51326206513048 0 144.51326206513048;0 0 144.51326206513048 0 0 144.51326206513048;0 0 144.51326206513048 0 0 144.51326206513048;0 144.51326206513048 0 144.51326206513048 0 144.51326206513048;0 144.51326206513048 0 144.51326206513048 0 144.51326206513048\" keyTimes=\"0;0.2;0.4;0.6;1\" dur=\"5\" begin=\"-5s\" repeatCount=\"indefinite\"></animate>\n" +
                 "    </circle>\n" +
@@ -50,7 +52,8 @@ public class LoadingFragment extends Fragment {
                 "        <animate attributeName=\"stroke-dasharray\" calcMode=\"linear\" values=\"0 0 0 106.81415022205297 0 106.81415022205297;0 0 106.81415022205297 0 0 106.81415022205297;0 0 106.81415022205297 0 0 106.81415022205297;0 106.81415022205297 0 106.81415022205297 0 106.81415022205297;0 106.81415022205297 0 106.81415022205297 0 106.81415022205297\" keyTimes=\"0;0.2;0.4;0.6;1\" dur=\"5\" begin=\"-3.2s\" repeatCount=\"indefinite\"></animate>\n" +
                 "      </circle>\n" +
                 "    </g>\n" +
-                "  </svg></body></html>";
+                "  </svg>" +
+                "</div></body></html>";
 
         wv.loadData(html, mimeType, encoding );
         wv.setOnTouchListener(new View.OnTouchListener() {

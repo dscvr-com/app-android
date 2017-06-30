@@ -39,7 +39,7 @@ public class CancelRecorderJob extends Job {
         Stitcher.clear(CameraUtils.CACHE_PATH + "right", CameraUtils.CACHE_PATH + "shared");
         Timber.v("CancelRecorderJobfinished");
 
-        BusProvider.getInstance().post(new RecordFinishedEvent());
+        BusProvider.getInstance().post(new RecordFinishedEvent(false));
         GlobalState.isAnyJobRunning = false;
     }
 
