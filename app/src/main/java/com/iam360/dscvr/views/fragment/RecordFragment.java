@@ -52,7 +52,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import iam360.com.record.RecorderPreviewListener;
@@ -157,6 +156,8 @@ public class RecordFragment extends Fragment {
                     ((RecorderActivity) getActivity()).setArrowRotation((float) Math.atan2(angularDiff[0], angularDiff[1]));
                     ((RecorderActivity) getActivity()).setArrowVisible(distXY > 0.15);
                     ((RecorderActivity) getActivity()).setGuideLinesVisible((Math.abs(angle) > 0.05 && distXY < 0.15));
+                    Log.d(TAG, "angularDiff: " + distXY);
+                    //For this <0.15 is bad.
                 }
             });
 
@@ -182,7 +183,7 @@ public class RecordFragment extends Fragment {
                 // queue finishing on main thread
                 queueFinishRecording();
             }
-            Timber.d("imageDataCall duration: "+(System.currentTimeMillis()-endOfLast));
+            Timber.d("imageDataCall duration: " + (System.currentTimeMillis() - endOfLast));
             endOfLast = System.currentTimeMillis();
         }
 
@@ -227,9 +228,9 @@ public class RecordFragment extends Fragment {
     }
 
     public void checkPermissions(View view) {
-        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED ){
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             createRecorderPreviewView(view);
-        }else{
+        } else {
 
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.CAMERA},
@@ -260,7 +261,7 @@ public class RecordFragment extends Fragment {
 
     @Override
     public void onPause() {
-        if(recordPreview!= null)recordPreview.onPause();
+        if (recordPreview != null) recordPreview.onPause();
         super.onPause();
         if (!cache.getBoolean(Cache.MOTOR_ON)) {
             DefaultListeners.unregister();
@@ -291,10 +292,10 @@ public class RecordFragment extends Fragment {
         provider = ((DscvrApp) getActivity().getApplicationContext()).getMatrixProvider();
 
 
-        if(cache.getBoolean(Cache.MOTOR_ON)){
+        if (cache.getBoolean(Cache.MOTOR_ON)) {
             BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
             moveEngine(bluetoothService);
-        }else{
+        } else {
             Recorder.setIdle(false);
             isRecording = true;
         }
@@ -302,30 +303,10 @@ public class RecordFragment extends Fragment {
     }
 
     public void moveEngine(BluetoothEngineControlService bluetoothService) {
-        boolean first = true;
-        for (Float statingPoint : getStartingPoints()) {
-            //FIXME to hacky
-            Timber.d("startingPoints: " + statingPoint);
-            if (first) {
-                bluetoothService.goToDeg(statingPoint);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        bluetoothService.goCompleteAround(BluetoothEngineControlService.SPEED);
-                        Recorder.setIdle(false);
-                        isRecording = true;
+        SelectionPoint[] selectionPoints = Recorder.getSelectionPoints();
+        for (SelectionPoint point : selectionPoints) {
+            bluetoothService.addCommand(getXinDegForSelectionPoint(point), getYinDegForSelectionPoint(point));
 
-                    }
-                }, 300);
-                first = false;
-            } else {
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        bluetoothService.move360withDeg(statingPoint);
-                    }
-                }, 1500);
-            }
         }
     }
 
@@ -333,21 +314,38 @@ public class RecordFragment extends Fragment {
         float[] vector = {0, 0, 1, 0};
         ArrayList<Float> result = new ArrayList<>();
         SelectionPoint[] rawPoints = Recorder.getSelectionPoints();
-        float[] extrinsics;
+        float[] extrinsic;
         float[] resultOfMultiply = new float[4];
         double valueInRad;
         float valueInDeg;
         for (SelectionPoint point : rawPoints) {
-            extrinsics = point.getExtrinsics();
-            Matrix.multiplyMV(resultOfMultiply, 0, extrinsics, 0, vector, 0);
-            valueInRad = Math.atan(resultOfMultiply[1]);
-            valueInDeg = (float) ((valueInRad * 180) / Math.PI);
-            if (!result.contains(valueInDeg)) {
-                result.add(valueInDeg);
-            }
+            getYinDegForSelectionPoint(point);
 
         }
         return result;
+    }
+
+    private float getYinDegForSelectionPoint(SelectionPoint point) {
+        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f}, 180);
+    }
+
+    private float getXinDegForSelectionPoint(SelectionPoint point) {
+        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f}, 180);
+    }
+
+    /**
+     * @param point  the point from stitcher
+     * @param vector which one do you need: for y = (0,0,1,0)
+     * @param base   180 or 360?
+     * @return
+     */
+    private float getValueInDeg(SelectionPoint point, float[] vector, int base) {
+        assert point != null;
+        assert vector != null && vector.length == 4;
+        float[] resultOfMultiply = new float[4];
+        Matrix.multiplyMV(resultOfMultiply, 0, point.getExtrinsics(), 0, vector, 0);
+        double valueInRad = Math.atan(resultOfMultiply[1]);
+        return (float) ((valueInRad * base) / Math.PI);
     }
 
     /**
