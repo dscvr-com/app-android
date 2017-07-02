@@ -96,6 +96,7 @@ public class FinishRecorderJob extends Job {
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
                                                      int maxRunCount) {
         Log.e(TAG,"error while Finishing", throwable);
+        GlobalState.isAnyJobRunning = false;
         BusProvider.getInstance().post(new RecordFinishedEvent(false));
         // An error occurred in onRun.
         // Return value determines whether this job should retry or cancel. You can further

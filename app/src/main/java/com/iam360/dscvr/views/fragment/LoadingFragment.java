@@ -1,4 +1,4 @@
-package com.iam360.dscvr.views.activity;
+package com.iam360.dscvr.views.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

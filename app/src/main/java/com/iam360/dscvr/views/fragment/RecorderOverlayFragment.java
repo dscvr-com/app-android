@@ -134,10 +134,10 @@ public class RecorderOverlayFragment extends Fragment {
     public void setArrowVisible(boolean visible) {
         if (visible) {
             arrow.setVisibility(View.VISIBLE);
-            crosshair.setBackground(getActivity().getResources().getDrawable(R.drawable.crosshair));
+            crosshair.setBackgroundResource(R.drawable.crosshair);
         } else {
             arrow.setVisibility(View.INVISIBLE);
-            crosshair.setBackground(getActivity().getResources().getDrawable(R.drawable.crosshair_red));
+            crosshair.setBackgroundResource(R.drawable.crosshair_red);
         }
     }
 

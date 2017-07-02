@@ -1,5 +1,7 @@
 package com.iam360.dscvr.views.record;
 
+import android.util.Log;
+
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.record.GlobalState;
@@ -17,6 +19,8 @@ import timber.log.Timber;
  * @date 2016-02-13
  */
 public class CancelRecorderJob extends Job {
+    private static final String TAG = CancelRecorderJob.class.getSimpleName();
+
     public CancelRecorderJob() {
         super(new Params(1));
     }
@@ -46,6 +50,10 @@ public class CancelRecorderJob extends Job {
     @Override
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount,
                                                      int maxRunCount) {
+
+        Log.e(TAG,"error while Finishing", throwable);
+        GlobalState.isAnyJobRunning = false;
+        BusProvider.getInstance().post(new RecordFinishedEvent(false));
         // An error occurred in onRun.
         // Return value determines whether this job should retry or cancel. You can further
         // specifcy a backoff strategy or change the job's priority. You can also apply the
