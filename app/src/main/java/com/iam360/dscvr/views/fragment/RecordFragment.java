@@ -81,7 +81,7 @@ public class RecordFragment extends Fragment {
     private int mode;
     private boolean fromPause = false;
 
-    // TODO: use this map
+
     private Map<Edge, LineNode> edgeLineNodeMap = new HashMap<>();
 
     // Map globalIds of the edge's selection points : LineNode
@@ -330,7 +330,7 @@ public class RecordFragment extends Fragment {
     }
 
     private float getXinDegForSelectionPoint(SelectionPoint point) {
-        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f}, 180);
+        return getValueInDeg(point, new float[]{0f, 1f, 0f, 0f}, 360);
     }
 
     /**

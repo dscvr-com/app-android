@@ -48,10 +48,11 @@ public class BluetoothEngineControlService {
     public static final int SPEED = 500;
     public static final EngineCommandPoint SPEEDPOINT = new EngineCommandPoint(SPEED, SPEED);
     private static final double SPEED_IN_RAD = (((float) SPEED) / ((float) STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
+    private float oldyDeg = 0;
+    private float oldxDeg = 0;
 
     public BluetoothEngineControlService() {
         worker = new CommandWorker(this);
-        worker.start();
     }
 
     public boolean setBluetoothGatt(BluetoothGatt gatt) {
@@ -114,9 +115,17 @@ public class BluetoothEngineControlService {
     }
 
     public void addCommand(float xDeg, float yDeg){
-        EngineCommandPoint point = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * xDeg, (float) (STEPS_FOR_ONE_ROUND_Y / 180) * yDeg);
-        point.mul(-1);
+        float xDegDelta = xDeg;
+        if(oldyDeg == yDeg){
+            xDegDelta =- oldxDeg;
+        }
+        //save old value and for ydeg
+        EngineCommandPoint point = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * xDegDelta, (float) (STEPS_FOR_ONE_ROUND_Y / 180) * yDeg);
+        //point.mul(-1);
         worker.addEngineCommandPoint(point);
+
+        oldyDeg = yDeg;
+        oldxDeg = xDeg;
     }
 
 
