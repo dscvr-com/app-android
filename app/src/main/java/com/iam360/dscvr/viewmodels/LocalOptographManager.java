@@ -1,11 +1,12 @@
 package com.iam360.dscvr.viewmodels;
 
+import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.util.CameraUtils;
+
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.util.CameraUtils;
 import rx.Observable;
 
 /**
@@ -27,7 +28,7 @@ public class LocalOptographManager {
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {
-                    if (file.listFiles().length==3) {
+                    if (file.listFiles().length==2) {
                         // create new optograph
                         Optograph optograph = new Optograph(file.getName());
                         optograph.setIs_local(true);

@@ -90,7 +90,6 @@ public class RecordFragment extends Fragment {
     // motor variables
     float[] vectorBallPos = {0, 0, 0.9f, 0};
     float[] newPositionOfBall = new float[4];
-    private boolean isRecording = false;
     RotationMatrixProvider provider;
     private float[] unit = {0, 0, 1, 0};
     private float[] currentHeading = new float[4];
@@ -288,11 +287,11 @@ public class RecordFragment extends Fragment {
 
 
         if (cache.getBoolean(Cache.MOTOR_ON)) {
+            Recorder.setIdle(false);
             BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
             moveEngine(bluetoothService);
         } else {
             Recorder.setIdle(false);
-            isRecording = true;
         }
 
     }

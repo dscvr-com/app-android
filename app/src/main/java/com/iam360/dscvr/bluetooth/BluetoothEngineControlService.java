@@ -109,10 +109,6 @@ public class BluetoothEngineControlService {
 
     }
 
-    public int getSpeed(){
-        return SPEED;
-    }
-
     public void createCommands(List<EngineCommandPoint> pointsInDeg){
         List<EngineCommandPoint> pointsInStep = new ArrayList<>();
         for(EngineCommandPoint point: pointsInDeg) {
