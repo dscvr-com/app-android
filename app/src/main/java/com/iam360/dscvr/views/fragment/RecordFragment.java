@@ -25,13 +25,13 @@ import android.widget.FrameLayout;
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bluetooth.BluetoothEngineControlService;
+import com.iam360.dscvr.bluetooth.EngineCommandPoint;
 import com.iam360.dscvr.record.Edge;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.record.LineNode;
 import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
 import com.iam360.dscvr.record.SelectionPoint;
-import com.iam360.dscvr.sensors.CustomRotationMatrixSource;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
 import com.iam360.dscvr.util.Cache;
@@ -88,14 +88,9 @@ public class RecordFragment extends Fragment {
     private Map<String, LineNode> edgeLineNodeGlobalIdMap = new HashMap<>();
 
     // motor variables
-    private float currentDegree = (float) 0.03;
-    private long lastElapsedTime = System.currentTimeMillis();
-    private float currentTheta = (float) 0.0;
-    private float currentPhi = (float) 0.0;
     float[] vectorBallPos = {0, 0, 0.9f, 0};
     float[] newPositionOfBall = new float[4];
     private boolean isRecording = false;
-    CustomRotationMatrixSource customRotationMatrixSource;
     RotationMatrixProvider provider;
     private float[] unit = {0, 0, 1, 0};
     private float[] currentHeading = new float[4];
@@ -195,7 +190,7 @@ public class RecordFragment extends Fragment {
                 // initialize recorder
                 size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
                 // Add some margin to the focal length, to avoid too short focal lengths.
-                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.5f;
+                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.3f;
 
             } catch (CameraAccessException e) {
                 Log.d("MARK", "CameraAccessException e" + e.getMessage());
@@ -304,48 +299,35 @@ public class RecordFragment extends Fragment {
 
     public void moveEngine(BluetoothEngineControlService bluetoothService) {
         SelectionPoint[] selectionPoints = Recorder.getSelectionPoints();
+        List<EngineCommandPoint> points = new ArrayList<>();
         for (SelectionPoint point : selectionPoints) {
-            bluetoothService.addCommand(getXinDegForSelectionPoint(point), getYinDegForSelectionPoint(point));
-
+            points.add(new EngineCommandPoint(getXinDegForSelectionPoint(point), getYinDegForSelectionPoint(point)));
         }
+        bluetoothService.createCommands(points);
+
     }
 
-    public ArrayList<Float> getStartingPoints() {
-        float[] vector = {0, 0, 1, 0};
-        ArrayList<Float> result = new ArrayList<>();
-        SelectionPoint[] rawPoints = Recorder.getSelectionPoints();
-        float[] extrinsic;
-        float[] resultOfMultiply = new float[4];
-        double valueInRad;
-        float valueInDeg;
-        for (SelectionPoint point : rawPoints) {
-            getYinDegForSelectionPoint(point);
-
-        }
-        return result;
-    }
 
     private float getYinDegForSelectionPoint(SelectionPoint point) {
-        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f}, 180);
+        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f});
     }
 
     private float getXinDegForSelectionPoint(SelectionPoint point) {
-        return getValueInDeg(point, new float[]{0f, 1f, 0f, 0f}, 360);
+        return getValueInDeg(point, new float[]{0f, 1f, 0f, 0f});
     }
 
     /**
      * @param point  the point from stitcher
      * @param vector which one do you need: for y = (0,0,1,0)
-     * @param base   180 or 360?
      * @return
      */
-    private float getValueInDeg(SelectionPoint point, float[] vector, int base) {
+    private float getValueInDeg(SelectionPoint point, float[] vector) {
         assert point != null;
         assert vector != null && vector.length == 4;
         float[] resultOfMultiply = new float[4];
         Matrix.multiplyMV(resultOfMultiply, 0, point.getExtrinsics(), 0, vector, 0);
         double valueInRad = Math.atan(resultOfMultiply[1]);
-        return (float) ((valueInRad * base) / Math.PI);
+        return (float) ((valueInRad * 180) / Math.PI);
     }
 
     /**

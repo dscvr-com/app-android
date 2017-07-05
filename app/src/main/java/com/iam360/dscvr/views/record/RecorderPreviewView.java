@@ -148,4 +148,5 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
             super.createCaptureSession(sessionSurfaces, callback, cameraDevice, backgroundHandler);
 //        }
     }
+
 }

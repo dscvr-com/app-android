@@ -11,6 +11,7 @@ import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
 import com.iam360.dscvr.util.Maths;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,8 +49,6 @@ public class BluetoothEngineControlService {
     public static final int SPEED = 500;
     public static final EngineCommandPoint SPEEDPOINT = new EngineCommandPoint(SPEED, SPEED);
     private static final double SPEED_IN_RAD = (((float) SPEED) / ((float) STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
-    private float oldyDeg = 0;
-    private float oldxDeg = 0;
 
     public BluetoothEngineControlService() {
         worker = new CommandWorker(this);
@@ -114,18 +113,15 @@ public class BluetoothEngineControlService {
         return SPEED;
     }
 
-    public void addCommand(float xDeg, float yDeg){
-        float xDegDelta = xDeg;
-        if(oldyDeg == yDeg){
-            xDegDelta =- oldxDeg;
-        }
-        //save old value and for ydeg
-        EngineCommandPoint point = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * xDegDelta, (float) (STEPS_FOR_ONE_ROUND_Y / 180) * yDeg);
-        //point.mul(-1);
-        worker.addEngineCommandPoint(point);
+    public void createCommands(List<EngineCommandPoint> pointsInDeg){
+        List<EngineCommandPoint> pointsInStep = new ArrayList<>();
+        for(EngineCommandPoint point: pointsInDeg) {
 
-        oldyDeg = yDeg;
-        oldxDeg = xDeg;
+            EngineCommandPoint stepspoint = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * point.getX(), (float) (STEPS_FOR_ONE_ROUND_Y / 180) * point.getY());
+            pointsInStep.add(stepspoint);
+
+        }
+        worker.setCommandPointsForNewRunnable(pointsInStep);
     }
 
 
