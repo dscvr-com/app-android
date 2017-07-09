@@ -129,6 +129,10 @@ public class Maths {
         return output;
     }
 
+    public static float radToDegrees(float rad) {
+        return (float)(rad * 180f / Math.PI);
+    }
+
     public static float[] carthesianToSpherical(Vector3 vector) {
         float len = vector.length();
         double theta = Math.acos(vector.z / len);

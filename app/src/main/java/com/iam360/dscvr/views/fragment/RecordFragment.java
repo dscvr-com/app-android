@@ -299,34 +299,45 @@ public class RecordFragment extends Fragment {
     public void moveEngine(BluetoothEngineControlService bluetoothService) {
         SelectionPoint[] selectionPoints = Recorder.getSelectionPoints();
         List<EngineCommandPoint> points = new ArrayList<>();
-        for (SelectionPoint point : selectionPoints) {
-            points.add(new EngineCommandPoint(getXinDegForSelectionPoint(point), getYinDegForSelectionPoint(point)));
+        SelectionPoint prev = selectionPoints[0];
+
+        points.add(new EngineCommandPoint(0, 0));
+
+        for (int i = 1; i < selectionPoints.length; i++) {
+            SelectionPoint point = selectionPoints[i];
+
+            float[] prevInv = new float[16];
+            float[] diff = new float[16];
+
+            Matrix.invertM(prevInv, 0, prev.getExtrinsics(), 0);
+            Matrix.multiplyMM(diff, 0, prevInv, 0, point.getExtrinsics(), 0);
+
+            float phi = getYinDegForSelectionPoint(diff);
+            float theta = getXinDegForSelectionPoint(diff);
+
+            points.add(new EngineCommandPoint(phi, theta));
+
+            prev = point;
         }
         bluetoothService.createCommands(points);
-
     }
 
 
-    private float getYinDegForSelectionPoint(SelectionPoint point) {
-        return getValueInDeg(point, new float[]{0f, 0f, 1f, 0f});
+    private float getYinDegForSelectionPoint(float[] mat) {
+        return Maths.radToDegrees(selectionPointToPhiTheta(mat)[1]);
     }
 
-    private float getXinDegForSelectionPoint(SelectionPoint point) {
-        return getValueInDeg(point, new float[]{0f, 1f, 0f, 0f});
+    private float getXinDegForSelectionPoint(float[] mat) {
+        // TODO: -180 because carthesiantospherical does not handle this matrix well
+        // I'm not sure if this fix holds for three rings.
+        return Maths.radToDegrees(selectionPointToPhiTheta(mat)[0]) - 180f;
     }
 
-    /**
-     * @param point  the point from stitcher
-     * @param vector which one do you need: for y = (0,0,1,0)
-     * @return
-     */
-    private float getValueInDeg(SelectionPoint point, float[] vector) {
-        assert point != null;
-        assert vector != null && vector.length == 4;
+    private float[] selectionPointToPhiTheta(float[] mat) {
+        float[] vec = new float[]{0f, 0f, 1f, 0f};
         float[] resultOfMultiply = new float[4];
-        Matrix.multiplyMV(resultOfMultiply, 0, point.getExtrinsics(), 0, vector, 0);
-        double valueInRad = Math.atan(resultOfMultiply[1]);
-        return (float) ((valueInRad * 180) / Math.PI);
+        Matrix.multiplyMV(resultOfMultiply, 0, mat, 0, vec, 0);
+        return Maths.carthesianToSpherical(new Vector3(resultOfMultiply));
     }
 
     /**

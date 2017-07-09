@@ -12,6 +12,10 @@ public class Vector3 {
     public Vector3() {
     }
 
+    public Vector3(float[] data) {
+        set(data[0], data[1], data[2]);
+    }
+
     public Vector3(float xValue, float yValue, float zValue) {
         set(xValue, yValue, zValue);
     }

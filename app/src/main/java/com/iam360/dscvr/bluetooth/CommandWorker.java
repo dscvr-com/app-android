@@ -1,5 +1,6 @@
 package com.iam360.dscvr.bluetooth;
 
+import android.nfc.Tag;
 import android.util.Log;
 
 import java.util.List;
@@ -44,11 +45,11 @@ public class CommandWorker {
         @Override
         public void run() {
             for (EngineCommandPoint current : points) {
-                float timeNeededX = (current.getX() != 0f ? ((float) BluetoothEngineControlService.SPEED *1000) / current.getX() : 0f);
-                float timeNeededY = (current.getY() != 0f ? ((float) BluetoothEngineControlService.SPEED *1000) / current.getY() : 0f);
+                float timeNeededX = (current.getX() != 0f ? (current.getX() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
+                float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
                 service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
                 try {
-                    Thread.sleep((long) max(timeNeededX, timeNeededY) );
+                    Thread.sleep((long) max(timeNeededX, timeNeededY) * 2);
 
                 } catch (InterruptedException e) {
                     Log.e(TAG, "interrupted!", e);
