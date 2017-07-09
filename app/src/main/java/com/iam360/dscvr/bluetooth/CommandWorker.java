@@ -49,7 +49,7 @@ public class CommandWorker {
                 float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
                 service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
                 try {
-                    Thread.sleep((long) max(timeNeededX, timeNeededY) * 2);
+                    Thread.sleep((long) max(timeNeededX, timeNeededY));
 
                 } catch (InterruptedException e) {
                     Log.e(TAG, "interrupted!", e);
