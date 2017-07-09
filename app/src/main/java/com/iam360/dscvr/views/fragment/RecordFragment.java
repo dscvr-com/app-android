@@ -299,12 +299,12 @@ public class RecordFragment extends Fragment {
     public void moveEngine(BluetoothEngineControlService bluetoothService) {
         SelectionPoint[] selectionPoints = Recorder.getSelectionPoints();
         List<EngineCommandPoint> points = new ArrayList<>();
-        SelectionPoint prev = selectionPoints[0];
-
-        points.add(new EngineCommandPoint(0, 0));
+        SelectionPoint first = selectionPoints[0];
+        SelectionPoint prev = first;
 
         for (int i = 1; i < selectionPoints.length; i++) {
-            SelectionPoint point = selectionPoints[i];
+            SelectionPoint point;
+            point = selectionPoints[i];
 
             float[] prevInv = new float[16];
             float[] diff = new float[16];
@@ -313,7 +313,10 @@ public class RecordFragment extends Fragment {
             Matrix.multiplyMM(diff, 0, prevInv, 0, point.getExtrinsics(), 0);
 
             float phi = getYinDegForSelectionPoint(diff);
+            // TODO: Check if theta calculation is correct.
             float theta = getXinDegForSelectionPoint(diff);
+
+            Log.d("POINTS", phi + "; " + theta);
 
             points.add(new EngineCommandPoint(phi, theta));
 
