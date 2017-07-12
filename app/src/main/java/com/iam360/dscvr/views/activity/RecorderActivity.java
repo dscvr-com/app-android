@@ -81,7 +81,6 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
 
     public void cancelRecording() {
         recordFragment.cancelRecording();
-        finish();
     }
 
     public void showLoading() {

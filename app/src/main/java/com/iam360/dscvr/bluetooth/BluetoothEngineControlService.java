@@ -7,14 +7,11 @@ import android.bluetooth.BluetoothGattService;
 import android.os.ParcelUuid;
 import android.util.Log;
 
-import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
 import com.iam360.dscvr.util.Maths;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -45,7 +42,6 @@ public class BluetoothEngineControlService {
     private EngineCommandPoint movedSteps = new EngineCommandPoint(0, 0);
     private BluetoothEngineMatrixProvider providerInstanz;
     private double yTeta = 0;
-    private long start360;
     public static final int SPEED = 500;
     public static final EngineCommandPoint SPEEDPOINT = new EngineCommandPoint(SPEED, SPEED);
     private static final double SPEED_IN_RAD = (((float) SPEED) / ((float) STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
@@ -114,6 +110,7 @@ public class BluetoothEngineControlService {
         for(EngineCommandPoint point: pointsInDeg) {
 
             EngineCommandPoint stepspoint = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * point.getX(), (float) (STEPS_FOR_ONE_ROUND_Y / 180) * point.getY());
+            stepspoint.mul(-1);
             pointsInStep.add(stepspoint);
 
         }
@@ -125,7 +122,6 @@ public class BluetoothEngineControlService {
     public void goCompleteAround(float speed) {
 
         moveXY(new EngineCommandPoint((float) STEP_FOR_360 * (-1), 0f), new EngineCommandPoint(speed, speed));
-        start360 = System.currentTimeMillis();
     }
 
 
@@ -150,27 +146,17 @@ public class BluetoothEngineControlService {
         return null;
     }
 
-    public void move360withDeg(Float statingPoint) {
-        goToDeg(statingPoint);
-        //do we need to wait?
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                goCompleteAround(BluetoothEngineControlService.SPEED);
-                Recorder.setIdle(false);
-            }
-        }, 300);
-    }
+
 
 
 
     public class BluetoothEngineMatrixProvider extends RotationMatrixProvider {
         @Override
         public void getRotationMatrix(float[] target) {
-            double xPhi = (SPEED_IN_RAD * (System.currentTimeMillis() - start360)) / 1000f;
+            double xPhi = ((double)worker.getStepsXrun())/(((double)STEPS_FOR_ONE_ROUND_X)/360d);
             Timber.d("xPhi: " + xPhi);
             float[] rotationX = {(float) yTeta + 180, 1, 0, 0};
-            float[] rotationY = {(float) -Math.toDegrees(xPhi), 0, 1, 0};
+            float[] rotationY = {(float) Math.toDegrees(xPhi), 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
             System.arraycopy(result, 0, target, 0, 16);
         }

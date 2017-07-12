@@ -1,71 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".AAFeedBinding" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Create your first 360 image."
             android:gravity="center"
-            />
+            android:text="Create your first 360 image." />
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/optographFeed"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/optographFeed"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="true"/>
-
-        </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"
+            android:clipToPadding="true" />
 
         <RelativeLayout
             android:id="@+id/overlay_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <ImageButton
                 android:id="@+id/header_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
-                android:src="@drawable/logo_mini_icn"
                 android:layout_centerHorizontal="true"
-                android:background="@color/transparentOverlay" />
+                android:layout_margin="6dp"
+                android:background="@color/transparentOverlay"
+                android:src="@drawable/logo_mini_icn" />
 
             <RelativeLayout
                 android:id="@+id/record_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:paddingBottom="@dimen/fab_margin">
 
                 <ImageButton
                     android:id="@+id/camera_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/camera_selector"/>
+                    android:background="@drawable/camera_selector" />
 
                 <ProgressBar
                     android:id="@+id/record_progress"
+                    style="@android:style/Widget.ProgressBar.Large.Inverse"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    style="@android:style/Widget.ProgressBar.Large.Inverse"
                     android:paddingBottom="@dimen/fab_margin"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
             </RelativeLayout>
 
@@ -75,43 +66,43 @@
             android:id="@+id/loading_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#BB000000"
             android:clickable="true"
-            android:visibility="gone"
-            android:background="#BB000000">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/circle_big"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/oval_android_orange"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:background="@drawable/oval_android_orange" />
 
             <ImageView
                 android:id="@+id/circle_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/oval_android_yellow"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:background="@drawable/oval_android_yellow" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dialog_loading_dscvr"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
                 android:layout_centerInParent="true"
+                android:text="@string/dialog_loading_dscvr"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
                 app:font="@{``}" />
 
             <TextView
                 android:id="@+id/tap_to_hide"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
-                android:text="@string/dialog_tap_to_hide"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:layout_margin="30dp"
+                android:text="@string/dialog_tap_to_hide"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
                 app:font="@{``}" />
 
         </RelativeLayout>

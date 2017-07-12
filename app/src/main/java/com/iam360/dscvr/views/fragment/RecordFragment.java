@@ -51,7 +51,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 import java.util.UUID;
 
 import iam360.com.record.RecorderPreviewListener;
@@ -71,8 +70,6 @@ public class RecordFragment extends Fragment {
     private Vector3 ballSpeed = new Vector3();
     private SelectionPoint lastKeyframe;
 
-
-    private Timer timer = new Timer();
 
     private float exposureDuration;
     private float sensorWidthInMeters = 0.004f;
@@ -257,9 +254,7 @@ public class RecordFragment extends Fragment {
     public void onPause() {
         if (recordPreview != null) recordPreview.onPause();
         super.onPause();
-        if (!cache.getBoolean(Cache.MOTOR_ON)) {
-            DefaultListeners.unregister();
-        }
+        DefaultListeners.unregister();
         fromPause = true;
     }
 
@@ -271,11 +266,11 @@ public class RecordFragment extends Fragment {
         Timber.d("Initializing recorder with f: " + focalLength + " sx: " + size.getWidth() + " sy: " + size.getHeight());
         Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
         // be shure for manual Mode:
-        if (!cache.getBoolean(Cache.MOTOR_ON)) {
-            DefaultListeners.register();
-        } else {
-            DefaultListeners.unregister();
-        }
+//        if (!cache.getBoolean(Cache.MOTOR_ON)) {
+        DefaultListeners.register();
+//        } else {
+//            DefaultListeners.unregister();
+//        }
 
         setupSelectionPoints();
         isRecorderReady = true;

@@ -8,7 +8,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,7 +17,6 @@ import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.util.Constants;
-import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.viewmodels.LocalOptographManager;
 import com.iam360.dscvr.views.VRModeActivity;
 import com.iam360.dscvr.views.activity.RecorderActivity;
@@ -34,7 +32,6 @@ import timber.log.Timber;
 public class MainFeedFragment extends OptographListFragment implements View.OnClickListener, SensorEventListener {
 
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
-    private DBHelper mydb;
     private DateTime inVRPositionSince = null;
     private SensorManager sensorManager;
 
@@ -44,7 +41,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         setHasOptionsMenu(true);
 
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        mydb = new DBHelper(getContext());
 
     }
 
@@ -58,14 +54,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         binding.circleBig.startAnimation(clockwiseRotateAnimation);
         Animation counterClockwiseRotateAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_counterclockwise);
         binding.circleSmall.startAnimation(counterClockwiseRotateAnimation);
-
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refresh();
-            }
-        });
-
         binding.cameraBtn.setOnClickListener(this);
     }
 
@@ -88,6 +76,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             binding.cameraBtn.setEnabled(true);
             binding.recordProgress.setVisibility(View.GONE);
         }
+        initializeFeed();
 
         BusProvider.getInstance().register(this);
     }
@@ -106,8 +95,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     @Override
     public void refresh() {
         loadLocalOptographs();
-        binding.swipeRefreshLayout.setRefreshing(false);
-
+        mLayoutManager.scrollToPosition(0);
     }
 
     private void loadLocalOptographs() {
