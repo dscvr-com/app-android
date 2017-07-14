@@ -1,6 +1,9 @@
 package com.iam360.dscvr.bluetooth;
 
+import android.provider.Settings;
 import android.util.Log;
+
+import com.iam360.dscvr.util.AutoResetEvent;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -17,15 +20,17 @@ public class CommandWorker {
     private Future<?> lastSubmitted = null;
     private BluetoothEngineControlService service;
     private static final String TAG = CommandWorker.class.getSimpleName();
-    private double timeForOldCommands = 0d;
-    private double currentSystimeOfDot = 0d;
-
-    public double getTimeForOldCommands() {
-        return timeForOldCommands + (currentSystimeOfDot - System.currentTimeMillis())/1000f;
-    }
+    private long currentStart;
+    private double currentStepX;
+    private double currentSpeed;
+    private double xPosition;
+    private AutoResetEvent event;
 
     public CommandWorker(BluetoothEngineControlService service) {
         this.service = service;
+        this.xPosition = 0;
+        this.currentStepX = 0;
+        this.event = new AutoResetEvent(false);
     }
 
     public void setCommandPointsForNewRunnable(List<EngineCommandPoint> points) {
@@ -34,6 +39,14 @@ public class CommandWorker {
         else{
             throw new  IllegalStateException("there is already a circle Command Running");
         }
+    }
+
+    public double getXPosition() {
+        return xPosition + Math.min(currentStepX, currentSpeed * (System.currentTimeMillis() - currentStart) / 1000.0);
+    }
+
+    public void notifyPictureProcessed() {
+        event.set();
     }
 
 
@@ -48,27 +61,27 @@ public class CommandWorker {
         @Override
         public void run() {
             try {
-                Thread.sleep(500);
-                timeForOldCommands = 0d;
-                currentSystimeOfDot = System.currentTimeMillis();
+                xPosition = 0;
+                //Thread.sleep(500);
                 for (EngineCommandPoint current : points) {
-                    float timeNeededX = (current.getX() != 0f ? (current.getX() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
-                    float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
+                    Log.d("COMMAND THREAD", "Waiting");
+                    event.waitOne();
+                    Log.d("COMMAND THREAD", "Continuing");
+                    float timeNeededX = (current.getX() != 0f ? (Math.abs(current.getX()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
+                    float timeNeededY = (current.getY() != 0f ? (Math.abs(current.getY()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
+                    currentStart = System.currentTimeMillis();
+                    currentStepX = current.getX();
+                    currentSpeed = BluetoothEngineControlService.SPEED;
                     service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
-
-                    Thread.sleep((long) max(timeNeededX, timeNeededY));
-                    currentSystimeOfDot = System.currentTimeMillis();
-                    Thread.sleep(500);
-                    timeForOldCommands += timeNeededX;
+                    Thread.sleep((long) Math.max(timeNeededX, timeNeededY));
+                    currentStepX = 0;
+                    xPosition += current.getX();
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "interrupted!", e);
             }
         }
 
-        private float max(float timeNeededX, float timeNeededY) {
-            return timeNeededX > timeNeededY ? timeNeededX : timeNeededY;
-        }
 
     }
 }
