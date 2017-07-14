@@ -44,9 +44,9 @@ public class RingOptionFragment extends Fragment {
     ImageButton manualBtn;
     @Bind(R.id.frag_motor_button)
     ImageButton motorBtn;
-    @Bind(R.id.frag_option_record_button)
+    @Bind(R.id.camera_btn)
     ImageButton recordButton;
-    @Bind(R.id.bt_record_progress)
+    @Bind(R.id.record_progress)
     ProgressBar loading;
 
     BluetoothConnector connector;
