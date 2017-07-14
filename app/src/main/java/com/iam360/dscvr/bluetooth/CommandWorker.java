@@ -47,18 +47,19 @@ public class CommandWorker {
 
         @Override
         public void run() {
-            stepsXrun = 0;
-            for (EngineCommandPoint current : points) {
-                float timeNeededX = (current.getX() != 0f ? (current.getX() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
-                float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
-                service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
-                stepsXrun += current.getX();
-                try {
-                    Thread.sleep((long) max(timeNeededX + 500, timeNeededY));
-
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "interrupted!", e);
+            try {
+                Thread.sleep(500);
+                stepsXrun = 0;
+                for (EngineCommandPoint current : points) {
+                    float timeNeededX = (current.getX() != 0f ? (current.getX() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
+                    float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
+                    service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
+                    Thread.sleep((long) max(timeNeededX, timeNeededY));
+                    stepsXrun += current.getX();
+                    Thread.sleep(500);
                 }
+            } catch (InterruptedException e) {
+                Log.e(TAG, "interrupted!", e);
             }
         }
 

@@ -9,6 +9,7 @@ import com.crashlytics.android.Crashlytics;
 import com.iam360.dscvr.bluetooth.BluetoothConnector;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
+import com.iam360.dscvr.util.Cache;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.log.CustomLogger;
@@ -101,9 +102,9 @@ public class DscvrApp extends Application {
     }
 
     public RotationMatrixProvider getMatrixProvider(){
-        if(connector!= null && connector.isConnected()){
+        if(Cache.getInstance().getBoolean(Cache.MOTOR_ON)) {
             return  connector.getBluetoothService().getBluetoothEngineMatrixProviderForGatt();
-        }   else{
+        } else {
             return DefaultListeners.getInstance();
         }
     }

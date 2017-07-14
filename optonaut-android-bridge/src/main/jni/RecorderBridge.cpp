@@ -166,7 +166,9 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
 
     internalRecordingMode = mode;
 
-    recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath));
+   // RecorderParamInfo(const double graphHOverlap, const double graphVOverlap, const double stereoHBuffer, const double stereoVBuffer, const double tolerance, const bool halfGraph)
+
+    recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath, RecorderParamInfo(0.8, 0.25, 0.5, 0.0, 2.0, true)));
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData) {

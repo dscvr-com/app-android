@@ -110,7 +110,7 @@ public class BluetoothEngineControlService {
         for(EngineCommandPoint point: pointsInDeg) {
 
             EngineCommandPoint stepspoint = new EngineCommandPoint((float) (STEPS_FOR_ONE_ROUND_X / 360) * point.getX(), (float) (STEPS_FOR_ONE_ROUND_Y / 180) * point.getY());
-            stepspoint.mul(-1);
+            //stepspoint.mul(-1);
             pointsInStep.add(stepspoint);
 
         }
@@ -154,9 +154,9 @@ public class BluetoothEngineControlService {
         @Override
         public void getRotationMatrix(float[] target) {
             double xPhi = ((double)worker.getStepsXrun())/(((double)STEPS_FOR_ONE_ROUND_X)/360d);
-            Timber.d("xPhi: " + xPhi);
-            float[] rotationX = {(float) yTeta + 180, 1, 0, 0};
-            float[] rotationY = {(float) Math.toDegrees(xPhi), 0, 1, 0};
+            Timber.d("xPhi: " + xPhi + "; " + yTeta);
+            float[] rotationX = {(float) yTeta, 1, 0, 0};
+            float[] rotationY = {(float) xPhi, 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
             System.arraycopy(result, 0, target, 0, 16);
         }

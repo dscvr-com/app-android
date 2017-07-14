@@ -186,7 +186,7 @@ public class RecordFragment extends Fragment {
                 // initialize recorder
                 size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
                 // Add some margin to the focal length, to avoid too short focal lengths.
-                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.3f;
+                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.1f;
 
             } catch (CameraAccessException e) {
                 Log.d("MARK", "CameraAccessException e" + e.getMessage());
@@ -294,12 +294,13 @@ public class RecordFragment extends Fragment {
     public void moveEngine(BluetoothEngineControlService bluetoothService) {
         SelectionPoint[] selectionPoints = Recorder.getSelectionPoints();
         List<EngineCommandPoint> points = new ArrayList<>();
-        SelectionPoint first = selectionPoints[0];
-        SelectionPoint prev = first;
+        SelectionPoint prev = selectionPoints[0];
+
+        float sum = 0;
 
         for (int i = 1; i < selectionPoints.length; i++) {
             SelectionPoint point;
-            point = selectionPoints[i];
+            point = selectionPoints[i % selectionPoints.length];
 
             float[] prevInv = new float[16];
             float[] diff = new float[16];
@@ -313,10 +314,13 @@ public class RecordFragment extends Fragment {
 
             Log.d("POINTS", phi + "; " + theta);
 
-            points.add(new EngineCommandPoint(phi, theta));
+            sum += phi;
+
+            points.add(new EngineCommandPoint(-phi, -theta));
 
             prev = point;
         }
+        Log.d("POINTS", "SUM: " + sum);
         bluetoothService.createCommands(points);
     }
 
