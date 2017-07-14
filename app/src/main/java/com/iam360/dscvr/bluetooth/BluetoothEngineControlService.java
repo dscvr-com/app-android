@@ -44,7 +44,6 @@ public class BluetoothEngineControlService {
     private double yTeta = 0;
     public static final int SPEED = 500;
     public static final EngineCommandPoint SPEEDPOINT = new EngineCommandPoint(SPEED, SPEED);
-    private static final double SPEED_IN_RAD = (((float) SPEED) / ((float) STEPS_FOR_ONE_ROUND_X)) * 2 * Math.PI;
 
     public BluetoothEngineControlService() {
         worker = new CommandWorker(this);
@@ -117,21 +116,6 @@ public class BluetoothEngineControlService {
         worker.setCommandPointsForNewRunnable(pointsInStep);
     }
 
-
-
-    public void goCompleteAround(float speed) {
-
-        moveXY(new EngineCommandPoint((float) STEP_FOR_360 * (-1), 0f), new EngineCommandPoint(speed, speed));
-    }
-
-
-
-    public void goToDeg(float deg) {
-        float ySteps = (float) ((STEPS_FOR_ONE_ROUND_Y / 360) * deg);
-        yTeta = deg + Math.toDegrees(Math.PI);
-        moveXY(new EngineCommandPoint(0, ySteps), new EngineCommandPoint(0, SPEED));
-    }
-
     private void stop() {
         sendCommand(EngineCommand.stop());
     }
@@ -153,9 +137,9 @@ public class BluetoothEngineControlService {
     public class BluetoothEngineMatrixProvider extends RotationMatrixProvider {
         @Override
         public void getRotationMatrix(float[] target) {
-            double xPhi = ((double)worker.getStepsXrun())/(((double)STEPS_FOR_ONE_ROUND_X)/360d);
-            Timber.d("xPhi: " + xPhi + "; " + yTeta);
-            float[] rotationX = {(float) yTeta, 1, 0, 0};
+            double xPhi = worker.getTimeForOldCommands()*SPEED / (STEPS_FOR_ONE_ROUND_X/360d);
+            Timber.d("xPhi: " + xPhi);
+            float[] rotationX = {(float) yTeta + 180, 1, 0, 0};
             float[] rotationY = {(float) xPhi, 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
             System.arraycopy(result, 0, target, 0, 16);

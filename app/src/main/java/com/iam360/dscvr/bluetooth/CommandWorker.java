@@ -14,14 +14,14 @@ import java.util.concurrent.Future;
 public class CommandWorker {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private Runnable runnable;
     private Future<?> lastSubmitted = null;
     private BluetoothEngineControlService service;
     private static final String TAG = CommandWorker.class.getSimpleName();
-    private int stepsXrun = 0;
+    private double timeForOldCommands = 0d;
+    private double currentSystimeOfDot = 0d;
 
-    public long getStepsXrun() {
-        return stepsXrun;
+    public double getTimeForOldCommands() {
+        return timeForOldCommands + (currentSystimeOfDot - System.currentTimeMillis())/1000f;
     }
 
     public CommandWorker(BluetoothEngineControlService service) {
@@ -49,14 +49,17 @@ public class CommandWorker {
         public void run() {
             try {
                 Thread.sleep(500);
-                stepsXrun = 0;
+                timeForOldCommands = 0d;
+                currentSystimeOfDot = System.currentTimeMillis();
                 for (EngineCommandPoint current : points) {
                     float timeNeededX = (current.getX() != 0f ? (current.getX() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
                     float timeNeededY = (current.getY() != 0f ? (current.getY() / BluetoothEngineControlService.SPEED) * 1000f: 0f);
                     service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
+
                     Thread.sleep((long) max(timeNeededX, timeNeededY));
-                    stepsXrun += current.getX();
+                    currentSystimeOfDot = System.currentTimeMillis();
                     Thread.sleep(500);
+                    timeForOldCommands += timeNeededX;
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "interrupted!", e);
