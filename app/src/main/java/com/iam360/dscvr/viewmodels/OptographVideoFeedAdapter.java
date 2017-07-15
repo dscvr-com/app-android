@@ -33,6 +33,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVideoFeedAdapter.OptographHolder> {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     private static final float ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
@@ -178,6 +180,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         if (created_at != null && created_at.isBefore(getOldest().getCreated_atDateTime())) {
             optographs.add(optograph);
             notifyDataSetChanged();
+            Timber.d("added optopgraph at the end");
             return;
         }
 
@@ -187,7 +190,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
             if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
                 notifyItemInserted(i);
-
+                Timber.d("added optopgraph at " + i);
                 return;
             }
         }

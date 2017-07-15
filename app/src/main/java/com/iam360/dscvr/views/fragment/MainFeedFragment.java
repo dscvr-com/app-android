@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.bus.BusProvider;
 import com.iam360.dscvr.bus.RecordFinishedEvent;
+import com.iam360.dscvr.model.Optograph;
 import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.viewmodels.LocalOptographManager;
@@ -85,6 +86,8 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     public void initializeFeed() {
         loadLocalOptographs();
         GlobalState.shouldHardRefreshFeed = false;
+        Timber.d("tried to scroll!");
+        binding.optographFeed.scrollToPosition(0);
     }
 
     @Override
@@ -101,7 +104,12 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private void loadLocalOptographs() {
         LocalOptographManager.getOptographs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(optographFeedAdapter::addItem);
+                .subscribe(this::addItem);
+    }
+
+    private void addItem(Optograph optograph){
+        optographFeedAdapter.addItem(optograph);
+        binding.optographFeed.scrollToPosition(0);
     }
 
     @Override
@@ -135,7 +143,6 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         Timber.d("receiveFinishedImage");
         binding.recordProgress.setVisibility(View.GONE);
         binding.cameraBtn.setEnabled(true);
-        binding.optographFeed.scrollToPosition(0);//FIXME does this work?
     }
 
     @Subscribe
