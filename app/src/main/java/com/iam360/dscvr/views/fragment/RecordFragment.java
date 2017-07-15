@@ -109,7 +109,11 @@ public class RecordFragment extends Fragment {
             endOfLast = System.currentTimeMillis();
             //assert colorFormat == Bitmap.Config.ARGB_8888;
             // build extrinsics
+            Log.d("COMMAND THREAD", "Image Data Ready");
             float[] coreMotionMatrix = provider.getRotationMatrix();
+            if(provider instanceof BluetoothEngineControlService.BluetoothEngineMatrixProvider) {
+                ((BluetoothEngineControlService.BluetoothEngineMatrixProvider)provider).notifyFrameCaptured();
+            }
             double[] extrinsicsData = Maths.convertFloatsToDoubles(coreMotionMatrix);
 //assert width * height * 4 == data.length;
 
@@ -440,7 +444,7 @@ public class RecordFragment extends Fragment {
 
             float maxSpeed = maxRecordingSpeed * timeDiff;
 
-            float accelleration = (!Recorder.isIdle() ? (maxRecordingSpeed / 10) : (maxRecordingSpeed)) / 30;
+            float accelleration = (!Recorder.isIdle() ? (maxRecordingSpeed / 100) : (maxRecordingSpeed)) / 300;
 
             Vector3 newHeading = Vector3.subtract(target, ballPos);
 
