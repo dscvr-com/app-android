@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data class=".AAFeedItemBinding">
         <import type="com.iam360.dscvr.model.Optograph" />
@@ -22,7 +22,7 @@
             android:background="@color/transparentOverlay"
             app:optograph="@{optograph}" />
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/profile_bar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -31,22 +31,37 @@
 
             <ImageButton
                 android:id="@+id/vr_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/vr_icon"/>
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/vr_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/more_button"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/more_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_width="10dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/transparentOverlay"
-                android:padding="8dp"
-                android:src="@drawable/more_settings" />
+                android:src="@drawable/more_settings"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
-        </RelativeLayout>
+        </android.support.constraint.ConstraintLayout>
 
     </FrameLayout>
 

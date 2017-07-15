@@ -18,7 +18,6 @@ import com.iam360.dscvr.AAFeedItemBinding;
 import com.iam360.dscvr.BR;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.views.activity.MainActivity;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
@@ -26,6 +25,7 @@ import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
+import com.iam360.dscvr.views.activity.MainActivity;
 
 import org.joda.time.DateTime;
 
@@ -187,6 +187,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
             if (created_at != null && created_at.isAfter(current.getCreated_atDateTime())) {
                 optographs.add(i, optograph);
                 notifyItemInserted(i);
+
                 return;
             }
         }

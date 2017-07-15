@@ -135,6 +135,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         Timber.d("receiveFinishedImage");
         binding.recordProgress.setVisibility(View.GONE);
         binding.cameraBtn.setEnabled(true);
+        binding.optographFeed.scrollToPosition(0);//FIXME does this work?
     }
 
     @Subscribe

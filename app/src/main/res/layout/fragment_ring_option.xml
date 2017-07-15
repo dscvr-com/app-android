@@ -80,9 +80,9 @@
         android:layout_height="match_parent">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="0dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:layout_marginTop="0dp"
@@ -113,8 +113,8 @@
             <ProgressBar
                 android:id="@+id/record_progress"
                 style="@android:style/Widget.ProgressBar.Large.Inverse"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginBottom="0dp"

@@ -25,11 +25,9 @@ public class RecorderOverlayFragment extends Fragment {
     public static final int RECORDING = 2;
 
     private int RECORDING_MODE = Constants.MODE_CENTER;
-    private int currentMode;
     private int screenWidth = Constants.getInstance().getDisplayMetrics().widthPixels;
     private int MODE = PREVIEW_RECORD;
 
-    private int PICK_IMAGE_REQUEST = 1;
 
     @Bind(R.id.record_button)
     ImageButton recordButton;
@@ -72,7 +70,7 @@ public class RecorderOverlayFragment extends Fragment {
         super.onStart();
         getView().setFocusableInTouchMode(true);
         getView().requestFocus();
-        ((RecorderActivity)getActivity()).overlayInitialised();
+        ((RecorderActivity) getActivity()).overlayInitialised();
     }
 
 
@@ -94,6 +92,7 @@ public class RecorderOverlayFragment extends Fragment {
         Timber.d("initializeNavigationButtons recordButtonClick");
         MODE = RECORDING_MODE;
         recordButton.setVisibility(View.INVISIBLE);
+        recordProgress.setVisibility(View.INVISIBLE);
         cameraOverlay.setVisibility(View.VISIBLE);
         instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
 
@@ -108,9 +107,6 @@ public class RecorderOverlayFragment extends Fragment {
         getView().setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (currentMode == RECORDING || currentMode == PREVIEW_RECORD) {
-//                        return cancelGroup.callOnClick();
-                    }
                 }
             }
             return false;
@@ -172,6 +168,8 @@ public class RecorderOverlayFragment extends Fragment {
         super.onResume();
         if (GlobalState.isAnyJobRunning) {
             recordProgress.setVisibility(View.VISIBLE);
+        } else {
+            recordProgress.setVisibility(View.INVISIBLE);
         }
     }
 
