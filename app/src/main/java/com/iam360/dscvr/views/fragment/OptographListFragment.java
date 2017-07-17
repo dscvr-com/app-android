@@ -63,6 +63,7 @@ public abstract class OptographListFragment extends Fragment {
             }
         };
         binding.optographFeed.setItemAnimator(animator);
+
         binding.optographFeed.addOnScrollListener(new InfiniteScrollListener(mLayoutManager) {
             @Override
             public void onLoadMore() {
@@ -73,9 +74,7 @@ public abstract class OptographListFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 firstVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition();
             }
-
         });
-
     }
 
     @Override
