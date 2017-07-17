@@ -26,7 +26,7 @@ int internalRecordingMode;
 
 extern "C" {
     // storagePath should end on "/"!
-    void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode);
+    void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject thiz, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode, jobject paramInfo);
 
     void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject thiz, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData);
 
@@ -76,34 +76,30 @@ extern "C" {
 
 }
 
-/*
-jdouble Java_com_iam360_dscvr_record_Recorder_getTopThetaValue(JNIEnv *, jobject)
-{
-    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-       return  motorRecorder->getTopThetaValue();
-    } else {
-       return 0;
-    }
+// On method signature IDs: http://www.rgagnon.com/javadetails/java-0286.html
+double invokeMethodDouble(JNIEnv *env, jobject obj, const char* name) {
+    jmethodID methodRef = env->GetMethodID(env->GetObjectClass(obj), name,"()D");
+    return env->CallDoubleMethod(obj, methodRef);
+}
+float invokeMethodInt(JNIEnv *env, jobject obj, const char* name) {
+    jmethodID methodRef = env->GetMethodID(env->GetObjectClass(obj), name,"()I");
+    return env->CallIntMethod(obj, methodRef);
+}
+bool invokeMethodBoolean(JNIEnv *env, jobject obj, const char* name) {
+    jmethodID methodRef = env->GetMethodID(env->GetObjectClass(obj), name,"()Z");
+    return env->CallBooleanMethod(obj, methodRef);
 }
 
-jdouble Java_com_iam360_dscvr_record_Recorder_getCenterThetaValue(JNIEnv *, jobject)
-{
-    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-       return  motorRecorder->getCenterThetaValue();
-    } else {
-       return 0;
-    }
+optonaut::RecorderParamInfo convertParamInfo(JNIEnv *env, jobject param) {
+    return RecorderParamInfo(
+        invokeMethodDouble(env, param, "getGraphHOverlap"),
+        invokeMethodDouble(env, param, "getGraphVOverlap"),
+        invokeMethodDouble(env, param, "getStereoHBuffer"),
+        invokeMethodDouble(env, param, "getStereoVBuffer"),
+        invokeMethodDouble(env, param, "getTolerance"),
+        invokeMethodBoolean(env, param, "getHalfGraph")
+    );
 }
-
-jdouble Java_com_iam360_dscvr_record_Recorder_getBotThetaValue(JNIEnv *, jobject)
-{
-    if(internalRecordingMode == RecorderGraph::ModeTruncated) {
-       return  motorRecorder->getBotThetaValue();
-    } else {
-       return 0;
-    }
-}
-*/
 
 jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
 {
@@ -124,7 +120,7 @@ jfloatArray matToJFloatArray(JNIEnv *env, const Mat& mat, int width, int height)
     return javaFloats;
 }
 
-void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode)
+void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, jstring storagePath, jfloat sensorWidth, jfloat sensorHeight, jfloat focalLength, jint mode, jobject paramInfo)
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
@@ -168,7 +164,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
 
    // RecorderParamInfo(const double graphHOverlap, const double graphVOverlap, const double stereoHBuffer, const double stereoVBuffer, const double tolerance, const bool halfGraph)
 
-    recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath, RecorderParamInfo(0.8, 0.25, 0.5, 0.0, 2.0, true)));
+    recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath, convertParamInfo(env, paramInfo)));
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData) {

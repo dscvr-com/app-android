@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
@@ -31,6 +32,8 @@ import com.iam360.dscvr.record.GlobalState;
 import com.iam360.dscvr.record.LineNode;
 import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.record.RecorderOverlayView;
+import com.iam360.dscvr.record.RecorderParamInfo;
+import com.iam360.dscvr.record.RecorderParamStorage;
 import com.iam360.dscvr.record.SelectionPoint;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.RotationMatrixProvider;
@@ -266,9 +269,13 @@ public class RecordFragment extends Fragment {
      *
      */
     public void startRecording() {
+        String text = "flen: " + focalLength + ", sx: " + size.getWidth() + ", sy: " + size.getHeight();
+        text = text + ", Device: " + android.os.Build.DEVICE + ", Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+        Toast.makeText(this.getContext(), text, Toast.LENGTH_LONG).show();
 
-        Timber.d("Initializing recorder with f: " + focalLength + " sx: " + size.getWidth() + " sy: " + size.getHeight());
-        Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode);
+        RecorderParamInfo paramInfo = RecorderParamStorage.getRecorderParams(focalLength, size.getWidth(), size.getHeight(), cache.getBoolean(Cache.MOTOR_ON));
+        Timber.d(String.format("Initializing recorder with f: %s sx: %s sy: %s, paramInfo: %s", focalLength, size.getWidth(), size.getHeight(), paramInfo));
+        Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode, paramInfo);
         // be shure for manual Mode:
 //        if (!cache.getBoolean(Cache.MOTOR_ON)) {
         DefaultListeners.register();
