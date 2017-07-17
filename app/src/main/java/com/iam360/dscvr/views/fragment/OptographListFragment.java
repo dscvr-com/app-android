@@ -75,6 +75,8 @@ public abstract class OptographListFragment extends Fragment {
                 firstVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition();
             }
         });
+
+        binding.optographFeed.setIsScrollable(false);
     }
 
     @Override
