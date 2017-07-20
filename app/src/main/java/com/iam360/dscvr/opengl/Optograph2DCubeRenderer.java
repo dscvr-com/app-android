@@ -1,37 +1,17 @@
 package com.iam360.dscvr.opengl;
 
-import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.iam360.dscvr.R;
-import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.model.SendStory;
 import com.iam360.dscvr.model.SendStoryChild;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.TouchEventListener;
 import com.iam360.dscvr.util.Constants;
-import com.iam360.dscvr.util.DBHelper;
-import com.iam360.dscvr.util.ImageUrlBuilder;
-import com.iam360.dscvr.util.Maths;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -188,4 +168,7 @@ public class Optograph2DCubeRenderer implements GLSurfaceView.Renderer {
         this.optoType = type;
     }
 
+    public Point getStartPoint() {
+        return combinedMotionManager.getStartPoint();
+    }
 }

@@ -3,7 +3,6 @@ package com.iam360.dscvr.sensors;
 import android.graphics.Point;
 import android.opengl.Matrix;
 
-import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.util.Maths;
 
 import java.util.Arrays;
@@ -77,6 +76,10 @@ public class CombinedMotionManager extends RotationMatrixProvider {
         }
 
         return touchEventListener.getRotationMatrix();
+    }
+
+    public Point getStartPoint(){
+        return touchEventListener.getTouchStartPoint();
     }
 
     @Override

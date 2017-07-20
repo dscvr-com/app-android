@@ -404,14 +404,20 @@ public class RecordFragment extends Fragment {
 
     public void cancelRecording() {
         recordPreview.setPreviewListener(null);
-        recordPreview.onPause();
+//        recordPreview.onPause();
 
         MixpanelHelper.trackCameraCancelRecording(getContext());
         GlobalState.isAnyJobRunning = true;
+        if(cache.getBoolean(Cache.MOTOR_ON)){
+
+            BluetoothEngineControlService bluetoothService = ((DscvrApp) getActivity().getApplicationContext()).getConnector().getBluetoothService();
+            bluetoothService.stopWorker();
+        }
 
 
         // start background thread to cancel recorder
         DscvrApp.getInstance().getJobManager().addJobInBackground(new CancelRecorderJob());
+
     }
 
     private void updateBallPosition() {

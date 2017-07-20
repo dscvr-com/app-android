@@ -1,6 +1,5 @@
 package com.iam360.dscvr.views.fragment;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,17 +12,21 @@ import android.view.ViewGroup;
 
 import com.iam360.dscvr.AAFeedBinding;
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.opengl.Optograph2DCubeView;
+import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.viewmodels.OptographVideoFeedAdapter;
-import com.iam360.dscvr.util.Cache;
 
-public abstract class OptographListFragment extends Fragment {
+import timber.log.Timber;
+
+public abstract class OptographListFragment extends Fragment implements Optograph2DCubeView.OnScrollLockListener {
     protected OptographVideoFeedAdapter optographFeedAdapter;
     protected Cache cache;
     protected AAFeedBinding binding;
     protected int firstVisible = 0;
 
     LinearLayoutManager mLayoutManager;
+    private int oldFirstVisible;
 
     public OptographListFragment() {
     }
@@ -72,9 +75,13 @@ public abstract class OptographListFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                Timber.d("scrolled!!:  " + dx + " " +dy);
+                oldFirstVisible = firstVisible;
                 firstVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+               if(firstVisible!= oldFirstVisible) binding.optographFeed.setIsScrollable(false);
             }
         });
+        optographFeedAdapter.setOnClickListener(this);
 
         binding.optographFeed.setIsScrollable(false);
     }
@@ -99,4 +106,15 @@ public abstract class OptographListFragment extends Fragment {
         super.onPause();
     }
 
+    @Override
+    public void lock() {
+        binding.optographFeed.setIsScrollable(false);
+    }
+
+
+    @Override
+    public void release() {
+        binding.optographFeed.setIsScrollable(true);
+
+    }
 }

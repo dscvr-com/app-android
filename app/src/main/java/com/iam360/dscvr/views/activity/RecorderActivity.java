@@ -116,6 +116,7 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
                 .setPositiveButton(getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         cancelRecording();
+                        RecorderActivity.super.onBackPressed();
                     }
                 })
                 .setNegativeButton(getResources().getString(R.string.dialog_dont_cancel), new DialogInterface.OnClickListener() {

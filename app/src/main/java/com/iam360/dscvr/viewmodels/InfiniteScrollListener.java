@@ -32,14 +32,18 @@ public abstract class InfiniteScrollListener extends RecyclerView.OnScrollListen
         this.llm = llm;
     }
 
+
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
         // don't react on layout changes
         if (dx == 0 && dy == 0) {
+
             return;
         }
+
+
 
         visibleItemCount = recyclerView.getChildCount();
         totalItemCount = llm.getItemCount();

@@ -128,8 +128,10 @@ public class BluetoothEngineControlService {
         return null;
     }
 
-
-
+    public void stopWorker() {
+        worker.stop();
+        this.stop();
+    }
 
 
     public class BluetoothEngineMatrixProvider extends RotationMatrixProvider {

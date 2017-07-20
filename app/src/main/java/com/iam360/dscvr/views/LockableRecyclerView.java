@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import timber.log.Timber;
+
 /**
  * Created by Emi on 17/07/2017.
  */
@@ -30,21 +32,17 @@ public class LockableRecyclerView extends RecyclerView {
 
     public void setIsScrollable(boolean scrollable) {
         mScrollable = scrollable;
+        Timber.d("scrollable: " + mScrollable);
     }
     public boolean getIsScrollable() {
         return mScrollable;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
                 // if we can scroll pass the event to the superclass
                 if (mScrollable) return super.onTouchEvent(ev);
                 // only continue to handle the touch event if scrolling enabled
                 return mScrollable; // mScrollable is always false at this point
-            default:
-                return super.onTouchEvent(ev);
-        }
     }
 }

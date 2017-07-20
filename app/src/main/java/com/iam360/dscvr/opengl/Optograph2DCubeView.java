@@ -9,18 +9,14 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.model.SendStory;
-import com.iam360.dscvr.model.SendStoryChild;
-import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.util.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+
+import timber.log.Timber;
 
 /**
  * @author Nilan Marktanner
@@ -31,6 +27,8 @@ public class Optograph2DCubeView extends GLSurfaceView {
     private Optograph optograph;
     private ScaleGestureDetector mScaleDetector;
 
+    private boolean isFullscreen;
+
     private final float MIN_ZOOM = 1.0f;
     private final float MAX_ZOOM = 5.0f;
     private float mScaleFactor = MIN_ZOOM;
@@ -38,6 +36,7 @@ public class Optograph2DCubeView extends GLSurfaceView {
     private Activity myAct;
     private String storyType;
     private ImageButton deleteStoryMarkerImage;
+    private OnScrollLockListener scrollListener;
 
     public Optograph2DCubeView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -109,7 +108,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
     }
 
 
-
     public void setOptograph(Optograph optograph) {
 
         // this view is set with the same optograph - abort
@@ -158,20 +156,31 @@ public class Optograph2DCubeView extends GLSurfaceView {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (!mScaleDetector.isInProgress())
-                        optograph2DCubeRenderer.touchStart(point);
+                        Timber.d("Action Down (start) " + point.toString());
+
+                    if (scrollListener != null) scrollListener.lock();
+                    optograph2DCubeRenderer.touchStart(point);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (!mScaleDetector.isInProgress())
-                        optograph2DCubeRenderer.touchMove(point);
+                        Timber.d("Action move(move) " + point.toString());
+                    if (scrollListener != null) scrollListener.lock();
+                    optograph2DCubeRenderer.touchMove(point);
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (!mScaleDetector.isInProgress())
+                    if (!mScaleDetector.isInProgress()) {
+                        Timber.d("Action end " + point.toString());
+                        if (scrollListener != null) scrollListener.release();
                         optograph2DCubeRenderer.touchEnd(point);
+                    }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     // release touching state also for cancel action
                     if (!mScaleDetector.isInProgress())
-                        optograph2DCubeRenderer.touchEnd(point);
+                        Timber.d("Action end " + point.toString());
+
+                    if (scrollListener != null) scrollListener.release();
+                    optograph2DCubeRenderer.touchEnd(point);
                     break;
                 default:
                     // ignore eventt
@@ -181,6 +190,16 @@ public class Optograph2DCubeView extends GLSurfaceView {
             // we dealt with the event
             return true;
         };
+    }
+
+    public void addScrollLockListener(OnScrollLockListener listener) {
+        this.scrollListener = listener;
+    }
+
+    public interface OnScrollLockListener {
+        void lock();
+
+        void release();
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

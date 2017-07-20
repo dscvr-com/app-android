@@ -18,6 +18,7 @@ import com.iam360.dscvr.AAFeedItemBinding;
 import com.iam360.dscvr.BR;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.model.Optograph;
+import com.iam360.dscvr.opengl.Optograph2DCubeView;
 import com.iam360.dscvr.sensors.CombinedMotionManager;
 import com.iam360.dscvr.sensors.GestureDetectors;
 import com.iam360.dscvr.util.Cache;
@@ -35,7 +36,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVideoFeedAdapter.OptographHolder> {
+public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVideoFeedAdapter.OptographHolder> implements Optograph2DCubeView.OnScrollLockListener {
     private static final int ITEM_HEIGHT = Constants.getInstance().getDisplayMetrics().heightPixels;
     private static final float ITEM_WIDTH = Constants.getInstance().getDisplayMetrics().widthPixels;
     private static final float DENSITY = Constants.getInstance().getDisplayMetrics().density;
@@ -44,6 +45,8 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
     private Cache cache;
     private Context context;
     private DBHelper mydb;
+    private Optograph2DCubeView.OnScrollLockListener scrollLock;
+    private boolean isFullscreen;
 
     public OptographVideoFeedAdapter(Context context) {
         this.context = context;
@@ -75,14 +78,17 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
 
         holder.bindingHeader.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
+        holder.bindingHeader.optograph2dview.addScrollLockListener(this);
         holder.bindingHeader.optograph2dview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
                 if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                    if(context instanceof MainActivity) {
+                    if (context instanceof MainActivity) {
                         toggleFullScreen(holder, ((MainActivity) context).isFullScreenMode);
+
                         ((MainActivity) context).toggleFeedFullScreen();
+                        scrollLock.lock();
                     }
                 }
 
@@ -133,10 +139,12 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
     private void toggleFullScreen(OptographHolder holder, boolean isFullScreenMode) {
 
-        if(isFullScreenMode) {
+        if (isFullScreenMode) {
             holder.bindingHeader.profileBar.setVisibility(View.VISIBLE);
+            if (scrollLock != null) scrollLock.release();
         } else {
             holder.bindingHeader.profileBar.setVisibility(View.GONE);
+            if (scrollLock != null) scrollLock.lock();
         }
     }
 
@@ -146,7 +154,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
         ArrayList<Optograph> optographList = new ArrayList<Optograph>();
 
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             optographList.add(optographs.get((position) % optoListCount));
             position++;
         }
@@ -213,7 +221,7 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {
-                    for (File file1: file.listFiles()) {
+                    for (File file1 : file.listFiles()) {
                         boolean result = file1.delete();
                     }
                     boolean result = file.delete();
@@ -243,13 +251,29 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
     public void refreshAfterDelete(String id) {
 
-        for (Optograph opto:optographs) {
-            if (opto!=null && opto.getId().equals(id)) {
+        for (Optograph opto : optographs) {
+            if (opto != null && opto.getId().equals(id)) {
                 int position = optographs.indexOf(opto);
                 optographs.remove(opto);
                 notifyItemRemoved(position);
                 return;
             }
+        }
+    }
+
+    public void setOnClickListener(Optograph2DCubeView.OnScrollLockListener scrollLock) {
+        this.scrollLock = scrollLock;
+    }
+
+    @Override
+    public void lock() {
+        scrollLock.lock();
+    }
+
+    @Override
+    public void release() {
+        if (context instanceof MainActivity &&  !((MainActivity) context).isFullScreenMode){
+            scrollLock.release();
         }
     }
 

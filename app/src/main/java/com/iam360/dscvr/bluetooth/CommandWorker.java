@@ -1,6 +1,5 @@
 package com.iam360.dscvr.bluetooth;
 
-import android.provider.Settings;
 import android.util.Log;
 
 import com.iam360.dscvr.util.AutoResetEvent;
@@ -49,6 +48,10 @@ public class CommandWorker {
         event.set();
     }
 
+    public void stop() {
+        lastSubmitted.cancel(true);
+    }
+
 
     private class CommandWorkerRunnable implements Runnable {
         private List<EngineCommandPoint> points;
@@ -78,7 +81,7 @@ public class CommandWorker {
                     xPosition += current.getX();
                 }
             } catch (InterruptedException e) {
-                Log.e(TAG, "interrupted!", e);
+                Log.d(TAG, "interrupted!", e);
             }
         }
 

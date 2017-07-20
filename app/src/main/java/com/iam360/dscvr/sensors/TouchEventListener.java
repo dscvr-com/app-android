@@ -83,6 +83,10 @@ public class TouchEventListener extends RotationMatrixProvider {
         touchStartPoint = null;
     }
 
+    public Point getTouchStartPoint() {
+        return touchStartPoint;
+    }
+
     public void reset() {
         phiDiff = 0;
         thetaDiff = 0;
