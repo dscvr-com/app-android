@@ -1,6 +1,7 @@
 package com.iam360.dscvr;
 
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.util.Log;
@@ -24,14 +25,12 @@ import timber.log.Timber;
 public class DscvrApp extends Application {
     private static DscvrApp instance;
     private JobManager jobManager;
-    private BluetoothConnector connector;
+    private BluetoothConnector connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), this.getApplicationContext());
+
+
 
     public DscvrApp() {
         instance = this;
-    }
-
-    public void setConnector(BluetoothConnector connector){
-        this.connector = connector;
     }
 
     public BluetoothConnector getConnector(){

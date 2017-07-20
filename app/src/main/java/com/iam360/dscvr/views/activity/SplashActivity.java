@@ -19,7 +19,6 @@ public class SplashActivity extends AppCompatActivity {
         cache = Cache.getInstance(this);
         cache = Cache.open();
         Intent intent = new Intent(this, MainActivity.class);
-
         startActivity(intent);
         finish();
     }

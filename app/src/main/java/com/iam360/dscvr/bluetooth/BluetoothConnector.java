@@ -31,24 +31,25 @@ public class BluetoothConnector extends BroadcastReceiver {
     private final BluetoothAdapter adapter;
     private final Context context;
     private final Handler stopScanHandler = new Handler();
-    private final BluetoothConnectionCallback.ButtonValueListener upperButtomListener;
-    private final BluetoothConnectionCallback.ButtonValueListener lowerButtonListener;
+    private BluetoothConnectionCallback.ButtonValueListener upperButtomListener;
+    private BluetoothConnectionCallback.ButtonValueListener lowerButtonListener;
     private BluetoothLoadingListener listener;
     private List<BluetoothDevice> nextDevice = new ArrayList<>();
     private boolean currentlyConnecting = false;
     private BluetoothEngineControlService controlService = new BluetoothEngineControlService();
     private BluetoothLeScanCallback bluetoothLeScanCallback = new BluetoothLeScanCallback((device -> addDeviceFromScan(device)));
 
-    public BluetoothConnector(BluetoothAdapter adapter, Context context, BluetoothLoadingListener listener, BluetoothConnectionCallback.ButtonValueListener upperButtomListener, BluetoothConnectionCallback.ButtonValueListener lowerButtonListener) {
+    public BluetoothConnector(BluetoothAdapter adapter, Context context) {
         this.adapter = adapter;
         this.context = context;
-        this.listener = listener;
-        this.upperButtomListener = upperButtomListener;
-        this.lowerButtonListener = lowerButtonListener;
 
     }
 
-    public void connect() {
+
+    public void connect(BluetoothLoadingListener listener, BluetoothConnectionCallback.ButtonValueListener upperButtomListener, BluetoothConnectionCallback.ButtonValueListener lowerButtonListener) {
+        this.listener = listener;
+        this.upperButtomListener = upperButtomListener;
+        this.lowerButtonListener = lowerButtonListener;
         List<BluetoothDevice> bluetoothDevices = searchBondedDevices();
         if (bluetoothDevices.size() > 0) {
             connect(bluetoothDevices.get(0));
@@ -110,7 +111,7 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     private void afterConnecting(BluetoothGatt gatt){
         controlService.setBluetoothGatt(gatt);
-        listener.endLoading(gatt);
+        if(listener!= null) listener.endLoading(gatt);
     }
 
     @Override

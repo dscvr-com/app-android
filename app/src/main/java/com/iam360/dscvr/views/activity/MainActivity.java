@@ -1,17 +1,15 @@
 package com.iam360.dscvr.views.activity;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
 import com.iam360.dscvr.sensors.DefaultListeners;
 import com.iam360.dscvr.sensors.GestureDetectors;
@@ -21,7 +19,6 @@ import com.iam360.dscvr.util.MixpanelHelper;
 import com.iam360.dscvr.views.fragment.MainFeedFragment;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,9 +62,23 @@ public class MainActivity extends AppCompatActivity {
         DefaultListeners.initialize(this);
 
         mainFeedFragment = new MainFeedFragment();
-
+        DscvrApp.getInstance().getConnector().connect((gatt)-> connected(), ()-> upperButton(), () -> lowerButton());
 //        copyAssets();
 
+    }
+
+    private void lowerButton() {
+
+    }
+
+    private void upperButton() {
+        cache.save(Cache.MOTOR_ON, true);
+        Intent i = new Intent(this, RecorderActivity.class);
+        i.putExtra(RecorderActivity.DIRECTLY_START_FROM_REMOTE, true);
+        startActivity(i);
+    }
+
+    private void connected() {
     }
 
     @Override

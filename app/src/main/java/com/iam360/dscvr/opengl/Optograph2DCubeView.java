@@ -27,8 +27,6 @@ public class Optograph2DCubeView extends GLSurfaceView {
     private Optograph optograph;
     private ScaleGestureDetector mScaleDetector;
 
-    private boolean isFullscreen;
-
     private final float MIN_ZOOM = 1.0f;
     private final float MAX_ZOOM = 5.0f;
     private float mScaleFactor = MIN_ZOOM;

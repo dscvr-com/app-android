@@ -23,6 +23,7 @@ import timber.log.Timber;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class RecorderActivity extends AppCompatActivity implements RingOptionFragment.OnModeFinished {
 
+    public static final String DIRECTLY_START_FROM_REMOTE = "startFromRemote";
     private final int PERMISSION_REQUEST_CAMERA = 2;
 
     private RecordFragment recordFragment;
@@ -56,7 +57,9 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
         setContentView(R.layout.activity_recorder);
         cache = Cache.open();
         checkPermissionAndInitialize();
-
+        if(getIntent().getBooleanExtra(DIRECTLY_START_FROM_REMOTE, false)){
+            directlyStartToRecord();
+        }
     }
 
     public void checkPermissionAndInitialize() {

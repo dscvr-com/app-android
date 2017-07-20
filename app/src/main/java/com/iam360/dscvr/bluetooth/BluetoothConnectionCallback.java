@@ -46,9 +46,9 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
         Timber.d("characteristic changed");
         if (characteristic.getUuid().equals(BluetoothEngineControlService.RESPONSE_UUID)) {
             if (Arrays.equals(characteristic.getValue(),BluetoothEngineControlService.BOTTOMBUTTON)) {
-                    bottomButton.buttomPressed();
+                    if(bottomButton!= null) bottomButton.buttomPressed();
             }else if(Arrays.equals(characteristic.getValue(), BluetoothEngineControlService.TOPBUTTON)){
-                    topButton.buttomPressed();
+                    if(bottomButton!= null) topButton.buttomPressed();
             }
         }
     }

@@ -141,9 +141,11 @@ public class RingOptionFragment extends Fragment {
             return;
 
         }
-        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext(), gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
-        DscvrApp.getInstance().setConnector(connector);
-        connector.connect();
+
+        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext());
+        DscvrApp.getInstance().getConnector();
+
+        connector.connect(gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
 
     }
 
@@ -156,7 +158,7 @@ public class RingOptionFragment extends Fragment {
         if (!isNotCloseable) {
             updateMode(false);
             callBackListener.directlyStartToRecord();
-        }
+    }
     }
 
     private void stopLoading(BluetoothGatt gatt) {
