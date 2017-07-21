@@ -169,7 +169,7 @@ public class Constants {
             throw new RuntimeException("External Storage is currently not mounted!");
         }
 
-        cachePath = activity.getExternalCacheDir().getPath();
+        cachePath = activity.getFilesDir().getPath();
 
         // initialize cache values for settings
         Cache cache = Cache.open();

@@ -1,7 +1,7 @@
 package com.iam360.dscvr.viewmodels;
 
 import com.iam360.dscvr.model.Optograph;
-import com.iam360.dscvr.util.CameraUtils;
+import com.iam360.dscvr.util.Constants;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -20,7 +20,7 @@ public class LocalOptographManager {
 
     private static List<Optograph> listLocalOptographs() {
         List<Optograph> optographs = new LinkedList<>();
-        File dir = new File(CameraUtils.PERSISTENT_STORAGE_PATH);
+        File dir = new File(Constants.getInstance().getCachePath());
 
         if (dir.exists()) {
             File[] files = dir.listFiles();

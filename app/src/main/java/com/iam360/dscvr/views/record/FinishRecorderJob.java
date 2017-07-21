@@ -70,6 +70,7 @@ public class FinishRecorderJob extends Job {
 
         Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
         CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "_1.jpg");
+        CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.CACHE_PATH + id + "_1.jpg");
 
         bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/", mode);
         for (int i = 0; i < bitmaps.length; ++i) {

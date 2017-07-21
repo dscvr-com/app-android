@@ -57,6 +57,7 @@ public class RingOptionFragment extends Fragment {
     private Cache cache;
 
     private OnModeFinished callBackListener;
+    private boolean firstTime = true;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -110,14 +111,15 @@ public class RingOptionFragment extends Fragment {
             motorBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
             cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
             cache.save(Cache.MOTOR_ON, !isManualMode);
-            if (isNotCloseable || DscvrApp.getInstance().hasConnection()) {
+            if (isNotCloseable && DscvrApp.getInstance().getConnector() != null && DscvrApp.getInstance().hasConnection()) {
                 connector.stop();
             }
         } else {
 
-            if (!DscvrApp.getInstance().hasConnection()) {
-                startToSearchEngine();
+            if (!DscvrApp.getInstance().hasConnection() || firstTime) {
                 showLoading();
+                startToSearchEngine();
+                firstTime = false;
                 isNotCloseable = true;
             }
             cache.save(Cache.MOTOR_ON, !isManualMode);
@@ -141,11 +143,14 @@ public class RingOptionFragment extends Fragment {
             return;
 
         }
+        this.connector = DscvrApp.getInstance().getConnector();
+        if (connector != null && DscvrApp.getInstance().hasConnection()) {
+            connector.update(() -> reactForUpperButton(), () -> reactForLowerButton());
+            stopLoading(null);
+        } else {
 
-        connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), getContext());
-        DscvrApp.getInstance().getConnector();
-
-        connector.connect(gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
+            this.connector.connect(gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
+        }
 
     }
 
@@ -158,7 +163,7 @@ public class RingOptionFragment extends Fragment {
         if (!isNotCloseable) {
             updateMode(false);
             callBackListener.directlyStartToRecord();
-    }
+        }
     }
 
     private void stopLoading(BluetoothGatt gatt) {
@@ -168,6 +173,7 @@ public class RingOptionFragment extends Fragment {
             Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
         }
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
+        getActivity().runOnUiThread(() -> recordButton.setBackgroundResource(R.drawable.camera_selector));
     }
 
     private void showLoading() {
@@ -180,6 +186,7 @@ public class RingOptionFragment extends Fragment {
             }
         }, 10000);
         loading.setVisibility(View.VISIBLE);
+        recordButton.setBackgroundResource(R.drawable.camera_without_icn);
     }
 
     @Override

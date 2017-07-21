@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -69,16 +70,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void lowerButton() {
 
+//        cache.save(Cache.MOTOR_ON, true);
+//        cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
+//        Intent i = new Intent(this, RecorderActivity.class);
+//        i.putExtra(RecorderActivity.DIRECTLY_START_FROM_REMOTE, true);
+//        startActivity(i);
     }
 
     private void upperButton() {
         cache.save(Cache.MOTOR_ON, true);
+        cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
         Intent i = new Intent(this, RecorderActivity.class);
         i.putExtra(RecorderActivity.DIRECTLY_START_FROM_REMOTE, true);
         startActivity(i);
     }
 
     private void connected() {
+        Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show();
     }
 
     @Override

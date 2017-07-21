@@ -30,7 +30,6 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
     private RecorderOverlayFragment recorderOverlayFragment;
     private RingOptionFragment ringOptionFragment;
     public Cache cache;
-    private boolean overlayInitialised = false;
     private boolean shouldDirectlyStart = false;
 
     private void initialzeRingOptions() {
@@ -46,7 +45,6 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
     }
 
     private void initalizeOverlay() {
-        overlayInitialised = true;
         getSupportFragmentManager().beginTransaction().add(R.id.feed_placeholder, recorderOverlayFragment).commit();
 
     }
@@ -141,7 +139,7 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
 
     @Override
     public void directlyStartToRecord() {
-        if (!overlayInitialised) {
+        if (!(recorderOverlayFragment.isOverlayReady()&& recordFragment.isCameraReady()) ) {
             finishSettingModeForRecording();
             shouldDirectlyStart = true;
         } else {
@@ -151,7 +149,7 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
     }
 
     public void overlayInitialised() {
-        if (shouldDirectlyStart) {
+        if (shouldDirectlyStart && recordFragment.isCameraReady()&& recorderOverlayFragment.isOverlayReady()) {
             recorderOverlayFragment.startRecording();
             shouldDirectlyStart = false;
         }

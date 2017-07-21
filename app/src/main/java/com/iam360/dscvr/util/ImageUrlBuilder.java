@@ -82,7 +82,7 @@ public class ImageUrlBuilder {
             return String.format(("%s/%s/%s%s.jpg"), URL, id, sideLetter, face);
         } else {
             String side = isLeftId ? "left/" : "right/";
-            String path = CameraUtils.PERSISTENT_STORAGE_PATH + id + "/" + side + face + ".jpg";
+            String path = CameraUtils.CACHE_PATH + id + "/" + side + face + ".jpg";
             Timber.v("local optograph path: %s", path);
             return path;
         }

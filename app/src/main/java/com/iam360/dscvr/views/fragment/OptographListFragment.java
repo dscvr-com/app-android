@@ -37,7 +37,7 @@ public abstract class OptographListFragment extends Fragment implements Optograp
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cache = Cache.open();
+        cache = Cache.getInstance();
         optographFeedAdapter = new OptographVideoFeedAdapter(getActivity());
     }
 

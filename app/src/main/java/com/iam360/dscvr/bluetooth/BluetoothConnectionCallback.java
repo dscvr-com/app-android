@@ -15,8 +15,8 @@ import timber.log.Timber;
  */
 public class BluetoothConnectionCallback extends BluetoothGattCallback {
 
-    private final ButtonValueListener bottomButton;
-    private final ButtonValueListener topButton;
+    private ButtonValueListener bottomButton;
+    private ButtonValueListener topButton;
     private BluetoothConnector.BluetoothLoadingListener listener;
 
     public BluetoothConnectionCallback(BluetoothConnector.BluetoothLoadingListener listener, ButtonValueListener bottomButton, ButtonValueListener topButton) {
@@ -57,6 +57,11 @@ public class BluetoothConnectionCallback extends BluetoothGattCallback {
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
         Timber.d("service discovered");
         listener.endLoading(gatt);
+    }
+
+    public void update(ButtonValueListener upper, ButtonValueListener lower) {
+        bottomButton = lower;
+        topButton = upper;
     }
 
     public interface ButtonValueListener {

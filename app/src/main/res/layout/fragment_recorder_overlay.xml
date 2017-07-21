@@ -139,7 +139,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginStart="128dp"
-                android:background="@drawable/camera_without_icn"
+                android:background="@drawable/camera_selector"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.494"
                 app:layout_constraintLeft_toLeftOf="parent"

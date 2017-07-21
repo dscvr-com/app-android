@@ -25,7 +25,7 @@ import timber.log.Timber;
 public class DscvrApp extends Application {
     private static DscvrApp instance;
     private JobManager jobManager;
-    private BluetoothConnector connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), this.getApplicationContext());
+    private BluetoothConnector connector = null;
 
 
 
@@ -34,6 +34,9 @@ public class DscvrApp extends Application {
     }
 
     public BluetoothConnector getConnector(){
+         if(connector == null){
+            connector = new BluetoothConnector(BluetoothAdapter.getDefaultAdapter(), this.getApplicationContext());
+        }
         return connector;
     }
 

@@ -38,6 +38,7 @@ public class BluetoothConnector extends BroadcastReceiver {
     private boolean currentlyConnecting = false;
     private BluetoothEngineControlService controlService = new BluetoothEngineControlService();
     private BluetoothLeScanCallback bluetoothLeScanCallback = new BluetoothLeScanCallback((device -> addDeviceFromScan(device)));
+    private BluetoothConnectionCallback callback;
 
     public BluetoothConnector(BluetoothAdapter adapter, Context context) {
         this.adapter = adapter;
@@ -105,7 +106,8 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     private void connect(BluetoothDevice device) {
         currentlyConnecting = true;
-        device.connectGatt(context, true, new BluetoothConnectionCallback(gatt -> afterConnecting(gatt), lowerButtonListener, upperButtomListener));
+        callback = new BluetoothConnectionCallback(gatt -> afterConnecting(gatt), lowerButtonListener, upperButtomListener);
+        device.connectGatt(context, true, callback);
 
     }
 
@@ -150,6 +152,14 @@ public class BluetoothConnector extends BroadcastReceiver {
     public void stop() {
         adapter.cancelDiscovery();
         adapter.getBluetoothLeScanner().stopScan(bluetoothLeScanCallback);
+    }
+
+    public void update(BluetoothConnectionCallback.ButtonValueListener upper, BluetoothConnectionCallback.ButtonValueListener lower) {
+        this.upperButtomListener = upper;
+        this.lowerButtonListener = lower;
+        if(callback!= null){
+            callback.update(upper, lower);
+        }
     }
 
     public interface BluetoothLoadingListener {

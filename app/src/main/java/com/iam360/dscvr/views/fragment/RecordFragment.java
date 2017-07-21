@@ -194,6 +194,8 @@ public class RecordFragment extends Fragment {
                 size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
                 // Add some margin to the focal length, to avoid too short focal lengths.
                 focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.1f;
+                cameraReady = true;
+                ((RecorderActivity) getActivity()).overlayInitialised();
 
             } catch (CameraAccessException e) {
                 Log.d("MARK", "CameraAccessException e" + e.getMessage());
@@ -205,6 +207,7 @@ public class RecordFragment extends Fragment {
         public void cameraClosed(CameraDevice device) {
         }
     };
+    private boolean cameraReady= false;
 
     private void queueFinishRecording() {
         // see: http://stackoverflow.com/a/11125271/1176596
@@ -496,5 +499,9 @@ public class RecordFragment extends Fragment {
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
 
         checkPermissions(getView());
+    }
+
+    public boolean isCameraReady() {
+        return cameraReady;
     }
 }

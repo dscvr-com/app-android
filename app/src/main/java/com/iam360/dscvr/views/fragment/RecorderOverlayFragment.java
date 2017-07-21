@@ -52,6 +52,7 @@ public class RecorderOverlayFragment extends Fragment {
     View arc;
     @Bind(R.id.progress)
     ProgressBar progressLine;
+    private boolean overlayReady = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,6 +71,7 @@ public class RecorderOverlayFragment extends Fragment {
         super.onStart();
         getView().setFocusableInTouchMode(true);
         getView().requestFocus();
+        overlayReady = true;
         ((RecorderActivity) getActivity()).overlayInitialised();
     }
 
@@ -168,9 +170,14 @@ public class RecorderOverlayFragment extends Fragment {
         super.onResume();
         if (GlobalState.isAnyJobRunning) {
             recordProgress.setVisibility(View.VISIBLE);
+            recordButton.setBackgroundResource(R.drawable.camera_without_icn);
         } else {
             recordProgress.setVisibility(View.INVISIBLE);
+            recordButton.setBackgroundResource(R.drawable.camera_selector);
         }
     }
 
+    public boolean isOverlayReady() {
+        return overlayReady;
+    }
 }
