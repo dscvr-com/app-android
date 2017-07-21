@@ -76,7 +76,8 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
     public void onBindViewHolder(OptographHolder holder, int position) {
         Optograph optograph = optographs.get(position);
 
-
+        holder.bindingHeader.vrButton.setOnClickListener(v -> startVRMode());
+        holder.bindingHeader.moreButton.setOnClickListener(v -> showDelete(holder, position));
         holder.bindingHeader.optograph2dview.setSensorMode(CombinedMotionManager.GYRO_MODE);
         holder.bindingHeader.optograph2dview.addScrollLockListener(this);
         holder.bindingHeader.optograph2dview.setOnTouchListener(new View.OnTouchListener() {

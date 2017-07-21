@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import com.iam360.dscvr.R;
+import com.iam360.dscvr.record.Recorder;
 import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.views.fragment.RecordFragment;
 import com.iam360.dscvr.views.fragment.RecorderOverlayFragment;
@@ -112,11 +113,16 @@ public class RecorderActivity extends AppCompatActivity implements RingOptionFra
 
     @Override
     public void onBackPressed() {
+        if(Recorder.isIdle() && !Recorder.hasStarted()) {
+            super.onBackPressed();
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.dialog_cancel_recording)
                 .setPositiveButton(getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        cancelRecording();
+                            cancelRecording();
+
                         RecorderActivity.super.onBackPressed();
                     }
                 })

@@ -118,9 +118,9 @@ public class RingOptionFragment extends Fragment {
 
             if (!DscvrApp.getInstance().hasConnection() || firstTime) {
                 showLoading();
+                isNotCloseable = true;
                 startToSearchEngine();
                 firstTime = false;
-                isNotCloseable = true;
             }
             cache.save(Cache.MOTOR_ON, !isManualMode);
             manualBtn.setBackgroundResource(R.drawable.manual_icon);
@@ -147,6 +147,7 @@ public class RingOptionFragment extends Fragment {
         if (connector != null && DscvrApp.getInstance().hasConnection()) {
             connector.update(() -> reactForUpperButton(), () -> reactForLowerButton());
             stopLoading(null);
+            isNotCloseable = false;
         } else {
 
             this.connector.connect(gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());

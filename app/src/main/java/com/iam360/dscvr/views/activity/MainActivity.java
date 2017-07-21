@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connected() {
-        Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show();
+        runOnUiThread(() -> Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show());
     }
 
     @Override

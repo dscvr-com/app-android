@@ -93,10 +93,10 @@ public class RecorderOverlayFragment extends Fragment {
     public void startRecording() {
         Timber.d("initializeNavigationButtons recordButtonClick");
         MODE = RECORDING_MODE;
-        recordButton.setVisibility(View.INVISIBLE);
-        recordProgress.setVisibility(View.INVISIBLE);
-        cameraOverlay.setVisibility(View.VISIBLE);
-        instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
+        if (recordButton != null) recordButton.setVisibility(View.INVISIBLE);
+        if (recordProgress != null) recordProgress.setVisibility(View.INVISIBLE);
+        if (cameraOverlay != null) cameraOverlay.setVisibility(View.VISIBLE);
+        if (instruction != null) instruction.setText(getActivity().getResources().getText(R.string.record_instruction_follow));
 
         ((RecorderActivity) getActivity()).startRecording();
     }
