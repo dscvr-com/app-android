@@ -13,7 +13,7 @@
         <ImageButton
             android:id="@+id/frag_manual_button"
             android:layout_width="143dp"
-            android:layout_height="wrap_content"
+            android:layout_height="143dp"
             android:background="@drawable/manual_icon"
             android:onClick="onClick"
             app:layout_constraintLeft_toLeftOf="parent"

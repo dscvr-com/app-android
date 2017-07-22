@@ -58,6 +58,7 @@ public class RingOptionFragment extends Fragment {
 
     private OnModeFinished callBackListener;
     private boolean firstTime = true;
+    private boolean isCurrentlyRingChoosing = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -96,7 +97,7 @@ public class RingOptionFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         callBackListener = (OnModeFinished) context;
-
+        isCurrentlyRingChoosing = false;
     }
 
     /**
@@ -105,27 +106,39 @@ public class RingOptionFragment extends Fragment {
      * @param isManualMode
      */
     private void updateMode(boolean isManualMode) {
-        if (isManualMode) {
-            stopLoading(null);
-            manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
-            motorBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
-            cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
-            cache.save(Cache.MOTOR_ON, !isManualMode);
-            if (isNotCloseable && DscvrApp.getInstance().getConnector() != null && DscvrApp.getInstance().hasConnection()) {
-                connector.stop();
+        if (isCurrentlyRingChoosing) {
+            if(isManualMode){
+                cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+            }else{
+                cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
             }
-        } else {
-
-            if (!DscvrApp.getInstance().hasConnection() || firstTime) {
-                showLoading();
-                isNotCloseable = true;
-                startToSearchEngine();
-                firstTime = false;
-            }
-            cache.save(Cache.MOTOR_ON, !isManualMode);
             manualBtn.setBackgroundResource(R.drawable.manual_icon);
-            motorBtn.setBackgroundResource(R.drawable.one_ring_active_icn);
-            cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE); // FIXME remove this later
+            motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);//FIXME!!!! put here the real motor Icon!!!!
+            isCurrentlyRingChoosing = false;
+        } else {
+            if (isManualMode) {
+                stopLoading(null);
+                manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
+                motorBtn.setBackgroundResource(R.drawable.motor_icon);
+                cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
+                cache.save(Cache.MOTOR_ON, !isManualMode);
+                if (isNotCloseable && DscvrApp.getInstance().getConnector() != null && DscvrApp.getInstance().hasConnection()) {
+                    connector.stop();
+                }
+            } else {
+
+                if (!DscvrApp.getInstance().hasConnection() || firstTime) {
+                    showLoading();
+                    isNotCloseable = true;
+                    startToSearchEngine();
+                    firstTime = false;
+                }
+                cache.save(Cache.MOTOR_ON, !isManualMode);
+
+                manualBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
+                motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);
+                isCurrentlyRingChoosing = true;
+            }
         }
     }
 
