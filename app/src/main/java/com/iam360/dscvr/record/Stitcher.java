@@ -7,16 +7,15 @@ import android.graphics.Bitmap;
  * @date 2016-02-11
  */
 public class Stitcher {
+
     static {
         System.loadLibrary("optonaut-android-bridge");
     }
 
-    public static native Bitmap[] getResult(String path, String sharedPath, int mode);
+    public static native Bitmap getResult(String path, String sharedPath);
 
-    public static native Bitmap getEQResult(String path, String sharedPath, int mode);
+    public static native Bitmap[] getCubeMap(Bitmap equirectangular);
 
     public static native void clear(String path, String sharedPath);
-
-    public static native boolean hasUnstitchedRecordings(String path, String sharedPath);
 
 }

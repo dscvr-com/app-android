@@ -57,40 +57,45 @@ public class FinishRecorderJob extends Job {
         Recorder.disposeRecorder();
         Timber.v("Stitcher is getting result...");
 
-//        Alignment.align(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
-        if (mode == Constants.THREE_RING_MODE)
-            ConvertToStereo.convert(CameraUtils.CACHE_PATH + "post/", CameraUtils.CACHE_PATH + "shared/", CameraUtils.CACHE_PATH);
+        final String leftPath = CameraUtils.CACHE_PATH + "left/";
+        final String rightPath = CameraUtils.CACHE_PATH + "right/";
+        final String sharedPath = CameraUtils.CACHE_PATH + "shared/";
 
-        Bitmap[] bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
-//        UUID id = UUID.randomUUID();
-        for (int i = 0; i < bitmaps.length; ++i) {
-            CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.CACHE_PATH + id + "/left/" + i + ".jpg");
-            bitmaps[i].recycle();
+
+        Bitmap leftEQ = Stitcher.getResult(leftPath, sharedPath);
+        CameraUtils.savePanoramaToLocationWithExif(leftEQ, CameraUtils.PERSISTENT_STORAGE_PATH + id + "_1.jpg");
+
+        Timber.v("EQ Size: " + leftEQ.getWidth() + "x" + leftEQ.getHeight());
+
+        Bitmap[] leftFaces = Stitcher.getCubeMap(leftEQ);
+        leftEQ.recycle();
+
+        for (int i = 0; i < leftFaces.length; ++i) {
+            CameraUtils.saveBitmapToLocation(leftFaces[i], CameraUtils.CACHE_PATH + id + "/left/" + i + ".jpg");
+            leftFaces[i].recycle();
         }
 
-        Bitmap eqmap = Stitcher.getEQResult(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/", mode);
-        CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.PERSISTENT_STORAGE_PATH + id + "_1.jpg");
-        CameraUtils.saveBitmapToLocationEQ(eqmap, CameraUtils.CACHE_PATH + id + "_1.jpg");
+        Bitmap rightEQ = Stitcher.getResult(rightPath, sharedPath);
 
-        bitmaps = Stitcher.getResult(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/", mode);
-        for (int i = 0; i < bitmaps.length; ++i) {
-            CameraUtils.saveBitmapToLocation(bitmaps[i], CameraUtils.CACHE_PATH + id + "/right/" + i + ".jpg");
-            bitmaps[i].recycle();
+        Bitmap[] rightFaces = Stitcher.getCubeMap(rightEQ);
+        rightEQ.recycle();
+
+        for (int i = 0; i < rightFaces.length; ++i) {
+            CameraUtils.saveBitmapToLocation(rightFaces[i], CameraUtils.CACHE_PATH + id + "/right/" + i + ".jpg");
+            rightFaces[i].recycle();
         }
 
         MixpanelHelper.trackStitchingFinish(getApplicationContext());
+
         Timber.v("FinishRecorderJob finished");
-        Stitcher.clear(CameraUtils.CACHE_PATH + "left/", CameraUtils.CACHE_PATH + "shared/");
-        Stitcher.clear(CameraUtils.CACHE_PATH + "right/", CameraUtils.CACHE_PATH + "shared/");
+        Stitcher.clear(leftPath, sharedPath);
+        Stitcher.clear(rightPath, sharedPath);
 
 
         GlobalState.isAnyJobRunning = false;
         GlobalState.shouldHardRefreshFeed = true;
         BusProvider.getInstance().post(new RecordFinishedEvent(true));
         Timber.v("finish all job");
-
-
-
     }
 
     @Override

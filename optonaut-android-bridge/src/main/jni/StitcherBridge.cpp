@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <android/log.h>
+#include <android/bitmap.h>
 
 #include "online-stitcher/src/stitcher/stitcher.hpp"
 #include "online-stitcher/src/io/checkpointStore.hpp"
@@ -11,13 +12,16 @@ using namespace optonaut;
 #define DEBUG_TAG "Stitcher.cpp"
 
 extern "C" {
-    jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode);
-    jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath, jint mode);
-    void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
-    jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject thiz, jstring path, jstring sharedPath);
+    jobject Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject, jstring path, jstring sharedPath);
+    jobjectArray  Java_com_iam360_dscvr_record_Stitcher_getCubeMap(JNIEnv *env, jobject, jobject sphereBitmap);
+    void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject, jstring path, jstring sharedPath);
+    jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *env, jobject, jstring path, jstring sharedPath);
 };
 
-
+void jniThrow(JNIEnv *env, const string error) {
+    jclass je = env->FindClass("java/lang/RuntimeException");
+    env->ThrowNew(je, error.c_str());
+}
 
 std::vector<Mat> getCubeFaces(const Mat& sphere)
 {
@@ -32,135 +36,127 @@ std::vector<Mat> getCubeFaces(const Mat& sphere)
     return cubeFaces;
 }
 
-std::vector<Mat> getResult(const std::string& path, const std::string& sharedPath)
-{
-    CheckpointStore store(path, sharedPath);
-//    Stitcher stitcher(store);
-//    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+jobject createBitmap(JNIEnv *env, int width, int height) {
 
-    StitchingResultP result = store.LoadOptograph();
-    result->image.Load();
-    Mat sphere = result->image.data;
-
-    Mat blurred;
-    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
-    panoBlur.Blur(sphere, blurred);
-    sphere.release();
-
-    return getCubeFaces(blurred);
-}
-
-std::vector<Mat> getResultThreeRing(const std::string& path, const std::string& sharedPath)
-{
-    CheckpointStore store(path, sharedPath);
-    optonaut::Stitcher stitcher(store);
-    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
-    Mat blurred;
-    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
-    panoBlur.Blur(sphere, blurred);
-    sphere.release();
-
-    return getCubeFaces(blurred);
-}
-
-Mat getEQResult(const std::string& path, const std::string& sharedPath)
-{
-    CheckpointStore store(path, sharedPath);
-//    Stitcher stitcher(store);
-//    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
-    StitchingResultP result = store.LoadOptograph();
-    result->image.Load();
-    Mat sphere = result->image.data;
-
-    Mat blurred;
-    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
-    panoBlur.Black(sphere, blurred);
-    sphere.release();
-
-    return blurred;
-}
-
-Mat getEQResultThreeRing(const std::string& path, const std::string& sharedPath)
-{
-    CheckpointStore store(path, sharedPath);
-    optonaut::Stitcher stitcher(store);
-    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
-    Mat blurred;
-    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
-    panoBlur.Black(sphere, blurred);
-    sphere.release();
-
-    return blurred;
-}
-
-jobject matToBitmap(JNIEnv *env, const Mat& mat)
-{
     jclass bitmapConfig = env->FindClass("android/graphics/Bitmap$Config");
     jfieldID rgba8888FieldID = env->GetStaticFieldID(bitmapConfig, "ARGB_8888", "Landroid/graphics/Bitmap$Config;");
     jobject rgba8888Obj = env->GetStaticObjectField(bitmapConfig, rgba8888FieldID);
 
     jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
     jmethodID createBitmapMethodID = env->GetStaticMethodID(bitmapClass,"createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
-    jobject bitmapObj = env->CallStaticObjectMethod(bitmapClass, createBitmapMethodID, mat.cols, mat.rows, rgba8888Obj);
 
-    jintArray pixels = env->NewIntArray(mat.cols * mat.rows);
+    Log << "create bitmap width: " << width << " create bitmap height: " << height;
 
-    jint *body = env->GetIntArrayElements(pixels, NULL);
+    jobject bitmapObj = env->CallStaticObjectMethod(bitmapClass, createBitmapMethodID, width, height, rgba8888Obj);
 
-    cv::cvtColor(
-            mat,
-            cv::Mat(mat.rows, mat.cols, CV_8UC4, body),
-            cv::COLOR_RGB2RGBA);
-
-    env->ReleaseIntArrayElements(pixels, body, 0);
-
-    jmethodID setPixelsMid = env->GetMethodID(bitmapClass, "setPixels", "([IIIIIII)V");
-    env->CallVoidMethod(bitmapObj, setPixelsMid, pixels, 0, mat.cols, 0, 0, mat.cols, mat.rows);
+    if(bitmapObj == NULL) {
+        jniThrow(env, "Created bitmap was null");
+    }
 
     return bitmapObj;
 }
 
+void transferToBitmap(JNIEnv *env, cv::Mat &mat, jobject bitmap) {
 
-jobjectArray Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject, jstring path, jstring sharedPath, jint mode)
+    AndroidBitmapInfo  info;
+
+    void* pixels = 0;
+    int res = AndroidBitmap_getInfo(env, bitmap, &info);
+    if(res != 0) {
+        jniThrow(env, (("Android Bitmap getInfo error: " + optonaut::ToString(res))).c_str());
+    }
+
+    if(mat.type() != CV_8UC3) {
+        jniThrow(env, "Mat pixel format error");
+    }
+    if(info.width != mat.cols || info.height != mat.rows) {
+        jniThrow(env, "Mat/bitmap width/height mismatch");
+    }
+    if(AndroidBitmap_lockPixels(env, bitmap, &pixels) != 0) {
+        jniThrow(env, "Lock pixels error");
+    }
+
+    cv::cvtColor(
+            mat,
+            cv::Mat(mat.rows, mat.cols, CV_8UC4, pixels),
+            cv::COLOR_RGB2RGBA);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+}
+
+
+void transferFromBitmap(JNIEnv *env, cv::Mat &mat, jobject bitmap) {
+
+    AndroidBitmapInfo  info;
+    void* pixels = 0;
+    int res = AndroidBitmap_getInfo(env, bitmap, &info);
+    if(res != 0) {
+        jniThrow(env, (("Android Bitmap getInfo error: " + optonaut::ToString(res))).c_str());
+    }
+
+    if(mat.type() != CV_8UC3 || info.width != mat.cols || info.height != mat.rows) {
+        mat = Mat(info.height, info.width, CV_8UC3);
+    }
+    if(AndroidBitmap_lockPixels(env, bitmap, &pixels) != 0) {
+        jniThrow(env, "Lock pixels error");
+    }
+
+    cv::cvtColor(
+            cv::Mat(mat.rows, mat.cols, CV_8UC4, pixels),
+            mat,
+            cv::COLOR_RGBA2RGB);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+}
+
+jobject getResult(JNIEnv *env, string storePath, string sharedPath) {
+    CheckpointStore store(storePath, sharedPath);
+    optonaut::Stitcher stitcher(store);
+    Mat sphere = stitcher.Finish(ProgressCallback::Empty)->image.data;
+
+    Log << sphere.size();
+
+    jobject bitmap = createBitmap(env, sphere.cols, sphere.rows);
+
+    transferToBitmap(env, sphere, bitmap);
+
+    return bitmap;
+}
+
+
+jobject Java_com_iam360_dscvr_record_Stitcher_getResult(JNIEnv *env, jobject, jstring path, jstring sharedPath)
 {
     const char *cPath = env->GetStringUTFChars(path, NULL);
     const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
 
-    std::vector<Mat> result(6);
-//    std::vector<Mat> result;// = NULL;// = getResult(cPath, cSharedPath);
-    if(mode == RecorderGraph::ModeCenter) {
-        result = getResult(cPath, cSharedPath);
-    } else {
-        result = getResultThreeRing(cPath, cSharedPath);
-    }
+    return getResult(env, cPath, cSharedPath);
+}
 
-    AssertEQ(result.size(), (size_t) 6);
+jobjectArray  Java_com_iam360_dscvr_record_Stitcher_getCubeMap(JNIEnv *env, jobject, jobject sphereBitmap) {
+    Mat sphere;
+    Mat blurred;
+
+    transferFromBitmap(env, sphere, sphereBitmap);
+    optonaut::PanoramaBlur panoBlur(sphere.size(), cv::Size(sphere.cols, std::max(sphere.cols / 2, sphere.rows)));
+
+    Log << sphere.size();
+
+    panoBlur.Blur(sphere, blurred);
+    sphere.release();
+
+    auto faces = getCubeFaces(blurred);
 
     jclass bitmapClass = env->FindClass("android/graphics/Bitmap");
-    jobjectArray bitmaps = (jobjectArray) env->NewObjectArray(result.size(), bitmapClass, 0);
+    jobjectArray bitmaps = (jobjectArray) env->NewObjectArray(faces.size(), bitmapClass, 0);
 
-    for(size_t i = 0; i < result.size(); ++i)
+    for(size_t i = 0; i < faces.size(); ++i)
     {
-        env->SetObjectArrayElement(bitmaps, i, matToBitmap(env, result[i]));
+        jobject bitmap = createBitmap(env, faces[i].cols, faces[i].rows);
+        transferToBitmap(env, faces[i], bitmap);
+        env->SetObjectArrayElement(bitmaps, i, bitmap);
     }
 
     return bitmaps;
-}
-
-jobject Java_com_iam360_dscvr_record_Stitcher_getEQResult(JNIEnv *env, jobject, jstring path, jstring sharedPath, jint mode)
-{
-    const char *cPath = env->GetStringUTFChars(path, NULL);
-    const char *cSharedPath = env->GetStringUTFChars(sharedPath, NULL);
-
-    Mat result;
-
-    if(mode == RecorderGraph::ModeCenter ) {
-        result = getEQResult(cPath, cSharedPath);
-    } else {
-        result = getEQResultThreeRing(cPath, cSharedPath);
-    }
-
-    return matToBitmap(env, result);
 }
 
 void Java_com_iam360_dscvr_record_Stitcher_clear(JNIEnv *env, jobject, jstring path, jstring sharedPath)
@@ -179,8 +175,4 @@ jboolean Java_com_iam360_dscvr_record_Stitcher_hasUnstitchedRecordings(JNIEnv *e
     CheckpointStore store(cPath, cSharedPath);
 
     return store.HasUnstitchedRecording();
-
-//    return Stores::left.HasUnstitchedRecording() || Stores::right.HasUnstitchedRecording();
-
-
 }

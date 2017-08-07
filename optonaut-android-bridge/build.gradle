@@ -12,7 +12,6 @@ android {
         versionName "1.0"
 
         // These directives will be used to tell Android studio how to compile your library
-
         sourceSets.main {
             jniLibs.srcDirs = ['src/main/libs']
             jni.srcDirs = [] //disable automatic ndk-build call
@@ -25,7 +24,7 @@ android {
                         "-DANDROID_ARM_MODE=arm",
                         "-DANDROID_ARM_NEON=true",
                         "-DANDROID_CPP_FEATURES=exceptions"
-                "-D__ANDROID__=true"
+                        "-D__ANDROID__=true"
             }
         }
     }
