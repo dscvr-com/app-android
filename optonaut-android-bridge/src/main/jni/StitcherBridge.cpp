@@ -79,7 +79,7 @@ void transferToBitmap(JNIEnv *env, cv::Mat &mat, jobject bitmap) {
     cv::cvtColor(
             mat,
             cv::Mat(mat.rows, mat.cols, CV_8UC4, pixels),
-            cv::COLOR_RGB2RGBA);
+            cv::COLOR_BGR2RGBA);
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }
@@ -104,7 +104,7 @@ void transferFromBitmap(JNIEnv *env, cv::Mat &mat, jobject bitmap) {
     cv::cvtColor(
             cv::Mat(mat.rows, mat.cols, CV_8UC4, pixels),
             mat,
-            cv::COLOR_RGBA2RGB);
+            cv::COLOR_RGBA2BGR);
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }
