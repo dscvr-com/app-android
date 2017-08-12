@@ -1,5 +1,6 @@
 package com.iam360.dscvr.views.activity;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_ENABLE_BT = 1;
     private Cache cache;
     private MainFeedFragment mainFeedFragment;
     public boolean isFullScreenMode = false;
@@ -63,7 +65,12 @@ public class MainActivity extends AppCompatActivity {
         DefaultListeners.initialize(this);
 
         mainFeedFragment = new MainFeedFragment();
-        DscvrApp.getInstance().getConnector().connect((gatt)-> connected(), ()-> upperButton(), () -> lowerButton());
+        try {
+            DscvrApp.getInstance().getConnector().connect((gatt) -> connected(), () -> upperButton(), () -> lowerButton());
+        }catch(IllegalStateException e){
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
 //        copyAssets();
 
     }
@@ -101,6 +108,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_ENABLE_BT) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                DscvrApp.getInstance().getConnector().connect((gatt) -> connected(), () -> upperButton(), () -> lowerButton());
+            }
+        }
         super.onActivityResult(requestCode, resultCode, data);
 
     }

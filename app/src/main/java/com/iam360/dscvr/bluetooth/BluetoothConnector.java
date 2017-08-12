@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 
-
 /**
  * Connects the application to a bluetoothdevice
  * Created by Charlotte on 17.03.2017.
@@ -63,16 +62,18 @@ public class BluetoothConnector extends BroadcastReceiver {
     }
 
     private void findLeDevice() {
-
-        stopScanHandler.postDelayed(() -> adapter.getBluetoothLeScanner().stopScan(bluetoothLeScanCallback), SCAN_PERIOD);
-        ScanSettings settings = new ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                .build();
-        ArrayList<ScanFilter> filters = new ArrayList<>();
-        filters.add(new ScanFilter.Builder().setServiceUuid(BluetoothEngineControlService.SERVICE_UUID).build());
-        adapter.getBluetoothLeScanner().startScan(filters, settings, bluetoothLeScanCallback);
+        if (adapter == null || !adapter.isEnabled() && adapter.getBluetoothLeScanner() == null) {
+            throw new IllegalStateException("adapter is not turned on");
+        } else {
+            stopScanHandler.postDelayed(() -> adapter.getBluetoothLeScanner().stopScan(bluetoothLeScanCallback), SCAN_PERIOD);
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .build();
+            ArrayList<ScanFilter> filters = new ArrayList<>();
+            filters.add(new ScanFilter.Builder().setServiceUuid(BluetoothEngineControlService.SERVICE_UUID).build());
+            adapter.getBluetoothLeScanner().startScan(filters, settings, bluetoothLeScanCallback);
+        }
     }
-
     private void addDeviceFromScan(BluetoothDevice device) {
         nextDevice.add(device);
         if (!currentlyConnecting) {
@@ -111,9 +112,9 @@ public class BluetoothConnector extends BroadcastReceiver {
 
     }
 
-    private void afterConnecting(BluetoothGatt gatt){
+    private void afterConnecting(BluetoothGatt gatt) {
         controlService.setBluetoothGatt(gatt);
-        if(listener!= null) listener.endLoading(gatt);
+        if (listener != null) listener.endLoading(gatt);
     }
 
     @Override
@@ -157,7 +158,7 @@ public class BluetoothConnector extends BroadcastReceiver {
     public void update(BluetoothConnectionCallback.ButtonValueListener upper, BluetoothConnectionCallback.ButtonValueListener lower) {
         this.upperButtomListener = upper;
         this.lowerButtonListener = lower;
-        if(callback!= null){
+        if (callback != null) {
             callback.update(upper, lower);
         }
     }
