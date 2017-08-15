@@ -35,6 +35,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
     private static final int MILLISECONDS_THRESHOLD_FOR_SWITCH = 250;
     private DateTime inVRPositionSince = null;
     private SensorManager sensorManager;
+    private boolean isFullScreen = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         super.onResume();
         registerAccelerationListener();
 
-        if(GlobalState.isAnyJobRunning) {
+        if (GlobalState.isAnyJobRunning) {
             binding.cameraBtn.setEnabled(false);
             binding.recordProgress.setVisibility(View.VISIBLE);
         } else {
@@ -107,7 +108,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
                 .subscribe(this::addItem);
     }
 
-    private void addItem(Optograph optograph){
+    private void addItem(Optograph optograph) {
         optographFeedAdapter.addItem(optograph);
         binding.optographFeed.scrollToPosition(0);
     }
@@ -150,19 +151,21 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
         initializeFeed();
     }
 
-    public boolean toggleFullScreen(boolean isFullScreenMode) {
-        if(isFullScreenMode) {
-            binding.overlayLayout.setVisibility(View.VISIBLE);
-            return false;
-        } else {
-            binding.overlayLayout.setVisibility(View.GONE);
-            return true;
+    public void toggleFullScreen(boolean setToFullScreen) {
+        if (isFullscreen() != setToFullScreen) {
+            if (setToFullScreen) {
+                binding.overlayLayout.setVisibility(View.GONE);
+            } else {
+                binding.overlayLayout.setVisibility(View.VISIBLE);
+            }
+            isFullScreen = setToFullScreen;
+            super.toggleFullScreen(setToFullScreen);
         }
     }
 
     public void switchToVRMode() {
 
-        if(optographFeedAdapter.getItemCount() > 0) {
+        if (optographFeedAdapter.getItemCount() > 0) {
             Intent intent = new Intent(getActivity(), VRModeActivity.class);
             intent.putParcelableArrayListExtra("opto_list", optographFeedAdapter.getNextOptographList(firstVisible, 5));
             startActivity(intent);
@@ -178,7 +181,7 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
             float y = event.values[1];
             float z = event.values[2];
 
-            float length = (float) Math.sqrt(x*x + y*y);
+            float length = (float) Math.sqrt(x * x + y * y);
             if (length < Constants.MINIMUM_AXIS_LENGTH) {
                 inVRPositionSince = null;
 
@@ -210,5 +213,28 @@ public class MainFeedFragment extends OptographListFragment implements View.OnCl
 
     private void unregisterAccelerationListener() {
         sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void lock() {
+        if (!isFullscreen()) {
+            binding.optographFeed.setIsScrollable(false);
+            toggleFullScreen(true);
+        }
+    }
+
+
+    @Override
+    public void release() {
+        if (isFullscreen()) {
+            binding.optographFeed.setIsScrollable(true);
+            toggleFullScreen(false);
+        }
+
+    }
+
+    @Override
+    public boolean isFullscreen() {
+        return isFullScreen;
     }
 }

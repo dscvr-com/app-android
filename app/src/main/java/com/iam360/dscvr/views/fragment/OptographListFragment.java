@@ -17,8 +17,6 @@ import com.iam360.dscvr.util.Cache;
 import com.iam360.dscvr.viewmodels.InfiniteScrollListener;
 import com.iam360.dscvr.viewmodels.OptographVideoFeedAdapter;
 
-import timber.log.Timber;
-
 public abstract class OptographListFragment extends Fragment implements Optograph2DCubeView.OnScrollLockListener {
     protected OptographVideoFeedAdapter optographFeedAdapter;
     protected Cache cache;
@@ -26,12 +24,9 @@ public abstract class OptographListFragment extends Fragment implements Optograp
     protected int firstVisible = 0;
 
     LinearLayoutManager mLayoutManager;
-    private int oldFirstVisible;
 
     public OptographListFragment() {
     }
-
-
 
 
     @Override
@@ -72,28 +67,29 @@ public abstract class OptographListFragment extends Fragment implements Optograp
             public void onLoadMore() {
                 loadMore();
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Timber.d("scrolled!!:  " + dx + " " +dy);
-                oldFirstVisible = firstVisible;
-                firstVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-               if(firstVisible!= oldFirstVisible) binding.optographFeed.setIsScrollable(false);
+                firstVisible = mLayoutManager.findFirstVisibleItemPosition();
             }
         });
         optographFeedAdapter.setOnClickListener(this);
 
-        binding.optographFeed.setIsScrollable(false);
+        binding.optographFeed.setIsScrollable(true);
+        binding.optographFeed.setScrollLock(this);
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initializeFeed();
     }
 
     public abstract void initializeFeed();
+
     public abstract void loadMore();
+
     public abstract void refresh();
 
     @Override
@@ -106,15 +102,14 @@ public abstract class OptographListFragment extends Fragment implements Optograp
         super.onPause();
     }
 
-    @Override
-    public void lock() {
-        binding.optographFeed.setIsScrollable(false);
-    }
-
-
-    @Override
-    public void release() {
-        binding.optographFeed.setIsScrollable(true);
-
+    public void toggleFullScreen(boolean setToFullScreen) {
+        View child = binding.optographFeed.getChildAt(firstVisible);
+        if (child == null) {
+            child = binding.optographFeed.getChildAt(0);
+        }
+        if (child == null) return;
+        OptographVideoFeedAdapter.OptographHolder viewHolder = (OptographVideoFeedAdapter.OptographHolder) binding.optographFeed.getChildViewHolder(child);
+        if (viewHolder == null) return;
+        optographFeedAdapter.toggleFullScreen(viewHolder, setToFullScreen);
     }
 }

@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private Cache cache;
     private MainFeedFragment mainFeedFragment;
-    public boolean isFullScreenMode = false;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -140,10 +139,6 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    public void toggleFeedFullScreen() {
-        isFullScreenMode = mainFeedFragment.toggleFullScreen(isFullScreenMode);
-    }
-
     public void switchToVRMode() {
         mainFeedFragment.switchToVRMode();
     }
@@ -224,4 +219,6 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
+
+
 }

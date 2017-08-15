@@ -26,7 +26,6 @@ import com.iam360.dscvr.util.CameraUtils;
 import com.iam360.dscvr.util.Constants;
 import com.iam360.dscvr.util.DBHelper;
 import com.iam360.dscvr.util.RFC3339DateFormatter;
-import com.iam360.dscvr.views.activity.MainActivity;
 
 import org.joda.time.DateTime;
 
@@ -46,7 +45,6 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
     private Context context;
     private DBHelper mydb;
     private Optograph2DCubeView.OnScrollLockListener scrollLock;
-    private boolean isFullscreen;
 
     public OptographVideoFeedAdapter(Context context) {
         this.context = context;
@@ -85,15 +83,15 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
             public boolean onTouch(View v, MotionEvent event) {
 
                 if (GestureDetectors.singleClickDetector.onTouchEvent(event)) {
-                    if (context instanceof MainActivity) {
-                        toggleFullScreen(holder, ((MainActivity) context).isFullScreenMode);
-
-                        ((MainActivity) context).toggleFeedFullScreen();
+                    if (scrollLock.isFullscreen()) {
+                        scrollLock.release();
+                    } else {
                         scrollLock.lock();
                     }
+                    return true;
+                } else {
+                    return holder.bindingHeader.optograph2dview.getOnTouchListener().onTouch(v, event);
                 }
-
-                return holder.bindingHeader.optograph2dview.getOnTouchListener().onTouch(v, event);
             }
         });
 
@@ -138,14 +136,11 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
         popup.show();//showing popup menu
     }
 
-    private void toggleFullScreen(OptographHolder holder, boolean isFullScreenMode) {
-
-        if (isFullScreenMode) {
-            holder.bindingHeader.profileBar.setVisibility(View.VISIBLE);
-            if (scrollLock != null) scrollLock.release();
-        } else {
+    public void toggleFullScreen(OptographHolder holder, boolean setToFullScreen) {
+        if (setToFullScreen) {
             holder.bindingHeader.profileBar.setVisibility(View.GONE);
-            if (scrollLock != null) scrollLock.lock();
+        } else {
+            holder.bindingHeader.profileBar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -273,9 +268,14 @@ public class OptographVideoFeedAdapter extends RecyclerView.Adapter<OptographVid
 
     @Override
     public void release() {
-        if (context instanceof MainActivity &&  !((MainActivity) context).isFullScreenMode){
+        if (!scrollLock.isFullscreen()) {
             scrollLock.release();
         }
+    }
+
+    @Override
+    public boolean isFullscreen() {
+        return scrollLock.isFullscreen();
     }
 
     public static class OptographHolder extends RecyclerView.ViewHolder {
