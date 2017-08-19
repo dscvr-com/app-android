@@ -21,8 +21,11 @@ public class CommandWorker {
     private static final String TAG = CommandWorker.class.getSimpleName();
     private long currentStart;
     private double currentStepX;
-    private double currentSpeed;
+    private double currentStepY;
+    private double currentSpeedX;
+    private double currentSpeedY;
     private double xPosition;
+    private double yPosition;
     private AutoResetEvent event;
 
     public CommandWorker(BluetoothEngineControlService service) {
@@ -41,7 +44,10 @@ public class CommandWorker {
     }
 
     public double getXPosition() {
-        return xPosition + Math.min(currentStepX, currentSpeed * (System.currentTimeMillis() - currentStart) / 1000.0);
+        return xPosition + Math.min(currentStepX, currentSpeedX * (System.currentTimeMillis() - currentStart) / 1000.0);
+    }
+    public double getYPosition() {
+        return yPosition + Math.min(currentStepY, currentSpeedY * (System.currentTimeMillis() - currentStart) / 1000.0);
     }
 
     public void notifyPictureProcessed() {
@@ -72,13 +78,18 @@ public class CommandWorker {
                     Log.d("COMMAND THREAD", "Continuing");
                     float timeNeededX = (current.getX() != 0f ? (Math.abs(current.getX()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
                     float timeNeededY = (current.getY() != 0f ? (Math.abs(current.getY()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
+                    Log.d("COMMAND THREAD", String.format("timeX: %d, timeY: %d", timeNeededX, timeNeededY));
                     currentStart = System.currentTimeMillis();
                     currentStepX = current.getX();
-                    currentSpeed = BluetoothEngineControlService.SPEED;
+                    currentStepY = current.getX();
+                    currentSpeedX = BluetoothEngineControlService.SPEED;
+                    currentSpeedY = BluetoothEngineControlService.SPEED;
                     service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
                     Thread.sleep((long) Math.max(timeNeededX, timeNeededY));
                     currentStepX = 0;
+                    currentStepY = 0;
                     xPosition += current.getX();
+                    yPosition += current.getY();
                 }
             } catch (InterruptedException e) {
                 Log.d(TAG, "interrupted!", e);

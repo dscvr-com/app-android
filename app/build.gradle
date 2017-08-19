@@ -14,7 +14,12 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
 
 repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'https://mvnrepository.com/artifact' }
+    maven { url 'http://repo1.maven.org/maven2' }
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots"}
 }
 
 apply plugin: 'com.android.databinding'
@@ -123,6 +128,8 @@ dependencies {
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.google.android.gms:play-services-appindexing:9.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+   // compile group: 'javax.media', name: 'jai_imageio', version: '1.1'
+  //  compile 'com.github.dragon66:icafe:1.1-SNAPSHOT'
     testCompile 'junit:junit:4.12'
 }
 

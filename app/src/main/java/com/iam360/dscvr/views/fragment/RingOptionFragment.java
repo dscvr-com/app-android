@@ -41,9 +41,9 @@ public class RingOptionFragment extends Fragment {
     private static final int PERMISSION_LOCATION = 2;
     private String TAG = RingOptionFragment.class.getSimpleName();
     @Bind(R.id.frag_manual_button)
-    ImageButton manualBtn;
+    ImageButton leftButton;
     @Bind(R.id.frag_motor_button)
-    ImageButton motorBtn;
+    ImageButton rightButton;
     @Bind(R.id.camera_btn)
     ImageButton recordButton;
     @Bind(R.id.record_progress)
@@ -75,15 +75,66 @@ public class RingOptionFragment extends Fragment {
         cache = Cache.open();
         ButterKnife.bind(this, view);
         initButtonListeners();
+        setModeToManual();
+        stopLoading();
         return view;
     }
 
     private void initButtonListeners() {
-        updateMode(!cache.getBoolean(Cache.MOTOR_ON));
-        manualBtn.setOnClickListener(v -> updateMode(true));
-        motorBtn.setOnClickListener(v -> updateMode(false));
+        leftButton.setOnClickListener(v -> {
+            if(!isCurrentlyRingChoosing) {
+                setModeToManual();
+            } else {
+                setModeToOneRingMotor();
+            }
+        });
+        rightButton.setOnClickListener(v -> {
+            if (!isCurrentlyRingChoosing) {
+                setModeToMotor();
+            } else {
+                setModeToThreeRingMotor();
+            }
+        });
         recordButton.setOnClickListener(v -> finishSettingMode());
+    }
 
+    private void setModeToThreeRingMotor() {
+        leftButton.setBackgroundResource(R.drawable.one_ring_icon);
+        rightButton.setBackgroundResource(R.drawable.three_ring_icon_orange);
+        cache.save(Cache.MOTOR_ON, true);
+        cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
+    }
+
+    private void setModeToMotor() {
+
+        if (!DscvrApp.getInstance().hasConnection() || firstTime) {
+            showLoading();
+            isNotCloseable = true;
+            startToSearchEngine();
+            firstTime = false;
+        }
+
+        isCurrentlyRingChoosing = true;
+        int rings = cache.getInt(Cache.CAMERA_MODE);
+
+        if(rings == Constants.THREE_RING_MODE) {
+            setModeToThreeRingMotor();
+        } else {
+            setModeToOneRingMotor();
+        }
+    }
+
+    private void setModeToOneRingMotor() {
+        leftButton.setBackgroundResource(R.drawable.one_ring_icon_active);
+        rightButton.setBackgroundResource(R.drawable.three_ring_icon);
+        cache.save(Cache.MOTOR_ON, true);
+        cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+    }
+
+    private void setModeToManual() {
+        leftButton.setBackgroundResource(R.drawable.manual_icon_orange);
+        rightButton.setBackgroundResource(R.drawable.motor_inactive_white);
+        cache.save(Cache.MOTOR_ON, false);
     }
 
     private void finishSettingMode() {
@@ -98,48 +149,6 @@ public class RingOptionFragment extends Fragment {
         super.onAttach(context);
         callBackListener = (OnModeFinished) context;
         isCurrentlyRingChoosing = false;
-    }
-
-    /**
-     * update engine or manual mode
-     *
-     * @param isManualMode
-     */
-    private void updateMode(boolean isManualMode) {
-        if (isCurrentlyRingChoosing) {
-            if(isManualMode){
-                cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
-            }else{
-                cache.save(Cache.CAMERA_MODE, Constants.THREE_RING_MODE);
-            }
-            manualBtn.setBackgroundResource(R.drawable.manual_icon);
-            motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);//FIXME!!!! put here the real motor Icon!!!!
-            isCurrentlyRingChoosing = false;
-        } else {
-            if (isManualMode) {
-                stopLoading(null);
-                manualBtn.setBackgroundResource(R.drawable.manual_icon_orange);
-                motorBtn.setBackgroundResource(R.drawable.motor_icon);
-                cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);//FIXME remove this later
-                cache.save(Cache.MOTOR_ON, !isManualMode);
-                if (isNotCloseable && DscvrApp.getInstance().getConnector() != null && DscvrApp.getInstance().hasConnection()) {
-                    connector.stop();
-                }
-            } else {
-
-                if (!DscvrApp.getInstance().hasConnection() || firstTime) {
-                    showLoading();
-                    isNotCloseable = true;
-                    startToSearchEngine();
-                    firstTime = false;
-                }
-                cache.save(Cache.MOTOR_ON, !isManualMode);
-
-                manualBtn.setBackgroundResource(R.drawable.one_ring_inactive_icn);
-                motorBtn.setBackgroundResource(R.drawable.motor_icon_orange);
-                isCurrentlyRingChoosing = true;
-            }
-        }
     }
 
     private void startToSearchEngine() {
@@ -158,34 +167,23 @@ public class RingOptionFragment extends Fragment {
         }
         this.connector = DscvrApp.getInstance().getConnector();
         if (connector != null && DscvrApp.getInstance().hasConnection()) {
-            connector.update(() -> reactForUpperButton(), () -> reactForLowerButton());
-            stopLoading(null);
+            connector.update(() -> {}, () -> {});
+            stopLoading();
             isNotCloseable = false;
         } else {
-
-            this.connector.connect(gatt -> stopLoading(gatt), () -> reactForUpperButton(), () -> reactForLowerButton());
+            this.connector.connect(gatt -> {
+                if (gatt != null) {
+                    Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
+                }
+                stopLoading();
+            }, () -> {}, () -> {});
         }
 
     }
 
-    private void reactForLowerButton() {
-        Timber.d("lowerBotton");
-        //TODO
-    }
-
-    private void reactForUpperButton() {
-        if (!isNotCloseable) {
-            updateMode(false);
-            callBackListener.directlyStartToRecord();
-        }
-    }
-
-    private void stopLoading(BluetoothGatt gatt) {
+    private void stopLoading() {
         Timber.d("stop bt loading");
         isNotCloseable = false;
-        if (gatt != null) {
-            Snackbar.make(getView(), "Motor found. ", Snackbar.LENGTH_SHORT).show();
-        }
         getActivity().runOnUiThread(() -> loading.setVisibility(View.INVISIBLE));
         getActivity().runOnUiThread(() -> recordButton.setBackgroundResource(R.drawable.camera_selector));
     }

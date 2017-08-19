@@ -2,6 +2,7 @@
 #include "online-stitcher/src/common/jniHelper.hpp"
 #include "online-stitcher/src/recorder/recorder.hpp"
 #include "online-stitcher/src/recorder/recorder2.hpp"
+#include "online-stitcher/src/recorder/multiRingRecorder2.hpp"
 
 using namespace optonaut;
 
@@ -20,9 +21,14 @@ std::unique_ptr<CheckpointStore> rightStore;
 std::unique_ptr<CheckpointStore> postStore;
 
 std::unique_ptr<Recorder2> recorder;
+std::unique_ptr<MultiRingRecorder> multiRingRecorder;
 std::string debugPath;
 std::string path;
+std::unique_ptr<StorageImageSink> leftSink;
+std::unique_ptr<StorageImageSink> rightSink;
 int internalRecordingMode;
+
+jobject selectionPointToJava(JNIEnv *env, const SelectionPoint &selectionPoint);
 
 extern "C" {
     // storagePath should end on "/"!
@@ -136,6 +142,9 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
     leftStore->Clear();
     rightStore->Clear();
 
+    leftSink = std::unique_ptr<StorageImageSink>(new StorageImageSink(*leftStore));
+    rightSink = std::unique_ptr<StorageImageSink>(new StorageImageSink(*rightStore));
+
 
     Log << "Init'ing recorder";
     Log << "Sensor height " << sensorHeight;
@@ -164,7 +173,15 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
 
    // RecorderParamInfo(const double graphHOverlap, const double graphVOverlap, const double stereoHBuffer, const double stereoVBuffer, const double tolerance, const bool halfGraph)
 
-    recorder = std::unique_ptr<Recorder2>(new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath, convertParamInfo(env, paramInfo)));
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        recorder = std::unique_ptr<Recorder2>(
+                new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath,
+                              convertParamInfo(env, paramInfo)));
+    } else {
+        multiRingRecorder = std::unique_ptr<MultiRingRecorder>(
+                new MultiRingRecorder(androidBase.clone(), zero.clone(), intrinsics, *leftSink, *rightSink, mode, 10.0, debugPath,
+                              convertParamInfo(env, paramInfo)));
+    }
 }
 
 void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jobject bitmap, jint width, jint height, jdoubleArray extrinsicsData) {
@@ -187,35 +204,46 @@ void Java_com_iam360_dscvr_record_Recorder_push(JNIEnv *env, jobject, jobject bi
     image->originalExtrinsics = extrinsics.clone();
     image->intrinsics = intrinsics.clone();
 
-    recorder->Push(image);
+
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        recorder->Push(image);
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        multiRingRecorder->Push(image);
+    }
 
     env->ReleaseDoubleArrayElements(extrinsicsData, (jdouble *) temp, 0);
 }
 
 void Java_com_iam360_dscvr_record_Recorder_setIdle(JNIEnv *, jobject, jboolean idle)
 {
-    recorder->SetIdle(idle);
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        recorder->SetIdle(idle);
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        multiRingRecorder->SetIdle(idle);
+    }
 }
 
 jobjectArray Java_com_iam360_dscvr_record_Recorder_getSelectionPoints(JNIEnv *env, jobject) {
     std::vector<SelectionPoint> selectionPoints;
 
-    selectionPoints = recorder->GetSelectionPoints();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        selectionPoints = recorder->GetSelectionPoints();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        selectionPoints = multiRingRecorder->GetSelectionPoints();
+    }
 
     jclass java_selection_point_class = env->FindClass("com/iam360/dscvr/record/SelectionPoint");
     jobjectArray javaSelectionPoints = (jobjectArray) env->NewObjectArray(selectionPoints.size(),
                                                                           java_selection_point_class, 0);
-
-    // [F for float array, III for three ints
-    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
-
     for(size_t i = 0; i < selectionPoints.size(); ++i)
     {
-        jobject current_point =  env->NewObject(java_selection_point_class, java_selection_point_init,
-                                                matToJFloatArray(env, selectionPoints[i].extrinsics, 4, 4),
-                                                selectionPoints[i].globalId,
-                                                selectionPoints[i].ringId,
-                                                selectionPoints[i].localId);
+        jobject current_point = selectionPointToJava(env, selectionPoints[i]);
 
         env->SetObjectArrayElement(javaSelectionPoints, i, current_point);
         env->DeleteLocalRef(current_point);
@@ -228,23 +256,42 @@ jobject Java_com_iam360_dscvr_record_Recorder_lastKeyframe(JNIEnv *env, jobject)
 
     SelectionPoint selectionPoint;
 
-    selectionPoint = recorder->GetCurrentKeyframe().closestPoint;
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        selectionPoint = recorder->GetCurrentKeyframe().closestPoint;
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        selectionPoint = multiRingRecorder->GetCurrentKeyframe().closestPoint;
+    }
 
-    jclass java_selection_point_class = env->FindClass("com/iam360/dscvr/record/SelectionPoint");
-    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIII)V");
-    jobject javaSelectionPoint = env->NewObject(java_selection_point_class, java_selection_point_init,
-                                                 matToJFloatArray(env, selectionPoint.extrinsics, 4, 4),
-                                                 selectionPoint.globalId,
-                                                 selectionPoint.ringId,
-                                                 selectionPoint.localId);
+    jobject javaSelectionPoint = selectionPointToJava(env, selectionPoint);
 
     return javaSelectionPoint;
 
 }
 
+jobject selectionPointToJava(JNIEnv *env, const SelectionPoint &selectionPoint) {
+    jclass java_selection_point_class = env->FindClass("com/iam360/dscvr/record/SelectionPoint");
+    jmethodID java_selection_point_init = env->GetMethodID(java_selection_point_class, "<init>", "([FIIIFF)V");
+    jobject javaSelectionPoint = env->NewObject(java_selection_point_class, java_selection_point_init,
+                                                matToJFloatArray(env, selectionPoint.extrinsics, 4, 4),
+                                                selectionPoint.globalId,
+                                                selectionPoint.ringId,
+                                                selectionPoint.localId,
+                                                (float)selectionPoint.vPos,
+                                                (float)selectionPoint.hPos);
+    return javaSelectionPoint;
+}
+
 void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *, jobject)
 {
-    recorder->Finish();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        recorder->Finish();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        multiRingRecorder->Finish();
+    }
 
     CheckpointStore leftStore(path + "left/", path + "shared/");
     CheckpointStore rightStore(path + "right/", path + "shared/");
@@ -255,43 +302,89 @@ void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *, jobject)
 
 void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *, jobject)
 {
-    recorder->Cancel();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        recorder->Cancel();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        multiRingRecorder->Cancel();
+    }
 }
 
 void Java_com_iam360_dscvr_record_Recorder_dispose(JNIEnv *, jobject )
 {
-
-    recorder.reset();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        recorder.reset();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        multiRingRecorder.reset();
+    }
 }
 
 jfloatArray Java_com_iam360_dscvr_record_Recorder_getBallPosition(JNIEnv *env, jobject)
 {
-    return matToJFloatArray(env ,recorder->GetBallPosition(), 4, 4);
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return matToJFloatArray(env, recorder->GetBallPosition(), 4, 4);
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return matToJFloatArray(env, multiRingRecorder->GetBallPosition(), 4, 4);
+    }
 }
 
 jboolean Java_com_iam360_dscvr_record_Recorder_isFinished(JNIEnv *, jobject)
 {
-    return recorder->IsFinished();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return (jboolean) recorder->IsFinished();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return (jboolean) multiRingRecorder->IsFinished();
+    }
 }
 
 jdouble Java_com_iam360_dscvr_record_Recorder_getDistanceToBall(JNIEnv *, jobject)
 {
-    return recorder->GetDistanceToBall();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return recorder->GetDistanceToBall();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return multiRingRecorder->GetDistanceToBall();
+    }
 }
 
-jfloatArray Java_com_iam360_dscvr_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject)
-{
-    return matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
+jfloatArray Java_com_iam360_dscvr_record_Recorder_getAngularDistanceToBall(JNIEnv *env, jobject) {
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return matToJFloatArray(env, recorder->GetAngularDistanceToBall(), 1, 3);
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return matToJFloatArray(env, multiRingRecorder->GetAngularDistanceToBall(), 1, 3);
+    }
 }
 
 jboolean Java_com_iam360_dscvr_record_Recorder_hasStarted(JNIEnv *, jobject)
 {
-    return recorder->HasStarted();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return recorder->HasStarted();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return multiRingRecorder->HasStarted();
+    }
 }
 
 jboolean Java_com_iam360_dscvr_record_Recorder_isIdle(JNIEnv *, jobject)
 {
-    return recorder->IsIdle();
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return recorder->IsIdle();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return multiRingRecorder->IsIdle();
+    }
 }
 
 void Java_com_iam360_dscvr_record_Recorder_enableDebug(JNIEnv *env, jobject, jstring storagePath)
@@ -307,11 +400,25 @@ void Java_com_iam360_dscvr_record_Recorder_disableDebug(JNIEnv *, jobject)
 }
 
 jint Java_com_iam360_dscvr_record_Recorder_getRecordedImagesCount(JNIEnv *, jobject) {
-    return recorder->GetRecordedImagesCount();
+
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return recorder->GetRecordedImagesCount();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return multiRingRecorder->GetRecordedImagesCount();
+    }
 }
 
 jint Java_com_iam360_dscvr_record_Recorder_getImagesToRecordCount(JNIEnv *, jobject) {
-    return recorder->GetImagesToRecordCount();
+
+    if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
+        Assert(recorder != nullptr);
+        return recorder->GetImagesToRecordCount();
+    } else {
+        Assert(multiRingRecorder != nullptr);
+        return multiRingRecorder->GetImagesToRecordCount();
+    }
 }
 
 jfloatArray Java_com_iam360_dscvr_record_Recorder_getCurrentRotation(JNIEnv *, jobject)
@@ -349,6 +456,6 @@ jobject matrixToBitmap(JNIEnv *env, const Mat& mat)
 
 jboolean Java_com_iam360_dscvr_record_Recorder_previewAvailable(JNIEnv *, jobject)
 {
-    Assert(recorder != NULL);
+    Assert(recorder != nullptr || multiRingRecorder != nullptr);
     return true;
 }

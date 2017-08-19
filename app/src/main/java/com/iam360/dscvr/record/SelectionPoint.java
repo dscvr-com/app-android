@@ -11,12 +11,16 @@ public class SelectionPoint {
     private int globalId;
     private int ringId;
     private int localId;
+    private float hPos;
+    private float vPos;
 
-    public SelectionPoint(float[] extrinsics, int globalId, int ringId, int localId) {
+    public SelectionPoint(float[] extrinsics, int globalId, int ringId, int localId, float hPos, float vPos) {
         this.extrinsics = extrinsics;
         this.globalId = globalId;
         this.ringId = ringId;
         this.localId = localId;
+        this.hPos = hPos;
+        this.vPos = vPos;
     }
 
     public long getRingId() {
@@ -51,6 +55,14 @@ public class SelectionPoint {
         this.localId = localId;
     }
 
+    public float getHPos() {
+        return hPos;
+    }
+
+    public float getVPos() {
+        return vPos;
+    }
+
     @Override
     public String toString() {
         String value = "Selection point : extrinsics=";
@@ -60,10 +72,9 @@ public class SelectionPoint {
 
         value += " globalId=" + globalId + " " +
                 "ringId=" + ringId + " " +
-                "localId=" + localId + " ";
-
-
-        Log.d("MARK","SelectionPoint value - "+value);
+                "localId=" + localId + " " +
+                "vPos=" + vPos + " " +
+                "hPos=" + hPos + " ";
 
         return value;
     }

@@ -23,9 +23,11 @@ android {
                 arguments "-DOpenCV_DIR=$System.env.OPENCV_ANDROID_PATH",
                         "-DANDROID_ARM_MODE=arm",
                         "-DANDROID_ARM_NEON=true",
-                        "-DANDROID_CPP_FEATURES=exceptions"
-                        "-D__ANDROID__=true"
+                        "-DANDROID_CPP_FEATURES=exceptions",
+                        "-D__ANDROID__=true",
+                        "-GAndroid Gradle - Ninja"
             }
+
         }
     }
 

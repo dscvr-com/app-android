@@ -50,7 +50,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="32dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/one_ring_inactive_icn"
+            android:background="@drawable/one_ring_icon"
             android:onClick="onClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

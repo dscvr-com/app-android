@@ -51,6 +51,7 @@ public class CameraUtils {
             ExifInterface exif = new ExifInterface(file.getCanonicalPath());
             exif.setAttribute(ExifInterface.TAG_MODEL, Constants.CAMERA_MODEL);
             exif.setAttribute(ExifInterface.TAG_MAKE, Constants.CAMERA_MAKE);
+
             exif.saveAttributes();
 
         } catch (IOException e) {

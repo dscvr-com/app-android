@@ -41,7 +41,6 @@ public class BluetoothEngineControlService {
     private BluetoothGatt gatt;
     private EngineCommandPoint movedSteps = new EngineCommandPoint(0, 0);
     private BluetoothEngineMatrixProvider providerInstanz;
-    private double yTeta = 0;
     public static final int SPEED = 500;
     public static final EngineCommandPoint SPEEDPOINT = new EngineCommandPoint(SPEED, SPEED);
 
@@ -138,7 +137,9 @@ public class BluetoothEngineControlService {
         @Override
         public void getRotationMatrix(float[] target) {
             double xPhi = worker.getXPosition() / (STEPS_FOR_ONE_ROUND_X/360d);
+            double yTeta = worker.getYPosition() / (STEPS_FOR_ONE_ROUND_X/360d);
             Timber.d("xPhi: " + xPhi);
+            Timber.d("yTeta: " + yTeta);
             float[] rotationX = {(float) yTeta, 1, 0, 0};
             float[] rotationY = {(float) xPhi, 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);
