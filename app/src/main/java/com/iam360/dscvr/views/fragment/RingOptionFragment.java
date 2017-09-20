@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.iam360.dscvr.DscvrApp;
 import com.iam360.dscvr.R;
@@ -44,6 +45,10 @@ public class RingOptionFragment extends Fragment {
     ImageButton leftButton;
     @Bind(R.id.frag_motor_button)
     ImageButton rightButton;
+    @Bind(R.id.frag_manual_text)
+    TextView leftText;
+    @Bind(R.id.frag_motor_text)
+    TextView rightText;
     @Bind(R.id.camera_btn)
     ImageButton recordButton;
     @Bind(R.id.record_progress)
@@ -107,6 +112,9 @@ public class RingOptionFragment extends Fragment {
 
     private void setModeToMotor() {
 
+        leftText.setText("ONE RING");
+        rightText.setText("THREE RING");
+
         if (!DscvrApp.getInstance().hasConnection() || firstTime) {
             showLoading();
             isNotCloseable = true;
@@ -134,6 +142,8 @@ public class RingOptionFragment extends Fragment {
     private void setModeToManual() {
         leftButton.setBackgroundResource(R.drawable.manual_icon_orange);
         rightButton.setBackgroundResource(R.drawable.motor_inactive_white);
+        leftText.setText("MANUAL MODE");
+        rightText.setText("MOTOR MODE");
         cache.save(Cache.MOTOR_ON, false);
     }
 

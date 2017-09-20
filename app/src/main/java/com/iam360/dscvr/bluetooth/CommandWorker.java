@@ -44,10 +44,10 @@ public class CommandWorker {
     }
 
     public double getXPosition() {
-        return xPosition + Math.min(currentStepX, currentSpeedX * (System.currentTimeMillis() - currentStart) / 1000.0);
+        return xPosition + Math.signum(currentStepX) * Math.min(Math.abs(currentStepX), currentSpeedX * (System.currentTimeMillis() - currentStart) / 1000.0);
     }
     public double getYPosition() {
-        return yPosition + Math.min(currentStepY, currentSpeedY * (System.currentTimeMillis() - currentStart) / 1000.0);
+        return yPosition + Math.signum(currentStepY) * Math.min(Math.abs(currentStepY), currentSpeedY * (System.currentTimeMillis() - currentStart) / 1000.0);
     }
 
     public void notifyPictureProcessed() {
@@ -72,16 +72,21 @@ public class CommandWorker {
             try {
                 xPosition = 0;
                 //Thread.sleep(500);
+                EngineCommandPoint last = points.get(points.size() - 1);
                 for (EngineCommandPoint current : points) {
-                    Log.d("COMMAND THREAD", "Waiting");
+                    Log.d("COMMAND THREAD", "Waiting bla");
                     event.waitOne();
-                    Log.d("COMMAND THREAD", "Continuing");
+                    if(current != last) {
+                        event.waitOne();
+                    }
+                    Log.d("COMMAND THREAD", "Continuing bla");
                     float timeNeededX = (current.getX() != 0f ? (Math.abs(current.getX()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
                     float timeNeededY = (current.getY() != 0f ? (Math.abs(current.getY()) * 1000f / BluetoothEngineControlService.SPEED) : 0f);
-                    Log.d("COMMAND THREAD", String.format("timeX: %d, timeY: %d", timeNeededX, timeNeededY));
+                    Log.d("COMMAND THREAD", String.format("timeX: %f, timeY: %f", timeNeededX, timeNeededY));
+
                     currentStart = System.currentTimeMillis();
                     currentStepX = current.getX();
-                    currentStepY = current.getX();
+                    currentStepY = current.getY();
                     currentSpeedX = BluetoothEngineControlService.SPEED;
                     currentSpeedY = BluetoothEngineControlService.SPEED;
                     service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
@@ -92,7 +97,9 @@ public class CommandWorker {
                     yPosition += current.getY();
                 }
             } catch (InterruptedException e) {
-                Log.d(TAG, "interrupted!", e);
+                e.printStackTrace();
+            } catch (RuntimeException e) {
+                e.printStackTrace();
             }
         }
 
