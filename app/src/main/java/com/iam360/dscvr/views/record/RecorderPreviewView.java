@@ -33,10 +33,12 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
 
     private static int DETECTOR_IMAGE_SIZE = 240;
 
+    boolean exposureLocked;
+
     public RecorderPreviewView(Activity context) {
         super(context);
         inMemoryRecorder = new InMemoryImageProvider();
-
+        exposureLocked = false;
     }
 
     @Override
@@ -73,9 +75,20 @@ public class RecorderPreviewView extends RecorderPreviewViewBase {
         Log.d(TAG, "setupPreviewSession");
         CaptureRequest.Builder builder = super.setupPreviewSession(device, previewSurface);
         builder.addTarget(inMemoryRecorder.getSurface());
+
+        if(this.exposureLocked) {
+            builder.set(CaptureRequest.CONTROL_AE_LOCK, true);
+        }
+
         return builder;
     }
 
+    public void lockExposure() {
+        if(!this.exposureLocked) {
+            this.exposureLocked = true;
+            startPreview(); // This call should be save, since it re-submits the capture request.
+        }
+    }
     @Override
     protected void onSessionCreated(CameraCaptureSession currentSession) {
         super.onSessionCreated(currentSession);

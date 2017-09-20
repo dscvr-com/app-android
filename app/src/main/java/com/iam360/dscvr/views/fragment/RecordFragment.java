@@ -272,6 +272,9 @@ public class RecordFragment extends Fragment {
      *
      */
     public void startRecording() {
+
+        this.recordPreview.lockExposure();
+
         String text = "flen: " + focalLength + ", sx: " + size.getWidth() + ", sy: " + size.getHeight();
         text = text + ", Device: " + android.os.Build.DEVICE + ", Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
         Toast.makeText(this.getContext(), text, Toast.LENGTH_LONG).show();
