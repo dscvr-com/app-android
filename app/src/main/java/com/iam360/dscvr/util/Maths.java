@@ -1,6 +1,7 @@
 package com.iam360.dscvr.util;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import timber.log.Timber;
 
@@ -131,18 +132,6 @@ public class Maths {
 
     public static float radToDegrees(float rad) {
         return (float)(rad * 180f / Math.PI);
-    }
-
-    public static float[] carthesianToSpherical(Vector3 vector) {
-        float len = vector.length();
-        double theta = Math.acos(vector.z / len);
-        double phi = Math.atan2(vector.y, vector.x);
-
-        float[] vec2 = new float[2];
-        vec2[0] = (float)phi;
-        vec2[1] = (float)theta;
-
-        return vec2;
     }
 
 }

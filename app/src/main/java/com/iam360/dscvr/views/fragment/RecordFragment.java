@@ -112,7 +112,7 @@ public class RecordFragment extends Fragment {
             endOfLast = System.currentTimeMillis();
             //assert colorFormat == Bitmap.Config.ARGB_8888;
             // build extrinsics
-            Log.d("COMMAND THREAD", "Image Data Ready");
+            // Log.d("COMMAND THREAD", "Image Data Ready");
             float[] coreMotionMatrix = provider.getRotationMatrix();
             if(provider instanceof BluetoothEngineControlService.BluetoothEngineMatrixProvider) {
                 ((BluetoothEngineControlService.BluetoothEngineMatrixProvider)provider).notifyFrameCaptured();
@@ -316,44 +316,53 @@ public class RecordFragment extends Fragment {
             SelectionPoint point;
             point = selectionPoints[i % selectionPoints.length];
 
-            float[] prevInv = new float[16];
+            float[] inv = new float[16];
             float[] diff = new float[16];
 
-            Matrix.invertM(prevInv, 0, prev.getExtrinsics(), 0);
-            Matrix.multiplyMM(diff, 0, prevInv, 0, point.getExtrinsics(), 0);
+            Matrix.invertM(inv, 0, prev.getExtrinsics(), 0);
+            Matrix.multiplyMM(diff, 0, point.getExtrinsics(), 0, inv, 0);
 
-            float phi = getYinDegForSelectionPoint(diff);
+            float phi = -selectionPointToPhi(diff);
             // TODO: Check if theta calculation is correct.
-            float theta = getXinDegForSelectionPoint(diff);
+            float theta = - selectionPointToTheta(diff);
 
             Log.d("POINTS", phi + "; " + theta);
 
-            sum += phi;
+            sum += theta;
 
-            points.add(new EngineCommandPoint(-phi, -theta));
+            points.add(new EngineCommandPoint(phi, theta));
 
             prev = point;
         }
         Log.d("POINTS", "SUM: " + sum);
+        if(Math.abs(sum) > 0.001) {
+            points.add(new EngineCommandPoint(0, -sum));
+        }
         bluetoothService.createCommands(points);
     }
 
+    public static float selectionPointToPhi(float[] mat) {
+        float[] vec = new float[]{1f, 0f, 0f, 0f};
+        float[] res = new float[4];
+        Matrix.multiplyMV(res, 0, mat, 0, vec, 0);
 
-    private float getYinDegForSelectionPoint(float[] mat) {
-        return Maths.radToDegrees(selectionPointToPhiTheta(mat)[1]);
+
+        float len = new Vector3(res).length();
+        //Log.d("POINTS", String.format("Phi - x: %f, y: %f, z: %f", res[0], res[1], res[2]));
+        double phi = Math.acos(res[0] / len);
+
+        return Maths.radToDegrees((float)phi);
     }
-
-    private float getXinDegForSelectionPoint(float[] mat) {
-        // TODO: -180 because carthesiantospherical does not handle this matrix well
-        // I'm not sure if this fix holds for three rings.
-        return Maths.radToDegrees(selectionPointToPhiTheta(mat)[0]) - 180f;
-    }
-
-    private float[] selectionPointToPhiTheta(float[] mat) {
+    public static float selectionPointToTheta(float[] mat) {
         float[] vec = new float[]{0f, 0f, 1f, 0f};
-        float[] resultOfMultiply = new float[4];
-        Matrix.multiplyMV(resultOfMultiply, 0, mat, 0, vec, 0);
-        return Maths.carthesianToSpherical(new Vector3(resultOfMultiply));
+        float[] res = new float[4];
+        Matrix.multiplyMV(res, 0, mat, 0, vec, 0);
+
+
+        float len = new Vector3(res).length();
+        //Log.d("POINTS", String.format("Theta - x: %f, y: %f, z: %f", res[0], res[1], res[2]));
+        double theta = Math.asin(res[1] / len);
+        return Maths.radToDegrees((float)theta);
     }
 
     /**

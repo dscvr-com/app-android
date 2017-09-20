@@ -22,7 +22,7 @@ std::unique_ptr<CheckpointStore> postStore;
 
 std::unique_ptr<Recorder2> recorder;
 std::unique_ptr<MultiRingRecorder> multiRingRecorder;
-std::string debugPath;
+std::string debugPath = "";
 std::string path;
 std::unique_ptr<StorageImageSink> leftSink;
 std::unique_ptr<StorageImageSink> rightSink;
@@ -130,7 +130,7 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
 {
     const char *cString = env->GetStringUTFChars(storagePath, NULL);
     std::string pathLocal(cString);
-    std::string debugPath = "";
+    //std::string debugPath = "";
     //std::string debugPath = pathLocal + "/dgb/"; // If debug is enabled, the recorder will crash on finish.
     path = pathLocal;
 
@@ -175,11 +175,11 @@ void Java_com_iam360_dscvr_record_Recorder_initRecorder(JNIEnv *env, jobject, js
 
     if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
         recorder = std::unique_ptr<Recorder2>(
-                new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 10.0, debugPath,
+                new Recorder2(androidBase.clone(), zero.clone(), intrinsics, mode, 1.0, debugPath,
                               convertParamInfo(env, paramInfo)));
     } else {
         multiRingRecorder = std::unique_ptr<MultiRingRecorder>(
-                new MultiRingRecorder(androidBase.clone(), zero.clone(), intrinsics, *leftSink, *rightSink, mode, 10.0, debugPath,
+                new MultiRingRecorder(androidBase.clone(), zero.clone(), intrinsics, *leftSink, *rightSink, mode, 1.0, debugPath,
                               convertParamInfo(env, paramInfo)));
     }
 }
@@ -288,16 +288,16 @@ void Java_com_iam360_dscvr_record_Recorder_finish(JNIEnv *, jobject)
     if(internalRecordingMode == optonaut::RecorderGraph::ModeCenter) {
         Assert(recorder != nullptr);
         recorder->Finish();
+
+        CheckpointStore leftStore(path + "left/", path + "shared/");
+        CheckpointStore rightStore(path + "right/", path + "shared/");
+
+        leftStore.SaveOptograph(recorder->GetLeftResult());
+        rightStore.SaveOptograph(recorder->GetRightResult());
     } else {
         Assert(multiRingRecorder != nullptr);
         multiRingRecorder->Finish();
     }
-
-    CheckpointStore leftStore(path + "left/", path + "shared/");
-    CheckpointStore rightStore(path + "right/", path + "shared/");
-
-    leftStore.SaveOptograph(recorder->GetLeftResult());
-    rightStore.SaveOptograph(recorder->GetRightResult());
 }
 
 void Java_com_iam360_dscvr_record_Recorder_cancel(JNIEnv *, jobject)
