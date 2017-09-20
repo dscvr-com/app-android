@@ -41,8 +41,8 @@ public class Recorder {
     public static void initializeRecorder(String storagePath, float sensorWidth, float sensorHeight, float focalLength, int mode, RecorderParamInfo paramInfo) {
         if (!isInitialized) {
             Timber.v("Initialized recorder");
-            enableDebug(storagePath);
-            //disableDebug();
+            //enableDebug(storagePath);
+            disableDebug();
             initRecorder(storagePath, sensorWidth, sensorHeight, focalLength, mode, paramInfo);
             isInitialized = true;
         } else {

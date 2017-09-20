@@ -327,7 +327,7 @@ public class RecordFragment extends Fragment {
 
             float phi = -selectionPointToPhi(diff);
             // TODO: Check if theta calculation is correct.
-            float theta = - selectionPointToTheta(diff);
+            float theta = -selectionPointToTheta(diff);
 
             Log.d("POINTS", phi + "; " + theta);
 
@@ -364,7 +364,7 @@ public class RecordFragment extends Fragment {
 
         float len = new Vector3(res).length();
         //Log.d("POINTS", String.format("Theta - x: %f, y: %f, z: %f", res[0], res[1], res[2]));
-        double theta = Math.asin(res[1] / len);
+        double theta = Math.asin(res[1]);
         return Maths.radToDegrees((float)theta);
     }
 
