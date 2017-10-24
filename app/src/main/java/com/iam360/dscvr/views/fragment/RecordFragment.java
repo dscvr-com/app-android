@@ -78,7 +78,6 @@ public class RecordFragment extends Fragment {
     private float sensorWidthInMeters = 0.004f;
     private long time = -1;
     private int captureWidth;
-    private int mode;
     private boolean fromPause = false;
 
 
@@ -193,7 +192,7 @@ public class RecordFragment extends Fragment {
                 // initialize recorder
                 size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
                 // Add some margin to the focal length, to avoid too short focal lengths.
-                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.1f;
+                focalLength = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0] * 1.5f;
                 cameraReady = true;
                 ((RecorderActivity) getActivity()).overlayInitialised();
 
@@ -220,7 +219,6 @@ public class RecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         cache = Cache.open();
-        this.mode = cache.getInt(Cache.CAMERA_MODE);
         View view = inflater.inflate(R.layout.fragment_record, container, false);
         checkPermissions(view);
 
@@ -275,10 +273,12 @@ public class RecordFragment extends Fragment {
 
         this.recordPreview.lockExposure();
 
-        String text = "flen: " + focalLength + ", sx: " + size.getWidth() + ", sy: " + size.getHeight();
-        text = text + ", Device: " + android.os.Build.DEVICE + ", Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
-        Toast.makeText(this.getContext(), text, Toast.LENGTH_LONG).show();
+        // Debug toast
+        //String text = "flen: " + focalLength + ", sx: " + size.getWidth() + ", sy: " + size.getHeight();
+        //text = text + ", Device: " + android.os.Build.DEVICE + ", Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+        //Toast.makeText(this.getContext(), text, Toast.LENGTH_LONG).show();
 
+        int mode = cache.getInt(Cache.CAMERA_MODE);
         RecorderParamInfo paramInfo = RecorderParamStorage.getRecorderParams(focalLength, size.getWidth(), size.getHeight(), cache.getBoolean(Cache.MOTOR_ON));
         Timber.d(String.format("Initializing recorder with f: %s sx: %s sy: %s, paramInfo: %s", focalLength, size.getWidth(), size.getHeight(), paramInfo));
         Recorder.initializeRecorder(CameraUtils.CACHE_PATH, size.getWidth(), size.getHeight(), focalLength, mode, paramInfo);
@@ -326,8 +326,9 @@ public class RecordFragment extends Fragment {
             Matrix.multiplyMM(diff, 0, point.getExtrinsics(), 0, inv, 0);
 
             float phi = -selectionPointToPhi(diff);
-            // TODO: Check if theta calculation is correct.
-            float theta = -selectionPointToTheta(diff);
+
+            // We calculate with euler angles for theta, since the matrix based approach did not work
+            float theta = selectionPointToTheta(prev.getExtrinsics()) - selectionPointToTheta(point.getExtrinsics());
 
             Log.d("POINTS", phi + "; " + theta);
 

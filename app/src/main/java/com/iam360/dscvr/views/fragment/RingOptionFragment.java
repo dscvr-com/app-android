@@ -2,7 +2,6 @@ package com.iam360.dscvr.views.fragment;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -112,8 +111,6 @@ public class RingOptionFragment extends Fragment {
 
     private void setModeToMotor() {
 
-        leftText.setText("ONE RING");
-        rightText.setText("THREE RING");
 
         if (!DscvrApp.getInstance().hasConnection() || firstTime) {
             showLoading();
@@ -122,6 +119,12 @@ public class RingOptionFragment extends Fragment {
             firstTime = false;
         }
 
+        // If you want to enable three ring and ring choosing,
+        // leftText.setText("ONE RING");
+        // rightText.setText("THREE RING");
+
+        // uncomment the code below.
+        /*
         isCurrentlyRingChoosing = true;
         int rings = cache.getInt(Cache.CAMERA_MODE);
 
@@ -130,6 +133,16 @@ public class RingOptionFragment extends Fragment {
         } else {
             setModeToOneRingMotor();
         }
+         */
+
+        // If you want to enable three ring and ring choosing,
+        // remove the code below.
+
+        cache.save(Cache.MOTOR_ON, true);
+        cache.save(Cache.CAMERA_MODE, Constants.ONE_RING_MODE);
+        leftButton.setBackgroundResource(R.drawable.manual_icon);
+        rightButton.setBackgroundResource(R.drawable.motor_icon_orange);
+        recordButton.setOnClickListener(v -> finishSettingMode());
     }
 
     private void setModeToOneRingMotor() {
@@ -141,7 +154,7 @@ public class RingOptionFragment extends Fragment {
 
     private void setModeToManual() {
         leftButton.setBackgroundResource(R.drawable.manual_icon_orange);
-        rightButton.setBackgroundResource(R.drawable.motor_inactive_white);
+        rightButton.setBackgroundResource(R.drawable.motor_icon);
         leftText.setText("MANUAL MODE");
         rightText.setText("MOTOR MODE");
         cache.save(Cache.MOTOR_ON, false);

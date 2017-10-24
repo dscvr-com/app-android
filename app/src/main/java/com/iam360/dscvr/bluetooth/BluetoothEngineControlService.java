@@ -138,8 +138,8 @@ public class BluetoothEngineControlService {
         public void getRotationMatrix(float[] target) {
             double xPhi = worker.getXPosition() / (STEPS_FOR_ONE_ROUND_X/360d);
             double yTeta = worker.getYPosition() / (STEPS_FOR_ONE_ROUND_Y/360d);
-            Timber.d("xPhi: " + xPhi);
-            Timber.d("yTeta: " + yTeta);
+            Timber.d("POS: xPhi: " + xPhi);
+            Timber.d("POS: yTeta: " + yTeta);
             float[] rotationX = {(float) -yTeta, 1, 0, 0};
             float[] rotationY = {(float) xPhi, 0, 1, 0};
             float[] result = Maths.buildRotationMatrix(rotationY, rotationX);

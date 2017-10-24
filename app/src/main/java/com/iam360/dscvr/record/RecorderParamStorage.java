@@ -13,7 +13,7 @@ public class RecorderParamStorage {
 
         //  RecorderParamInfo(double graphHOverlap, double graphVOverlap, double stereoHBuffer, double stereoVBuffer, double tolerance, boolean halfGraph)
 
-        double vBuffer = usingMotor ? 0.0 : -0.5;
+        double vBuffer = usingMotor ? 0.0 : -0.05;
 
         switch(android.os.Build.MODEL) {
             /*
@@ -31,8 +31,8 @@ public class RecorderParamStorage {
             07-17 13:15:52.434 11738-11738/com.iam360.dscvr D/DEVICEINFO: Device: OnePlus5, Model: ONEPLUS A5000 (OnePlus5)
              */
             case "ONEPLUS A5000":
-            case "SM-N920I": return new RecorderParamInfo(0.7, 0.25, 0.55, vBuffer, 2.0, true);
-            default: return new RecorderParamInfo(0.7, 0.5, 0.55, vBuffer, 2.0, true); // FALL TROUGH
+            case "SM-N920I": return new RecorderParamInfo(0.8, 0.25, 0.50, vBuffer, 2.0, true);
+            default: return new RecorderParamInfo(0.8, 0.25, 0.6, vBuffer, 2.0, true); // FALL TROUGH
         }
     }
 }

@@ -90,7 +90,11 @@ public class CommandWorker {
                     currentSpeedX = BluetoothEngineControlService.SPEED;
                     currentSpeedY = BluetoothEngineControlService.SPEED;
                     service.moveXY(current, BluetoothEngineControlService.SPEEDPOINT);
-                    Thread.sleep((long) Math.max(timeNeededX, timeNeededY));
+                    if(timeNeededX > timeNeededY) {
+                        Thread.sleep((long) timeNeededX);
+                    } else {
+                        Thread.sleep((long) timeNeededY);
+                    }
                     currentStepX = 0;
                     currentStepY = 0;
                     xPosition += current.getX();
