@@ -1,4 +1,4 @@
-# App Android
+# DSCVR Android App
 
 This repository contains the DSCVR (former Optonaut) Android application. 
 

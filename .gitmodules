@@ -1,3 +1,3 @@
-[submodule "oribit360media"]
-	path = oribit360media
-	url = git@gitlab.com:orbit360/oribit360media.git
+[submodule "orbit360media"]
+	path = orbit360media
+	url = git@github.com:dscvr-com/dscvr-android-media.git
