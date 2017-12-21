@@ -1,8 +1,8 @@
 # DSCVR Android App
 
-This repository contains the DSCVR (former Optonaut) Android application. 
+This repository contains the [DSCVR (former Optonaut) Android application](https://play.google.com/store/apps/details?id=com.iam360.dscvr). 
 
-The applications wraps the image processing component (`online-stitcher`, found [here]()), and adds the infrastucture necassary for recording and viewing on Android. 
+The applications wraps the image processing component (`online-stitcher`, found [here](https://github.com/dscvr-com/online-stitcher)), and adds the infrastucture necassary for recording and viewing on Android. 
 
 ## Project Structure
 
